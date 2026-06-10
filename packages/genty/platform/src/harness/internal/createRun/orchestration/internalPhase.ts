@@ -32,7 +32,7 @@ import {
 import { readProcessFileFingerprint } from "./effects";
 import { createOrchestrationTools } from "./internalTools";
 import { ensureRunAndMaybeBindFromProcessDefinition } from "../planProcess/runState";
-import { runDelegatedHarnessTask } from "../planProcess";
+import { buildAgentPrompt, coerceAgentResultValue, runDelegatedHarnessTask } from "../planProcess";
 import { assessRun } from "../resumeState";
 import type { OrchestrationProgressSnapshot, RunOrchestrationPhaseArgs } from "./types";
 import { subscribeVerbosePiEvents } from "./verbose";
@@ -54,6 +54,19 @@ export async function runInternalOrchestrationPhase(
     pendingEffectResults: new Map(),
   };
   let orchestrationSession: AgentCoreSessionHandle | null = null;
+
+  // Bug #936: genty's internal (in-process) execution must establish the run
+  // lifecycle in the WORKSPACE .a5c/runs, not the global ~/.a5c/runs. When the
+  // caller did not pass an explicit runsDir and no BABYSITTER_RUNS_DIR override
+  // is set, resolveRunsDir() defaults to the global home dir (scope=global),
+  // so the workspace .a5c/runs/ is never created and downstream verification
+  // (and run resumption) can't find the run. Force the workspace repo runs dir
+  // in that case so the internal path matches the external path's lifecycle.
+  // An explicit args.runsDir or BABYSITTER_RUNS_DIR override still wins.
+  const resolvedRunsDir = resolveWorkspaceRunsDir(args.runsDir, args.workspace);
+  if (resolvedRunsDir && resolvedRunsDir !== args.runsDir) {
+    args.runsDir = resolvedRunsDir;
+  }
 
   // Initialize genty session context — wires trust, extensions, instructions, steering, model switch
   let gentyCtx: GentySessionContext | null = null;
@@ -501,10 +514,14 @@ export async function runInternalOrchestrationPhase(
               effectsResolved++;
             }
           } else {
-            const agentSpec = (action as any).agent ?? (action as any).taskDef?.agent;
-            const prompt = typeof agentSpec?.prompt === 'string'
-              ? agentSpec.prompt
-              : JSON.stringify(agentSpec?.prompt ?? (action as any).title ?? (action as any).label ?? 'Execute this task');
+            // Build the agent prompt exactly as the SDK effect resolver does so
+            // structured-output (outputSchema) instructions are included. Using
+            // the raw taskDef means object-shaped prompts ({role,task,...}) and
+            // declared output schemas are honored — not blindly JSON.stringified.
+            const taskDef = (action as any).taskDef as Record<string, unknown> | undefined;
+            const prompt = taskDef
+              ? buildAgentPrompt(taskDef)
+              : String((action as any).title ?? (action as any).label ?? 'Execute this task');
             writeVerbose(`[phaseOrchestration host] auto-delegating ${action.kind} effect ${effectId}: ${((action as any).title ?? (action as any).label ?? '').slice(0, 80)}`);
             try {
               const delegated = await runDelegatedHarnessTask({
@@ -513,10 +530,27 @@ export async function runInternalOrchestrationPhase(
                 model: args.model,
                 timeout: 180_000,
               });
+              if (!delegated.success) {
+                writeVerbose(`[phaseOrchestration host] ${action.kind} effect ${effectId} returned failure`);
+                await invokeTool(taskPostTool, 'babysitter_task_post_result', {
+                  effectId,
+                  status: 'error',
+                  valueText: delegated.output,
+                });
+                effectsResolved++;
+                continue;
+              }
+              // Bug #936: propagate the AGENT'S RESULT (delegated.output), not the
+              // {success,output,harness} wrapper. Coerce against the task's declared
+              // outputSchema (mirrors resolveEffect's agent branch) so ctx.task()
+              // receives the real value the process expects (e.g. {markdown}).
+              const coerced = taskDef
+                ? coerceAgentResultValue(taskDef, delegated.output)
+                : delegated.output;
               await invokeTool(taskPostTool, 'babysitter_task_post_result', {
                 effectId,
                 status: 'ok',
-                valueJson: typeof delegated === 'string' ? delegated : JSON.stringify(delegated),
+                valueJson: JSON.stringify(coerced),
               });
               effectsResolved++;
             } catch (err: unknown) {
@@ -714,6 +748,53 @@ export async function runInternalOrchestrationPhase(
       });
       await destroyGentySessionContext(gentyCtx).catch(() => {});
     }
+  }
+}
+
+/**
+ * Resolve the runs directory for genty's internal (in-process) execution.
+ *
+ * Precedence (highest first):
+ *   1. An explicit runsDir passed by the caller (CLI --runs-dir).
+ *   2. The BABYSITTER_RUNS_DIR / BABYSITTER_RUNS_SCOPE env overrides, honored
+ *      via the SDK's resolveRunsDir({ cwd }).
+ *   3. The WORKSPACE repo runs dir (<repoRoot>/.a5c/runs) — NOT the global
+ *      ~/.a5c/runs. The SDK defaults to global scope when nothing is set, which
+ *      means a plain `genty call` never materializes the workspace .a5c/runs/.
+ *      Forcing the workspace dir here makes the internal path establish the run
+ *      lifecycle where downstream tooling (and the live-stack verification)
+ *      expects it. See #936 bug 2.
+ *
+ * The SDK is loaded lazily (sync require, only when this is actually called) to
+ * avoid eagerly pulling the heavy SDK + atlas index into the module graph, per
+ * the #936 default-provider lazy-load decision.
+ */
+export function resolveWorkspaceRunsDir(
+  explicitRunsDir: string | undefined,
+  workspace: string | undefined,
+): string | undefined {
+  if (explicitRunsDir) {
+    return explicitRunsDir;
+  }
+  const cwd = workspace ?? process.cwd();
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const sdk = require("@a5c-ai/babysitter-sdk") as {
+      resolveRunsDir: (opts?: { cwd?: string }) => string;
+      getRepoRunsDir: (startDir?: string) => string;
+      getRunsScope: () => "global" | "repo";
+    };
+    // An explicit BABYSITTER_RUNS_DIR override (or repo scope) already resolves
+    // to a deterministic, caller-intended location — honor it verbatim.
+    if (process.env.BABYSITTER_RUNS_DIR?.trim() || sdk.getRunsScope() === "repo") {
+      return sdk.resolveRunsDir({ cwd });
+    }
+    // Otherwise default genty's internal execution to the workspace repo runs
+    // dir instead of the global home dir.
+    return sdk.getRepoRunsDir(cwd);
+  } catch {
+    // If the SDK cannot be resolved, fall back to the caller-provided value.
+    return explicitRunsDir;
   }
 }
 
