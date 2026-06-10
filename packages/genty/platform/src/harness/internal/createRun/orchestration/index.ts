@@ -19,12 +19,12 @@ export {
   resolveHarnessSessionIdForBinding,
 } from "./effects";
 export { runExternalOrchestrationPhase } from "./externalPhase";
-export { runInternalOrchestrationPhase } from "./internalPhase";
+export { runInternalOrchestrationPhase, resolveWorkspaceRunsDir } from "./internalPhase";
 export { subscribeVerbosePiEvents } from "./verbose";
 
 import type { RunOrchestrationPhaseArgs } from "./types";
 import { runExternalOrchestrationPhase } from "./externalPhase";
-import { runInternalOrchestrationPhase } from "./internalPhase";
+import { runInternalOrchestrationPhase, resolveWorkspaceRunsDir } from "./internalPhase";
 import {
   BabysitterRuntimeError,
   ErrorCategory,
@@ -110,7 +110,15 @@ export async function runCliOrchestration(args: RunOrchestrationPhaseArgs): Prom
 
   const processPath = args.processPath;
   const workspace = args.workspace ?? process.cwd();
-  const runsDir = args.runsDir;
+  // Bug #936: when no explicit --runs-dir is provided, babysitter run:create
+  // defaults to the GLOBAL ~/.a5c/runs, so the nested run (and its completion
+  // proof) land outside <workspace>/.a5c/runs where the live-stack validator —
+  // and users — look. Default to the WORKSPACE runs dir instead. An explicit
+  // args.runsDir or a BABYSITTER_RUNS_DIR / repo-scope override still wins (see
+  // resolveWorkspaceRunsDir's precedence). The resolver walks to the workspace's
+  // repo root when present and otherwise uses the workspace itself, so a
+  // non-git-repo live-stack workspace still resolves to <workspace>/.a5c/runs.
+  const runsDir = resolveWorkspaceRunsDir(args.runsDir, workspace);
   const prompt = args.prompt ?? "";
   const model = args.model;
 
@@ -178,6 +186,9 @@ export async function runCliOrchestration(args: RunOrchestrationPhaseArgs): Prom
     process.stderr.write(`[genty-orchestration] iteration ${i}/${maxIterations} starting\n`);
     try {
       const iterArgs = [...babysitterPrefix, "run:iterate", runDir, "--json", "--iteration", String(i)];
+      // #936: keep the iterate calls anchored to the same runs dir as create so
+      // the run lifecycle stays in <workspace>/.a5c/runs throughout.
+      if (runsDir) iterArgs.push("--runs-dir", runsDir);
       process.stderr.write(`[genty-orchestration] exec: ${babysitterCmd} ${iterArgs.join(" ")}\n`);
       let iterResult: string;
       try {

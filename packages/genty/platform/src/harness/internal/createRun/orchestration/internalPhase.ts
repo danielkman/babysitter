@@ -773,7 +773,7 @@ export async function runInternalOrchestrationPhase(
 export function resolveWorkspaceRunsDir(
   explicitRunsDir: string | undefined,
   workspace: string | undefined,
-): string | undefined {
+): string {
   if (explicitRunsDir) {
     return explicitRunsDir;
   }
@@ -782,7 +782,6 @@ export function resolveWorkspaceRunsDir(
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const sdk = require("@a5c-ai/babysitter-sdk") as {
       resolveRunsDir: (opts?: { cwd?: string }) => string;
-      getRepoRunsDir: (startDir?: string) => string;
       getRunsScope: () => "global" | "repo";
     };
     // An explicit BABYSITTER_RUNS_DIR override (or repo scope) already resolves
@@ -790,13 +789,17 @@ export function resolveWorkspaceRunsDir(
     if (process.env.BABYSITTER_RUNS_DIR?.trim() || sdk.getRunsScope() === "repo") {
       return sdk.resolveRunsDir({ cwd });
     }
-    // Otherwise default genty's internal execution to the workspace repo runs
-    // dir instead of the global home dir.
-    return sdk.getRepoRunsDir(cwd);
   } catch {
-    // If the SDK cannot be resolved, fall back to the caller-provided value.
-    return explicitRunsDir;
+    // SDK unavailable: fall through to the deterministic workspace anchor below.
   }
+  // Default genty's internal execution to the runs dir directly under the
+  // workspace the CLI was invoked in — <workspace>/.a5c/runs — NOT the global
+  // ~/.a5c/runs. Deliberately do NOT use getRepoRunsDir here: it walks UP to the
+  // nearest .git/.a5c ancestor, which for a non-git-repo workspace nested under
+  // $HOME (e.g. a tmp live-stack workspace) would wrongly anchor on the global
+  // ~/.a5c. Anchoring on the workspace directly guarantees the nested run + its
+  // completion proof land where the validator (and users) look. See #936 bug 2.
+  return path.join(cwd, ".a5c", "runs");
 }
 
 function summarizeAgentText(text: string): string {

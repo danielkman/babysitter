@@ -30,11 +30,11 @@ import {
   emitProgress,
   discoverHarnesses,
 } from "./utils";
-// SDK-owned: adapter lookup and runs directory resolution are harness infrastructure
-import { getAdapterByName, resolveRunsDir } from "@a5c-ai/babysitter-sdk";
+// SDK-owned: adapter lookup is harness infrastructure
+import { getAdapterByName } from "@a5c-ai/babysitter-sdk";
 import { ORCHESTRATION_DEFAULTS } from "../../../utils/defaults";
 import { getProcessOutputDir, runPlanProcessPhase } from "./planProcess";
-import { runOrchestrationPhase } from "./orchestration";
+import { runOrchestrationPhase, resolveWorkspaceRunsDir } from "./orchestration";
 import { normalizeBuiltInHarnessName } from "../../builtInHarness";
 import { getSessionHistory } from "../../../session/history";
 import type { SessionHistory } from "../../../session/types";
@@ -73,7 +73,15 @@ export async function handleHarnessCreateRun(
     json,
     verbose,
   } = parsed;
-  const runsDir = requestedRunsDir ?? resolveRunsDir({ cwd: workspace ?? process.cwd() });
+  // Bug #936: when no explicit --runs-dir is given, resolveRunsDir() defaults to
+  // the GLOBAL ~/.a5c/runs (scope=global), so a plain `genty call` materializes
+  // the run — and its completion proof — outside <workspace>/.a5c/runs where the
+  // live-stack validator (and users) look. resolveWorkspaceRunsDir defaults to
+  // the workspace repo runs dir instead, while still honoring an explicit
+  // runsDir or a BABYSITTER_RUNS_DIR / repo-scope override. This is the single
+  // source of truth threaded into BOTH the plan-process phase (parent run
+  // creation) and the orchestration phase.
+  const runsDir = resolveWorkspaceRunsDir(requestedRunsDir, workspace ?? process.cwd());
 
   const mode: OutputMode = resolveOutputMode(json, parsed.outputMode);
   const interactive = parsed.interactive ?? (mode === "cli" && process.stdin.isTTY === true);
