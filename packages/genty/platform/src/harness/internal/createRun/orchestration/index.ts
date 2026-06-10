@@ -26,6 +26,8 @@ import type { RunOrchestrationPhaseArgs } from "./types";
 import { runExternalOrchestrationPhase } from "./externalPhase";
 import { runInternalOrchestrationPhase } from "./internalPhase";
 import {
+  BabysitterRuntimeError,
+  ErrorCategory,
   createApprovalAskUserQuestion,
   createAskUserQuestionResponse,
 } from "../utils";
@@ -39,6 +41,58 @@ async function importOptionalModule(specifier: string): Promise<unknown> {
   return import(specifier);
 }
 
+/**
+ * Parse a babysitter CLI `--json` stdout payload, failing loudly (and fast)
+ * when the CLI emitted a non-JSON line instead of a structured result.
+ *
+ * Bug #936 phase-2: when a delegated effect failed, `babysitter run:iterate`
+ * (or its child) could emit a bare `Error: Effect failed` line on stdout. The
+ * old code did an UNGUARDED `JSON.parse(...)`, which surfaced the cryptic
+ * `Unexpected token 'E', "Error: Effect failed" is not valid JSON` and then
+ * spun the iterate loop until the 80-minute orchestration timeout.
+ *
+ * This helper trims, attempts the parse, and on failure throws a clear
+ * {@link BabysitterRuntimeError} that includes the command, the first ~500
+ * chars of the raw non-JSON stdout AND stderr, so the failure is diagnosable
+ * immediately instead of as a SyntaxError 80 minutes later.
+ */
+export function parseBabysitterCliJson(
+  raw: string,
+  context: { command: string; stderr?: string },
+): Record<string, unknown> {
+  const trimmed = (raw ?? "").trim();
+  try {
+    return JSON.parse(trimmed) as Record<string, unknown>;
+  } catch (error: unknown) {
+    const parseMessage = error instanceof Error ? error.message : String(error);
+    const stdoutSnippet = trimmed.slice(0, 500);
+    const stderrSnippet = (context.stderr ?? "").trim().slice(0, 500);
+    throw new BabysitterRuntimeError(
+      "BabysitterCliNonJsonOutput",
+      `babysitter ${context.command} did not emit valid JSON on stdout under --json `
+        + `(${parseMessage}).\n--- stdout (first 500 chars) ---\n${stdoutSnippet || "<empty>"}`
+        + `\n--- stderr (first 500 chars) ---\n${stderrSnippet || "<empty>"}`,
+      { category: ErrorCategory.Runtime },
+    );
+  }
+}
+
+/**
+ * execFileSync throws on non-zero exit; the error carries `stdout`/`stderr`
+ * buffers. Surface BOTH so a failed iterate/create is diagnosable. The literal
+ * `Error: Effect failed` line that triggered #936 lands on one of these.
+ */
+function describeExecFileError(err: unknown): { message: string; stdout: string; stderr: string } {
+  const e = err as { message?: string; stdout?: unknown; stderr?: unknown };
+  const decode = (v: unknown): string =>
+    typeof v === "string" ? v : Buffer.isBuffer(v) ? v.toString("utf8") : "";
+  return {
+    message: err instanceof Error ? err.message : String(err),
+    stdout: decode(e?.stdout),
+    stderr: decode(e?.stderr),
+  };
+}
+
 export async function runOrchestrationPhase(
   args: RunOrchestrationPhaseArgs,
 ): Promise<number> {
@@ -50,7 +104,7 @@ export async function runOrchestrationPhase(
   return runInternalOrchestrationPhase(args);
 }
 
-async function runCliOrchestration(args: RunOrchestrationPhaseArgs): Promise<number> {
+export async function runCliOrchestration(args: RunOrchestrationPhaseArgs): Promise<number> {
   const { execFileSync } = await import("node:child_process");
   const path = await import("node:path");
 
@@ -95,17 +149,24 @@ async function runCliOrchestration(args: RunOrchestrationPhaseArgs): Promise<num
       timeout: 30_000,
       env: { ...process.env },
     });
-    const parsed = JSON.parse(createResult);
-    runDir = parsed.runDir;
+    // #936: guarded parse — a non-JSON line (e.g. "Error: Effect failed") on
+    // stdout must surface a clear error, not a cryptic SyntaxError.
+    const parsed = parseBabysitterCliJson(createResult, { command: "run:create" });
+    runDir = parsed.runDir as string;
     await fsPromises.unlink(inputsFile).catch(() => {});
     if (!args.json) {
       process.stderr.write(`\x1b[32mRun created:\x1b[0m ${runDir}\n`);
     }
   } catch (err) {
     await fsPromises.unlink(inputsFile).catch(() => {});
-    const msg = err instanceof Error ? err.message : String(err);
+    // execFileSync throws on non-zero exit — capture stdout/stderr buffers so
+    // the failure reason (not just "Command failed") is visible.
+    const { message, stdout, stderr } = describeExecFileError(err);
+    const detail = err instanceof BabysitterRuntimeError
+      ? message
+      : `${message}${stdout ? `\n--- stdout ---\n${stdout.slice(0, 500)}` : ""}${stderr ? `\n--- stderr ---\n${stderr.slice(0, 500)}` : ""}`;
     if (!args.json) {
-      process.stderr.write(`\x1b[31mFailed to create run:\x1b[0m ${msg}\n`);
+      process.stderr.write(`\x1b[31mFailed to create run:\x1b[0m ${detail}\n`);
     }
     return 1;
   }
@@ -118,13 +179,39 @@ async function runCliOrchestration(args: RunOrchestrationPhaseArgs): Promise<num
     try {
       const iterArgs = [...babysitterPrefix, "run:iterate", runDir, "--json", "--iteration", String(i)];
       process.stderr.write(`[genty-orchestration] exec: ${babysitterCmd} ${iterArgs.join(" ")}\n`);
-      const iterResult = execFileSync(babysitterCmd, iterArgs, {
-        cwd: workspace,
-        encoding: "utf8",
-        timeout: 120_000,
-        env: { ...process.env },
-      });
-      const parsed = JSON.parse(iterResult);
+      let iterResult: string;
+      try {
+        iterResult = execFileSync(babysitterCmd, iterArgs, {
+          cwd: workspace,
+          encoding: "utf8",
+          timeout: 120_000,
+          env: { ...process.env },
+        });
+      } catch (execErr: unknown) {
+        // #936: run:iterate exited non-zero. FAIL FAST with the captured
+        // stdout/stderr (which carries the real failure, e.g. the
+        // "Error: Effect failed" line) instead of letting the loop spin to
+        // the 80-minute orchestration timeout. Prefer stdout for the guarded
+        // JSON parse when present so a structured failure result is honored.
+        const { message, stdout, stderr } = describeExecFileError(execErr);
+        if (stdout.trim().length > 0) {
+          iterResult = stdout;
+        } else {
+          throw new BabysitterRuntimeError(
+            "BabysitterIterateFailed",
+            `babysitter run:iterate (iteration ${i}) exited non-zero: ${message}`
+              + `\n--- stderr (first 500 chars) ---\n${stderr.trim().slice(0, 500) || "<empty>"}`,
+            { category: ErrorCategory.Runtime },
+          );
+        }
+      }
+      // #936: guarded parse — throws a clear BabysitterRuntimeError including
+      // the raw stdout/stderr when run:iterate emits a non-JSON line.
+      const parsed = parseBabysitterCliJson(iterResult, { command: `run:iterate (iteration ${i})` }) as {
+        status?: string;
+        reason?: string;
+        nextActions?: Array<Parameters<typeof resolveAndPostEffect>[0]>;
+      };
       process.stderr.write(`[genty-orchestration] iterate result: status=${parsed.status} actions=${parsed.nextActions?.length ?? 0} reason=${parsed.reason ?? 'n/a'}\n`);
 
       if (parsed.status === "completed") {
@@ -201,7 +288,15 @@ export async function resolveAndPostEffect(
   const bCmd = babysitterParts[0]!;
   const bPrefix = babysitterParts.slice(1);
 
+  // #936: track the effect outcome explicitly. A delegated agent/skill prompt
+  // that fails (result.success === false) or a shell command that exits
+  // non-zero MUST be posted as `--status error` with the real error — NOT
+  // silently posted as ok with an error string as the value. Posting a poisoned
+  // "ok" value is what produced the downstream "Error: Effect failed" line and
+  // the 80-minute spin.
   let value: string;
+  let postStatus: "ok" | "error" = "ok";
+  let postError: string | undefined;
 
   const tasksMuxValue = await resolveViaTasksMuxForCli(action, workspace, model);
   if (tasksMuxValue !== undefined) {
@@ -221,7 +316,17 @@ export async function resolveAndPostEffect(
     });
     try {
       const result = await session.prompt(prompt);
-      value = JSON.stringify(result.output ?? "");
+      if (result.success === false) {
+        // Delegated session failed — propagate the failure so the process can
+        // handle it, instead of posting the failure text as a successful value.
+        postStatus = "error";
+        postError = (typeof result.output === "string" && result.output.trim().length > 0)
+          ? result.output
+          : `Delegated ${action.kind} effect failed (exitCode=${result.exitCode ?? "unknown"})`;
+        value = JSON.stringify(result.output ?? "");
+      } else {
+        value = JSON.stringify(result.output ?? "");
+      }
     } finally {
       session.dispose();
     }
@@ -231,7 +336,10 @@ export async function resolveAndPostEffect(
       const output = execSync(command, { cwd: workspace, encoding: "utf8", timeout: 120_000 });
       value = JSON.stringify(output);
     } catch (err: unknown) {
+      // A failed shell command is a real effect failure — post it as error.
       const stderr = (err as { stderr?: string }).stderr ?? "";
+      postStatus = "error";
+      postError = stderr || (err instanceof Error ? err.message : "shell command failed");
       value = JSON.stringify(stderr || "shell command failed");
     }
   } else if (action.kind === "breakpoint") {
@@ -244,6 +352,18 @@ export async function resolveAndPostEffect(
   try {
     const fs = await import("node:fs/promises");
     const path = await import("node:path");
+    if (postStatus === "error") {
+      // task:post --status error reads the error payload as JSON from --error
+      // <file> (see handleTaskPost -> readJsonFile). Write a structured error
+      // object, not a bare string, so the CLI commits a proper failure result.
+      const errorFile = path.join(runDir, "tasks", action.effectId, "error.json");
+      await fs.mkdir(path.dirname(errorFile), { recursive: true });
+      await fs.writeFile(errorFile, JSON.stringify({ name: "Error", message: postError ?? "Effect failed" }));
+      execFileSync(bCmd, [...bPrefix, "task:post", runDir, action.effectId, "--status", "error", "--error", errorFile, "--json"], {
+        cwd: workspace, encoding: "utf8", timeout: 30_000, env: { ...process.env },
+      });
+      return;
+    }
     const taskDir = path.join(runDir, "tasks", action.effectId);
     await fs.mkdir(taskDir, { recursive: true });
     await fs.writeFile(path.join(taskDir, "output.json"), value);
