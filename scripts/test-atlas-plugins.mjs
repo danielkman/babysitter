@@ -519,6 +519,36 @@ function runGeneratedSuite(r) {
     }
     return true;
   });
+
+  // 6. The atlas process modules referenced by the commands must actually be
+  //    SHIPPED in every generated target (bundled via plugin.json `include`),
+  //    not just present in the unified source.
+  r.assert('generated: every target ships the atlas process modules under processes/', () => {
+    const sourceProcessesDir = join(PLUGIN_DIR, 'processes');
+    const sourceProcessFiles = existsSync(sourceProcessesDir)
+      ? readdirSync(sourceProcessesDir).filter((f) => f.endsWith('.mjs'))
+      : [];
+    if (sourceProcessFiles.length === 0) {
+      throw new Error('no source process modules found under plugins/atlas-unified/processes/');
+    }
+    let inspected = false;
+    for (const target of BABYSITTER_TARGETS) {
+      const dir = join(GENERATED_DIR, target);
+      if (!existsSync(dir) || !statSync(dir).isDirectory()) continue;
+      inspected = true;
+      const targetProcessesDir = join(dir, 'processes');
+      if (!existsSync(targetProcessesDir) || !statSync(targetProcessesDir).isDirectory()) {
+        throw new Error(`${target}: missing processes/ directory (process modules not bundled — add "processes/" to plugin.json include)`);
+      }
+      for (const f of sourceProcessFiles) {
+        if (!existsSync(join(targetProcessesDir, f))) {
+          throw new Error(`${target}/processes/${f} missing from generated bundle`);
+        }
+      }
+    }
+    if (!inspected) throw new Error('no generated targets found to inspect for processes/');
+    return true;
+  });
 }
 
 // ---------------------------------------------------------------------------
