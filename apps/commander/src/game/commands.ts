@@ -22,7 +22,6 @@
 import {
   buildCommandContext,
   getAlertForUnits,
-  getIdleUnitIds,
   getLatestAlert,
   getSelectedEntities,
 } from './selectors';
@@ -95,83 +94,126 @@ export function findCommandByHotkey(
 }
 
 /**
+ * Agents the current selection acts on: the selected units plus every agent
+ * attending a selected card (SPEC-V3: cards are the primary selection).
+ */
+function actingAgentIds(state: CommandStateSlices): string[] {
+  const { units, tasks } = getSelectedEntities(state);
+  const ids = units.map((u) => u.id);
+  for (const task of tasks) {
+    for (const unitId of task.view.assigneeIds) {
+      if (!ids.includes(unitId)) ids.push(unitId);
+    }
+  }
+  return ids;
+}
+
+/** Hold/release toggle over a set of active agents (Pause / Hold Merge). */
+function toggleHolds(state: CommandStateSlices, orders: Orders, agentIds: readonly string[]): void {
+  const active = agentIds
+    .map((id) => state.world.units[id])
+    .filter((u): u is NonNullable<typeof u> => u !== undefined && u.view.runId !== null);
+  if (active.length === 0) return;
+  if (active.every((u) => u.view.paused)) {
+    orders.resumeUnits(active.map((u) => u.id));
+  } else {
+    orders.pauseUnits(active.filter((u) => !u.view.paused).map((u) => u.id));
+  }
+}
+
+/**
  * Execute a command intent against the store/sim. Shared by the command card
  * buttons and the hotkey path so both behave byte-identically (SPEC §8).
+ * Every intent routes to a REAL sim verb (`moveCard`/`setYolo`/`createTask`/
+ * steer via `session.message`/`hook.decision`) or a visible store mutation —
+ * never a UI-only success (SPEC-V2 §V2-2).
  */
 export function executeIntent(intent: CommandIntent, store: CommanderStore, orders: Orders): void {
   const state = store.getState();
-  const { units, tasks } = getSelectedEntities(state);
-  const unitIds = units.map((u) => u.id);
+  const { tasks } = getSelectedEntities(state);
+  const agentIds = actingAgentIds(state);
 
   switch (intent.kind) {
-    case 'dispatch-mode':
-      state.setTargeting('dispatch');
-      return;
-    case 'rally-mode':
-      state.setTargeting('rally');
-      return;
-    case 'clone': {
-      const first = units[0];
-      if (first !== undefined) orders.clone(first.view.agent, first.view.workspaceId);
-      return;
-    }
-    case 'retire':
-      // Decommission: idle units despawn from the world (orders filters +
-      // drops the fade ping; the sim emits unit_retired for the ticker).
-      orders.retire(unitIds);
-      return;
     case 'steer':
       state.openSteer();
       return;
-    case 'pause-unit': {
-      // Toggle semantics: if every active selected unit is already held,
-      // release the holds; otherwise hold the ones still running.
-      const active = units.filter((u) => u.view.runId !== null);
-      if (active.length === 0) return;
-      if (active.every((u) => u.view.paused)) {
-        orders.resumeUnits(active.map((u) => u.id));
-      } else {
-        orders.pauseUnits(active.filter((u) => !u.view.paused).map((u) => u.id));
+    case 'pause-unit':
+      // Toggle semantics: if every acting agent is already held, release the
+      // holds; otherwise hold the ones still running.
+      toggleHolds(state, orders, agentIds);
+      return;
+    case 'inspect':
+    case 'open-diff': {
+      // Inspector for the first acting agent (open-diff lands on its
+      // Workspace tab once the board phase deep-links tabs); agent-less
+      // cards (human-review/merged) center + ping so the click is visible.
+      const first = agentIds[0];
+      if (first !== undefined) {
+        state.openInspector(first);
+        return;
+      }
+      const task = tasks[0];
+      if (task !== undefined) {
+        state.centerOnEntity(task.id);
+        state.addPing(task.id, 'info');
       }
       return;
     }
-    case 'inspect': {
-      const first = unitIds[0];
-      if (first !== undefined) state.openInspector(first);
-      return;
-    }
     case 'abort':
-      orders.abort(unitIds);
+      // `/abort` via session.message: the sim bounces the card to backlog
+      // and despawns its agents (SPEC-V3 §V3-2).
+      orders.abort(agentIds);
       return;
     case 'approve':
     case 'deny': {
-      const alert = getAlertForUnits(state, unitIds) ?? getLatestAlert(state);
+      const alert = getAlertForUnits(state, agentIds) ?? getLatestAlert(state);
       if (alert !== undefined) orders.decide(alert.hookRequestId, intent.kind === 'approve' ? 'allow' : 'deny');
       return;
     }
-    case 'assign-best-idle': {
-      const task = tasks[0];
-      const idle = getIdleUnitIds(state)[0];
-      if (task !== undefined && idle !== undefined) orders.dispatchToTask([idle], task.id);
+    case 'task-action': {
+      // Kind-specific verb (§V2-2): relay the prompt to the attending agents
+      // as a REAL steer (session.message → the agent replans, transcript +
+      // turn events stream) and log the order on the ticker.
+      if (agentIds.length === 0) return;
+      orders.steer(agentIds, intent.prompt);
+      const target = tasks[0]?.view.title ?? `${agentIds.length} agent(s)`;
+      state.pushEvent(`Order relayed — ${intent.prompt} (${target})`, 'info', tasks[0]?.id);
+      return;
+    }
+    case 'move-card': {
+      // User board move via the sim verb (§V3-1) — same path as drag & drop.
+      for (const task of tasks) {
+        orders.moveCard(task.id, intent.column);
+      }
+      return;
+    }
+    case 'set-yolo': {
+      for (const task of tasks) {
+        orders.setYolo(task.id, intent.on);
+      }
       return;
     }
     case 'prioritize': {
-      // Real queue reorder: the sim bumps the task's priority so idle
-      // auto-assignment prefers it (chevron on the TaskNode + ticker log).
       const task = tasks[0];
       if (task !== undefined) orders.prioritize(task.id);
       return;
     }
-    case 'cancel-task': {
+    case 'commission-task':
+      // Sim verb `createTask` (§V2-6): a new card lands in the backlog.
+      // The board phase routes this through the Foundry dialog for kind/title
+      // input; the command card commissions the default kind directly.
+      orders.createTask({ taskKind: 'implement' });
+      return;
+    case 'open-review': {
       const task = tasks[0];
       if (task !== undefined) {
-        orders.abort(task.view.assigneeIds);
-        state.pushEvent(`Objective cancelled — recalling ${task.view.title} assignees`, 'warn', task.id);
+        state.openReview(task.id);
+        state.centerOnEntity(task.id);
       }
       return;
     }
-    case 'select-all-idle':
-      state.select(getIdleUnitIds(state));
+    case 'hold-merge':
+      toggleHolds(state, orders, agentIds);
       return;
     case 'jump-to-alert':
       state.jumpToLatestAlert();

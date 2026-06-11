@@ -1,11 +1,18 @@
 /**
- * Microagent interface (SPEC §8): contextual command generation and
- * deterministic procedural icon generation. The mock implementation is
+ * Microagent interface (SPEC §8 + SPEC-V2 §V2-2 + SPEC-V3 §V3-5/§V3-7):
+ * contextual command generation, deterministic procedural icon generation,
+ * and inquiry-option icon generation. The mock implementation is
  * rule-based/sync; a future LLM microagent implements the same surface
  * (Promise-able later) without UI changes.
  */
 
 export type IconSpec = { svg: string; palette: string[] };
+
+/** SPEC-V3 §V3-1 board columns (CommandContext gains `column`, §V3-7). */
+export type BoardColumn = 'backlog' | 'do' | 'ai-review' | 'human-review' | 'approved';
+
+/** Agent roles attending a card (SPEC-V3 §V3-2). */
+export type BoardAgentRole = 'worker' | 'reviewer' | 'integration';
 
 export interface SelectionSummary {
   count: number;
@@ -18,6 +25,27 @@ export interface SelectionSummary {
   taskStates: string[];
   /** Selected units currently under an operator hold (Pause command). */
   pausedUnits: number;
+}
+
+/**
+ * Board-context summary for one card relevant to the selection (SPEC-V2
+ * §V2-2 deep context + SPEC-V3 §V3-7 column-aware sets): the selected card
+ * itself, or the card attended by a selected agent.
+ */
+export interface CardContextSummary {
+  taskId: string;
+  taskKind: string;
+  column: BoardColumn;
+  /** Current babysitter process phase label (§V2-5), null when no run. */
+  runStage: string | null;
+  /** An unanswered inquiry (§V3-5 breakpoint) targets this card. */
+  inquiryPending: boolean;
+  /** Workspace has uncommitted changes (§V2-7). */
+  workspaceDirty: boolean;
+  yolo: boolean;
+  merged: boolean;
+  /** Roles of the agents currently attending the card (§V3-2). */
+  agentRoles: BoardAgentRole[];
 }
 
 export interface AlertSummary {
@@ -38,6 +66,11 @@ export interface CommandContext {
   selection: SelectionSummary;
   alerts: AlertSummary[];
   fleet: FleetSnapshot;
+  /**
+   * Cards in scope for the selection (selected cards + cards attended by
+   * selected agents). Empty when nothing card-related is selected.
+   */
+  cards: CardContextSummary[];
 }
 
 export interface IconContext {
@@ -49,22 +82,40 @@ export interface IconContext {
   taskKind?: string;
 }
 
-/** UI/sim actions a command cell can trigger (all visible in v1, SPEC §8). */
+/** Inquiry option shape the icon generator consumes (SPEC-V3 §V3-5). */
+export interface InquiryOptionLike {
+  id: string;
+  caption: string;
+  tone?: 'normal' | 'danger' | 'primary';
+}
+
+/**
+ * UI/sim actions a command cell can trigger (SPEC-V3 verb set: every intent
+ * routes to a real sim verb or visible store mutation in `executeIntent`).
+ * Retired v1 intents (dispatch targeting, rally, clone, retire, idle
+ * selection) are gone with the idle fleet (SPEC-V3 §V3-2).
+ */
 export type CommandIntent =
-  | { kind: 'dispatch-mode' }
-  | { kind: 'rally-mode' }
-  | { kind: 'clone' }
-  | { kind: 'retire' }
   | { kind: 'steer' }
   | { kind: 'pause-unit' }
   | { kind: 'inspect' }
   | { kind: 'abort' }
   | { kind: 'approve' }
   | { kind: 'deny' }
-  | { kind: 'assign-best-idle' }
+  /** Kind-specific verb (§V2-2): steers the attending agents with `prompt`. */
+  | { kind: 'task-action'; action: string; prompt: string }
+  /** Open the workspace/diff surface for the card's attending agent (§V2-7). */
+  | { kind: 'open-diff' }
+  /** User board move via the sim verb `moveCard` (§V3-1). */
+  | { kind: 'move-card'; column: BoardColumn; danger?: boolean }
+  | { kind: 'set-yolo'; on: boolean }
   | { kind: 'prioritize' }
-  | { kind: 'cancel-task' }
-  | { kind: 'select-all-idle' }
+  /** Commission Task — sim verb `createTask` (§V2-6, Foundry's only tab). */
+  | { kind: 'commission-task' }
+  /** Open the human-review side panel for the selected card (§V3-4). */
+  | { kind: 'open-review' }
+  /** Hold/release the integration agents of an approved card (§V3-2). */
+  | { kind: 'hold-merge' }
   | { kind: 'jump-to-alert' }
   | { kind: 'toggle-sim' };
 
@@ -84,4 +135,6 @@ export interface Microagent {
   generateCommands(ctx: CommandContext): CommandSpec[];
   /** Deterministic per entity: same id ⇒ byte-identical SVG. */
   generateIcon(ctx: IconContext): IconSpec;
+  /** Deterministic per option: engraved-brass glyph for an inquiry option (§V3-5). */
+  generateOptionIcon(option: InquiryOptionLike): IconSpec;
 }

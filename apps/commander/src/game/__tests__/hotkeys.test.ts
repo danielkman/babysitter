@@ -69,44 +69,62 @@ describe('mode arbiter precedence (SPEC §5 collisions)', () => {
 });
 
 describe('positional hotkeys on the 3x4 grid', () => {
-  it('cell i answers to COMMAND_HOTKEYS[i] (idle set → Q/W/E/R)', () => {
+  it('cell i answers to COMMAND_HOTKEYS[i] (backlog card set → Q/W/E/R)', () => {
     const specs = generateCommands({
       selection: {
         count: 1,
-        kinds: ['unit'],
-        states: ['idle'],
-        adapters: ['pi'],
-        taskStates: [],
+        kinds: ['task'],
+        states: [],
+        adapters: [],
+        taskStates: ['queued'],
         pausedUnits: 0,
       },
       alerts: [],
-      fleet: { totalUnits: 10, idleUnits: 4, busyUnits: 6, pendingAlerts: 0, simPaused: false },
+      fleet: { totalUnits: 0, idleUnits: 0, busyUnits: 0, pendingAlerts: 0, simPaused: false },
+      cards: [
+        {
+          taskId: 'adr-01-fix',
+          taskKind: 'fix',
+          column: 'backlog',
+          runStage: null,
+          inquiryPending: false,
+          workspaceDirty: false,
+          yolo: false,
+          merged: false,
+          agentRoles: [],
+        },
+      ],
     });
     expect(specs.map((s) => s.hotkey)).toEqual(['Q', 'W', 'E', 'R']);
   });
 });
 
 describe('hotkey execution over the live store', () => {
-  it('empty selection: Q activates Select All Idle', () => {
+  it('empty selection: Q commissions a new task into the backlog (§V3-7 global set)', () => {
     const rig = makeRig(42);
     const state = rig.store.getState();
     expect(state.selection.ids).toEqual([]);
-    expect(findCommandByHotkey(state, 'Q')?.id).toBe('select-all-idle');
+    expect(findCommandByHotkey(state, 'Q')?.id).toBe('commission-task');
+    const tasksBefore = state.world.taskIds.length;
 
     const claimed = executeCommandHotkey('Q', rig.store, rig.binding.orders);
     expect(claimed).toBe(true);
     const after = rig.store.getState();
-    const idleIds = after.world.unitIds.filter((id) => after.world.units[id]?.view.state === 'idle');
-    expect(after.selection.ids.slice().sort()).toEqual(idleIds.slice().sort());
+    expect(after.world.taskIds.length).toBe(tasksBefore + 1);
+    const created = after.world.taskIds.find((id) => id.startsWith('adr-c'));
+    expect(created).toBeDefined();
+    expect(after.world.tasks[created!]?.view.state).toBe('queued'); // lands in backlog
+    expect(after.events.some((e) => /commissioned/i.test(e.text))).toBe(true);
   });
 
-  // RETIRED by V3: "idle unit selected: Q primes dispatch targeting" — the
-  // boot world has no idle units and the idle-unit command set is retired
-  // (SPEC-V3 §V3-2); the pure command-gen path is still covered above.
+  // RETIRED by V3: "idle unit selected: Q primes dispatch targeting" and
+  // "Q selects all idle" — there are no idle units and the idle-unit command
+  // set is retired (SPEC-V3 §V3-2); the pure command-gen path is covered above.
 
-  it('unbound letters fall through (F with a 4-command card)', () => {
+  it('unbound letters fall through (F with a sub-8-command card)', () => {
     const rig = makeRig(42);
-    rig.store.getState().clickSelect(rig.store.getState().world.unitIds[0]!, false);
+    // Select a backlog card: its column set binds Q/W/E/R only.
+    rig.store.getState().clickSelect(rig.store.getState().world.taskIds[0]!, false);
     expect(findCommandByHotkey(rig.store.getState(), 'F')).toBeUndefined();
     expect(executeCommandHotkey('F', rig.store, rig.binding.orders)).toBe(false);
   });

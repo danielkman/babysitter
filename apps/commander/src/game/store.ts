@@ -24,10 +24,13 @@ import type {
 } from '../contracts/gateway-protocol';
 import type { MockBackend } from '../backend/mock/mockBackend';
 import type {
+  ColumnId,
   SimHookView,
   SimTaskView,
   SimUnitView,
 } from '../backend/mock/simulation';
+import type { TaskKind } from '../backend/mock/scenario';
+import { setActiveBoardLens } from './boardLens';
 import {
   centerOn,
   clampCamera,
@@ -180,6 +183,8 @@ export interface MetaSlice {
   paused: boolean;
   viewport: Size;
   inspectorUnitId: string | null;
+  /** Human-review side panel target (SPEC-V3 §V3-4; rendered by the board phase). */
+  reviewTaskId: string | null;
   steerOpen: boolean;
   targeting: TargetingMode;
   marquee: MarqueeRect | null;
@@ -237,6 +242,9 @@ export interface CommanderState {
   setMarquee(rect: MarqueeRect | null): void;
   openInspector(unitId: string): void;
   closeInspector(): void;
+  /** Open/close the human-review side panel for a card (SPEC-V3 §V3-4). */
+  openReview(taskId: string): void;
+  closeReview(): void;
   openSteer(): void;
   closeSteer(): void;
   setTargeting(mode: TargetingMode): void;
@@ -700,6 +708,7 @@ export function createCommanderStore(): CommanderStore {
       paused: false,
       viewport: { width: 1280, height: 720 },
       inspectorUnitId: null,
+      reviewTaskId: null,
       steerOpen: false,
       targeting: null,
       marquee: null,
@@ -1007,9 +1016,14 @@ export function createCommanderStore(): CommanderStore {
       });
     },
     escape() {
-      // Esc cascade: steer modal → inspector → targeting → selection (SPEC §5;
-      // the modal closes WITHOUT clearing the selection — HUD-phase contract).
+      // Esc cascade: review panel → steer modal → inspector → targeting →
+      // selection (SPEC §5 + SPEC-V3 §V3-7; the modal closes WITHOUT clearing
+      // the selection — HUD-phase contract).
       const state = get();
+      if (state.meta.reviewTaskId !== null) {
+        set({ meta: { ...state.meta, reviewTaskId: null } });
+        return;
+      }
       if (state.meta.steerOpen) {
         set({ meta: { ...state.meta, steerOpen: false } });
         return;
@@ -1071,6 +1085,12 @@ export function createCommanderStore(): CommanderStore {
     },
     closeInspector() {
       set((state) => ({ meta: { ...state.meta, inspectorUnitId: null } }));
+    },
+    openReview(taskId) {
+      set((state) => ({ meta: { ...state.meta, reviewTaskId: taskId } }));
+    },
+    closeReview() {
+      set((state) => ({ meta: { ...state.meta, reviewTaskId: null } }));
     },
     openSteer() {
       set((state) => ({ meta: { ...state.meta, steerOpen: true } }));
@@ -1157,10 +1177,18 @@ export interface Orders {
   pauseUnits(unitIds: readonly string[]): void;
   /** Resume: release operator holds. */
   resumeUnits(unitIds: readonly string[]): void;
-  /** Prioritize: bump a task to the front of the idle-assignment queue. */
+  /** Prioritize: bump a backlog card to the top of its lane. */
   prioritize(taskId: string): void;
   /** Pause/resume the simulation (global command card). */
   toggleSim(): void;
+  /** SPEC-V3 §V3-1: user board move via the sim verb (drag or command card). */
+  moveCard(taskId: string, column: ColumnId): void;
+  /** SPEC-V3 §V3-1: yolo toggle — passing AI review auto-approves. */
+  setYolo(taskId: string, on: boolean): void;
+  /** SPEC-V2 §V2-6 Commission Task: lands a new card in the backlog. */
+  createTask(input: { taskKind: TaskKind; title?: string; parentId?: string; workspaceId?: string }): string | null;
+  /** SPEC-V3 §V3-5: resolve an inquiry with the chosen option. */
+  answerInquiry(hookRequestId: string, optionId: string | null): void;
 }
 
 export interface BackendBinding {
@@ -1313,13 +1341,53 @@ export function bindBackendToStore(store: CommanderStore, backend: MockBackend):
         store.getState().pushEvent('Simulation paused', 'info');
       }
     },
+    moveCard(taskId, column) {
+      const title = store.getState().world.tasks[taskId]?.view.title ?? taskId;
+      if (sim.moveCard(taskId, column)) {
+        store.getState().pushEvent(`Card order — ${title} moved to ${column.toUpperCase()}`, 'info', taskId);
+      }
+      flush();
+    },
+    setYolo(taskId, on) {
+      const title = store.getState().world.tasks[taskId]?.view.title ?? taskId;
+      if (sim.setYolo(taskId, on)) {
+        store.getState().pushEvent(
+          on ? `Yolo flag raised — ${title} will auto-approve on review pass` : `Yolo flag struck — ${title} returns to human review`,
+          'warn',
+          taskId,
+        );
+      }
+      flush();
+    },
+    createTask(input) {
+      const taskId = sim.createTask(input);
+      flush();
+      if (taskId !== null) {
+        store.getState().pushEvent(`Commissioned — ${input.taskKind} task ${taskId} enters the backlog`, 'info', taskId);
+      }
+      return taskId;
+    },
+    answerInquiry(hookRequestId, optionId) {
+      backend.send({
+        type: 'hook.decision',
+        hookRequestId,
+        decision: 'allow',
+        ...(optionId !== null ? { optionId } : {}),
+      });
+      flush();
+    },
   };
+
+  // Board lens (§V3-7): the command-context builder reads board facts —
+  // column, yolo, merged, dirt, inquiries, roles — straight off the sim.
+  setActiveBoardLens(sim);
 
   return {
     flush,
     orders,
     dispose() {
       disposed = true;
+      setActiveBoardLens(null);
       unsubscribe();
     },
   };
