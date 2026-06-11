@@ -19,6 +19,43 @@ export function resolveSafe(workspace: string, filePath: string): string {
   return resolved;
 }
 
+/** True when `target` resolves to `root` itself or any path inside it. */
+function isInsideRoot(target: string, root: string): boolean {
+  const normalizedRoot = path.resolve(root);
+  const normalizedTarget = path.resolve(target);
+  return (
+    normalizedTarget === normalizedRoot
+    || normalizedTarget.startsWith(normalizedRoot + path.sep)
+  );
+}
+
+/**
+ * Resolve a path for a READ-ONLY operation (read/grep/find). The path is
+ * accepted when it is inside the workspace OR inside any of the declared
+ * read-only roots (e.g. the active process-library reference roots that the
+ * planning prompt explicitly tells the agent to search). Write operations must
+ * keep using {@link resolveSafe} so they stay strictly workspace-bounded.
+ *
+ * `readOnlyRoots` is an allow-list of absolute reference directories. When the
+ * target is absolute and falls inside one of them, it is returned verbatim.
+ * Otherwise the target is resolved against the workspace and bounded normally.
+ */
+export function resolveReadable(
+  workspace: string,
+  filePath: string,
+  readOnlyRoots?: readonly string[],
+): string {
+  if (readOnlyRoots?.length && path.isAbsolute(filePath)) {
+    const absolute = path.resolve(filePath);
+    for (const root of readOnlyRoots) {
+      if (root && isInsideRoot(absolute, root)) {
+        return absolute;
+      }
+    }
+  }
+  return resolveSafe(workspace, filePath);
+}
+
 export function globToRegex(pattern: string): RegExp {
   let regexString = "^";
   let index = 0;

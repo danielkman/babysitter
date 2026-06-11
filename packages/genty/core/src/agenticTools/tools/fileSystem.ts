@@ -4,7 +4,7 @@ import { Type } from "@sinclair/typebox";
 import type { AgenticToolOptions, CustomToolDefinition, ToolResult } from "../types";
 import { DEFAULT_SEARCH_TIMEOUT, MAX_READ_LINES, getRgPath, spawnAsync } from "../shared/process";
 import { errorResult, ok } from "../shared/results";
-import { globToRegex, resolveSafe, walkDir } from "../shared/paths";
+import { globToRegex, resolveReadable, resolveSafe, walkDir } from "../shared/paths";
 
 function escapePatchPath(value: string): string {
   return value.replace(/\\/g, "/");
@@ -25,6 +25,7 @@ function buildUnifiedPatch(filePath: string, before: string, after: string): str
 
 export function createFileSystemTools(options: AgenticToolOptions): CustomToolDefinition[] {
   const { workspace } = options;
+  const readOnlyRoots = options.readOnlyRoots;
 
   return [
     {
@@ -38,7 +39,7 @@ export function createFileSystemTools(options: AgenticToolOptions): CustomToolDe
         limit: Type.Optional(Type.Number({ description: "Max number of lines to return" })),
       }),
       execute: (_toolCallId, params): ToolResult => {
-        const filePath = resolveSafe(workspace, String(params.path));
+        const filePath = resolveReadable(workspace, String(params.path), readOnlyRoots);
         const lines = fs.readFileSync(filePath, "utf8").split("\n");
         const start = Math.max(0, ((params.offset as number) ?? 1) - 1);
         const requestedLimit = (params.limit as number) ?? MAX_READ_LINES;
@@ -119,7 +120,7 @@ export function createFileSystemTools(options: AgenticToolOptions): CustomToolDe
         head_limit: Type.Optional(Type.Number({ description: "Max output lines (default 250)" })),
       }),
       execute: async (_toolCallId, params) => {
-        const searchPath = params.path ? resolveSafe(workspace, String(params.path)) : workspace;
+        const searchPath = params.path ? resolveReadable(workspace, String(params.path), readOnlyRoots) : workspace;
         const mode = (params.output_mode as string) ?? "files_with_matches";
         const args: string[] = ["--color", "never"];
 
@@ -188,18 +189,39 @@ export function createFileSystemTools(options: AgenticToolOptions): CustomToolDe
         const DEFAULT_GLOB_LIMIT = 500;
         const MAX_GLOB_LIMIT = 5000;
         const maxResults = Math.min((params.limit as number) ?? DEFAULT_GLOB_LIMIT, MAX_GLOB_LIMIT);
-        const allFiles: string[] = [];
-        walkDir(workspace, Boolean(params.hidden), maxResults * 5, allFiles);
-
         const regex = globToRegex(String(params.pattern));
         const matches: string[] = [];
-        for (const filePath of allFiles) {
+
+        // Search roots: the workspace (relative matches) plus any declared
+        // read-only roots (absolute matches so they are unambiguous).
+        const roots: Array<{ dir: string; relativeTo: string | null }> = [
+          { dir: workspace, relativeTo: workspace },
+        ];
+        for (const root of readOnlyRoots ?? []) {
+          if (root && path.resolve(root) !== path.resolve(workspace)) {
+            roots.push({ dir: path.resolve(root), relativeTo: null });
+          }
+        }
+
+        for (const { dir, relativeTo } of roots) {
           if (matches.length >= maxResults) {
             break;
           }
-          const relativePath = path.relative(workspace, filePath).replace(/\\/g, "/");
-          if (regex.test(relativePath)) {
-            matches.push(relativePath);
+          const rootFiles: string[] = [];
+          walkDir(dir, Boolean(params.hidden), maxResults * 5, rootFiles);
+          for (const filePath of rootFiles) {
+            if (matches.length >= maxResults) {
+              break;
+            }
+            const candidate = relativeTo
+              ? path.relative(relativeTo, filePath).replace(/\\/g, "/")
+              : filePath.replace(/\\/g, "/");
+            const matchKey = relativeTo
+              ? candidate
+              : path.relative(dir, filePath).replace(/\\/g, "/");
+            if (regex.test(matchKey)) {
+              matches.push(candidate);
+            }
           }
         }
         return ok(matches.join("\n") || "(no matches)");

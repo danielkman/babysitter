@@ -80,22 +80,67 @@ export function buildStructuredAgentOutputInstructions(agent: Record<string, unk
   ];
 }
 
+/**
+ * Scan from the first `{` (or `[`) and return the first BALANCED JSON value,
+ * respecting string literals and escapes. This tolerates trailing content after
+ * the JSON (e.g. a worker that emits `{...}` then prose/markdown that itself
+ * contains braces) which the naive first-brace/last-brace slice mishandles —
+ * the prior cause of "invalid JSON" coercion loops.
+ */
+function extractFirstBalancedJson(text: string): string | null {
+  const open = text.search(/[{[]/);
+  if (open < 0) {
+    return null;
+  }
+  const openChar = text[open];
+  const closeChar = openChar === "{" ? "}" : "]";
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  for (let i = open; i < text.length; i += 1) {
+    const ch = text[i];
+    if (inString) {
+      if (escaped) {
+        escaped = false;
+      } else if (ch === "\\") {
+        escaped = true;
+      } else if (ch === '"') {
+        inString = false;
+      }
+      continue;
+    }
+    if (ch === '"') {
+      inString = true;
+    } else if (ch === openChar) {
+      depth += 1;
+    } else if (ch === closeChar) {
+      depth -= 1;
+      if (depth === 0) {
+        return text.slice(open, i + 1);
+      }
+    }
+  }
+  return null;
+}
+
 export function extractJsonObjectFromText(text: string): string | null {
   const trimmed = text.trim();
   if (!trimmed) {
     return null;
   }
-  if ((trimmed.startsWith("{") && trimmed.endsWith("}")) || (trimmed.startsWith("[") && trimmed.endsWith("]"))) {
-    return trimmed;
-  }
+  // Prefer a fenced ```json block when present; otherwise scan the raw text.
+  // Always extract the FIRST balanced JSON value (respecting strings/escapes)
+  // rather than naively slicing first-brace..last-brace, so trailing prose or
+  // markdown after a complete JSON object does not corrupt the parse.
   const fenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/i);
-  if (fenced?.[1]) {
-    return fenced[1].trim();
+  const source = fenced?.[1]?.trim() ?? trimmed;
+  const balanced = extractFirstBalancedJson(source);
+  if (balanced) {
+    return balanced;
   }
-  const firstBrace = trimmed.indexOf("{");
-  const lastBrace = trimmed.lastIndexOf("}");
-  if (firstBrace >= 0 && lastBrace > firstBrace) {
-    return trimmed.slice(firstBrace, lastBrace + 1);
+  // Fall back to a clean, already-bare JSON value.
+  if ((source.startsWith("{") && source.endsWith("}")) || (source.startsWith("[") && source.endsWith("]"))) {
+    return source;
   }
   return null;
 }

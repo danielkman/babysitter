@@ -24,6 +24,7 @@ import {
 import {
   buildOrchestrationSystemPrompt,
   buildOrchestrationTurnPrompt,
+  prefersAgentOnlyTasks,
 } from "../prompts";
 import {
   MAX_CONSECUTIVE_PROCESS_ERROR_STALLS,
@@ -384,7 +385,7 @@ export async function runInternalOrchestrationPhase(
     args.selectedHarnessName,
     args.promptContext,
     args.interactive,
-    args.invocationCommand === "call",
+    prefersAgentOnlyTasks(args.invocationCommand),
   );
   const appendSystemPrompt = [orchestrationSystemPrompt];
   let sessionCustomTools: CustomToolDefinition[] = mergedTools;
@@ -453,6 +454,36 @@ export async function runInternalOrchestrationPhase(
     let consecutiveTimeouts = 0;
     let consecutiveStalls = 0;
     let consecutiveProcessErrorStalls = 0;
+    // #936: a process-error whose journal "advances" each turn (e.g. an agent
+    // task that declares outputSchema but whose worker returns markdown, so the
+    // SDK rejects every result with the same coercion error) keeps re-arming the
+    // auto-advance branch and resets the stall counters — spinning forever on
+    // the same iteration. Track the verbatim error signature independently of
+    // journal advancement and abort fast once it recurs past the threshold.
+    let lastProcessErrorSignature: string | undefined;
+    let repeatedProcessErrorCount = 0;
+    const observeProcessErrorConvergence = (): void => {
+      if (state.lastIterationResult?.status !== "process-error") {
+        lastProcessErrorSignature = undefined;
+        repeatedProcessErrorCount = 0;
+        return;
+      }
+      const signature = extractIterationError(state.lastIterationResult.error);
+      if (signature === lastProcessErrorSignature) {
+        repeatedProcessErrorCount += 1;
+      } else {
+        lastProcessErrorSignature = signature;
+        repeatedProcessErrorCount = 1;
+      }
+      if (repeatedProcessErrorCount >= MAX_CONSECUTIVE_PROCESS_ERROR_STALLS) {
+        throw new BabysitterRuntimeError(
+          "OrchestrationProcessErrorLoop",
+          `The run produced the same process-error ${repeatedProcessErrorCount} times without progress; aborting instead of spinning. `
+            + `Underlying error: ${signature}`,
+          { category: ErrorCategory.Runtime },
+        );
+      }
+    };
     // #936: bound repeated delegated-effect failures. A delegated agent/skill/
     // shell effect that keeps failing (e.g. the worker session can't reach a
     // model, so runDelegatedHarnessTask returns success:false every time) must
@@ -496,6 +527,9 @@ export async function runInternalOrchestrationPhase(
         if (ensureTerminalResult() !== null) {
           break;
         }
+        // Abort if the auto-advanced iterate keeps yielding the identical
+        // process-error (otherwise this branch re-arms every turn and spins).
+        observeProcessErrorConvergence();
         consecutiveTimeouts = 0;
         consecutiveStalls = 0;
         consecutiveProcessErrorStalls = 0;

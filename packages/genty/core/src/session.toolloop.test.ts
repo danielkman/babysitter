@@ -291,4 +291,83 @@ describe("AgentCoreSessionHandle tool-calling loop", () => {
     const body = JSON.parse(mockFetch.mock.calls[0]![1].body);
     expect(body.tools).toBeUndefined();
   });
+
+  // --- Convergence guard (#936) --------------------------------------------
+
+  it("terminates fast when the model fixates on the same failing tool call (does not spin to the iteration cap)", async () => {
+    // Every model turn emits the SAME tool call with identical arguments, and
+    // the tool always returns an error. Without the convergence guard this
+    // would run up to MAX_TOOL_LOOP_ITERATIONS (50) model calls; the guard must
+    // break far sooner (MAX_CONSECUTIVE_TOOL_ERRORS = 6) and return usable text.
+    mockFetch.mockImplementation(async () => ({
+      ok: true,
+      body: textStream([
+        openAiTextDelta("thinking"),
+        openAiToolCallFrames([
+          { index: 0, id: "call_loop", name: "search", argChunks: ['{"value":"outside-workspace"}'] },
+        ]),
+      ]),
+    }));
+
+    const execute = vi.fn(
+      async (): Promise<ToolResult> => ({
+        // errorResult-shaped: text begins with "Error:" so the guard counts it.
+        content: [{ type: "text", text: 'Error: Path "x" resolves outside the workspace boundary.' }],
+      }),
+    );
+    const session = createAgentCoreSession({
+      model: "gpt-5.5",
+      customTools: [makeTool("search", execute)],
+    });
+
+    const result = await session.prompt("Search the library");
+
+    // Loop converged (returned the last assistant text) instead of throwing the
+    // "exceeded 50 iterations" error.
+    expect(result.output).toBe("thinking");
+    // Terminated at the consecutive-error threshold, NOT the 50-iteration cap.
+    expect(execute.mock.calls.length).toBeLessThanOrEqual(6);
+    expect(mockFetch.mock.calls.length).toBeLessThanOrEqual(6);
+  });
+
+  it("steers the model after repeated identical tool calls before giving up", async () => {
+    // The tool succeeds (non-error) so the consecutive-error guard never trips;
+    // the repeated-signature guard must still inject a corrective steering turn
+    // once the same call recurs past the threshold (MAX_REPEATED_TOOL_CALLS=3),
+    // then the model emits final text.
+    let turn = 0;
+    mockFetch.mockImplementation(async () => {
+      turn += 1;
+      // Turns 1..3 repeat the identical tool call; turn 4 finishes with text.
+      if (turn >= 4) {
+        return { ok: true, body: openAiFinalText("done after steering") };
+      }
+      return {
+        ok: true,
+        body: textStream([
+          openAiToolCallFrames([
+            { index: 0, id: `call_${turn}`, name: "noop", argChunks: ['{"value":"same"}'] },
+          ]),
+        ]),
+      };
+    });
+
+    const execute = vi.fn(async (): Promise<ToolResult> => ({ content: [{ type: "text", text: "ok" }] }));
+    const session = createAgentCoreSession({
+      model: "gpt-5.5",
+      customTools: [makeTool("noop", execute)],
+    });
+
+    const result = await session.prompt("Repeat the same call");
+    expect(result.output).toBe("done after steering");
+
+    // The 4th request (final-text turn) must carry a corrective steering user
+    // message injected after the 3rd identical call.
+    const finalBody = JSON.parse(mockFetch.mock.calls[3]![1].body);
+    const userTurns = finalBody.messages.filter((m: { role: string }) => m.role === "user");
+    const steered = userTurns.some(
+      (m: { content: unknown }) => typeof m.content === "string" && m.content.includes("identical arguments"),
+    );
+    expect(steered).toBe(true);
+  });
 });

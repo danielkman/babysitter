@@ -36,6 +36,18 @@ export interface HarnessPromptContext {
 /** @deprecated Use HarnessPromptContext instead */
 export type SessionCreatePromptContext = HarnessPromptContext;
 
+/**
+ * Autonomous, non-interactive run flows (`/babysitter:call` and `yolo`) should
+ * drive all implementation and verification through agent/skill tasks rather
+ * than `shell` tasks. `shell` subtasks authored by the model are fragile
+ * (deeply-escaped `node -e` one-liners that fail to spawn) and the repo policy
+ * forbids them for these flows. Centralize the decision so every phase
+ * (plan/orchestration, internal/external) stays consistent.
+ */
+export function prefersAgentOnlyTasks(invocationCommand?: string): boolean {
+  return invocationCommand === "call" || invocationCommand === "yolo";
+}
+
 export interface ProcessDefinitionUserPromptOptions {
   interactive: boolean;
   workspaceAssessment?: "empty" | "non-empty";
@@ -256,6 +268,30 @@ function formatSharedContext(context: HarnessPromptContext): string[] {
     "",
     ...formatHarnessAssignmentGuidance(context),
   ];
+}
+
+/**
+ * Resolve the read-only reference roots the planning agent's prompt points it
+ * at (the active process-library binding dir and its reference root). These are
+ * outside the workspace, so the workspace-bounded file tools must be granted
+ * read-only access to them — otherwise the agent loops retrying paths it was
+ * told to search but cannot reach. Returns absolute, de-duplicated dirs.
+ */
+export async function resolveProcessLibraryReadOnlyRoots(): Promise<string[]> {
+  const roots = new Set<string>();
+  try {
+    const resolved = await resolveActiveProcessLibrary();
+    if (resolved.binding?.dir) {
+      roots.add(resolved.binding.dir);
+      const referenceRoot = getDefaultProcessLibrarySpec().referenceRoot;
+      if (referenceRoot) {
+        roots.add(referenceRoot);
+      }
+    }
+  } catch {
+    // No binding — nothing to grant.
+  }
+  return [...roots];
 }
 
 export async function buildProcessDefinitionSystemPrompt(

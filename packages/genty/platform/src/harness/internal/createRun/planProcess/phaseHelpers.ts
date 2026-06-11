@@ -69,6 +69,12 @@ export function createPlanProcessTools(args: {
   phaseOutputs: string[];
   sessionRef: { current: AgentCoreSessionHandle | null };
   writeVerboseData: (label: string, value: unknown, maxChars?: number) => void;
+  /**
+   * Absolute reference roots (process-library/reference dirs) the planning
+   * prompt tells the agent to search. Granted read-only to the file tools so
+   * the agent cannot get trapped retrying an out-of-workspace path.
+   */
+  readOnlyRoots?: string[];
 }): CustomToolDefinition[] {
   let mergedCustomTools: CustomToolDefinition[] = [];
   const customTools: CustomToolDefinition[] = [
@@ -131,6 +137,7 @@ export function createPlanProcessTools(args: {
 
   const agenticTools = createAgentCoreToolDefinitions({
     workspace: args.workspace ?? process.cwd(),
+    ...(args.readOnlyRoots?.length ? { readOnlyRoots: args.readOnlyRoots } : {}),
     interactive: args.interactive ?? false,
     askUserQuestionHandler: async (params: unknown) => {
       const response = await askUserQuestionViaTool(

@@ -248,6 +248,14 @@ export interface CustomToolDefinition {
 export interface AgentCoreToolOptions {
   workspace: string;
   /**
+   * Additional absolute directories that READ-ONLY file tools (read/grep/find)
+   * may access in addition to the workspace. Write tools (write/edit) ignore
+   * this and stay strictly workspace-bounded. Used to grant the planning agent
+   * read access to the active process-library/reference roots its own prompt
+   * tells it to search, so it cannot get trapped retrying an unreachable path.
+   */
+  readOnlyRoots?: string[];
+  /**
    * Enables host interaction on the tool surface. When `false`,
    * `AskUserQuestion` returns an unavailable error and never invokes the
    * injected handler.

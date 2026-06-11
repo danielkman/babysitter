@@ -1,6 +1,11 @@
 import * as path from "node:path";
 import { getGlobalRegistry } from "../../../../orchestration/global";
-import { buildProcessDefinitionSystemPrompt, buildProcessDefinitionUserPrompt } from "../prompts";
+import {
+  buildProcessDefinitionSystemPrompt,
+  buildProcessDefinitionUserPrompt,
+  prefersAgentOnlyTasks,
+  resolveProcessLibraryReadOnlyRoots,
+} from "../prompts";
 import {
   DIM,
   RESET,
@@ -49,8 +54,13 @@ export async function runPlanProcessPhase(args: import("./phaseTypes").RunPlanPr
     : undefined;
   const writeVerbose = (message: string): void => writeVerboseLine(args.verbose, args.json, message, args.outputMode);
   const writeVerboseData = (label: string, value: unknown, maxChars?: number): void => writeVerboseBlock(args.verbose, args.json, label, value, maxChars, args.outputMode);
+  // Grant the file tools read-only access to the process-library/reference roots
+  // the planning prompt tells the agent to search (they live outside the
+  // workspace). Without this the agent loops retrying an unreachable path.
+  const readOnlyRoots = await resolveProcessLibraryReadOnlyRoots();
+  writeVerboseData("phasePlanProcess read-only roots", readOnlyRoots);
   const mergedCustomTools = createPlanProcessTools({
-    ...args, state, phaseOutputs, sessionRef, writeVerboseData,
+    ...args, state, phaseOutputs, sessionRef, writeVerboseData, readOnlyRoots,
   });
   emitProgress(
     { phase: "1", status: "started", harness: "agent-core" },
@@ -110,7 +120,7 @@ export async function runPlanProcessPhase(args: import("./phaseTypes").RunPlanPr
       interactive: args.interactive,
       workspaceAssessment: workspaceAssessment.kind,
       workspaceEntries: workspaceAssessment.entries,
-      preferAgentOnlyTasks: args.invocationCommand === "call",
+      preferAgentOnlyTasks: prefersAgentOnlyTasks(args.invocationCommand),
     },
   );
 

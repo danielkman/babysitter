@@ -1,7 +1,7 @@
 import * as path from "node:path";
 import { execFile } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
-import type { CustomToolDefinition } from "@a5c-ai/genty-core";
+import { createCodingToolDefinitions, type CustomToolDefinition } from "@a5c-ai/genty-core";
 import { invokeHarness } from "../../../invoker";
 import {
   PARENT_PROMPT_TIMEOUT_MS,
@@ -83,6 +83,15 @@ export async function runDelegatedHarnessTask(args: {
   bashSandbox?: AgentCoreSessionOptions["bashSandbox"];
   skills?: string[];
   customTools?: CustomToolDefinition[];
+  /**
+   * When the delegated task declares a JSON output schema, enforce it on the
+   * built-in agent-core worker via the provider's structured-output mode
+   * (`response_format: json_schema`). This guarantees the worker returns
+   * schema-conforming JSON instead of free-form prose/markdown, so the caller's
+   * result coercion cannot fail in a retry loop. Only honored for the built-in
+   * agent-core harness; external CLI harnesses ignore it.
+   */
+  outputSchema?: AgentCoreSessionOptions["outputSchema"];
 }): Promise<{
   success: boolean;
   output: string;
@@ -103,13 +112,41 @@ export async function runDelegatedHarnessTask(args: {
 
   const harnessName = normalizeBuiltInHarnessName(args.harness?.trim() || "agent-core");
   if (isBuiltInHarnessName(harnessName)) {
+    const effectiveToolsMode = args.toolsMode ?? "coding";
+    // genty-core's session does NOT auto-build a tool surface from `toolsMode`;
+    // it only exposes the tools passed via `customTools`. Without this, the
+    // delegated worker is TOOLLESS — it cannot read/write files and instead
+    // returns a description (e.g. a `cmd` string) of work it never performed,
+    // so the file is never created. Build the focused coding/readonly file +
+    // bash tools so the worker can actually act. Caller-supplied customTools
+    // (e.g. the planning-phase babysitter tools) are appended.
+    const workerTools = effectiveToolsMode === "default"
+      ? args.customTools
+      : [
+          ...createCodingToolDefinitions(
+            { workspace, interactive: false },
+            effectiveToolsMode === "readonly" ? "readonly" : "coding",
+          ),
+          ...(args.customTools ?? []),
+        ];
     const session = createAgentCoreSession({
       workspace,
       model: args.model,
       timeout: args.timeout,
-      toolsMode: args.toolsMode ?? "coding",
-      customTools: args.customTools,
+      toolsMode: effectiveToolsMode,
+      ...(workerTools?.length ? { customTools: workerTools } : {}),
       ephemeral: true,
+      ...(args.outputSchema
+        ? {
+            outputFormat: "json_schema" as const,
+            outputSchema: args.outputSchema,
+            // Non-strict: process-authored schemas often omit the
+            // `additionalProperties:false` / fully-required shape that
+            // provider strict mode demands. We only need a conforming JSON
+            // object, which non-strict json_schema still guarantees.
+            outputSchemaStrict: false,
+          }
+        : {}),
       ...(args.bashSandbox ? { bashSandbox: args.bashSandbox } : {}),
       ...(args.thinkingLevel && args.thinkingLevel !== "none"
         ? { thinkingLevel: args.thinkingLevel }

@@ -18,6 +18,7 @@ import {
   buildExternalProcessConformancePrompt,
   buildExternalProcessDefinitionPrompt,
 } from "./prompts";
+import { prefersAgentOnlyTasks } from "../prompts";
 import { recoverReportedProcessDefinition } from "./recovery";
 import { validateProcessExport } from "./validation";
 
@@ -84,7 +85,7 @@ export async function runExternalProcessDefinitionPhase(args: {
       workspace: args.workspace,
       promptContext: args.promptContext,
       workspaceAssessment,
-      preferAgentOnlyTasks: args.invocationCommand === "call",
+      preferAgentOnlyTasks: prefersAgentOnlyTasks(args.invocationCommand),
     }),
     900_000,
   );

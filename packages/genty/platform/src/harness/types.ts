@@ -176,6 +176,17 @@ export interface AgentCoreSessionOptions {
   agentDir?: string;
   /** Minimum delay before retrying PI session initialization after a failure. */
   initFailureBackoffMs?: number;
+  /**
+   * Structured-output mode. `"json_schema"` makes the provider enforce a JSON
+   * response that conforms to {@link outputSchema}. Defaults to plain text.
+   */
+  outputFormat?: "text" | "json_object" | "json_schema";
+  /** JSON Schema enforced when {@link outputFormat} is `"json_schema"`. */
+  outputSchema?: Record<string, unknown>;
+  /** Provider-visible schema name. */
+  outputSchemaName?: string;
+  /** Provider strictness flag for APIs that support schema strictness. */
+  outputSchemaStrict?: boolean;
 }
 
 /**

@@ -53,6 +53,33 @@ export function createAgentCoreToolDefinitions(options: AgenticToolOptions): Cus
   return tools;
 }
 
+/**
+ * Focused coding tool surface for delegated workers: file tools
+ * (read/write/edit/grep/find) plus the `bash` execution tool, and nothing
+ * else. The full {@link createAgentCoreToolDefinitions} surface (browser,
+ * background, delegation, web, discovery, config — ~30 tools) invites a worker
+ * with a single bounded task to wander; a delegated agent that must author a
+ * file only needs read + write + bash. This keeps the worker on-task and is
+ * what {@link createAgentCoreSession}-based delegated harnesses should pass as
+ * `customTools` when their `toolsMode` is `"coding"` or `"readonly"`.
+ */
+export function createCodingToolDefinitions(
+  options: AgenticToolOptions,
+  mode: "coding" | "readonly" = "coding",
+): CustomToolDefinition[] {
+  const fileTools = createFileSystemTools(options);
+  const tools = mode === "readonly"
+    // Read-only workers get read/grep/find but not write/edit/bash.
+    ? fileTools.filter((tool) => tool.name === "read" || tool.name === "grep" || tool.name === "find")
+    : [...fileTools, ...createExecutionTools(options).filter((tool) => tool.name === "bash")];
+  const wrapped = tools.map((tool) => wrapToolDefinition(tool, options.onToolUse));
+  toolDefinitionScopes.set(wrapped, options);
+  for (const tool of wrapped) {
+    toolDefinitionOwners.set(tool, options);
+  }
+  return wrapped;
+}
+
 export function disposeAgentCoreToolDefinitions(definitions: CustomToolDefinition[]): void {
   const options = toolDefinitionScopes.get(definitions)
     ?? definitions.map((definition) => toolDefinitionOwners.get(definition)).find(Boolean);
