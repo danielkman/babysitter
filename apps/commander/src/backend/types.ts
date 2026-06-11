@@ -1,7 +1,33 @@
 /**
  * Backend abstraction (SPEC §7).
- * Will define `CommanderBackend` (connect/disconnect/send/onFrame +
- * listAgents/listSessions/listRuns/listTasks) once the mirrored contracts
- * in `src/contracts/` exist. Stub only — populated in the backend phase.
+ *
+ * The UI talks ONLY to this interface. v1 binds it to the deterministic mock
+ * simulation (`src/backend/mock/`); v2 swaps in a real
+ * `@a5c-ai/adapters-gateway` WS+REST transport without touching UI code.
  */
-export {};
+
+import type {
+  AgentSummary,
+  ClientFrame,
+  RunEntry,
+  ServerFrame,
+  SessionEntry,
+} from '../contracts/gateway-protocol';
+import type { CommanderTask } from '../contracts/kradle-resources';
+
+export interface CommanderBackend {
+  connect(): Promise<void>;
+  disconnect(): void;
+  /** Commands go in as protocol frames. */
+  send(frame: ClientFrame): void;
+  /** Events come out as protocol frames. Returns an unsubscribe function. */
+  onFrame(cb: (frame: ServerFrame) => void): () => void;
+  /** GET /api/v1/agents */
+  listAgents(): Promise<AgentSummary[]>;
+  /** GET /api/v1/sessions */
+  listSessions(): Promise<SessionEntry[]>;
+  /** GET /api/v1/runs */
+  listRuns(): Promise<RunEntry[]>;
+  /** kradle AgentDispatchRun list (mock-local for v1) */
+  listTasks(): Promise<CommanderTask[]>;
+}
