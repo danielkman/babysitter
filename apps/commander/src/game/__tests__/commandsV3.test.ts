@@ -234,15 +234,25 @@ describe('executeIntent → real sim verbs', () => {
     ).toBe(true);
   });
 
-  it('inspect on an agent-less card logs a visible ticker note (never silent)', () => {
+  it('inspect on an agent-less card opens the card-mode Inspector (Process tab, §V2-5)', () => {
     const rig = makeRig(42);
     const taskId = singleBacklogCard(rig);
     select(rig, taskId);
-    const eventsBefore = rig.store.getState().events.length;
     executeIntent({ kind: 'inspect' }, rig.store, rig.binding.orders);
-    expect(rig.store.getState().events.length).toBe(eventsBefore + 1);
-    expect(rig.store.getState().events.at(-1)?.text).toMatch(/no attending agent/i);
     expect(rig.store.getState().meta.inspectorUnitId).toBeNull();
+    expect(rig.store.getState().meta.inspectorTaskId).toBe(taskId);
+    expect(rig.store.getState().meta.inspectorTab).toBe('process');
+  });
+
+  it('open-diff deep-links the Inspector Workspace tab (§V2-2)', () => {
+    const rig = makeRig(42);
+    const taskId = singleBacklogCard(rig);
+    rig.backend.sim.moveCard(taskId, 'do');
+    rig.binding.flush();
+    select(rig, taskId);
+    executeIntent({ kind: 'open-diff' }, rig.store, rig.binding.orders);
+    expect(rig.store.getState().meta.inspectorUnitId).not.toBeNull();
+    expect(rig.store.getState().meta.inspectorTab).toBe('workspace');
   });
 
   it('inspect on a working card opens the inspector on its attending agent', () => {

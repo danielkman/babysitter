@@ -41,7 +41,12 @@ export function attachInput({ store, orders }: AttachInputOptions): () => void {
       case 'Space':
         if (isButtonLike(e.target)) return; // let focused buttons receive Space
         e.preventDefault();
-        if (!e.repeat) store.getState().jumpToLatestAlert();
+        if (!e.repeat) {
+          // Land the operator on the latest alert's card AND pulse the
+          // Inquiry Dock (scroll into view + highlight, §V3-5).
+          store.getState().jumpToLatestAlert();
+          store.getState().pulseDock();
+        }
         return;
       case 'KeyM': {
         if (e.ctrlKey || e.metaKey || e.altKey) break;

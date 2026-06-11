@@ -337,6 +337,11 @@ function Card({ card, allCards, agents, store, orders, selected, onHoverLane }: 
     e.stopPropagation();
     if (suppressClickRef.current) return;
     store.getState().clickSelect(card.taskId, e.shiftKey);
+    // SPEC-V3 §V3-4: a SINGLE click on a HUMAN REVIEW card opens the review
+    // side panel (AC30).
+    if (card.column === 'human-review' && !card.merged) {
+      store.getState().openReview(card.taskId);
+    }
   };
 
   const onDoubleClick = (e: React.MouseEvent): void => {
@@ -345,8 +350,10 @@ function Card({ card, allCards, agents, store, orders, selected, onHoverLane }: 
     const first = card.agentIds[0];
     if (first !== undefined) {
       store.getState().openInspector(first);
-    } else if (card.column === 'human-review') {
-      store.getState().openReview(card.taskId);
+    } else if (card.column !== 'human-review') {
+      // Agent-less cards open the Inspector in card mode (Process tab
+      // default, §V2-5); human-review cards already opened the review panel.
+      store.getState().openInspectorCard(card.taskId);
     }
   };
 
@@ -563,12 +570,15 @@ export function KanbanBoard({ store, orders }: KanbanBoardProps): React.JSX.Elem
                     onHoverLane={onHoverLane}
                   />
                 );
-                // Non-backlog lanes wrap each top-level card in a slot
-                // element (frozen e2e contract: `cardsInColumn(col)
+                // ONLY the DO lane wraps each top-level card in a slot
+                // element (frozen e2e contract: `cardsInColumn('do')
                 // .locator('[data-testid="card-<id>"]')` resolves the card as
-                // a DESCENDANT of a card-prefixed element; backlog stays bare
-                // so `singleCardsIn('backlog')` sees flat singles).
-                return columnId === 'backlog' ? (
+                // a DESCENDANT of a card-prefixed element). Every other lane
+                // stays bare so raw `cardsInColumn(col).count()` waits (e.g.
+                // AC30's "≥2 cards in HUMAN REVIEW") count REAL cards, not
+                // slot wrappers, and `singleCardsIn('backlog')` sees flat
+                // singles.
+                return columnId !== 'do' ? (
                   el
                 ) : (
                   <div key={card.taskId} className="wr-card-slot" data-testid={`card-slot-${card.taskId}`}>

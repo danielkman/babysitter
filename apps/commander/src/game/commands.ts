@@ -111,19 +111,19 @@ export function executeIntent(intent: CommandIntent, store: CommanderStore, orde
       return;
     case 'inspect':
     case 'open-diff': {
-      // Inspector for the first acting agent (open-diff lands on its
-      // Workspace tab once the panels phase deep-links tabs); agent-less
-      // cards (backlog/human-review/merged) log a visible note instead of
-      // failing silently.
+      // Inspector for the first acting agent; agent-less cards open in card
+      // mode (Process tab default, §V2-5). `Open Diff` deep-links the
+      // Workspace tab (§V2-2 — tab state is store-settable).
       const first = agentIds[0];
+      const task = tasks[0];
       if (first !== undefined) {
         state.openInspector(first);
+      } else if (task !== undefined) {
+        state.openInspectorCard(task.id);
+      } else {
         return;
       }
-      const task = tasks[0];
-      if (task !== undefined) {
-        state.pushEvent(`Inspection — ${task.view.title} has no attending agent`, 'info', task.id);
-      }
+      if (intent.kind === 'open-diff') store.getState().setInspectorTab('workspace');
       return;
     }
     case 'abort':

@@ -136,6 +136,23 @@ export interface BoardMemory {
   records: GraphRecord[];
 }
 
+/**
+ * A resolved inquiry kept for the owning agent's Inspector transcript
+ * (SPEC-V3 §V3-5: "resolved state shows the chosen caption + icon").
+ */
+export interface ResolvedInquiry {
+  hookRequestId: string;
+  unitId: string;
+  taskId: string;
+  question: string;
+  optionId: string;
+  caption: string;
+  tone?: 'normal' | 'danger' | 'primary';
+}
+
+/** Resolved-inquiry history kept per agent (transcript inline bubbles). */
+const RESOLVED_INQUIRY_CAP = 12;
+
 export interface BoardSlice {
   cards: Record<string, BoardCardEntity>;
   /** Sorted card ids (stable iteration; lanes re-sort by order, §V3-1). */
@@ -143,6 +160,8 @@ export interface BoardSlice {
   agents: Record<string, SimAgentView>;
   agentIds: string[];
   inquiries: SimInquiryView[];
+  /** unitId → resolved inquiries (newest last, capped — §V3-5 transcript). */
+  resolvedInquiries: Record<string, ResolvedInquiry[]>;
   /** Static memory graph (silos + records, §V2-3 Archive overlay). */
   memory: BoardMemory;
   /**
@@ -187,6 +206,9 @@ export interface MemoryPulse {
   ts: number;
 }
 
+/** Inspector tab ids (SPEC-V2 §V2-5/§V2-7). */
+export type InspectorTab = 'transcript' | 'process' | 'workspace';
+
 export interface MetaSlice {
   resources: ResourcesSnapshot;
   simTimeMs: number;
@@ -196,8 +218,17 @@ export interface MetaSlice {
   paused: boolean;
   viewport: { width: number; height: number };
   inspectorUnitId: string | null;
+  /**
+   * Inspector opened directly on a CARD (agent-less, SPEC-V2 §V2-5 under V3).
+   * Mutually exclusive with `inspectorUnitId`.
+   */
+  inspectorTaskId: string | null;
+  /** Active Inspector tab — externally settable (Open Diff intent, §V2-2). */
+  inspectorTab: InspectorTab;
   /** Human-review side panel target (SPEC-V3 §V3-4). */
   reviewTaskId: string | null;
+  /** Space-key pulse counter — the Inquiry Dock scrolls into view + flashes. */
+  dockPulse: number;
   steerOpen: boolean;
   /** The Foundry dialog (§V2-6 — Commission Task only under V3). */
   foundryOpen: boolean;
@@ -250,7 +281,15 @@ export interface CommanderState {
   // --- transient UI ---------------------------------------------------------
   setViewport(size: { width: number; height: number }): void;
   openInspector(unitId: string): void;
+  /** Open the Inspector on an agent-less CARD (defaults to the Process tab). */
+  openInspectorCard(taskId: string): void;
   closeInspector(): void;
+  /** Switch the Inspector tab (externally settable — Open Diff, §V2-2). */
+  setInspectorTab(tab: InspectorTab): void;
+  /** Space: pulse the Inquiry Dock (scroll into view + highlight, §V3-5). */
+  pulseDock(): void;
+  /** Record a resolved inquiry for the owning agent's transcript (§V3-5). */
+  recordResolvedInquiry(entry: ResolvedInquiry): void;
   /** Open/close the human-review side panel for a card (SPEC-V3 §V3-4). */
   openReview(taskId: string): void;
   closeReview(): void;
@@ -768,6 +807,7 @@ export function createCommanderStore(): CommanderStore {
       agents: {},
       agentIds: [],
       inquiries: [],
+      resolvedInquiries: {},
       memory: { silos: [], records: [] },
       heldByCard: {},
     },
@@ -783,7 +823,10 @@ export function createCommanderStore(): CommanderStore {
       paused: false,
       viewport: { width: 1280, height: 720 },
       inspectorUnitId: null,
+      inspectorTaskId: null,
+      inspectorTab: 'transcript',
       reviewTaskId: null,
+      dockPulse: 0,
       steerOpen: false,
       foundryOpen: false,
       archiveOpen: false,
@@ -1028,6 +1071,7 @@ export function createCommanderStore(): CommanderStore {
                 agents,
                 agentIds: agentIdsStable ? prevBoard.agentIds : agentIds,
                 inquiries,
+                resolvedInquiries: prevBoard.resolvedInquiries,
                 memory: prevBoard.memory,
                 heldByCard,
               }
@@ -1091,8 +1135,8 @@ export function createCommanderStore(): CommanderStore {
         set({ meta: { ...state.meta, steerOpen: false } });
         return;
       }
-      if (state.meta.inspectorUnitId !== null) {
-        set({ meta: { ...state.meta, inspectorUnitId: null } });
+      if (state.meta.inspectorUnitId !== null || state.meta.inspectorTaskId !== null) {
+        set({ meta: { ...state.meta, inspectorUnitId: null, inspectorTaskId: null } });
         return;
       }
       get().clearSelection();
@@ -1121,10 +1165,39 @@ export function createCommanderStore(): CommanderStore {
       );
     },
     openInspector(unitId) {
-      set((state) => ({ meta: { ...state.meta, inspectorUnitId: unitId } }));
+      set((state) => ({
+        meta: { ...state.meta, inspectorUnitId: unitId, inspectorTaskId: null, inspectorTab: 'transcript' },
+      }));
+    },
+    openInspectorCard(taskId) {
+      // Agent-less cards default to the Process tab (SPEC-V2 §V2-5 under V3).
+      set((state) => ({
+        meta: { ...state.meta, inspectorUnitId: null, inspectorTaskId: taskId, inspectorTab: 'process' },
+      }));
     },
     closeInspector() {
-      set((state) => ({ meta: { ...state.meta, inspectorUnitId: null } }));
+      set((state) => ({ meta: { ...state.meta, inspectorUnitId: null, inspectorTaskId: null } }));
+    },
+    setInspectorTab(tab) {
+      set((state) => (state.meta.inspectorTab === tab ? state : { meta: { ...state.meta, inspectorTab: tab } }));
+    },
+    pulseDock() {
+      set((state) => ({ meta: { ...state.meta, dockPulse: state.meta.dockPulse + 1 } }));
+    },
+    recordResolvedInquiry(entry) {
+      set((state) => {
+        const prev = state.board.resolvedInquiries[entry.unitId] ?? [];
+        if (prev.some((r) => r.hookRequestId === entry.hookRequestId)) return state;
+        return {
+          board: {
+            ...state.board,
+            resolvedInquiries: {
+              ...state.board.resolvedInquiries,
+              [entry.unitId]: [...prev, entry].slice(-RESOLVED_INQUIRY_CAP),
+            },
+          },
+        };
+      });
     },
     openReview(taskId) {
       set((state) => ({ meta: { ...state.meta, reviewTaskId: taskId } }));

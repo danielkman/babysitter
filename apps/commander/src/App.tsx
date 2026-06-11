@@ -97,5 +97,5 @@ if (import.meta.hot) {
 }
 
 export default function App(): React.JSX.Element {
-  return <WarRoom store={store} orders={binding.orders} />;
+  return <WarRoom store={store} orders={binding.orders} views={backend.sim} />;
 }

@@ -147,6 +147,8 @@ function UnitCardGrid({ store, units }: { store: CommanderStore; units: UnitEnti
 
 function TaskDetails({ store, task }: { store: CommanderStore; task: TaskEntity }): React.JSX.Element {
   const units = useStore(store, (s) => s.world.units);
+  /** Current babysitter process phase of the card's run (§V2-5 sel-stage). */
+  const runStage = useStore(store, (s) => s.board.cards[task.id]?.runStage ?? null);
   const icon = generateIcon({ entityId: task.id, kind: 'task', taskKind: task.view.taskKind });
   return (
     <div className="wr-sel-single">
@@ -160,6 +162,11 @@ function TaskDetails({ store, task }: { store: CommanderStore; task: TaskEntity 
         </div>
         <div className="wr-sel-staterow">
           <span className={`wr-sel-state wr-sel-state--task-${task.view.state}`}>{task.view.state}</span>
+          {runStage !== null && (
+            <span className="wr-sel-stage" data-testid="sel-stage" title="current process stage">
+              {runStage}
+            </span>
+          )}
           {task.view.priority > 0 && <span className="wr-sel-priority">priority</span>}
         </div>
       </div>

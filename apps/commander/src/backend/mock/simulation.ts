@@ -1331,10 +1331,14 @@ export class Simulation {
 
   private advanceCard(card: CardRecord): void {
     // Unanswered inquiries auto-default at the deadline (first option) so the
-    // board never deadlocks; the path is fully deterministic.
+    // board never deadlocks; the path is fully deterministic. An auto-default
+    // FREES the per-attempt inquiry slot — the operator never answered, so
+    // the run may breakpoint again at a later phase start (AC20 relies on a
+    // working run reliably presenting a live inquiry).
     for (const inquiry of [...this.inquiries.values()]) {
       if (inquiry.taskId === card.taskId && this.now() >= inquiry.deadlineTs) {
         this.answerInquiry(inquiry.hookRequestId, null, 'allow', 'auto-default at deadline');
+        card.inquiriesThisAttempt = Math.max(0, card.inquiriesThisAttempt - 1);
       }
     }
 
@@ -1439,9 +1443,13 @@ export class Simulation {
     if (this.rng.chance(0.6)) this.emitMemoryQuery(card, worker);
 
     // Inquiry roll (SPEC-V3 §V3-5): at most one open inquiry per card, and at
-    // most one raised per DO attempt (keeps work durations bounded).
+    // most one raised per DO attempt (keeps work durations bounded). The
+    // FINAL phase start guarantees the roll: every working attempt raises
+    // exactly one inquiry (AC20 needs the only working run to hit a
+    // breakpoint within budget — the rng decides WHEN, never whether).
     const hasOpen = [...this.inquiries.values()].some((i) => i.taskId === card.taskId);
-    if (!hasOpen && card.inquiriesThisAttempt < 1 && this.rng.chance(0.45)) {
+    const lastPhase = run.phaseIndex >= run.phases.length - 1;
+    if (!hasOpen && card.inquiriesThisAttempt < 1 && (this.rng.chance(0.45) || lastPhase)) {
       card.inquiriesThisAttempt += 1;
       this.raiseInquiry(card, worker);
     }
