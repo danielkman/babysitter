@@ -19,6 +19,19 @@ import type {
 } from '../types';
 import { generateIcon } from './iconGen';
 
+/**
+ * Positional hotkeys for the 3x4 command grid (SPEC §5): row-major, mirroring
+ * the physical keyboard rows QWER / ASDF / ZXCV. Cell index i always answers
+ * to COMMAND_HOTKEYS[i] regardless of which command occupies it.
+ */
+export const COMMAND_HOTKEYS = [
+  'Q', 'W', 'E', 'R',
+  'A', 'S', 'D', 'F',
+  'Z', 'X', 'C', 'V',
+] as const;
+
+export type CommandHotkey = (typeof COMMAND_HOTKEYS)[number];
+
 const GLYPH_STROKE = '#9fd9ef';
 
 function glyph(paths: string): IconSpec {
@@ -57,18 +70,17 @@ function fallbackGlyph(): IconSpec {
 interface CommandDef {
   id: string;
   label: string;
-  hotkey?: string;
   intent: CommandIntent;
   tooltip: string;
   severity?: 'normal' | 'danger' | 'urgent';
   enabled?: (ctx: CommandContext) => boolean;
 }
 
-function spec(def: CommandDef, ctx: CommandContext): CommandSpec {
+function spec(def: CommandDef, ctx: CommandContext, hotkey: CommandHotkey | undefined): CommandSpec {
   return {
     id: def.id,
     label: def.label,
-    ...(def.hotkey !== undefined ? { hotkey: def.hotkey } : {}),
+    ...(hotkey !== undefined ? { hotkey } : {}),
     icon: GLYPHS[def.id] ?? fallbackGlyph(),
     intent: def.intent,
     enabled: def.enabled !== undefined ? def.enabled(ctx) : true,
@@ -81,7 +93,6 @@ const GLOBAL_DEFS: CommandDef[] = [
   {
     id: 'select-all-idle',
     label: 'Select All Idle',
-    hotkey: 'Q',
     intent: { kind: 'select-all-idle' },
     tooltip: 'Select every idle unit in the fleet',
     enabled: (ctx) => ctx.fleet.idleUnits > 0,
@@ -89,7 +100,6 @@ const GLOBAL_DEFS: CommandDef[] = [
   {
     id: 'jump-to-alert',
     label: 'Jump to Alert',
-    hotkey: 'W',
     intent: { kind: 'jump-to-alert' },
     tooltip: 'Center the camera on the most recent pending alert',
     enabled: (ctx) => ctx.fleet.pendingAlerts > 0,
@@ -98,7 +108,6 @@ const GLOBAL_DEFS: CommandDef[] = [
   {
     id: 'toggle-sim',
     label: 'Pause Sim', // label resolved dynamically below
-    hotkey: 'E',
     intent: { kind: 'toggle-sim' },
     tooltip: 'Pause or resume the simulation clock',
   },
@@ -108,28 +117,24 @@ const IDLE_DEFS: CommandDef[] = [
   {
     id: 'dispatch',
     label: 'Dispatch…',
-    hotkey: 'Q',
     intent: { kind: 'dispatch-mode' },
     tooltip: 'Pick a target objective for the selected units',
   },
   {
     id: 'rally',
     label: 'Rally',
-    hotkey: 'W',
     intent: { kind: 'rally-mode' },
     tooltip: 'Pick a rally point to reposition the selected idle units',
   },
   {
     id: 'clone',
     label: 'Clone',
-    hotkey: 'E',
     intent: { kind: 'clone' },
     tooltip: 'Spawn a fresh unit of the same adapter',
   },
   {
     id: 'retire',
     label: 'Retire',
-    hotkey: 'R',
     intent: { kind: 'retire' },
     tooltip: 'Decommission the selected units at the next idle window',
     severity: 'danger',
@@ -140,28 +145,24 @@ const WORKING_DEFS: CommandDef[] = [
   {
     id: 'steer',
     label: 'Steer…',
-    hotkey: 'Q',
     intent: { kind: 'steer' },
     tooltip: 'Send a steering prompt to the selected units',
   },
   {
     id: 'pause-unit',
     label: 'Pause',
-    hotkey: 'W',
     intent: { kind: 'pause-unit' },
     tooltip: 'Ask the unit to hold after its current step',
   },
   {
     id: 'inspect',
     label: 'Inspect',
-    hotkey: 'E',
     intent: { kind: 'inspect' },
     tooltip: 'Open the session transcript inspector',
   },
   {
     id: 'abort',
     label: 'Abort',
-    hotkey: 'R',
     intent: { kind: 'abort' },
     tooltip: 'Abort the active run and return the unit to the staging area',
     severity: 'danger',
@@ -172,7 +173,6 @@ const APPROVAL_DEFS: CommandDef[] = [
   {
     id: 'approve',
     label: 'Approve',
-    hotkey: 'Q',
     intent: { kind: 'approve' },
     tooltip: 'Allow the gated action and unblock the unit',
     severity: 'urgent',
@@ -180,7 +180,6 @@ const APPROVAL_DEFS: CommandDef[] = [
   {
     id: 'deny',
     label: 'Deny',
-    hotkey: 'W',
     intent: { kind: 'deny' },
     tooltip: 'Deny the gated action',
     severity: 'danger',
@@ -188,7 +187,6 @@ const APPROVAL_DEFS: CommandDef[] = [
   {
     id: 'inspect',
     label: 'Inspect',
-    hotkey: 'E',
     intent: { kind: 'inspect' },
     tooltip: 'Open the session transcript inspector',
   },
@@ -198,7 +196,6 @@ const TASK_DEFS: CommandDef[] = [
   {
     id: 'assign-best-idle',
     label: 'Assign Best Idle',
-    hotkey: 'Q',
     intent: { kind: 'assign-best-idle' },
     tooltip: 'Dispatch the first available idle unit to this objective',
     enabled: (ctx) => ctx.fleet.idleUnits > 0,
@@ -206,14 +203,12 @@ const TASK_DEFS: CommandDef[] = [
   {
     id: 'prioritize',
     label: 'Prioritize',
-    hotkey: 'W',
     intent: { kind: 'prioritize' },
     tooltip: 'Mark this objective as the fleet priority',
   },
   {
     id: 'cancel-task',
     label: 'Cancel',
-    hotkey: 'R',
     intent: { kind: 'cancel-task' },
     tooltip: 'Recall every unit assigned to this objective',
     severity: 'danger',
@@ -245,7 +240,10 @@ export function generateCommands(ctx: CommandContext): CommandSpec[] {
     defs = GLOBAL_DEFS;
   }
 
-  const specs = defs.slice(0, 12).map((def) => spec(def, ctx));
+  // Positional hotkeys: cell i ⇒ COMMAND_HOTKEYS[i] (SPEC §5 grid mapping).
+  const specs = defs
+    .slice(0, COMMAND_HOTKEYS.length)
+    .map((def, index) => spec(def, ctx, COMMAND_HOTKEYS[index]));
   // Dynamic label for the sim toggle.
   return specs.map((s) =>
     s.id === 'toggle-sim' ? { ...s, label: ctx.fleet.simPaused ? 'Resume Sim' : 'Pause Sim' } : s,

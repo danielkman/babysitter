@@ -1,7 +1,9 @@
 /**
  * SelectionPanel (SPEC §4): single unit → portrait + name/adapter/model/state
- * + vitals; multi-unit → card grid (one portrait per unit); task → details +
- * assignees. data-testid="selection-panel" (SPEC §9).
+ * badge + current task link + vitals (context bar, budget bar, turns/rank);
+ * multi-unit → clickable card grid (click a card to sub-select that unit);
+ * task → icon + title/kind/repo/phase + progress + assignees (click an
+ * assignee to select it). data-testid="selection-panel" (SPEC §9).
  *
  * NOTE (frozen e2e contract): the panel text is matched against the §3 state
  * strings — render `view.state` verbatim and never include the word "idle"
@@ -9,16 +11,37 @@
  */
 
 import { useStore } from 'zustand';
+import clsx from 'clsx';
 
 import { formatInt, formatPct, formatUsd, getSelectedEntities } from '../../game/selectors';
 import type { CommanderStore, TaskEntity, UnitEntity } from '../../game/store';
 import { generateIcon } from '../../microagent/mock/iconGen';
 
+const MAX_RANK_CHEVRONS = 5;
+
 export interface SelectionPanelProps {
   store: CommanderStore;
 }
 
-function UnitVitals({ unit }: { unit: UnitEntity }): React.JSX.Element {
+function focusEntity(store: CommanderStore, id: string, shift: boolean): void {
+  store.getState().clickSelect(id, shift);
+  store.getState().centerOnEntity(id);
+}
+
+function RankChevrons({ turnCount }: { turnCount: number }): React.JSX.Element {
+  const rank = Math.min(MAX_RANK_CHEVRONS, turnCount);
+  return (
+    <span className="wr-rank" title={`${turnCount} turns served`} aria-label={`rank ${rank}`}>
+      {Array.from({ length: MAX_RANK_CHEVRONS }, (_, i) => (
+        <span key={i} className={clsx('wr-rank-chevron', i < rank && 'is-earned')} />
+      ))}
+    </span>
+  );
+}
+
+function UnitVitals({ store, unit }: { store: CommanderStore; unit: UnitEntity }): React.JSX.Element {
+  const taskId = unit.view.taskId;
+  const task = useStore(store, (s) => (taskId !== null ? s.world.tasks[taskId] : undefined));
   const icon = generateIcon({ entityId: unit.id, kind: 'unit', adapter: unit.view.agent });
   return (
     <div className="wr-sel-single">
@@ -26,10 +49,20 @@ function UnitVitals({ unit }: { unit: UnitEntity }): React.JSX.Element {
       <div className="wr-sel-info">
         <div className="wr-sel-name">{unit.view.title}</div>
         <div className="wr-sel-sub">
-          <span className="wr-sel-adapter">{unit.view.agent}</span>
+          <span className={`wr-sel-adapter wr-faction-text--${unit.view.agent}`}>{unit.view.agent}</span>
           <span className="wr-sel-model">{unit.view.model}</span>
         </div>
         <div className={`wr-sel-state wr-sel-state--${unit.view.state}`}>{unit.view.state}</div>
+        {taskId !== null && (
+          <button
+            type="button"
+            className="wr-sel-tasklink"
+            title="Select the assigned objective"
+            onClick={(e) => focusEntity(store, taskId, e.shiftKey)}
+          >
+            › {task?.view.title ?? taskId}
+          </button>
+        )}
       </div>
       <div className="wr-sel-vitals">
         <div className="wr-vital">
@@ -40,7 +73,7 @@ function UnitVitals({ unit }: { unit: UnitEntity }): React.JSX.Element {
           <span className="wr-vital-value">{formatPct(1 - unit.contextPct)}</span>
         </div>
         <div className="wr-vital">
-          <span className="wr-vital-label">PWR</span>
+          <span className="wr-vital-label">BUDGET</span>
           <div className="wr-bar wr-bar--energy">
             <div className="wr-bar-fill" style={{ width: formatPct(unit.energyPct) }} />
           </div>
@@ -48,6 +81,7 @@ function UnitVitals({ unit }: { unit: UnitEntity }): React.JSX.Element {
         </div>
         <div className="wr-vital">
           <span className="wr-vital-label">TURNS</span>
+          <RankChevrons turnCount={unit.view.turnCount} />
           <span className="wr-vital-value">{formatInt(unit.view.turnCount)}</span>
         </div>
       </div>
@@ -55,24 +89,31 @@ function UnitVitals({ unit }: { unit: UnitEntity }): React.JSX.Element {
   );
 }
 
-function UnitCardGrid({ units }: { units: UnitEntity[] }): React.JSX.Element {
+function UnitCardGrid({ store, units }: { store: CommanderStore; units: UnitEntity[] }): React.JSX.Element {
   return (
     <div className="wr-sel-grid">
       {units.map((unit) => {
         const icon = generateIcon({ entityId: unit.id, kind: 'unit', adapter: unit.view.agent });
         return (
-          <div key={unit.id} className={`wr-sel-card wr-sel-card--${unit.view.state}`}>
+          <button
+            key={unit.id}
+            type="button"
+            className={`wr-sel-card wr-sel-card--${unit.view.state}`}
+            title={`${unit.view.title} — click to select only this unit`}
+            onClick={(e) => focusEntity(store, unit.id, e.shiftKey)}
+          >
             <div className="wr-sel-card-portrait" dangerouslySetInnerHTML={{ __html: icon.svg }} />
             <div className="wr-sel-card-name">{unit.view.title}</div>
             <div className="wr-sel-card-state">{unit.view.state}</div>
-          </div>
+          </button>
         );
       })}
     </div>
   );
 }
 
-function TaskDetails({ task }: { task: TaskEntity }): React.JSX.Element {
+function TaskDetails({ store, task }: { store: CommanderStore; task: TaskEntity }): React.JSX.Element {
+  const units = useStore(store, (s) => s.world.units);
   const icon = generateIcon({ entityId: task.id, kind: 'task', taskKind: task.view.taskKind });
   return (
     <div className="wr-sel-single">
@@ -82,6 +123,7 @@ function TaskDetails({ task }: { task: TaskEntity }): React.JSX.Element {
         <div className="wr-sel-sub">
           <span>{task.view.taskKind}</span>
           <span>{task.view.repository}</span>
+          <span className="wr-sel-phase">{task.view.phase}</span>
         </div>
         <div className={`wr-sel-state wr-sel-state--task-${task.view.state}`}>{task.view.state}</div>
       </div>
@@ -95,9 +137,23 @@ function TaskDetails({ task }: { task: TaskEntity }): React.JSX.Element {
         </div>
         <div className="wr-vital wr-vital--assignees">
           <span className="wr-vital-label">ASSIGNEES</span>
-          <span className="wr-vital-value">
-            {task.view.assigneeIds.length === 0 ? 'none' : task.view.assigneeIds.join(', ')}
-          </span>
+          {task.view.assigneeIds.length === 0 ? (
+            <span className="wr-vital-value">none</span>
+          ) : (
+            <span className="wr-sel-assignees">
+              {task.view.assigneeIds.map((id) => (
+                <button
+                  key={id}
+                  type="button"
+                  className="wr-sel-assignee"
+                  title="Select this unit"
+                  onClick={(e) => focusEntity(store, id, e.shiftKey)}
+                >
+                  {units[id]?.view.title ?? id}
+                </button>
+              ))}
+            </span>
+          )}
         </div>
       </div>
     </div>
@@ -115,18 +171,18 @@ export function SelectionPanel({ store }: SelectionPanelProps): React.JSX.Elemen
     content = <div className="wr-sel-empty">no selection — click a unit or drag a marquee</div>;
   } else if (units.length === 1 && tasks.length === 0) {
     const unit = units[0];
-    content = unit !== undefined ? <UnitVitals unit={unit} /> : <div />;
+    content = unit !== undefined ? <UnitVitals store={store} unit={unit} /> : <div />;
   } else if (units.length > 1 && tasks.length === 0) {
-    content = <UnitCardGrid units={units} />;
+    content = <UnitCardGrid store={store} units={units} />;
   } else if (tasks.length === 1 && units.length === 0) {
     const task = tasks[0];
-    content = task !== undefined ? <TaskDetails task={task} /> : <div />;
+    content = task !== undefined ? <TaskDetails store={store} task={task} /> : <div />;
   } else {
     content = (
       <div className="wr-sel-mixed">
-        <UnitCardGrid units={units} />
+        <UnitCardGrid store={store} units={units} />
         {tasks.map((task) => (
-          <TaskDetails key={task.id} task={task} />
+          <TaskDetails key={task.id} store={store} task={task} />
         ))}
       </div>
     );

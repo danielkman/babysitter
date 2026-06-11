@@ -8,10 +8,14 @@
  *  - Double-click unit: open Inspector.
  *  - Wheel: zoom toward cursor (clamped). WASD/arrows: pan.
  *  - Middle-drag or Space-drag: pan.
- *  - Esc: close inspector → cancel targeting → clear selection.
+ *  - Esc: close steer modal → close inspector → cancel targeting → clear selection.
  *  - Space (tap): jump camera to most recent alert.
  *  - F: cycle idle units. Ctrl+1..9 assign control groups; 1..9 recall
  *    (recalling the active group again centers the camera).
+ *  - Q/W/E/R/A/S/D/F/Z/X/C/V: command card hotkeys — the mode arbiter in
+ *    `commands.ts` gives them precedence over the colliding camera-pan
+ *    (W/A/S/D) and idle-cycle (F) duties whenever the selection is non-empty;
+ *    arrow keys always pan (SPEC §5, HUD-phase contract).
  *
  * Implemented with DOM event delegation: sprites carry `data-entity-id` /
  * `data-entity-kind`; the map viewport element owns all mouse listeners and
@@ -19,6 +23,13 @@
  */
 
 import { screenToWorld, worldToScreen, KEY_PAN_STEP_PX, type Vec2 } from './camera';
+import {
+  executeIntent,
+  findCommandByHotkey,
+  hotkeyFromCode,
+  hotkeyPrecedence,
+  type CommandHotkey,
+} from './commands';
 import type { CommanderStore, Orders } from './store';
 
 const DRAG_THRESHOLD_PX = 5;
@@ -238,6 +249,22 @@ export function attachInput({ store, orders, element }: AttachInputOptions): () 
 
   // --- keyboard -----------------------------------------------------------------
 
+  /** Screen-space pan delta for the WASD letters (camera-pan domain). */
+  const panDeltaFor = (letter: CommandHotkey): Vec2 | null => {
+    switch (letter) {
+      case 'W':
+        return { x: 0, y: -KEY_PAN_STEP_PX };
+      case 'S':
+        return { x: 0, y: KEY_PAN_STEP_PX };
+      case 'A':
+        return { x: -KEY_PAN_STEP_PX, y: 0 };
+      case 'D':
+        return { x: KEY_PAN_STEP_PX, y: 0 };
+      default:
+        return null;
+    }
+  };
+
   const onKeyDown = (e: KeyboardEvent): void => {
     if (isTextEntry(e.target)) return;
 
@@ -251,26 +278,20 @@ export function attachInput({ store, orders, element }: AttachInputOptions): () 
       case 'Escape':
         store.getState().escape();
         return;
-      case 'KeyF':
-        if (!e.ctrlKey && !e.metaKey) store.getState().cycleIdle();
-        return;
+      // Arrow keys always pan — they never collide with command hotkeys (SPEC §5).
       case 'ArrowUp':
-      case 'KeyW':
         store.getState().panBy(0, -KEY_PAN_STEP_PX);
         e.preventDefault();
         return;
       case 'ArrowDown':
-      case 'KeyS':
         store.getState().panBy(0, KEY_PAN_STEP_PX);
         e.preventDefault();
         return;
       case 'ArrowLeft':
-      case 'KeyA':
         store.getState().panBy(-KEY_PAN_STEP_PX, 0);
         e.preventDefault();
         return;
       case 'ArrowRight':
-      case 'KeyD':
         store.getState().panBy(KEY_PAN_STEP_PX, 0);
         e.preventDefault();
         return;
@@ -287,6 +308,37 @@ export function attachInput({ store, orders, element }: AttachInputOptions): () 
         e.preventDefault();
       } else {
         store.getState().recallGroup(digit);
+      }
+      return;
+    }
+
+    // Command hotkeys (Q/W/E/R/A/S/D/F/Z/X/C/V) through the mode arbiter.
+    // Modified letters (Ctrl+C, Cmd+R, …) stay with the browser.
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    const letter = hotkeyFromCode(e.code);
+    if (letter === null) return;
+    const state = store.getState();
+    const domains = hotkeyPrecedence(letter, state.selection.ids.length > 0);
+    for (const domain of domains) {
+      if (domain === 'command') {
+        const spec = findCommandByHotkey(state, letter);
+        if (spec !== undefined) {
+          // A visible cell claims the key even when disabled or auto-repeating —
+          // it must not leak through to camera pan mid-press.
+          if (!e.repeat && spec.enabled) executeIntent(spec.intent, store, orders);
+          e.preventDefault();
+          return;
+        }
+      } else if (domain === 'camera-pan') {
+        const delta = panDeltaFor(letter);
+        if (delta !== null) {
+          store.getState().panBy(delta.x, delta.y);
+          e.preventDefault();
+          return;
+        }
+      } else {
+        store.getState().cycleIdle();
+        return;
       }
     }
   };

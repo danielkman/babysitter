@@ -98,6 +98,12 @@ export interface TranscriptEntry {
   id: string;
   kind: 'turn' | 'text' | 'thinking' | 'tool' | 'note';
   text: string;
+  /** Tool-call entries: tool name (Inspector renders name + duration). */
+  toolName?: string;
+  /** Tool-result entries: execution duration in ms. */
+  durationMs?: number;
+  /** Tool entry lifecycle (running → done | failed). */
+  toolStatus?: 'running' | 'done' | 'failed';
 }
 
 export interface UnitEntity {
@@ -180,6 +186,8 @@ export interface MetaSlice {
   pings: PingRecord[];
   idleCycleCursor: number;
   eventSeq: number;
+  /** Monotonic id counter for UI-originated pings (ticker focus, SPEC §4). */
+  pingSeq: number;
   version: string;
 }
 
@@ -235,6 +243,8 @@ export interface CommanderState {
   setRally(unitIds: string[], point: Vec2): void;
   setPaused(paused: boolean): void;
   pushEvent(text: string, severity: TickerSeverity, entityId?: string): void;
+  /** Drop a minimap/world ping at an entity (ticker focus, SPEC §4). */
+  addPing(entityId: string, tone: PingRecord['tone']): void;
 }
 
 export type CommanderStore = StoreApi<CommanderState>;
@@ -468,14 +478,27 @@ function routeRunEvent(
     }
     case 'tool_call_start': {
       const toolName = asString(ev['toolName']) ?? 'tool';
-      if (unitId !== undefined) transcript(unitId, { kind: 'tool', text: `> ${toolName} running…` });
+      if (unitId !== undefined) {
+        transcript(unitId, {
+          kind: 'tool',
+          text: `> ${toolName} running…`,
+          toolName,
+          toolStatus: 'running',
+        });
+      }
       break;
     }
     case 'tool_result': {
       const toolName = asString(ev['toolName']) ?? 'tool';
       const durationMs = asNumber(ev['durationMs']) ?? 0;
       if (unitId !== undefined) {
-        transcript(unitId, { kind: 'tool', text: `> ${toolName} finished (${durationMs}ms)` });
+        transcript(unitId, {
+          kind: 'tool',
+          text: `> ${toolName} finished (${durationMs}ms)`,
+          toolName,
+          durationMs,
+          toolStatus: 'done',
+        });
       }
       break;
     }
@@ -483,7 +506,12 @@ function routeRunEvent(
       const toolName = asString(ev['toolName']) ?? 'tool';
       const error = asString(ev['error']) ?? 'tool failed';
       if (unitId !== undefined) {
-        transcript(unitId, { kind: 'tool', text: `> ${toolName} FAILED: ${error}` });
+        transcript(unitId, {
+          kind: 'tool',
+          text: `> ${toolName} FAILED: ${error}`,
+          toolName,
+          toolStatus: 'failed',
+        });
         ticker({ ts, severity: 'warn', text: `${unitTitle(unitId)}: ${error}`, entityId: unitId });
       }
       break;
@@ -643,6 +671,7 @@ export function createCommanderStore(): CommanderStore {
       pings: [],
       idleCycleCursor: -1,
       eventSeq: 0,
+      pingSeq: 0,
       version: COMMANDER_VERSION,
     },
 
@@ -943,13 +972,15 @@ export function createCommanderStore(): CommanderStore {
       });
     },
     escape() {
+      // Esc cascade: steer modal → inspector → targeting → selection (SPEC §5;
+      // the modal closes WITHOUT clearing the selection — HUD-phase contract).
       const state = get();
-      if (state.meta.inspectorUnitId !== null) {
-        set({ meta: { ...state.meta, inspectorUnitId: null } });
-        return;
-      }
       if (state.meta.steerOpen) {
         set({ meta: { ...state.meta, steerOpen: false } });
+        return;
+      }
+      if (state.meta.inspectorUnitId !== null) {
+        set({ meta: { ...state.meta, inspectorUnitId: null } });
         return;
       }
       if (state.meta.targeting !== null) {
@@ -1047,6 +1078,21 @@ export function createCommanderStore(): CommanderStore {
           events: [...state.events, entry].slice(-EVENT_RING_CAP),
           meta: { ...state.meta, eventSeq },
         };
+      });
+    },
+    addPing(entityId, tone) {
+      set((state) => {
+        const pos = state.world.positions[entityId];
+        if (pos === undefined) return state;
+        const pingSeq = state.meta.pingSeq + 1;
+        const ping: PingRecord = {
+          id: `ping-ui-${pingSeq}`,
+          x: pos.x,
+          y: pos.y,
+          tone,
+          startedAt: state.meta.simTimeMs,
+        };
+        return { meta: { ...state.meta, pingSeq, pings: [...state.meta.pings, ping] } };
       });
     },
   }));

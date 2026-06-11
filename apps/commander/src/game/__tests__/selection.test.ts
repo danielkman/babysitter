@@ -91,6 +91,21 @@ describe('store selection slice over the seeded world', () => {
     expect(store.getState().selection.ids).toEqual([unitIds[0]]);
   });
 
+  it('escape cascade: steer modal closes first and keeps the selection (HUD phase)', () => {
+    store.getState().select([unitIds[0]!]);
+    store.getState().openInspector(unitIds[0]!);
+    store.getState().openSteer();
+
+    store.getState().escape();
+    expect(store.getState().meta.steerOpen).toBe(false);
+    expect(store.getState().meta.inspectorUnitId).toBe(unitIds[0]); // untouched this pass
+    expect(store.getState().selection.ids).toEqual([unitIds[0]]);
+
+    store.getState().escape();
+    expect(store.getState().meta.inspectorUnitId).toBeNull();
+    expect(store.getState().selection.ids).toEqual([unitIds[0]]);
+  });
+
   it('escape cascade: inspector → targeting → selection (SPEC §5)', () => {
     store.getState().select([unitIds[0]!]);
     store.getState().openInspector(unitIds[0]!);

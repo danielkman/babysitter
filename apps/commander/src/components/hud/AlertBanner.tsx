@@ -1,12 +1,17 @@
 /**
- * AlertBanner (SPEC §4/§5, AC6): top-center banner shown while approvals are
- * pending, with inline Approve/Deny for the most recent alert. Hidden (not
- * rendered) when no alerts exist — the e2e suite asserts visibility both ways.
- * Kept compact and high so it never overlaps map interaction scan lines.
+ * AlertBanner (SPEC §4/§5, AC6): top-center "base under attack" banner shown
+ * while approvals pend. Queue UI: shows the MOST URGENT alert (earliest
+ * deadline) plus a "+N more" count; clicking the banner cycles through the
+ * queue; Approve/Deny act on the shown alert only. Space (handled in
+ * input.ts) still jumps the camera to the latest alert. Hidden (not
+ * rendered) when no alerts exist — the e2e suite asserts visibility both
+ * ways. Urgent pulse kept restrained per SPEC §10.
  */
 
+import { useState } from 'react';
 import { useStore } from 'zustand';
 
+import { nextAlert, resolveShownAlert } from '../../game/alertQueue';
 import type { CommanderStore, Orders } from '../../game/store';
 
 export interface AlertBannerProps {
@@ -17,30 +22,67 @@ export interface AlertBannerProps {
 export function AlertBanner({ store, orders }: AlertBannerProps): React.JSX.Element | null {
   const alerts = useStore(store, (s) => s.alerts);
   const units = useStore(store, (s) => s.world.units);
-  const latest = alerts[alerts.length - 1];
-  if (latest === undefined) return null;
+  const [shownId, setShownId] = useState<string | null>(null);
 
-  const unitTitle = units[latest.unitId]?.view.title ?? latest.unitId;
-  const action = typeof latest.payload['action'] === 'string' ? latest.payload['action'] : latest.kind;
+  const shown = resolveShownAlert(alerts, shownId);
+  if (shown === undefined) return null;
+
+  const unitTitle = units[shown.unitId]?.view.title ?? shown.unitId;
+  const action = typeof shown.payload['action'] === 'string' ? shown.payload['action'] : shown.kind;
+  const detail = typeof shown.payload['detail'] === 'string' ? shown.payload['detail'] : null;
+  const more = alerts.length - 1;
+
+  const cycle = (): void => {
+    if (alerts.length < 2) return;
+    const next = nextAlert(alerts, shown.hookRequestId);
+    if (next !== undefined) setShownId(next.hookRequestId);
+  };
+
+  const decide = (decision: 'allow' | 'deny') => (e: React.MouseEvent): void => {
+    e.stopPropagation(); // the banner body click cycles — buttons must not
+    orders.decide(shown.hookRequestId, decision);
+  };
 
   return (
-    <div className="wr-alert-banner" data-testid="alert-banner" role="alert">
-      <span className="wr-alert-count">{alerts.length}</span>
+    <div
+      className="wr-alert-banner"
+      data-testid="alert-banner"
+      role="alert"
+      onClick={cycle}
+      title={more > 0 ? 'Click to cycle through pending alerts' : detail ?? undefined}
+    >
+      <span className="wr-alert-count" aria-label={`${alerts.length} pending approvals`}>
+        {alerts.length}
+      </span>
       <span className="wr-alert-text">
         <strong>{unitTitle}</strong> wants to {action}
+        {detail !== null && <em className="wr-alert-detail"> — {detail}</em>}
       </span>
+      {more > 0 && (
+        <button
+          type="button"
+          className="wr-alert-more"
+          onClick={(e) => {
+            e.stopPropagation(); // banner body also cycles — don't double-step
+            cycle();
+          }}
+          title="Show the next pending alert"
+        >
+          +{more} more
+        </button>
+      )}
       <span className="wr-alert-actions">
         <button
           type="button"
           className="wr-alert-btn wr-alert-btn--approve"
-          onClick={() => orders.decide(latest.hookRequestId, 'allow')}
+          onClick={decide('allow')}
         >
           Approve
         </button>
         <button
           type="button"
           className="wr-alert-btn wr-alert-btn--deny"
-          onClick={() => orders.decide(latest.hookRequestId, 'deny')}
+          onClick={decide('deny')}
         >
           Deny
         </button>

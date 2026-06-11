@@ -33,7 +33,7 @@ export function WarRoom({ store, orders }: WarRoomProps): React.JSX.Element {
   return (
     <div className="wr-root" data-testid="war-room">
       <MapViewport store={store} orders={orders} />
-      <TopBar store={store} />
+      <TopBar store={store} orders={orders} />
       <AlertBanner store={store} orders={orders} />
       <Minimap store={store} />
       <div className="wr-bottom-row">
