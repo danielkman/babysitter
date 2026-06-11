@@ -13,7 +13,6 @@ import {
   executeIntent,
   findCommandByHotkey,
   hotkeyFromCode,
-  hotkeyPrecedence,
 } from '../commands';
 import { generateCommands } from '../../microagent/mock/commandGen';
 import {
@@ -47,26 +46,8 @@ describe('hotkeyFromCode', () => {
   });
 });
 
-describe('mode arbiter precedence (SPEC §5 collisions)', () => {
-  it('W/A/S/D: command wins with a selection; camera pan otherwise', () => {
-    for (const letter of ['W', 'A', 'S', 'D'] as const) {
-      expect(hotkeyPrecedence(letter, true)).toEqual(['command', 'camera-pan']);
-      expect(hotkeyPrecedence(letter, false)).toEqual(['camera-pan']);
-    }
-  });
-
-  it('F: command wins with a selection; idle-cycle otherwise', () => {
-    expect(hotkeyPrecedence('F', true)).toEqual(['command', 'idle-cycle']);
-    expect(hotkeyPrecedence('F', false)).toEqual(['idle-cycle']);
-  });
-
-  it('non-colliding letters always reach the command card', () => {
-    for (const letter of ['Q', 'E', 'R', 'Z', 'X', 'C', 'V'] as const) {
-      expect(hotkeyPrecedence(letter, true)).toEqual(['command']);
-      expect(hotkeyPrecedence(letter, false)).toEqual(['command']);
-    }
-  });
-});
+// RETIRED by V3: the camera-pan / idle-cycle mode arbiter — letters either
+// activate their command cell or do nothing (the map canvas is gone).
 
 describe('positional hotkeys on the 3x4 grid', () => {
   it('cell i answers to COMMAND_HOTKEYS[i] (backlog card set → Q/W/E/R)', () => {
@@ -137,9 +118,9 @@ describe('hotkey execution over the live store', () => {
     expect(spec?.id).toBe('jump-to-alert');
     expect(spec?.enabled).toBe(false);
 
-    const cameraBefore = rig.store.getState().camera;
+    const eventsBefore = rig.store.getState().events.length;
     expect(executeCommandHotkey('W', rig.store, rig.binding.orders)).toBe(true);
-    expect(rig.store.getState().camera).toEqual(cameraBefore);
+    expect(rig.store.getState().events.length).toBe(eventsBefore); // no side effects
     expect(rig.store.getState().selection.ids).toEqual([]);
   });
 

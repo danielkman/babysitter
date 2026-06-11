@@ -49,10 +49,10 @@ export function EventTicker({ store }: EventTickerProps): React.JSX.Element {
   const visible = frozen ?? live;
 
   const onActivate = (entry: TickerEntry): void => {
+    // Click an entity-linked entry → select that card/agent (the board
+    // highlights the selection; the v1 camera jump is retired with the map).
     if (entry.entityId === undefined) return;
     store.getState().clickSelect(entry.entityId, false);
-    store.getState().centerOnEntity(entry.entityId);
-    store.getState().addPing(entry.entityId, 'info');
   };
 
   return (

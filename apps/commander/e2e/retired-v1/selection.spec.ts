@@ -3,7 +3,7 @@
  * Deterministic: `/?seed=42`, sim paused on boot, time advanced only via tick(n) (SPEC §9, §13).
  */
 import { expect, test } from '@playwright/test';
-import { bootWarRoom, getSelectionIds, marqueeSelectAll, SEL } from './helpers';
+import { bootWarRoom, getSelectionIds, marqueeSelectAll, SEL } from '../helpers';
 
 test('AC2: clicking a unit selects it and populates SelectionPanel + CommandCard', async ({
   page,

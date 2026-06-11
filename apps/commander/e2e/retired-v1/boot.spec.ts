@@ -4,7 +4,7 @@
  * All tests drive determinism via `/?seed=42` + pause-on-boot + `sim.tick(n)` (SPEC §9, §13).
  */
 import { expect, test } from '@playwright/test';
-import { bootWarRoom, captureUnitIcons, SEL, tick, tickUntil, topbarTexts } from './helpers';
+import { bootWarRoom, captureUnitIcons, SEL, tick, tickUntil, topbarTexts } from '../helpers';
 
 test('AC1: /?seed=42 boots the war room with units, task nodes, non-zero counters and no console errors', async ({
   page,

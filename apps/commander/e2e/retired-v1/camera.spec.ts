@@ -4,7 +4,7 @@
  * Deterministic: `/?seed=42`, sim paused on boot (SPEC §9, §13).
  */
 import { expect, test } from '@playwright/test';
-import { bootWarRoom, getCamera, SEL } from './helpers';
+import { bootWarRoom, getCamera, SEL } from '../helpers';
 
 test('AC7: minimap click recenters the camera', async ({ page }) => {
   await bootWarRoom(page, { seed: 42 });

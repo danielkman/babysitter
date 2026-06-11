@@ -1,18 +1,24 @@
 /**
- * Single Zustand store (SPEC §6) with slices:
- *   - world: entities (UnitEntity | TaskEntity) + positions {x,y} + seeded layout
- *   - selection: ordered entityId[] + control groups Record<digit, entityId[]>
- *   - camera: {x, y, zoom} with clamped bounds
+ * Single Zustand store (SPEC §6 as amended by SPEC-V3) with slices:
+ *   - world: active agents (UnitEntity, transcript-bearing) + v1-compat task
+ *     views (SelectionPanel/CommandCard consumers)
+ *   - board: the kanban surface (SimCardView/SimAgentView/SimInquiryView
+ *     committed per tick batch, §V3-1) + the static memory graph (§V2-3)
+ *   - selection: ordered entityId[] (card taskIds and agent unitIds)
  *   - events: ring buffer (≤500) of ticker entries {id, ts, severity, text, entityId?}
- *   - alerts: pending approvals {hookRequestId, runId, unitId, kind, payload, deadlineTs}
- *   - meta: resources snapshot, sim clock, connection status (+ transient UI fields)
+ *   - alerts: pending inquiries {hookRequestId, runId, unitId, kind, payload, deadlineTs}
+ *   - meta: resources snapshot, sim clock, overlay state, card-move animation
+ *     registry (`is-moving` lifecycle, §V3-3)
  *
- * One store commit per sim tick batch: `bindBackendToStore` buffers ServerFrames
- * and flushes them together with the sim views (`listUnitViews`/`listTaskViews`/
- * `listPendingHooks`) in a single `commitTick` setState (SPEC §6, §14).
+ * RETIRED by V3 (with the map canvas): camera, world positions/layout, rally
+ * points, marquee, targeting modes, pings, control groups, idle-cycle.
  *
- * Determinism (AC13): everything committed during a tick derives from the sim
- * (frames + views + sim clock) — never Date.now() or Math.random().
+ * One store commit per sim tick batch: `bindBackendToStore` buffers
+ * ServerFrames and flushes them together with the sim views in a single
+ * `commitTick` setState (SPEC §6, §14, §V3-7).
+ *
+ * Determinism (AC13/AC33): everything committed during a tick derives from
+ * the sim (frames + views + sim clock) — never Date.now() or Math.random().
  */
 
 import { createStore, type StoreApi } from 'zustand/vanilla';
@@ -22,53 +28,38 @@ import type {
   RunEventFrame,
   ServerFrame,
 } from '../contracts/gateway-protocol';
+import type { GraphRecord } from '../contracts/kradle-memory';
 import type { MockBackend } from '../backend/mock/mockBackend';
 import type {
   ColumnId,
+  SimAgentView,
+  SimCardView,
   SimHookView,
+  SimInquiryView,
+  SimMemorySiloView,
   SimTaskView,
   SimUnitView,
 } from '../backend/mock/simulation';
 import type { TaskKind } from '../backend/mock/scenario';
-import { setActiveBoardLens } from './boardLens';
-import {
-  centerOn,
-  clampCamera,
-  createDefaultCamera,
-  panByScreen,
-  worldToScreen,
-  zoomAtPoint,
-  type CameraState,
-  type Size,
-  type Vec2,
-} from './camera';
-import {
-  clampToWorld,
-  computeLayout,
-  rallyOffset,
-  stagingSlot,
-  taskOrbitSlot,
-  WORLD,
-  type WorldLayout,
-} from './layout';
 
 // ---------------------------------------------------------------------------
-// Entity & slice types (SPEC §6)
+// Entity & slice types (SPEC §6 / SPEC-V3)
 // ---------------------------------------------------------------------------
 
-export const COMMANDER_VERSION = '0.3.0-microagent';
+export const COMMANDER_VERSION = '0.4.0-board';
 
-/** Assumed context window per unit (tokens) → health bar = context headroom. */
+/** Assumed context window per agent (tokens) → health bar = context headroom. */
 export const CONTEXT_WINDOW_TOKENS = 200_000;
-/** Assumed token budget per unit (USD) → energy bar = budget remaining. */
+/** Assumed token budget per agent (USD) → energy bar = budget remaining. */
 export const UNIT_BUDGET_USD = 2.5;
 
 /** Ring buffer cap (SPEC §6). */
 export const EVENT_RING_CAP = 500;
-/** Transcript entries kept per unit (Inspector stream). */
+/** Transcript entries kept per agent (Inspector stream). */
 const TRANSCRIPT_CAP = 100;
-/** Ping lifetime in sim milliseconds. */
-const PING_TTL_MS = 4_000;
+/** Memory transfer pulse lifetime in sim milliseconds (§V2-3). */
+const PULSE_TTL_MS = 5_000;
+const PULSE_CAP = 24;
 
 export type TickerSeverity = 'info' | 'success' | 'warn' | 'alert';
 
@@ -89,14 +80,6 @@ export interface AlertEntry {
   deadlineTs: number;
 }
 
-export interface PingRecord {
-  id: string;
-  x: number;
-  y: number;
-  tone: 'alert' | 'info';
-  startedAt: number;
-}
-
 export interface TranscriptEntry {
   id: string;
   kind: 'turn' | 'text' | 'thinking' | 'tool' | 'note';
@@ -112,7 +95,7 @@ export interface TranscriptEntry {
 export interface UnitEntity {
   kind: 'unit';
   id: string;
-  /** Serializable sim view (wraps mirrored SessionEntry-level data + run state). */
+  /** Serializable sim view (v1-compat lifecycle surface of an ACTIVE agent). */
   view: SimUnitView;
   /** Context window usage 0..1 (health bar = 1 - contextPct). */
   contextPct: number;
@@ -137,21 +120,42 @@ export interface WorldSlice {
   tasks: Record<string, TaskEntity>;
   /** Sorted task ids (stable render order). */
   taskIds: string[];
-  /** entityId → world position. Task positions are static; units glide. */
-  positions: Record<string, Vec2>;
-  layout: WorldLayout;
-  bounds: Size;
-  /** runId → unitId (resolves run-scoped adapter events to units). */
+  /** runId → unitId (resolves run-scoped adapter events to agents). */
   runToUnit: Record<string, string>;
-  /** Manual rally points for idle units (cleared on dispatch). */
-  rallyPoints: Record<string, Vec2>;
+}
+
+/** Board card entity: the V3 view + the live babysitter run stage (§V2-5). */
+export interface BoardCardEntity {
+  id: string;
+  view: SimCardView;
+  runStage: string | null;
+}
+
+export interface BoardMemory {
+  silos: SimMemorySiloView[];
+  records: GraphRecord[];
+}
+
+export interface BoardSlice {
+  cards: Record<string, BoardCardEntity>;
+  /** Sorted card ids (stable iteration; lanes re-sort by order, §V3-1). */
+  cardIds: string[];
+  agents: Record<string, SimAgentView>;
+  agentIds: string[];
+  inquiries: SimInquiryView[];
+  /** Static memory graph (silos + records, §V2-3 Archive overlay). */
+  memory: BoardMemory;
+  /**
+   * taskId → memory record ids its agents have drawn (accumulated from
+   * memory_query events; survives worker despawn so the Archive can keep
+   * highlighting a selected card's pieces, §V2-3/AC18).
+   */
+  heldByCard: Record<string, string[]>;
 }
 
 export interface SelectionSlice {
-  /** Ordered selection (units and/or tasks). */
+  /** Ordered selection (cards and/or agents). */
   ids: string[];
-  /** Control groups: digit → entityId[]. */
-  groups: Record<string, string[]>;
 }
 
 export interface ResourcesSnapshot {
@@ -165,13 +169,22 @@ export interface ResourcesSnapshot {
   alertCount: number;
 }
 
-export type TargetingMode = 'dispatch' | 'rally' | null;
+/** §V3-3 auto-move animation registry entry (`is-moving` e2e hook). */
+export interface CardMove {
+  from: ColumnId;
+  to: ColumnId;
+  reason: string;
+  seq: number;
+}
 
-export interface MarqueeRect {
-  x0: number;
-  y0: number;
-  x1: number;
-  y1: number;
+/** §V2-3 live memory-transfer pulse (Archive overlay animation source). */
+export interface MemoryPulse {
+  id: string;
+  kind: 'query' | 'update';
+  silo: string;
+  recordIds: string[];
+  unitId: string | null;
+  ts: number;
 }
 
 export interface MetaSlice {
@@ -181,18 +194,21 @@ export interface MetaSlice {
   tickIndex: number;
   connection: 'connecting' | 'connected' | 'disconnected';
   paused: boolean;
-  viewport: Size;
+  viewport: { width: number; height: number };
   inspectorUnitId: string | null;
-  /** Human-review side panel target (SPEC-V3 §V3-4; rendered by the board phase). */
+  /** Human-review side panel target (SPEC-V3 §V3-4). */
   reviewTaskId: string | null;
   steerOpen: boolean;
-  targeting: TargetingMode;
-  marquee: MarqueeRect | null;
-  pings: PingRecord[];
-  idleCycleCursor: number;
+  /** The Foundry dialog (§V2-6 — Commission Task only under V3). */
+  foundryOpen: boolean;
+  /** The Archive overlay (§V2-3). */
+  archiveOpen: boolean;
+  /** taskId → in-flight automatic move (cleared by the board after the glide). */
+  movingCards: Record<string, CardMove>;
+  moveSeq: number;
+  memoryPulses: MemoryPulse[];
+  pulseSeq: number;
   eventSeq: number;
-  /** Monotonic id counter for UI-originated pings (ticker focus, SPEC §4). */
-  pingSeq: number;
   version: string;
 }
 
@@ -201,6 +217,11 @@ export interface TickCommitInput {
   units: SimUnitView[];
   tasks: SimTaskView[];
   hooks: SimHookView[];
+  cards: SimCardView[];
+  agents: SimAgentView[];
+  inquiries: SimInquiryView[];
+  /** taskId → current babysitter phase label (active cards only, §V2-5). */
+  runStages: Record<string, string | null>;
   nowMs: number;
   tickIndex: number;
   paused: boolean;
@@ -208,8 +229,8 @@ export interface TickCommitInput {
 
 export interface CommanderState {
   world: WorldSlice;
+  board: BoardSlice;
   selection: SelectionSlice;
-  camera: CameraState;
   events: TickerEntry[];
   alerts: AlertEntry[];
   meta: MetaSlice;
@@ -220,26 +241,14 @@ export interface CommanderState {
   // --- selection ------------------------------------------------------------
   select(ids: string[]): void;
   clickSelect(id: string, shift: boolean): void;
-  marqueeSelect(ids: string[], shift: boolean): void;
   clearSelection(): void;
-  assignGroup(digit: string): void;
-  /** Recall a control group; recalling the already-active group centers the camera. */
-  recallGroup(digit: string): void;
-  cycleIdle(): void;
-  /** Esc: close inspector → cancel targeting/steer → clear selection (SPEC §5). */
+  /** Esc: foundry/archive → review panel → steer modal → inspector → selection (§V3-7). */
   escape(): void;
-
-  // --- camera ---------------------------------------------------------------
-  setCamera(camera: CameraState): void;
-  panBy(dxScreen: number, dyScreen: number): void;
-  zoomAt(screenPoint: Vec2, deltaY: number): void;
-  centerOnPoint(point: Vec2): void;
-  centerOnEntity(entityId: string): void;
+  /** Space: select the latest alert's card so the operator lands on it. */
   jumpToLatestAlert(): void;
 
   // --- transient UI ---------------------------------------------------------
-  setViewport(size: Size): void;
-  setMarquee(rect: MarqueeRect | null): void;
+  setViewport(size: { width: number; height: number }): void;
   openInspector(unitId: string): void;
   closeInspector(): void;
   /** Open/close the human-review side panel for a card (SPEC-V3 §V3-4). */
@@ -247,12 +256,15 @@ export interface CommanderState {
   closeReview(): void;
   openSteer(): void;
   closeSteer(): void;
-  setTargeting(mode: TargetingMode): void;
-  setRally(unitIds: string[], point: Vec2): void;
+  openFoundry(): void;
+  closeFoundry(): void;
+  openArchive(): void;
+  closeArchive(): void;
+  /** The board calls this when a card's §V3-3 glide animation finishes. */
+  clearMoving(taskId: string): void;
+  setMemory(memory: BoardMemory): void;
   setPaused(paused: boolean): void;
   pushEvent(text: string, severity: TickerSeverity, entityId?: string): void;
-  /** Drop a minimap/world ping at an entity (ticker focus, SPEC §4). */
-  addPing(entityId: string, tone: PingRecord['tone']): void;
 }
 
 export type CommanderStore = StoreApi<CommanderState>;
@@ -264,19 +276,6 @@ export type CommanderStore = StoreApi<CommanderState>;
 export function applyClickSelection(current: readonly string[], id: string, shift: boolean): string[] {
   if (!shift) return [id];
   return current.includes(id) ? current.filter((x) => x !== id) : [...current, id];
-}
-
-export function applyMarqueeSelection(
-  current: readonly string[],
-  ids: readonly string[],
-  shift: boolean,
-): string[] {
-  if (!shift) return [...ids];
-  const merged = [...current];
-  for (const id of ids) {
-    if (!merged.includes(id)) merged.push(id);
-  }
-  return merged;
 }
 
 export function sameSelectionSet(a: readonly string[], b: readonly string[]): boolean {
@@ -342,15 +341,50 @@ function taskViewEqual(a: SimTaskView, b: SimTaskView): boolean {
   );
 }
 
-function vecEqual(a: Vec2 | undefined, b: Vec2): boolean {
-  return a !== undefined && a.x === b.x && a.y === b.y;
+function cardViewEqual(a: SimCardView, b: SimCardView): boolean {
+  return (
+    a.taskId === b.taskId &&
+    a.taskKind === b.taskKind &&
+    a.title === b.title &&
+    a.column === b.column &&
+    a.order === b.order &&
+    a.yolo === b.yolo &&
+    a.merged === b.merged &&
+    a.progress === b.progress &&
+    a.parentId === b.parentId &&
+    a.attempt === b.attempt &&
+    a.feedback === b.feedback &&
+    a.dirtyFileCount === b.dirtyFileCount &&
+    a.hasPendingInquiry === b.hasPendingInquiry &&
+    a.childIds.length === b.childIds.length &&
+    a.childIds.every((id, i) => b.childIds[i] === id) &&
+    a.agentIds.length === b.agentIds.length &&
+    a.agentIds.every((id, i) => b.agentIds[i] === id)
+  );
+}
+
+interface CardMoveSource {
+  taskId: string;
+  from: ColumnId;
+  to: ColumnId;
+  reason: string;
+}
+
+interface PulseSource {
+  kind: 'query' | 'update';
+  silo: string;
+  recordIds: string[];
+  unitId: string | null;
+  taskId: string | null;
+  ts: number;
 }
 
 interface FrameRouting {
   tickerEntries: Array<Omit<TickerEntry, 'id'>>;
   /** unitId → appended transcript entries (without ids). */
   transcriptOps: Map<string, Array<Omit<TranscriptEntry, 'id'>>>;
-  pingSources: Array<{ entityId: string; tone: PingRecord['tone']; key: string; ts: number }>;
+  cardMoves: CardMoveSource[];
+  pulses: PulseSource[];
   runToUnit: Record<string, string>;
   connected: boolean;
 }
@@ -363,9 +397,14 @@ function asNumber(value: unknown): number | undefined {
   return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
 }
 
+function asStringArray(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((v): v is string => typeof v === 'string') : [];
+}
+
 /**
- * Route a batch of ServerFrames into ticker entries, transcript appends, ping
- * sources and runId→unitId index updates. Pure with respect to its inputs.
+ * Route a batch of ServerFrames into ticker entries, transcript appends,
+ * card-move animation sources, memory pulses and runId→unitId index updates.
+ * Pure with respect to its inputs.
  */
 function routeFrames(
   frames: readonly ServerFrame[],
@@ -377,7 +416,8 @@ function routeFrames(
   const routing: FrameRouting = {
     tickerEntries: [],
     transcriptOps: new Map(),
-    pingSources: [],
+    cardMoves: [],
+    pulses: [],
     runToUnit: prevRunToUnit,
     connected: false,
   };
@@ -411,15 +451,14 @@ function routeFrames(
         ticker({ ts: nowMs, severity: 'alert', text: `Command rejected — ${frame.code}: ${frame.message}` });
         break;
       case 'hook.request': {
-        const unitId = asString((frame as HookRequestFrame).payload['unitId']);
-        if (unitId !== undefined) {
-          routing.pingSources.push({
-            entityId: unitId,
-            tone: 'alert',
-            key: `ping-${frame.hookRequestId}`,
-            ts: nowMs,
-          });
-        }
+        const taskId = asString((frame as HookRequestFrame).payload['taskId']);
+        const question = asString((frame as HookRequestFrame).payload['question']);
+        ticker({
+          ts: nowMs,
+          severity: 'warn',
+          text: `Inquiry raised — ${question ?? 'the agent needs a decision'}`,
+          ...(taskId !== undefined ? { entityId: taskId } : {}),
+        });
         break;
       }
       case 'hook.resolved':
@@ -435,6 +474,24 @@ function routeFrames(
     }
   }
   return routing;
+}
+
+/** Ticker phrasing for automatic card moves (§V3-2/§V3-3). */
+function cardMoveText(reason: string, title: string, to: ColumnId): string {
+  switch (reason) {
+    case 'work-complete':
+      return `Work complete — ${title} advances to AI REVIEW`;
+    case 'review-pass':
+      return `Review passed — ${title} awaits human review`;
+    case 'review-pass-yolo':
+      return `Yolo pass — ${title} auto-approved, skipping human review`;
+    case 'review-rejected':
+      return `Review rejected — ${title} returns to DO for rework`;
+    case 'aborted':
+      return `Abort executed — ${title} returns to the backlog`;
+    default:
+      return `${title} moved to ${to.toUpperCase()}`;
+  }
 }
 
 function routeRunEvent(
@@ -456,6 +513,7 @@ function routeRunEvent(
     indexRun(frame.runId, sessionId);
   }
   const unitId = sessionId ?? eventUnitId ?? routing.runToUnit[frame.runId];
+  const taskId = asString(ev['taskId']);
 
   switch (type) {
     case 'session_start': {
@@ -465,7 +523,7 @@ function routeRunEvent(
         ticker({
           ts,
           severity: 'info',
-          text: `${unitTitle(unitId)} deployed${resumed ? ' (resumed)' : ''}`,
+          text: `${unitTitle(unitId)} attends${resumed ? ' (resumed)' : ''}`,
           entityId: unitId,
         });
       }
@@ -526,47 +584,13 @@ function routeRunEvent(
       }
       break;
     }
-    case 'approval_request': {
-      const action = asString(ev['action']) ?? 'an action';
-      if (unitId !== undefined) {
-        transcript(unitId, { kind: 'note', text: `requests approval: ${asString(ev['detail']) ?? action}` });
-        ticker({
-          ts,
-          severity: 'warn',
-          text: `Approval requested — ${unitTitle(unitId)} wants to ${action}`,
-          entityId: unitId,
-        });
-      }
-      break;
-    }
-    case 'approval_granted': {
-      if (unitId !== undefined) {
-        transcript(unitId, { kind: 'note', text: 'approval granted' });
-        ticker({ ts, severity: 'success', text: `Approval granted — ${unitTitle(unitId)} proceeds`, entityId: unitId });
-      }
-      break;
-    }
-    case 'approval_denied': {
-      if (unitId !== undefined) {
-        transcript(unitId, { kind: 'note', text: 'approval denied' });
-        ticker({ ts, severity: 'warn', text: `Approval denied — ${unitTitle(unitId)} holds`, entityId: unitId });
-      }
-      break;
-    }
-    case 'aborted': {
-      if (unitId !== undefined) {
-        transcript(unitId, { kind: 'note', text: 'run aborted by operator' });
-        ticker({ ts, severity: 'warn', text: `Abort executed — ${unitTitle(unitId)} stands down`, entityId: unitId });
-      }
-      break;
-    }
     case 'paused': {
       if (unitId !== undefined) {
         transcript(unitId, { kind: 'note', text: 'holding — paused by operator' });
         ticker({
           ts,
           severity: 'info',
-          text: `${unitTitle(unitId)} holding position — paused by operator`,
+          text: `${unitTitle(unitId)} holding — paused by operator`,
           entityId: unitId,
         });
       }
@@ -579,23 +603,11 @@ function routeRunEvent(
       }
       break;
     }
-    case 'unit_retired': {
-      const retiredId = eventUnitIdOf(ev) ?? unitId;
-      // No entityId: the unit leaves the world this very commit — a ticker
-      // link to a despawned entity would be a dead click.
-      ticker({
-        ts,
-        severity: 'info',
-        text: `${unitTitle(retiredId)} retired — decommissioned from the fleet`,
-      });
-      break;
-    }
     case 'task_prioritized': {
-      const taskId = asString(ev['taskId']);
       ticker({
         ts,
         severity: 'info',
-        text: `Priority objective — ${taskTitle(taskId)} moved to the front of the queue`,
+        text: `Priority — ${taskTitle(taskId)} bumped to the top of the backlog`,
         ...(taskId !== undefined ? { entityId: taskId } : {}),
       });
       break;
@@ -618,56 +630,115 @@ function routeRunEvent(
       if (unitId !== undefined) transcript(unitId, { kind: 'note', text: 'session ended' });
       break;
     }
-    case 'task_assigned': {
-      const taskId = asString(ev['taskId']);
-      const tUnit = eventUnitIdOf(ev) ?? unitId;
-      ticker({
-        ts,
-        severity: 'info',
-        text: `Dispatch order — ${unitTitle(tUnit)} assigned to ${taskTitle(taskId)}`,
-        ...(tUnit !== undefined ? { entityId: tUnit } : {}),
-      });
-      break;
-    }
-    case 'task_completed': {
-      const taskId = asString(ev['taskId']);
-      ticker({
-        ts,
-        severity: 'success',
-        text: `Objective secured — ${taskTitle(taskId)}`,
-        ...(taskId !== undefined ? { entityId: taskId } : {}),
-      });
-      break;
-    }
-    case 'task_failed': {
-      const taskId = asString(ev['taskId']);
-      ticker({
-        ts,
-        severity: 'alert',
-        text: `Objective compromised — ${taskTitle(taskId)}`,
-        ...(taskId !== undefined ? { entityId: taskId } : {}),
-      });
-      if (taskId !== undefined) {
-        routing.pingSources.push({ entityId: taskId, tone: 'alert', key: `ping-fail-${taskId}-${ts}`, ts });
+    // --- V3 board events (§V3-2/§V3-3/§V3-5) --------------------------------
+    case 'card_moved': {
+      const from = asString(ev['from']) as ColumnId | undefined;
+      const to = asString(ev['to']) as ColumnId | undefined;
+      const reason = asString(ev['reason']) ?? 'user-move';
+      if (taskId !== undefined && from !== undefined && to !== undefined) {
+        routing.cardMoves.push({ taskId, from, to, reason });
+        if (reason !== 'user-move') {
+          // User moves are logged by the Orders layer; auto-moves here.
+          ticker({ ts, severity: 'info', text: cardMoveText(reason, taskTitle(taskId), to), entityId: taskId });
+        }
       }
       break;
     }
+    case 'card_merged': {
+      ticker({
+        ts,
+        severity: 'success',
+        text: `Merged — ${taskTitle(taskId)} sealed into the base branch`,
+        ...(taskId !== undefined ? { entityId: taskId } : {}),
+      });
+      break;
+    }
+    case 'integration_step': {
+      const step = asString(ev['step']) ?? 'integration step';
+      ticker({
+        ts,
+        severity: 'info',
+        text: `Integration — ${step} (${taskTitle(taskId)})`,
+        ...(taskId !== undefined ? { entityId: taskId } : {}),
+      });
+      break;
+    }
+    case 'review_feedback': {
+      const feedback = asString(ev['feedback']) ?? 'changes requested';
+      ticker({
+        ts,
+        severity: 'warn',
+        text: `Feedback — ${taskTitle(taskId)}: ${feedback}`,
+        ...(taskId !== undefined ? { entityId: taskId } : {}),
+      });
+      break;
+    }
+    case 'review_note': {
+      const note = asString(ev['note']) ?? 'reviewer note';
+      ticker({
+        ts,
+        severity: 'info',
+        text: `Reviewer — ${note}`,
+        ...(taskId !== undefined ? { entityId: taskId } : {}),
+      });
+      break;
+    }
+    case 'inquiry_resolved': {
+      const caption = asString(ev['caption']) ?? 'option chosen';
+      ticker({
+        ts,
+        severity: 'success',
+        text: `Inquiry resolved — ${caption} (${taskTitle(taskId)})`,
+        ...(taskId !== undefined ? { entityId: taskId } : {}),
+      });
+      break;
+    }
+    case 'inquiry_followup': {
+      const text = asString(ev['text']) ?? 'branch engaged';
+      ticker({
+        ts,
+        severity: 'info',
+        text,
+        ...(taskId !== undefined ? { entityId: taskId } : {}),
+      });
+      break;
+    }
+    case 'memory_query': {
+      const silo = asString(ev['silo']) ?? '';
+      const matched = asStringArray(ev['matchedIds']);
+      const qUnit = asString(ev['unitId']);
+      routing.pulses.push({ kind: 'query', silo, recordIds: matched, unitId: qUnit ?? null, taskId: taskId ?? null, ts });
+      ticker({
+        ts,
+        severity: 'info',
+        text: `Memory query — ${unitTitle(qUnit)} drew ${matched.length} piece(s) from ${silo}`,
+        ...(qUnit !== undefined ? { entityId: qUnit } : {}),
+      });
+      break;
+    }
+    case 'memory_update': {
+      const silo = asString(ev['silo']) ?? '';
+      const uUnit = asString(ev['unitId']);
+      routing.pulses.push({ kind: 'update', silo, recordIds: [], unitId: uUnit ?? null, taskId: taskId ?? null, ts });
+      ticker({
+        ts,
+        severity: 'info',
+        text: `Memory write-back — ${unitTitle(uUnit)} proposes changes to ${silo}`,
+        ...(uUnit !== undefined ? { entityId: uUnit } : {}),
+      });
+      break;
+    }
     default:
-      // thinking_start/stop, message_start/stop, token_usage, turn_end, task_progress…
-      // are intentionally not surfaced in the ticker (noise control, SPEC §14).
+      // thinking_start/stop, message_start/stop, token_usage, turn_end,
+      // phase/workspace chatter… intentionally not surfaced in the ticker
+      // (noise control, SPEC §14).
       break;
   }
-}
-
-function eventUnitIdOf(ev: Record<string, unknown>): string | undefined {
-  return asString(ev['unitId']);
 }
 
 // ---------------------------------------------------------------------------
 // Store factory
 // ---------------------------------------------------------------------------
-
-const EMPTY_LAYOUT: WorldLayout = { zoneCenters: {}, taskPositions: {}, signature: '' };
 
 function initialResources(): ResourcesSnapshot {
   return {
@@ -689,14 +760,18 @@ export function createCommanderStore(): CommanderStore {
       unitIds: [],
       tasks: {},
       taskIds: [],
-      positions: {},
-      layout: EMPTY_LAYOUT,
-      bounds: WORLD,
       runToUnit: {},
-      rallyPoints: {},
     },
-    selection: { ids: [], groups: {} },
-    camera: createDefaultCamera(WORLD),
+    board: {
+      cards: {},
+      cardIds: [],
+      agents: {},
+      agentIds: [],
+      inquiries: [],
+      memory: { silos: [], records: [] },
+      heldByCard: {},
+    },
+    selection: { ids: [] },
     events: [],
     alerts: [],
     meta: {
@@ -710,12 +785,13 @@ export function createCommanderStore(): CommanderStore {
       inspectorUnitId: null,
       reviewTaskId: null,
       steerOpen: false,
-      targeting: null,
-      marquee: null,
-      pings: [],
-      idleCycleCursor: -1,
+      foundryOpen: false,
+      archiveOpen: false,
+      movingCards: {},
+      moveSeq: 0,
+      memoryPulses: [],
+      pulseSeq: 0,
       eventSeq: 0,
-      pingSeq: 0,
       version: COMMANDER_VERSION,
     },
 
@@ -723,27 +799,21 @@ export function createCommanderStore(): CommanderStore {
     commitTick(input) {
       set((state) => {
         const prevWorld = state.world;
+        const prevBoard = state.board;
         const unitViewById = new Map(input.units.map((u) => [u.unitId, u]));
-        const taskViewById = new Map(input.tasks.map((t) => [t.taskId, t]));
         const unitTitle = (id: string | undefined): string => {
-          if (id === undefined) return 'unknown unit';
+          if (id === undefined) return 'unknown agent';
           return unitViewById.get(id)?.title ?? prevWorld.units[id]?.view.title ?? id;
         };
         const taskTitle = (id: string | undefined): string => {
-          if (id === undefined) return 'unknown objective';
-          return taskViewById.get(id)?.title ?? prevWorld.tasks[id]?.view.title ?? id;
+          if (id === undefined) return 'unknown task';
+          const card = input.cards.find((c) => c.taskId === id);
+          return card?.title ?? prevBoard.cards[id]?.view.title ?? id;
         };
 
         const routing = routeFrames(input.frames, prevWorld.runToUnit, unitTitle, taskTitle, input.nowMs);
 
-        // --- layout (recompute only when the task set changes) --------------
-        const signature = input.tasks
-          .map((t) => t.taskId)
-          .sort()
-          .join('|');
-        const layout = signature === prevWorld.layout.signature ? prevWorld.layout : computeLayout(input.tasks);
-
-        // --- tasks -----------------------------------------------------------
+        // --- tasks (v1-compat views for SelectionPanel etc.) ----------------
         const tasks: Record<string, TaskEntity> = {};
         let tasksChanged = false;
         for (const view of input.tasks) {
@@ -759,7 +829,7 @@ export function createCommanderStore(): CommanderStore {
         const taskIdsStable =
           taskIds.length === prevWorld.taskIds.length && taskIds.every((id, i) => prevWorld.taskIds[i] === id);
 
-        // --- units (preserve refs when unchanged → memoized sprites) --------
+        // --- units (active agents; preserve refs when unchanged) ------------
         const units: Record<string, UnitEntity> = {};
         let unitsChanged = false;
         for (const view of input.units) {
@@ -803,42 +873,44 @@ export function createCommanderStore(): CommanderStore {
         const unitIdsStable =
           unitIds.length === prevWorld.unitIds.length && unitIds.every((id, i) => prevWorld.unitIds[i] === id);
 
-        // --- rally cleanup (dispatched units forget manual rally points) ----
-        let rallyPoints = prevWorld.rallyPoints;
-        for (const id of Object.keys(rallyPoints)) {
-          const view = unitViewById.get(id);
-          if (view === undefined || view.taskId !== null) {
-            if (rallyPoints === prevWorld.rallyPoints) rallyPoints = { ...rallyPoints };
-            delete rallyPoints[id];
-          }
-        }
-
-        // --- positions (deterministic targets; CSS animates the glide) ------
-        const positions: Record<string, Vec2> = {};
-        let positionsChanged = false;
-        for (const id of taskIds) {
-          const target = layout.taskPositions[id] ?? { x: WORLD.width / 2, y: 300 };
-          const prevPos = prevWorld.positions[id];
-          positions[id] = vecEqual(prevPos, target) && prevPos !== undefined ? prevPos : target;
-          if (positions[id] !== prevPos) positionsChanged = true;
-        }
-        unitIds.forEach((id, index) => {
-          const view = unitViewById.get(id);
-          let target: Vec2;
-          const taskId = view?.taskId ?? null;
-          if (taskId !== null && layout.taskPositions[taskId] !== undefined) {
-            target = taskOrbitSlot(layout.taskPositions[taskId], id, taskId);
+        // --- board cards (§V3-1) ---------------------------------------------
+        const cards: Record<string, BoardCardEntity> = {};
+        let cardsChanged = false;
+        for (const view of input.cards) {
+          const prev = prevBoard.cards[view.taskId];
+          const runStage = input.runStages[view.taskId] ?? null;
+          if (prev && prev.runStage === runStage && cardViewEqual(prev.view, view)) {
+            cards[view.taskId] = prev;
           } else {
-            const rally = rallyPoints[id];
-            target = rally !== undefined ? rally : stagingSlot(index);
+            cards[view.taskId] = { id: view.taskId, view, runStage };
+            cardsChanged = true;
           }
-          const prevPos = prevWorld.positions[id];
-          positions[id] = vecEqual(prevPos, target) && prevPos !== undefined ? prevPos : target;
-          if (positions[id] !== prevPos) positionsChanged = true;
-        });
-        if (Object.keys(prevWorld.positions).length !== Object.keys(positions).length) {
-          positionsChanged = true;
         }
+        const cardIds = Object.keys(cards).sort();
+        const cardIdsStable =
+          cardIds.length === prevBoard.cardIds.length && cardIds.every((id, i) => prevBoard.cardIds[i] === id);
+
+        // --- board agents (§V3-2) ----------------------------------------------
+        const agents: Record<string, SimAgentView> = {};
+        let agentsChanged = false;
+        for (const view of input.agents) {
+          const prev = prevBoard.agents[view.unitId];
+          if (prev && prev.updatedAt === view.updatedAt && prev.state === view.state && prev.paused === view.paused && prev.heldPieces.length === view.heldPieces.length) {
+            agents[view.unitId] = prev;
+          } else {
+            agents[view.unitId] = view;
+            agentsChanged = true;
+          }
+        }
+        const agentIds = Object.keys(agents).sort();
+        const agentIdsStable =
+          agentIds.length === prevBoard.agentIds.length && agentIds.every((id, i) => prevBoard.agentIds[i] === id);
+
+        // --- inquiries (§V3-5) ---------------------------------------------------
+        const inquiriesStable =
+          input.inquiries.length === prevBoard.inquiries.length &&
+          input.inquiries.every((q, i) => prevBoard.inquiries[i]?.hookRequestId === q.hookRequestId);
+        const inquiries = inquiriesStable ? prevBoard.inquiries : input.inquiries;
 
         // --- alerts (sim pending hooks are the source of truth) -------------
         const prevAlertById = new Map(state.alerts.map((a) => [a.hookRequestId, a]));
@@ -865,26 +937,44 @@ export function createCommanderStore(): CommanderStore {
           events = [...state.events, ...appended].slice(-EVENT_RING_CAP);
         }
 
-        // --- pings -------------------------------------------------------------
-        let pings = state.meta.pings.filter((p) => input.nowMs - p.startedAt < PING_TTL_MS);
-        if (pings.length === state.meta.pings.length && routing.pingSources.length === 0) {
-          pings = state.meta.pings;
-        }
-        if (routing.pingSources.length > 0) {
-          const existing = new Set(pings.map((p) => p.id));
-          const added: PingRecord[] = [];
-          for (const source of routing.pingSources) {
-            if (existing.has(source.key)) continue;
-            const pos = positions[source.entityId];
-            if (pos === undefined) continue;
-            added.push({ id: source.key, x: pos.x, y: pos.y, tone: source.tone, startedAt: input.nowMs });
+        // --- card-move animation registry (§V3-3) -----------------------------
+        let movingCards = state.meta.movingCards;
+        let moveSeq = state.meta.moveSeq;
+        if (routing.cardMoves.length > 0) {
+          movingCards = { ...movingCards };
+          for (const move of routing.cardMoves) {
+            moveSeq += 1;
+            movingCards[move.taskId] = { from: move.from, to: move.to, reason: move.reason, seq: moveSeq };
           }
-          if (added.length > 0) pings = [...pings, ...added];
+        }
+
+        // --- held pieces per card (§V2-3/AC18) -----------------------------------
+        let heldByCard = prevBoard.heldByCard;
+        for (const pulse of routing.pulses) {
+          if (pulse.kind !== 'query' || pulse.taskId === null || pulse.recordIds.length === 0) continue;
+          const prevHeld = heldByCard[pulse.taskId] ?? [];
+          const added = pulse.recordIds.filter((id) => !prevHeld.includes(id));
+          if (added.length === 0) continue;
+          if (heldByCard === prevBoard.heldByCard) heldByCard = { ...heldByCard };
+          heldByCard[pulse.taskId] = [...prevHeld, ...added];
+        }
+
+        // --- memory transfer pulses (§V2-3) -------------------------------------
+        let pulseSeq = state.meta.pulseSeq;
+        let memoryPulses = state.meta.memoryPulses.filter((p) => input.nowMs - p.ts < PULSE_TTL_MS);
+        if (memoryPulses.length === state.meta.memoryPulses.length && routing.pulses.length === 0) {
+          memoryPulses = state.meta.memoryPulses;
+        }
+        if (routing.pulses.length > 0) {
+          memoryPulses = [
+            ...memoryPulses,
+            ...routing.pulses.map((p) => ({ id: `pulse-${(pulseSeq += 1)}`, ...p })),
+          ].slice(-PULSE_CAP);
         }
 
         // --- selection pruning ------------------------------------------------
         let selection = state.selection;
-        const pruned = selection.ids.filter((id) => units[id] !== undefined || tasks[id] !== undefined);
+        const pruned = selection.ids.filter((id) => units[id] !== undefined || cards[id] !== undefined);
         if (pruned.length !== selection.ids.length) {
           selection = { ...selection, ids: pruned };
         }
@@ -915,25 +1005,37 @@ export function createCommanderStore(): CommanderStore {
           tasksChanged ||
           !unitIdsStable ||
           !taskIdsStable ||
-          positionsChanged ||
-          routing.runToUnit !== prevWorld.runToUnit ||
-          rallyPoints !== prevWorld.rallyPoints ||
-          layout !== prevWorld.layout
+          routing.runToUnit !== prevWorld.runToUnit
             ? {
                 units,
                 unitIds: unitIdsStable ? prevWorld.unitIds : unitIds,
                 tasks,
                 taskIds: taskIdsStable ? prevWorld.taskIds : taskIds,
-                positions,
-                layout,
-                bounds: WORLD,
                 runToUnit: routing.runToUnit,
-                rallyPoints,
               }
             : prevWorld;
 
+        const board: BoardSlice =
+          cardsChanged ||
+          agentsChanged ||
+          !cardIdsStable ||
+          !agentIdsStable ||
+          inquiries !== prevBoard.inquiries ||
+          heldByCard !== prevBoard.heldByCard
+            ? {
+                cards,
+                cardIds: cardIdsStable ? prevBoard.cardIds : cardIds,
+                agents,
+                agentIds: agentIdsStable ? prevBoard.agentIds : agentIds,
+                inquiries,
+                memory: prevBoard.memory,
+                heldByCard,
+              }
+            : prevBoard;
+
         return {
           world,
+          board,
           selection,
           events,
           alerts: alertsStable ? state.alerts : alerts,
@@ -945,7 +1047,10 @@ export function createCommanderStore(): CommanderStore {
             tickIndex: input.tickIndex,
             connection: routing.connected ? 'connected' : state.meta.connection,
             paused: input.paused,
-            pings,
+            movingCards,
+            moveSeq,
+            memoryPulses,
+            pulseSeq,
             eventSeq,
           },
         };
@@ -961,65 +1066,23 @@ export function createCommanderStore(): CommanderStore {
         selection: { ...state.selection, ids: applyClickSelection(state.selection.ids, id, shift) },
       }));
     },
-    marqueeSelect(ids, shift) {
-      set((state) => ({
-        selection: { ...state.selection, ids: applyMarqueeSelection(state.selection.ids, ids, shift) },
-      }));
-    },
     clearSelection() {
       set((state) =>
         state.selection.ids.length === 0 ? state : { selection: { ...state.selection, ids: [] } },
       );
     },
-    assignGroup(digit) {
-      set((state) => ({
-        selection: {
-          ...state.selection,
-          groups: { ...state.selection.groups, [digit]: [...state.selection.ids] },
-        },
-      }));
-    },
-    recallGroup(digit) {
+    escape() {
+      // Esc cascade (§V3-7): foundry/archive > review panel > steer modal >
+      // inspector > selection. Modals close WITHOUT clearing the selection.
       const state = get();
-      const group = (state.selection.groups[digit] ?? []).filter(
-        (id) => state.world.units[id] !== undefined || state.world.tasks[id] !== undefined,
-      );
-      if (group.length === 0) return;
-      if (sameSelectionSet(state.selection.ids, group)) {
-        // Recall-again centers the camera on the group centroid (SPEC §5).
-        const points = group
-          .map((id) => state.world.positions[id])
-          .filter((p): p is Vec2 => p !== undefined);
-        if (points.length > 0) {
-          const centroid = {
-            x: points.reduce((acc, p) => acc + p.x, 0) / points.length,
-            y: points.reduce((acc, p) => acc + p.y, 0) / points.length,
-          };
-          set({ camera: centerOn(state.camera, centroid, state.world.bounds) });
-        }
+      if (state.meta.foundryOpen) {
+        set({ meta: { ...state.meta, foundryOpen: false } });
         return;
       }
-      set({ selection: { ...state.selection, ids: group } });
-    },
-    cycleIdle() {
-      const state = get();
-      const idle = state.world.unitIds.filter((id) => state.world.units[id]?.view.state === 'idle');
-      if (idle.length === 0) return;
-      const cursor = (state.meta.idleCycleCursor + 1) % idle.length;
-      const id = idle[cursor];
-      if (id === undefined) return;
-      const pos = state.world.positions[id];
-      set({
-        selection: { ...state.selection, ids: [id] },
-        meta: { ...state.meta, idleCycleCursor: cursor },
-        ...(pos !== undefined ? { camera: centerOn(state.camera, pos, state.world.bounds) } : {}),
-      });
-    },
-    escape() {
-      // Esc cascade: review panel → steer modal → inspector → targeting →
-      // selection (SPEC §5 + SPEC-V3 §V3-7; the modal closes WITHOUT clearing
-      // the selection — HUD-phase contract).
-      const state = get();
+      if (state.meta.archiveOpen) {
+        set({ meta: { ...state.meta, archiveOpen: false } });
+        return;
+      }
       if (state.meta.reviewTaskId !== null) {
         set({ meta: { ...state.meta, reviewTaskId: null } });
         return;
@@ -1032,41 +1095,21 @@ export function createCommanderStore(): CommanderStore {
         set({ meta: { ...state.meta, inspectorUnitId: null } });
         return;
       }
-      if (state.meta.targeting !== null) {
-        set({ meta: { ...state.meta, targeting: null } });
-        return;
-      }
       get().clearSelection();
     },
-
-    // --- camera ----------------------------------------------------------------
-    setCamera(camera) {
-      set((state) => ({ camera: clampCamera(camera, state.world.bounds) }));
-    },
-    panBy(dxScreen, dyScreen) {
-      set((state) => ({ camera: panByScreen(state.camera, dxScreen, dyScreen, state.world.bounds) }));
-    },
-    zoomAt(screenPoint, deltaY) {
-      set((state) => ({
-        camera: zoomAtPoint(state.camera, screenPoint, deltaY, state.meta.viewport, state.world.bounds),
-      }));
-    },
-    centerOnPoint(point) {
-      set((state) => ({ camera: centerOn(state.camera, point, state.world.bounds) }));
-    },
-    centerOnEntity(entityId) {
-      const state = get();
-      const pos = state.world.positions[entityId];
-      if (pos === undefined) return;
-      set({ camera: centerOn(state.camera, pos, state.world.bounds) });
-    },
     jumpToLatestAlert() {
+      // Space (SPEC §5 under V3): land the operator on the latest alert by
+      // selecting its card (the agent's attended task), falling back to the
+      // agent itself.
       const state = get();
       const latest = state.alerts[state.alerts.length - 1];
       if (latest === undefined) return;
-      const pos = state.world.positions[latest.unitId];
-      if (pos === undefined) return;
-      set({ camera: centerOn(state.camera, pos, state.world.bounds) });
+      const fromPayload = state.board.cards[String(latest.payload['taskId'] ?? '')]?.id;
+      const taskId = fromPayload ?? state.world.units[latest.unitId]?.view.taskId ?? null;
+      const target = taskId ?? (state.world.units[latest.unitId] !== undefined ? latest.unitId : null);
+      if (target !== null) {
+        set({ selection: { ...state.selection, ids: [target] } });
+      }
     },
 
     // --- transient UI ------------------------------------------------------------
@@ -1076,9 +1119,6 @@ export function createCommanderStore(): CommanderStore {
           ? state
           : { meta: { ...state.meta, viewport: size } },
       );
-    },
-    setMarquee(rect) {
-      set((state) => ({ meta: { ...state.meta, marquee: rect } }));
     },
     openInspector(unitId) {
       set((state) => ({ meta: { ...state.meta, inspectorUnitId: unitId } }));
@@ -1098,23 +1138,28 @@ export function createCommanderStore(): CommanderStore {
     closeSteer() {
       set((state) => ({ meta: { ...state.meta, steerOpen: false } }));
     },
-    setTargeting(mode) {
-      set((state) => ({ meta: { ...state.meta, targeting: mode } }));
+    openFoundry() {
+      set((state) => ({ meta: { ...state.meta, foundryOpen: true } }));
     },
-    setRally(unitIds, point) {
+    closeFoundry() {
+      set((state) => ({ meta: { ...state.meta, foundryOpen: false } }));
+    },
+    openArchive() {
+      set((state) => ({ meta: { ...state.meta, archiveOpen: true } }));
+    },
+    closeArchive() {
+      set((state) => ({ meta: { ...state.meta, archiveOpen: false } }));
+    },
+    clearMoving(taskId) {
       set((state) => {
-        const rallyPoints = { ...state.world.rallyPoints };
-        const positions = { ...state.world.positions };
-        unitIds.forEach((id, index) => {
-          const unit = state.world.units[id];
-          if (unit === undefined || unit.view.taskId !== null) return;
-          const offset = rallyOffset(index);
-          const target = clampToWorld({ x: point.x + offset.x, y: point.y + offset.y });
-          rallyPoints[id] = target;
-          positions[id] = target;
-        });
-        return { world: { ...state.world, rallyPoints, positions } };
+        if (state.meta.movingCards[taskId] === undefined) return state;
+        const movingCards = { ...state.meta.movingCards };
+        delete movingCards[taskId];
+        return { meta: { ...state.meta, movingCards } };
       });
+    },
+    setMemory(memory) {
+      set((state) => ({ board: { ...state.board, memory } }));
     },
     setPaused(paused) {
       set((state) => (state.meta.paused === paused ? state : { meta: { ...state.meta, paused } }));
@@ -1135,21 +1180,6 @@ export function createCommanderStore(): CommanderStore {
         };
       });
     },
-    addPing(entityId, tone) {
-      set((state) => {
-        const pos = state.world.positions[entityId];
-        if (pos === undefined) return state;
-        const pingSeq = state.meta.pingSeq + 1;
-        const ping: PingRecord = {
-          id: `ping-ui-${pingSeq}`,
-          x: pos.x,
-          y: pos.y,
-          tone,
-          startedAt: state.meta.simTimeMs,
-        };
-        return { meta: { ...state.meta, pingSeq, pings: [...state.meta.pings, ping] } };
-      });
-    },
   }));
 }
 
@@ -1157,23 +1187,15 @@ export function createCommanderStore(): CommanderStore {
 // Backend binding: frames + sim views → ONE store commit per tick batch
 // ---------------------------------------------------------------------------
 
-/** Order surface used by the input grammar and command card (SPEC §5/§8). */
+/** Order surface used by the input grammar, board and command card (§V3-7). */
 export interface Orders {
-  /** Right-click task: `session.start` with sessionId=<unitId> and `task:<id>` prompt. */
-  dispatchToTask(unitIds: readonly string[], taskId: string): void;
-  /** Right-click ground: reposition idle units (UI-local rally). */
-  rally(unitIds: readonly string[], point: Vec2): void;
   /** `/abort` via session.message. */
   abort(unitIds: readonly string[]): void;
   /** Any other prompt via session.message. */
   steer(unitIds: readonly string[], prompt: string): void;
-  /** hook.decision frames. */
+  /** hook.decision frames (legacy approve/deny surface — AlertBanner). */
   decide(hookRequestId: string, decision: 'allow' | 'deny'): void;
-  /** Clone: session.start WITHOUT sessionId spawns a fresh unit. */
-  clone(agent: string, workspaceId?: string): void;
-  /** Retire: decommission idle units — they despawn from the world (SPEC §8). */
-  retire(unitIds: readonly string[]): void;
-  /** Pause: hold working units' runs mid-state (sim operator verb). */
+  /** Pause: hold working agents' runs mid-state (sim operator verb). */
   pauseUnits(unitIds: readonly string[]): void;
   /** Resume: release operator holds. */
   resumeUnits(unitIds: readonly string[]): void;
@@ -1217,11 +1239,24 @@ export function bindBackendToStore(store: CommanderStore, backend: MockBackend):
     const frames = pending;
     pending = [];
     lastTick = sim.tickIndex;
+    const cards = sim.listCardViews();
+    // Current babysitter phase per ACTIVE card (§V2-5 run stage in context).
+    const runStages: Record<string, string | null> = {};
+    for (const card of cards) {
+      if (card.agentIds.length === 0) continue;
+      const observation = sim.getRunObservation(card.taskId);
+      runStages[card.taskId] =
+        observation?.phases.find((p) => p.status === 'current')?.label ?? null;
+    }
     store.getState().commitTick({
       frames,
       units: sim.listUnitViews(),
       tasks: sim.listTaskViews(),
       hooks: sim.listPendingHooks(),
+      cards,
+      agents: sim.listActiveAgentViews(),
+      inquiries: sim.listInquiries(),
+      runStages,
       nowMs: sim.now(),
       tickIndex: sim.tickIndex,
       paused: sim.paused,
@@ -1239,38 +1274,12 @@ export function bindBackendToStore(store: CommanderStore, backend: MockBackend):
     }
   });
 
-  // Initial world ingest (boot world exists before the first tick).
+  // Static memory graph (§V2-3) + initial world ingest (boot world exists
+  // before the first tick).
+  store.getState().setMemory({ silos: sim.listMemorySilos(), records: sim.listMemoryRecords() });
   flush();
 
   const orders: Orders = {
-    dispatchToTask(unitIds, taskId) {
-      const state = store.getState();
-      const ready = unitIds.filter((id) => state.world.units[id]?.view.runId === null);
-      if (ready.length === 0) {
-        state.pushEvent('Dispatch ignored — no ready units in selection', 'warn');
-        return;
-      }
-      for (const unitId of ready) {
-        const unit = state.world.units[unitId];
-        if (unit === undefined) continue;
-        backend.send({
-          type: 'session.start',
-          agent: unit.view.agent,
-          model: unit.view.model,
-          prompt: `Capture the objective. task:${taskId}`,
-          sessionId: unitId,
-          workspaceId: unit.view.workspaceId,
-        });
-      }
-      flush();
-    },
-    rally(unitIds, point) {
-      const state = store.getState();
-      const idle = unitIds.filter((id) => state.world.units[id]?.view.state === 'idle');
-      if (idle.length === 0) return;
-      state.setRally(idle, point);
-      store.getState().pushEvent(`Rally order — ${idle.length} unit(s) repositioning`, 'info');
-    },
     abort(unitIds) {
       const state = store.getState();
       const active = unitIds.filter((id) => state.world.units[id]?.view.runId !== null);
@@ -1287,31 +1296,6 @@ export function bindBackendToStore(store: CommanderStore, backend: MockBackend):
     },
     decide(hookRequestId, decision) {
       backend.send({ type: 'hook.decision', hookRequestId, decision });
-      flush();
-    },
-    clone(agent, workspaceId) {
-      backend.send({
-        type: 'session.start',
-        agent,
-        prompt: 'Reinforce the fleet',
-        ...(workspaceId !== undefined ? { workspaceId } : {}),
-      });
-      flush();
-      store.getState().pushEvent(`Reinforcement requested — new ${agent} unit inbound`, 'info');
-    },
-    retire(unitIds) {
-      const state = store.getState();
-      const ready = unitIds.filter((id) => state.world.units[id]?.view.runId === null);
-      if (ready.length === 0) {
-        state.pushEvent('Retire ignored — units must be idle to decommission', 'warn');
-        return;
-      }
-      for (const id of ready) {
-        // Despawn marker first (the position vanishes with the unit): an
-        // expand-and-fade ping marks where the veteran stood (SPEC §8 fade).
-        store.getState().addPing(id, 'info');
-        sim.retireUnit(id);
-      }
       flush();
     },
     pauseUnits(unitIds) {
@@ -1342,14 +1326,14 @@ export function bindBackendToStore(store: CommanderStore, backend: MockBackend):
       }
     },
     moveCard(taskId, column) {
-      const title = store.getState().world.tasks[taskId]?.view.title ?? taskId;
+      const title = store.getState().board.cards[taskId]?.view.title ?? taskId;
       if (sim.moveCard(taskId, column)) {
         store.getState().pushEvent(`Card order — ${title} moved to ${column.toUpperCase()}`, 'info', taskId);
       }
       flush();
     },
     setYolo(taskId, on) {
-      const title = store.getState().world.tasks[taskId]?.view.title ?? taskId;
+      const title = store.getState().board.cards[taskId]?.view.title ?? taskId;
       if (sim.setYolo(taskId, on)) {
         store.getState().pushEvent(
           on ? `Yolo flag raised — ${title} will auto-approve on review pass` : `Yolo flag struck — ${title} returns to human review`,
@@ -1378,21 +1362,12 @@ export function bindBackendToStore(store: CommanderStore, backend: MockBackend):
     },
   };
 
-  // Board lens (§V3-7): the command-context builder reads board facts —
-  // column, yolo, merged, dirt, inquiries, roles — straight off the sim.
-  setActiveBoardLens(sim);
-
   return {
     flush,
     orders,
     dispose() {
       disposed = true;
-      setActiveBoardLens(null);
       unsubscribe();
     },
   };
 }
-
-// Re-exports for convenience (screen/world transforms used by input + HUD).
-export { WORLD, worldToScreen };
-export type { CameraState, Size, Vec2 };

@@ -30,6 +30,11 @@ interface CommanderTestApi {
     resume(): void;
     tick(n: number): void;
     seed: number;
+    /** SPEC-V3 §V3-7 board verbs on the test-hooks API (deterministic setup). */
+    moveCard(taskId: string, column: string): void;
+    setYolo(taskId: string, on: boolean): void;
+    createTask(input: { taskKind: string; title?: string; parentId?: string }): string | null;
+    answerInquiry(hookRequestId: string, optionId: string | null): void;
   };
   store: CommanderStore;
   version: string;
@@ -62,6 +67,17 @@ window.__commander = {
       binding.flush();
     },
     seed: backend.sim.seed,
+    moveCard: (taskId: string, column: string) => {
+      binding.orders.moveCard(taskId, column as Parameters<typeof binding.orders.moveCard>[1]);
+    },
+    setYolo: (taskId: string, on: boolean) => {
+      binding.orders.setYolo(taskId, on);
+    },
+    createTask: (input: { taskKind: string; title?: string; parentId?: string }) =>
+      binding.orders.createTask(input as Parameters<typeof binding.orders.createTask>[0]),
+    answerInquiry: (hookRequestId: string, optionId: string | null) => {
+      binding.orders.answerInquiry(hookRequestId, optionId);
+    },
   },
   store,
   version: COMMANDER_VERSION,

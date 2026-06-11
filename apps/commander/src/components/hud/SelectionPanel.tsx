@@ -47,7 +47,6 @@ export interface SelectionPanelProps {
 
 function focusEntity(store: CommanderStore, id: string, shift: boolean): void {
   store.getState().clickSelect(id, shift);
-  store.getState().centerOnEntity(id);
 }
 
 function RankChevrons({ turnCount }: { turnCount: number }): React.JSX.Element {

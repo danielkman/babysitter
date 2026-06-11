@@ -13,7 +13,7 @@ import {
   tick,
   tickUntil,
   unitById,
-} from './helpers';
+} from '../helpers';
 
 test('AC10: EventTicker streams items; clicking an item with an entity selects and centers that entity', async ({
   page,

@@ -1,27 +1,30 @@
 /**
- * WarRoom (SPEC §4): the single full-viewport screen.
+ * WarRoom (SPEC §4 as amended by SPEC-V3): the single full-viewport screen.
  *
- *   TopBar (glass, top) — resources + sim clock
- *   MAP VIEWPORT (fills everything) — world, units, tasks, links, pings
- *   AlertBanner (top-center, only while approvals pend)
- *   Minimap (fixed top-right overlay)
+ *   TopBar (brass, top) — resources + memory/create buttons + sim clock
+ *   THE COGITATOR BOARD (fills everything) — five kanban lanes (§V3-1)
+ *   AlertBanner (top-center, while inquiries pend — Inquiry Dock next phase)
  *   Bottom HUD row: EventTicker | SelectionPanel | CommandCard
- *   Inspector (right slide-over) + SteerModal
+ *   Inspector (right slide-over) + SteerModal + Foundry + Archive overlay
  *   Narrow-viewport gate (<1100px, SPEC §15)
  *
- * All HUD chrome floats over the map as glass panels (pointer-events pass
- * through the row container so the map stays clickable between panels).
+ * The map canvas, minimap, marquee, link/ping layers and camera are RETIRED
+ * (SPEC-V3 header). Keyboard grammar attaches window-scoped via attachInput.
  */
 
+import { useEffect } from 'react';
+
+import { attachInput } from '../game/input';
 import type { CommanderStore, Orders } from '../game/store';
-import { MapViewport } from './map/MapViewport';
+import { KanbanBoard } from './board/KanbanBoard';
 import { AlertBanner } from './hud/AlertBanner';
 import { CommandCard } from './hud/CommandCard';
 import { EventTicker } from './hud/EventTicker';
-import { Minimap } from './hud/Minimap';
 import { SelectionPanel } from './hud/SelectionPanel';
 import { TopBar } from './hud/TopBar';
+import { Foundry } from './panels/Foundry';
 import { Inspector } from './panels/Inspector';
+import { MemoryOverlay } from './panels/MemoryOverlay';
 import { SteerModal } from './panels/SteerModal';
 
 export interface WarRoomProps {
@@ -30,12 +33,13 @@ export interface WarRoomProps {
 }
 
 export function WarRoom({ store, orders }: WarRoomProps): React.JSX.Element {
+  useEffect(() => attachInput({ store, orders }), [store, orders]);
+
   return (
     <div className="wr-root" data-testid="war-room">
-      <MapViewport store={store} orders={orders} />
       <TopBar store={store} orders={orders} />
+      <KanbanBoard store={store} orders={orders} />
       <AlertBanner store={store} orders={orders} />
-      <Minimap store={store} />
       <div className="wr-bottom-row">
         <EventTicker store={store} />
         <SelectionPanel store={store} />
@@ -43,6 +47,8 @@ export function WarRoom({ store, orders }: WarRoomProps): React.JSX.Element {
       </div>
       <Inspector store={store} />
       <SteerModal store={store} orders={orders} />
+      <Foundry store={store} orders={orders} />
+      <MemoryOverlay store={store} />
       <div className="wr-narrow-gate" role="note">
         <div className="wr-narrow-gate-card">
           <h1>A5C Commander</h1>

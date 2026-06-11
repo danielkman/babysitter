@@ -49,7 +49,9 @@ function snapshot(store: CommanderStore): string {
   return JSON.stringify({
     units: s.world.unitIds.map((id) => s.world.units[id]?.view),
     tasks: s.world.taskIds.map((id) => s.world.tasks[id]?.view),
-    positions: s.world.positions,
+    cards: s.board.cardIds.map((id) => ({ view: s.board.cards[id]?.view, stage: s.board.cards[id]?.runStage })),
+    agents: s.board.agentIds.map((id) => s.board.agents[id]),
+    inquiries: s.board.inquiries,
     events: s.events,
     alerts: s.alerts,
     resources: s.meta.resources,
@@ -65,12 +67,17 @@ describe('boot ingest', () => {
     // SPEC-V3 §V3-2: no idle agents, no pre-spawned fleet.
     expect(s.world.unitIds.length).toBe(0);
     expect(s.world.taskIds.length).toBeGreaterThanOrEqual(5);
-    expect(Object.keys(s.world.positions).length).toBe(s.world.unitIds.length + s.world.taskIds.length);
+    expect(s.board.cardIds.length).toBe(s.world.taskIds.length);
+    expect(s.board.agentIds.length).toBe(0);
     expect(s.meta.resources.unitCount).toBe(0);
     expect(s.meta.resources.tasksTotal).toBe(s.world.taskIds.length);
     for (const id of s.world.taskIds) {
       expect(s.world.tasks[id]?.view.state).toBe('queued');
+      expect(s.board.cards[id]?.view.column).toBe('backlog');
     }
+    // Static memory graph is committed at bind time (§V2-3).
+    expect(s.board.memory.silos.length).toBeGreaterThanOrEqual(3);
+    expect(s.board.memory.records.length).toBeGreaterThanOrEqual(30);
   });
 
   it('marks the connection on the hello frame', async () => {
@@ -186,7 +193,8 @@ describe('alert lifecycle (AC6)', () => {
     expect(typeof alert.kind).toBe('string');
     expect(alert.deadlineTs).toBeGreaterThan(0);
     expect(s.meta.resources.alertCount).toBe(s.alerts.length);
-    expect(s.meta.pings.some((p) => p.id === `ping-${alert.hookRequestId}`)).toBe(true);
+    // The inquiry also rides the board slice for the dock (§V3-5).
+    expect(s.board.inquiries.some((q) => q.hookRequestId === alert.hookRequestId)).toBe(true);
 
     rig.binding.orders.decide(alert.hookRequestId, 'allow');
     const after = rig.store.getState();

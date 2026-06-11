@@ -13,7 +13,7 @@ import {
   tick,
   tickUntil,
   unitById,
-} from './helpers';
+} from '../helpers';
 
 test('AC6: hook.request shows AlertBanner and increments the alert counter; Approve resolves it and the unit resumes', async ({
   page,

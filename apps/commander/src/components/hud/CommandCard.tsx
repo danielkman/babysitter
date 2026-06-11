@@ -29,11 +29,12 @@ export interface CommandCardProps {
 
 export function CommandCard({ store, orders }: CommandCardProps): React.JSX.Element {
   const world = useStore(store, (s) => s.world);
+  const board = useStore(store, (s) => s.board);
   const selection = useStore(store, (s) => s.selection);
   const alerts = useStore(store, (s) => s.alerts);
   const meta = useStore(store, (s) => s.meta);
 
-  const specs = getCommandSpecs({ world, selection, alerts, meta });
+  const specs = getCommandSpecs({ world, board, selection, alerts, meta });
   const empties = Math.max(0, GRID_CELLS - specs.length);
 
   const onRun = (spec: CommandSpec): void => {
@@ -61,6 +62,8 @@ export function CommandCard({ store, orders }: CommandCardProps): React.JSX.Elem
           >
             <span className="wr-cmd-icon" dangerouslySetInnerHTML={{ __html: spec.icon.svg }} />
             <span className="wr-cmd-label">{spec.label}</span>
+            {/* word-boundary separator: keeps innerText "Abort F", not "AbortF" */}
+            {spec.hotkey !== undefined && <span className="wr-cmd-sep" aria-hidden>{' '}</span>}
             {spec.hotkey !== undefined && <kbd className="wr-cmd-hotkey">{spec.hotkey}</kbd>}
           </button>
         ))}

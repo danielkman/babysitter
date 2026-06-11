@@ -15,7 +15,7 @@ import {
   tick,
   tickUntil,
   unitById,
-} from './helpers';
+} from '../helpers';
 
 test('AC4: right-click dispatch assigns the selected idle unit to a task', async ({ page }) => {
   test.setTimeout(120_000);

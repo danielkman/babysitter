@@ -37,8 +37,8 @@ export function TopBar({ store, orders }: TopBarProps): React.JSX.Element {
         <em className="wr-topbar-cogitator">The Aegis Cogitator</em>
       </div>
       <div className="wr-topbar-stats">
-        <div className="wr-stat" data-testid="topbar-units" title="Active units / busy units">
-          <span className="wr-stat-label">UNITS</span>
+        <div className="wr-stat" data-testid="topbar-units" title="Active agents / busy agents">
+          <span className="wr-stat-label">AGENTS</span>
           <span className="wr-stat-value">
             <Num text={formatInt(r.unitCount)} />
             <em>
@@ -69,6 +69,36 @@ export function TopBar({ store, orders }: TopBarProps): React.JSX.Element {
           </span>
         </div>
       </div>
+      <button
+        type="button"
+        className="wr-sim-toggle"
+        data-testid="topbar-memory"
+        title="Open the Archive — the company brain (M)"
+        onClick={() => {
+          if (meta.archiveOpen) {
+            store.getState().closeArchive();
+          } else {
+            store.getState().openArchive();
+          }
+        }}
+      >
+        ARCHIVE
+      </button>
+      <button
+        type="button"
+        className="wr-sim-toggle"
+        data-testid="topbar-create"
+        title="Open the Foundry — commission a task (N)"
+        onClick={() => {
+          if (meta.foundryOpen) {
+            store.getState().closeFoundry();
+          } else {
+            store.getState().openFoundry();
+          }
+        }}
+      >
+        FOUNDRY
+      </button>
       <button
         type="button"
         className={`wr-sim-toggle${meta.paused ? ' wr-sim-toggle--paused' : ''}`}

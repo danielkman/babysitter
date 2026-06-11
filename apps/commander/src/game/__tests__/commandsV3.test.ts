@@ -234,13 +234,14 @@ describe('executeIntent → real sim verbs', () => {
     ).toBe(true);
   });
 
-  it('inspect on an agent-less card centers the camera and pings (visible, never silent)', () => {
+  it('inspect on an agent-less card logs a visible ticker note (never silent)', () => {
     const rig = makeRig(42);
     const taskId = singleBacklogCard(rig);
     select(rig, taskId);
-    const pingsBefore = rig.store.getState().meta.pings.length;
+    const eventsBefore = rig.store.getState().events.length;
     executeIntent({ kind: 'inspect' }, rig.store, rig.binding.orders);
-    expect(rig.store.getState().meta.pings.length).toBe(pingsBefore + 1);
+    expect(rig.store.getState().events.length).toBe(eventsBefore + 1);
+    expect(rig.store.getState().events.at(-1)?.text).toMatch(/no attending agent/i);
     expect(rig.store.getState().meta.inspectorUnitId).toBeNull();
   });
 
