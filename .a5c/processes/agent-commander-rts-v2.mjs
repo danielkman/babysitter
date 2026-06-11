@@ -94,14 +94,21 @@ export async function process(inputs, ctx) {
     `cd "${appAbs}" && npx tsc --noEmit && npx playwright test --list`, 480000);
   await commitPhase('author-e2e-v2');
 
-  // ---- Phase 3: Sim + contract extensions -------------------------------------
+  // ---- V3 pivot (user scope change mid-run): kanban board supersedes the RTS
+  // canvas. Read SPEC-V3 at runtime and use the combined text for all later phases.
+  const spec3 = await ctx.task(readSpecTask, { specAbsList: [`${repoRoot}/apps/commander/SPEC-V3.md`] });
+  const specTextV3 = `${specText}\n\n===== NEXT SPEC FILE =====\n\n${spec3.stdout}`;
+
+  // ---- Phase 3: Sim + contract extensions (kanban model) ----------------------
   await ctx.task(implementTask, {
-    phase: 'sim-extensions', appAbs, devPort, specText,
+    phase: 'sim-extensions', appAbs, devPort, specText: specTextV3,
     mission: [
-      'Extend src/contracts/ with faithful mirrors per SPEC-V2 sections V2-3/V2-5/V2-7: kradle memory resources (AgentMemoryRepository/Source/Query/Update specs, GraphRecord with the verbatim node/edge kind unions, queryGraph result shapes) in a new contracts/kradle-memory.ts; babysitter run-observation shapes (JournalEvent, ObservedRunState, EffectStatus, pendingEffectsByKind, effect kinds) in contracts/babysitter-run.ts; workspace/review shapes (AgentWorkspaceStatus.gitStatus, PatchArtifact, AgentApproval, WriteBackPolicy) in contracts/kradle-workspace.ts. Read the source-of-truth files referenced in SPEC-V2 for fidelity.',
-      'Extend the sim (src/backend/mock/) per SPEC-V2: (a) task kinds expanded to the full V2-2 list and task HIERARCHY per V2-4 (parent label linkage, 2-3 roots with 2-4 children, parent progress aggregation, dispatch-to-parent auto-assigns an open child); (b) unified memory graph of 40-60 records partitioned across 3-4 silos, periodic deterministic memory_query/memory_update events with held-pieces tracking per unit (V2-3); (c) per-run babysitter process model per V2-5 (kind-derived phase pipelines, journal events EFFECT_REQUESTED/RESOLVED per phase, breakpoint effects for approvals, ObservedRunState derivation, ring-capped journals); (d) workspace changes per V2-7 (deterministic changed-file lists with synthetic unified diffs, testEvidence, write-back AgentApproval lifecycle with approve-applies/reject-returns-to-working, alerts tagged kind write-back); (e) creation verbs createTask/createUnit per V2-6 with deterministic ids and events.',
-      'Maintain ALL existing determinism guarantees: the baseline no-command frame stream from a given seed may change (new features emit events) but must remain deterministic — update the determinism tests accordingly (two engines, same seed, 200 ticks => deep-equal). Existing command-effect tests must keep passing.',
-      'Add focused unit tests for: hierarchy aggregation + dispatch-to-parent, memory partition coverage + query/update determinism + held-pieces, journal/state derivation (waiting with pending breakpoint, completed), workspace diff generation determinism + approval lifecycle, creation verbs.',
+      'Extend src/contracts/ with faithful mirrors per SPEC-V2 sections V2-3/V2-5/V2-7: kradle memory resources (AgentMemoryRepository/Source/Query/Update specs, GraphRecord with the verbatim node/edge kind unions, queryGraph result shapes) in contracts/kradle-memory.ts; babysitter run-observation shapes (JournalEvent, ObservedRunState, EffectStatus, pendingEffectsByKind, effect kinds) in contracts/babysitter-run.ts; workspace/review shapes (AgentWorkspaceStatus.gitStatus, PatchArtifact, AgentApproval, WriteBackPolicy) in contracts/kradle-workspace.ts. Read the source-of-truth files referenced in SPEC-V2 for fidelity.',
+      'Rebuild the sim around the SPEC-V3 kanban model: tasks carry a board column (backlog|do|ai-review|human-review|approved) plus merged terminal state; the boot scenario places ALL cards in backlog with NO agents spawned (topbar units = 0); task kinds from V2-2 and hierarchy stacks per V2-4/V3-1; the column state machine per V3-2 (moveCard verb for user drags; auto-transitions: work-complete -> ai-review, review pass -> human-review or approved when yolo, reject -> do with feedback; approved -> integration agent merge/rebase/conflict events -> merged).',
+      'Agent lifecycle per V3-2: spawn-on-demand workers per the taskKind->adapter mapping when a card enters do (children each get a worker), reviewer agents (different adapter) in ai-review, integration agents in approved; despawn when the card leaves; setYolo(taskId, on) verb.',
+      'Inquiry options per V3-5: hook.request payloads gain {question, options[2-5] of {id, caption, detail?, tone?}} (icons attach in the microagent phase); hook.decision gains optionId; the sim branches deterministically per chosen option with visibly different follow-up events; keep classic 2-option tool approvals as a case; memory_query/memory_update per V2-3 and per-run babysitter process model per V2-5 (phase pipelines, journal events, breakpoint effects when an inquiry is pending) stay as previously specified; workspace changes per V2-7 accumulate while in do and feed the review surfaces.',
+      'Maintain determinism: same seed + same verb sequence (moveCard/setYolo/hook.decision included) => identical board state and frame stream — update the two-engine determinism tests; existing command-effect tests updated where the lifecycle changed (no idle units anymore).',
+      'Add focused unit tests for: column state machine incl. yolo branch and reject loop, spawn/despawn mapping per kind, stack aggregation, inquiry option branching, memory partition + held-pieces, journal/state derivation, workspace diff determinism + integration/merge lifecycle, createTask verb.',
       'Backend/contracts stay framework-free. Do not modify e2e/.',
       'Verify before finishing: npx tsc --noEmit && npx vitest run pass.',
     ],
@@ -110,15 +117,15 @@ export async function process(inputs, ctx) {
   await gatedLoop('sim-extensions', 'sim-extensions-gate', UNIT_GATE, 480000);
   await commitPhase('sim-extensions');
 
-  // ---- Phase 4: Microagent v2 — deep contextual commands ----------------------
+  // ---- Phase 4: Microagent v2 — deep contextual commands + inquiry icons ------
   await ctx.task(implementTask, {
-    phase: 'microagent-v2', appAbs, devPort, specText,
+    phase: 'microagent-v2', appAbs, devPort, specText: specTextV3,
     mission: [
-      'Implement SPEC-V2 section V2-2 in the microagent (src/microagent/): kind-specific command sets for all ten task kinds, layered over lifecycle staples with the stated priority rules (never drop Abort; <=12), task-node kind-aware sets, and context inputs from run stage, approval state, and workspace dirt (extend CommandContext/buildCommandContext as needed).',
-      'Every command id gets a DISTINCT procedural engraved-brass-style glyph from the icon generator (path-only). Extend the icon generator with a command-glyph family for the new commands.',
-      'Every new intent must do something visible and honest via the sim verbs added in the previous phase (Run Tests emits a named tool_call pair with deterministic outcome and progress bump; Approve Review/Request Changes act on the write-back approval when present or the review task progress otherwise; Open Diff opens the Inspector Workspace tab intent; Archive to Brain emits a memory_update; etc.). Wire intents through the single executeIntent switch in src/game/commands.ts.',
-      'v1 frozen labels and sets for the selections the v1 suite exercises must be unchanged (pure idle units, pure same-state multi-select, empty selection).',
-      'Extend microagent unit tests: per-kind expected command sets, icon presence + distinctness per set, <=12 sweep across kinds x states, frozen-label invariants.',
+      'Implement SPEC-V2 section V2-2 in the microagent (src/microagent/) with the V3-7 column dimension: CommandContext gains column; kind-specific command sets for all ten task kinds layered over staples (never drop Abort for working agents; <=12), column-aware sets (human-review card -> Open Review/Approve All/Request Changes; approved card -> Hold Merge/Force Rebase; backlog card -> Start Work/Set Yolo/Prioritize), and context inputs from run stage, inquiry state, and workspace dirt.',
+      'Every command id gets a DISTINCT procedural engraved-brass-style glyph (path-only, GLYPH_STROKE tone). Implement generateOptionIcon (or extend generateIcon) so every InquiryOption per SPEC-V3 V3-5 gets a generated icon keyed by option id/caption semantics (strategy, version, approve, reject, etc.).',
+      'Every intent must do something visible and honest via the sim verbs (moveCard, setYolo, hook.decision with optionId, Run Tests tool_call pair, memory_update for Archive to Brain, etc.). Wire intents through the single executeIntent switch in src/game/commands.ts.',
+      'No idle-unit command set remains (no idle agents exist); the empty-selection global set keeps Jump to Alert/Pause Sim/Resume Sim and gains Commission Task.',
+      'Extend microagent unit tests: per-kind and per-column expected command sets, inquiry option icon presence + distinctness, <=12 sweep, path-only invariant.',
       'Verify before finishing: npx tsc --noEmit && npx vitest run && npx vite build pass.',
     ],
   });
@@ -126,38 +133,40 @@ export async function process(inputs, ctx) {
   await gatedLoop('microagent-v2', 'microagent-v2-gate', BUILD_GATE, 480000);
   await commitPhase('microagent-v2');
 
-  // ---- Phase 5: Feature UI A — Archive (memory) + hierarchy --------------------
+  // ---- Phase 5: The Cogitator Board — kanban canvas ----------------------------
   await ctx.task(implementTask, {
-    phase: 'ui-memory-hierarchy', appAbs, devPort, specText,
+    phase: 'ui-kanban-board', appAbs, devPort, specText: specTextV3,
     mission: [
-      'Implement SPEC-V2 section V2-3 UI: the Archive overlay (topbar-memory button + M key, Esc cascade extended) — silo cards, deterministic radial/clustered SVG graph (nodes colored+badged by nodeKind, edges as <path> curves ONLY, silo sector hulls/rings), nodeKind filter chips, node attribute cards, silo focus, unit held-pieces highlighting, animated transfer pulses on memory_query/memory_update events, ticker logging. All V2-3 testids.',
-      'Implement SPEC-V2 section V2-4 UI: parent task nodes larger with child-count pip, engraved <path> connector arcs to children clustered around them, SelectionPanel task hierarchy breadcrumb + clickable children list, dispatch-to-parent visible auto-assignment.',
-      'Performance: the overlay renders 40-60 nodes + edges as static SVG with CSS transitions; no per-tick re-layout (layout is seed-deterministic and cached); transfer pulses are transient elements.',
-      'CRITICAL: zero new <line>/<polyline> elements anywhere (frozen census). Do not modify e2e/. Keep all v1 behaviors.',
-      'Add unit tests for the deterministic graph layout (same seed => same positions) and held-pieces selectors.',
-      'Verify before finishing: npx tsc --noEmit && npx vitest run && npx vite build pass, plus a brief dev-server sanity check of the overlay.',
+      'Replace the RTS map canvas with the SPEC-V3 kanban board: five brass-framed parchment lanes (V3-1 testids), task cards (wax-seal icon, serif title, kind chip, progress ring, yolo toggle, dirty badge, agent slot with up to 3 attending creature avatars + overflow), subtask STACKS (parent + fanned mini-children, dragged as one), card click = select (SelectionPanel + CommandCard as before), double-click = Inspector.',
+      'Pointer-based drag & drop per V3-1 (no library): lift shadow + tilt, lane drop-target amber highlight, snap-back on invalid drop; user drags allowed backlog->do, human-review->{do, ai-review, approved}, backlog reorder; each drag issues the moveCard sim verb.',
+      'Automatic movement per V3-3: FLIP-style ~600ms arc glide with is-moving class and brass trail, soft settle; agent spawn = gear-assemble, despawn = dissolve; prefers-reduced-motion collapses to instant. Wire the sim auto-transition events into these animations.',
+      'RETIRE the RTS surfaces per SPEC-V3 header: remove MapViewport camera/zoom/pan, minimap, marquee, LinkLayer, PingLayer, staging rows, control groups, F-cycle, rally from the live composition (delete or quarantine the dead components and their input handling; keep the store lean). MOVE the v1 e2e specs that test retired surfaces to e2e/retired-v1/ and add testIgnore for that dir in playwright.config.ts — include a retirement mapping in your summary. v1 tests for persisting behaviors (boot counters, icon determinism, ticker, inspector transcript, steer modal, Esc, viewport gate) must be kept and pass with selector updates ONLY where elements genuinely moved.',
+      'Keep the Archive overlay (V2-3) wired (M key + topbar-memory) over the board.',
+      'Add unit tests: drag-verb mapping, stack drag integrity, animation class lifecycle (store-level), board selectors.',
+      'Verify before finishing: npx tsc --noEmit && npx vitest run && npx vite build pass, and npx playwright test --list runs clean (the moved v1 specs no longer listed; do not run the full suite yet).',
     ],
   });
-  phases.push('ui-memory-hierarchy');
-  await gatedLoop('ui-memory-hierarchy', 'ui-a-gate', BUILD_GATE, 480000);
-  await commitPhase('ui-memory-hierarchy');
+  phases.push('ui-kanban-board');
+  await gatedLoop('ui-kanban-board', 'ui-a-gate', BUILD_GATE, 480000);
+  await commitPhase('ui-kanban-board');
 
-  // ---- Phase 6: Feature UI B — Process tab, Workspace tab, Foundry -------------
+  // ---- Phase 6: Panels — inquiry dock, review panel, inspector tabs, foundry ---
   await ctx.task(implementTask, {
-    phase: 'ui-process-workspace-foundry', appAbs, devPort, specText,
+    phase: 'ui-panels', appAbs, devPort, specText: specTextV3,
     mission: [
-      'Implement SPEC-V2 section V2-5 UI: tabbed Inspector (Transcript default + Process + Workspace, with the stated testids); Process tab = brass stage pipeline (done/current/pending chip states, gear spinner on current), ObservedRunState badge, pendingEffectsByKind chips, auto-following journal list; SelectionPanel gains the sel-stage chip.',
-      'Implement SPEC-V2 section V2-7 UI: Workspace tab — gitStatus header (branch, short sha, dirty badge, phase, test-evidence chip), changed-file list with status letters and +/- counts, sepia diff plate with verdigris additions / garnet deletions and engraved line numbers, write-back approval bar (ws-approve / ws-reject) wired to the sim approval lifecycle; workspace zone dirty-count badge on the map; AlertBanner write-back alerts deep-link to this tab.',
-      'Implement SPEC-V2 section V2-6 UI: the Foundry dialog (topbar-create button + N key, Esc cascade) with Commission Task and Forge Agent tabs per spec, wired to the sim creation verbs, with deterministic suggested names/titles and ticker logging.',
-      'Keyboard: M/N act only when no modal/overlay is open and focus is not in an input. Esc cascade final order: foundry/archive (whichever is open) > steer modal > inspector > targeting > selection.',
-      'CRITICAL: zero new <line>/<polyline>. Do not modify e2e/. Keep all v1 behaviors and testids.',
-      'Add unit tests for the Esc cascade ordering, approval-bar action routing, and Foundry submission building correct sim verb calls.',
-      'Verify before finishing: npx tsc --noEmit && npx vitest run && npx vite build pass, plus a brief dev-server sanity check of all three features.',
+      'Implement the SPEC-V3 V3-5 Inquiry Dock (chat-dock testid, replaces the AlertBanner role): chat-like stack of inquiry bubbles — question text + option buttons each rendering the microagent icon ABOVE a short caption (inquiry-opt testids, tone styling, danger tint); choosing posts hook.decision with optionId, resolves everywhere, ticker-logs the caption; the same bubble renders inline in the owning agent Inspector transcript; Space jumps to the dock.',
+      'Implement the SPEC-V3 V3-4 human review side panel (review-panel testid): header (title, branch, sha, test evidence, ahead/behind), changed-file list (ws-file-*), inline sepia diff plates (verdigris additions, garnet deletions, engraved line numbers), reviewer notes, Approve All (review-approve-all) -> animates card to approved, Request Changes with feedback field -> animates card to do. Opens on click of a human-review card.',
+      'Implement SPEC-V2 V2-5 Inspector tabs (Transcript default + Process + Workspace with stated testids): Process = brass stage pipeline + ObservedRunState badge + pendingEffectsByKind chips + auto-following journal; Workspace = gitStatus header + file list + diff plates (shared diff components with the review panel); SelectionPanel gains sel-stage chip.',
+      'Foundry (V2-6 amended by V3): topbar-create + N key opens Commission Task ONLY (no Forge Agent tab — agents are never created manually); commissioned tasks land in backlog.',
+      'Esc cascade final order per V3-7: foundry/archive > review panel > steer modal > inspector > selection. M/N only when no modal open and not typing.',
+      'CRITICAL: zero <line>/<polyline> document-wide. Do not modify active e2e specs.',
+      'Add unit tests: inquiry option routing (optionId reaches the sim and branches), review panel action routing, Esc cascade ordering, foundry submission verb.',
+      'Verify before finishing: npx tsc --noEmit && npx vitest run && npx vite build pass.',
     ],
   });
-  phases.push('ui-process-workspace-foundry');
-  await gatedLoop('ui-process-workspace-foundry', 'ui-b-gate', BUILD_GATE, 480000);
-  await commitPhase('ui-process-workspace-foundry');
+  phases.push('ui-panels');
+  await gatedLoop('ui-panels', 'ui-b-gate', BUILD_GATE, 480000);
+  await commitPhase('ui-panels');
 
   // ---- Phase 7: E2E convergence (v1 + v2 suites) -------------------------------
   let e2ePassed = false;
@@ -168,9 +177,9 @@ export async function process(inputs, ctx) {
     });
     if (e2e.passed) { e2ePassed = true; break; }
     await ctx.task(fixTask, {
-      phase: 'e2e-convergence', gateLabel: 'playwright-e2e-full', attempt: round + 1, appAbs, devPort, specText,
+      phase: 'e2e-convergence', gateLabel: 'playwright-e2e-full', attempt: round + 1, appAbs, devPort, specText: specTextV3,
       exitCode: e2e.exitCode, stdoutTail: e2e.stdoutTail, stderrTail: e2e.stderrTail,
-      note: 'Fix the APPLICATION to satisfy the frozen e2e specs (v1 and v2). Only modify a test if it objectively contradicts the SPEC text below — cite the SPEC line when doing so.',
+      note: 'Fix the APPLICATION to satisfy the frozen e2e specs (surviving v1 + v2/v3). Only modify a test if it objectively contradicts the SPEC text below (V3 supersedes) — cite the SPEC line when doing so.',
     });
   }
   if (!e2ePassed) {
@@ -182,11 +191,11 @@ export async function process(inputs, ctx) {
   // ---- Phase 8: Design polish convergence (cogitator rubric) -------------------
   let designScore = 0;
   for (let round = 0; round < maxPolishRounds; round += 1) {
-    const review = await ctx.task(designReviewTask, { appAbs, devPort, specText, round, designScoreThreshold });
+    const review = await ctx.task(designReviewTask, { appAbs, devPort, specText: specTextV3, round, designScoreThreshold });
     designScore = review.score;
     if (review.score >= designScoreThreshold) break;
     if (round < maxPolishRounds - 1) {
-      await ctx.task(polishTask, { appAbs, devPort, specText, round, findings: review.findings, score: review.score });
+      await ctx.task(polishTask, { appAbs, devPort, specText: specTextV3, round, findings: review.findings, score: review.score });
       await gatedLoop('design-polish', `polish-regression-gate-r${round}`, FULL_GATE, 900000);
     }
   }
@@ -194,7 +203,7 @@ export async function process(inputs, ctx) {
   await commitPhase('design-polish');
 
   // ---- Phase 9: Docs + final verification --------------------------------------
-  await ctx.task(readmeTask, { appAbs, devPort, specText, designScore });
+  await ctx.task(readmeTask, { appAbs, devPort, specText: specTextV3, designScore });
   const finalGate = await gatedLoop('final', 'final-full-gate', FULL_GATE, 900000);
   phases.push('final');
   await commitPhase('final');
@@ -248,6 +257,7 @@ export const implementTask = defineTask('implement-phase', (args, taskCtx) => ({
         'Never run npm at the repository root. Never edit root package.json or root package-lock.json.',
         'Honor the dependency allowlist in SPEC section 11 strictly — no new runtime dependencies.',
         'Code style: TypeScript strict, no `any` (use unknown + narrowing), no floating promises, small focused modules.',
+        'PROCESS DISCIPLINE (mandatory): never start a dev server or any long-lived process in a foreground command; rely on Playwright webServer for anything needing a live app (it starts and stops its own). Every command you run must have a natural exit and an explicit timeout. Before returning, verify no process you started is still alive (port 5199 has no LISTENING entry).',
         'Before finishing, run the phase verification commands listed in your mission and fix what they surface.',
         '',
         'SPEC (verbatim, the sole source of truth — SPEC.md followed by SPEC-V2.md; V2 extends and, for visual direction, overrides):',

@@ -20,11 +20,20 @@ interface Rig {
   store: CommanderStore;
 }
 
-function makeRig(seed: number): Rig {
+/**
+ * V3 boot world has zero units (SPEC-V3 §V3-2): spawn a worker by moving a
+ * backlog card to DO via the sim verb, then return its unitId.
+ */
+function makeRigWithAgent(seed: number): Rig & { unitId: string; binding: ReturnType<typeof bindBackendToStore> } {
   const backend = new MockBackend({ seed, autoStart: false });
   const store = createCommanderStore();
-  bindBackendToStore(store, backend).flush();
-  return { backend, store };
+  const binding = bindBackendToStore(store, backend);
+  binding.flush();
+  const card = backend.sim.listCardViews().find((c) => c.parentId === null && c.childIds.length === 0)!;
+  backend.sim.moveCard(card.taskId, 'do');
+  binding.flush();
+  const unitId = store.getState().world.unitIds[0]!;
+  return { backend, store, unitId, binding };
 }
 
 function runEvent(
@@ -50,8 +59,8 @@ function commit(rig: Rig, frames: RunEventFrame[], tickIndex: number): void {
 
 describe('text_delta collapse (SPEC §14 noise control)', () => {
   it('folds consecutive deltas into one growing entry and keeps them out of the ticker', () => {
-    const rig = makeRig(42);
-    const unitId = rig.store.getState().world.unitIds[0]!;
+    const rig = makeRigWithAgent(42);
+    const unitId = rig.unitId;
     const eventsBefore = rig.store.getState().events.length;
 
     commit(
@@ -73,8 +82,8 @@ describe('text_delta collapse (SPEC §14 noise control)', () => {
   });
 
   it('alternating kinds break the fold; same-kind runs never sit adjacent', () => {
-    const rig = makeRig(42);
-    const unitId = rig.store.getState().world.unitIds[0]!;
+    const rig = makeRigWithAgent(42);
+    const unitId = rig.unitId;
 
     commit(
       rig,
@@ -88,7 +97,11 @@ describe('text_delta collapse (SPEC §14 noise control)', () => {
       1,
     );
 
-    const transcript = rig.store.getState().world.units[unitId]!.transcript;
+    // The spawn emits a session-start note first (V3 worker spawn) — the
+    // collapse invariant concerns the delta kinds only.
+    const transcript = rig.store
+      .getState()
+      .world.units[unitId]!.transcript.filter((t) => t.kind === 'text' || t.kind === 'thinking');
     expect(transcript.map((t) => [t.kind, t.text])).toEqual([
       ['thinking', 'hm'],
       ['text', 'xy'],
@@ -104,24 +117,32 @@ describe('text_delta collapse (SPEC §14 noise control)', () => {
   });
 
   it('the collapse invariant holds over real sim traffic', () => {
+    // V3: start real work by moving two cards to DO (sim verbs).
     const backend = new MockBackend({ seed: 42, autoStart: false });
     const store = createCommanderStore();
     const binding = bindBackendToStore(store, backend);
     binding.flush();
-    const s0 = store.getState();
-    binding.orders.dispatchToTask([s0.world.unitIds[0]!], s0.world.taskIds[0]!);
+    const singles = backend.sim
+      .listCardViews()
+      .filter((c) => c.parentId === null && c.childIds.length === 0)
+      .slice(0, 2);
+    for (const card of singles) backend.sim.moveCard(card.taskId, 'do');
+    // Agents despawn when their card moves on (V3), so assert the invariant
+    // on every flush while the workers are alive.
+    let sawDelta = false;
     for (let i = 0; i < 30; i += 1) {
       backend.sim.tick(10);
       binding.flush();
-    }
-    let sawDelta = false;
-    for (const id of store.getState().world.unitIds) {
-      const transcript = store.getState().world.units[id]!.transcript;
-      for (let i = 0; i < transcript.length; i += 1) {
-        const entry = transcript[i]!;
-        if (entry.kind !== 'text' && entry.kind !== 'thinking') continue;
-        sawDelta = true;
-        if (i > 0) expect(transcript[i - 1]!.kind).not.toBe(entry.kind);
+      for (const id of store.getState().world.unitIds) {
+        const transcript = store.getState().world.units[id]!.transcript;
+        for (let t = 0; t < transcript.length; t += 1) {
+          const entry = transcript[t]!;
+          if (entry.kind !== 'text' && entry.kind !== 'thinking') continue;
+          sawDelta = true;
+          if (t > 0 && (transcript[t - 1]!.kind === 'text' || transcript[t - 1]!.kind === 'thinking')) {
+            expect(transcript[t - 1]!.kind).not.toBe(entry.kind);
+          }
+        }
       }
     }
     expect(sawDelta).toBe(true);
@@ -130,8 +151,8 @@ describe('text_delta collapse (SPEC §14 noise control)', () => {
 
 describe('tool transcript metadata (Inspector name + duration)', () => {
   it('tool_call_start/tool_result entries carry toolName, durationMs and status', () => {
-    const rig = makeRig(42);
-    const unitId = rig.store.getState().world.unitIds[0]!;
+    const rig = makeRigWithAgent(42);
+    const unitId = rig.unitId;
 
     commit(
       rig,

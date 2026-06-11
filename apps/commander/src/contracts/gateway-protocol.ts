@@ -120,6 +120,12 @@ export interface HookDecisionFrame {
   hookRequestId: string;
   decision: 'allow' | 'deny';
   reason?: string;
+  /**
+   * SPEC-V3 §V3-5 extension (NOT in gateway protocol v1): the chosen inquiry
+   * option id when a breakpoint carries an option palette. Legacy approve/deny
+   * is the degenerate 2-option case. KNOWN v1-PROTOCOL GAP to raise upstream.
+   */
+  optionId?: string;
 }
 
 export interface HookResolvedFrame {

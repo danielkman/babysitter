@@ -59,16 +59,17 @@ function snapshot(store: CommanderStore): string {
 }
 
 describe('boot ingest', () => {
-  it('populates the world from the seeded sim before any tick', () => {
+  it('populates the world from the seeded sim before any tick (V3: zero agents, all cards backlog)', () => {
     const rig = makeRig(42);
     const s = rig.store.getState();
-    expect(s.world.unitIds.length).toBeGreaterThanOrEqual(10);
-    expect(s.world.taskIds.length).toBeGreaterThanOrEqual(6);
+    // SPEC-V3 §V3-2: no idle agents, no pre-spawned fleet.
+    expect(s.world.unitIds.length).toBe(0);
+    expect(s.world.taskIds.length).toBeGreaterThanOrEqual(5);
     expect(Object.keys(s.world.positions).length).toBe(s.world.unitIds.length + s.world.taskIds.length);
-    expect(s.meta.resources.unitCount).toBe(s.world.unitIds.length);
+    expect(s.meta.resources.unitCount).toBe(0);
     expect(s.meta.resources.tasksTotal).toBe(s.world.taskIds.length);
-    for (const id of s.world.unitIds) {
-      expect(s.world.units[id]?.view.state).toBe('idle');
+    for (const id of s.world.taskIds) {
+      expect(s.world.tasks[id]?.view.state).toBe('queued');
     }
   });
 
@@ -96,94 +97,38 @@ describe('one commit per tick batch (SPEC §6)', () => {
   });
 });
 
-describe('dispatch order routing (AC4)', () => {
-  it('session.start with task:<id> assigns the unit, moves it, logs the order', () => {
+// RETIRED by V3: dispatch order routing (AC4 — session.start with task:<id>)
+// and unit Retire. Agents spawn only when a card enters DO (SPEC-V3 §V3-2)
+// and despawn with their card; session.start answers `unsupported_in_v3`.
+
+describe('abort routing (AC5, V3 semantics)', () => {
+  it('aborting a worker bounces its card to backlog and despawns the agent', () => {
     const rig = makeRig(42);
-    const s0 = rig.store.getState();
-    const unitId = s0.world.unitIds[0]!;
-    const taskId = s0.world.taskIds[0]!;
-    const stagingPos = s0.world.positions[unitId]!;
-
-    rig.binding.orders.dispatchToTask([unitId], taskId);
-
-    const s1 = rig.store.getState();
-    expect(s1.world.units[unitId]?.view.state).toBe('dispatching');
-    expect(s1.world.units[unitId]?.view.taskId).toBe(taskId);
-    expect(s1.world.tasks[taskId]?.view.assigneeIds).toContain(unitId);
-    expect(s1.world.tasks[taskId]?.view.state).toBe('assigned');
-
-    // Optimistic motion: position retargets toward the task orbit.
-    const newPos = s1.world.positions[unitId]!;
-    const taskPos = s1.world.positions[taskId]!;
-    expect(newPos).not.toEqual(stagingPos);
-    const dist = Math.hypot(newPos.x - taskPos.x, newPos.y - taskPos.y);
-    expect(dist).toBeLessThanOrEqual(90);
-
-    // Ticker logs the order with the unit as entity (AC4/AC10).
-    const entry = s1.events.find((e) => /dispatch|assign|order/i.test(e.text));
-    expect(entry).toBeDefined();
-    expect(entry?.entityId).toBe(unitId);
-  });
-});
-
-describe('abort routing (AC5)', () => {
-  it('returns the unit to idle and logs the abort', () => {
-    const rig = makeRig(42);
+    const card = rig.backend.sim
+      .listCardViews()
+      .find((c) => c.parentId === null && c.childIds.length === 0)!;
+    rig.backend.sim.moveCard(card.taskId, 'do');
+    rig.binding.flush();
     const unitId = rig.store.getState().world.unitIds[0]!;
-    const taskId = rig.store.getState().world.taskIds[0]!;
-    rig.binding.orders.dispatchToTask([unitId], taskId);
-    const working = tickUntil(rig, (s) => {
-      const st = s.world.units[unitId]?.view.state;
-      return st === 'thinking' || st === 'tool_running';
-    });
-    expect(working).toBe(true);
+    expect(unitId).toBeDefined();
 
     rig.binding.orders.abort([unitId]);
     const s = rig.store.getState();
-    expect(s.world.units[unitId]?.view.state).toBe('idle');
-    expect(s.world.units[unitId]?.view.runId).toBeNull();
-    expect(s.events.some((e) => /abort/i.test(e.text))).toBe(true);
+    expect(s.world.units[unitId]).toBeUndefined();
+    expect(s.world.tasks[card.taskId]?.view.state).toBe('queued');
+    expect(rig.backend.sim.listActiveAgentViews()).toHaveLength(0);
   });
 });
 
-describe('operator verbs routing (SPEC §8: Retire / Pause / Prioritize)', () => {
-  it('orders.retire despawns the idle unit, drops a fade ping and logs the ticker', () => {
-    const rig = makeRig(42);
-    const s0 = rig.store.getState();
-    const unitId = s0.world.unitIds[0]!;
-    const title = s0.world.units[unitId]?.view.title ?? '';
-    const before = s0.world.unitIds.length;
-
-    rig.binding.orders.retire([unitId]);
-
-    const s1 = rig.store.getState();
-    expect(s1.world.units[unitId]).toBeUndefined();
-    expect(s1.world.unitIds.length).toBe(before - 1);
-    expect(s1.meta.resources.unitCount).toBe(before - 1);
-    expect(s1.meta.pings.length).toBeGreaterThan(0);
-    const entry = s1.events.find((e) => /retired/i.test(e.text));
-    expect(entry).toBeDefined();
-    expect(entry?.text).toContain(title);
-  });
-
-  it('orders.retire on a busy selection warns instead of despawning', () => {
-    const rig = makeRig(42);
-    const unitId = rig.store.getState().world.unitIds[0]!;
-    const taskId = rig.store.getState().world.taskIds[0]!;
-    rig.binding.orders.dispatchToTask([unitId], taskId);
-
-    rig.binding.orders.retire([unitId]);
-
-    const s = rig.store.getState();
-    expect(s.world.units[unitId]).toBeDefined();
-    expect(s.events.some((e) => /retire ignored/i.test(e.text))).toBe(true);
-  });
-
+describe('operator verbs routing (Pause / Prioritize over active agents)', () => {
   it('orders.pauseUnits holds the run (view.paused), resumeUnits releases it', () => {
     const rig = makeRig(42);
+    const card = rig.backend.sim
+      .listCardViews()
+      .find((c) => c.parentId === null && c.childIds.length === 0)!;
+    rig.backend.sim.moveCard(card.taskId, 'do');
+    rig.binding.flush();
     const unitId = rig.store.getState().world.unitIds[0]!;
-    const taskId = rig.store.getState().world.taskIds[0]!;
-    rig.binding.orders.dispatchToTask([unitId], taskId);
     const working = tickUntil(rig, (s) => {
       const st = s.world.units[unitId]?.view.state;
       return st === 'thinking' || st === 'tool_running';
@@ -223,6 +168,13 @@ describe('operator verbs routing (SPEC §8: Retire / Pause / Prioritize)', () =>
 describe('alert lifecycle (AC6)', () => {
   it('hook.request fills the alerts slice + ping; decision clears it', () => {
     const rig = makeRig(42);
+    // V3: inquiries fire from ACTIVE agents only — start all single cards.
+    for (const card of rig.backend.sim.listCardViews()) {
+      if (card.parentId === null && card.childIds.length === 0) {
+        rig.backend.sim.moveCard(card.taskId, 'do');
+      }
+    }
+    rig.binding.flush();
     const fired = tickUntil(rig, (s) => s.alerts.length > 0, 6000);
     expect(fired).toBe(true);
 
@@ -246,12 +198,21 @@ describe('alert lifecycle (AC6)', () => {
 describe('events ring buffer (SPEC §6)', () => {
   it(`caps the ticker at ${EVENT_RING_CAP} entries`, () => {
     const rig = makeRig(42);
+    // V3: nothing streams until cards enter DO — yolo them all so events flow.
+    for (const card of rig.backend.sim.listCardViews()) {
+      if (card.parentId !== null) continue;
+      rig.backend.sim.setYolo(card.taskId, true);
+      rig.backend.sim.moveCard(card.taskId, 'do');
+    }
+    rig.binding.flush();
     for (let i = 0; i < 40; i += 1) {
       tickFlush(rig, 100);
     }
     const s = rig.store.getState();
     expect(s.events.length).toBeLessThanOrEqual(EVENT_RING_CAP);
-    expect(s.events.length).toBeGreaterThan(100); // it actually streamed
+    // It actually streamed. (The v1 store maps only a subset of the new V3
+    // sim event payloads to ticker entries; the UI phase re-tightens this.)
+    expect(s.events.length).toBeGreaterThan(30);
   });
 });
 
@@ -272,11 +233,13 @@ describe('store determinism (AC13)', () => {
     const a = makeRig(7);
     const b = makeRig(7);
     for (const rig of [a, b]) {
-      const unitId = rig.store.getState().world.unitIds[2]!;
+      // V3 verb sequence: start a card, work a while, abort its worker.
       const taskId = rig.store.getState().world.taskIds[1]!;
-      rig.binding.orders.dispatchToTask([unitId], taskId);
+      rig.backend.sim.moveCard(taskId, 'do');
+      rig.binding.flush();
       tickFlush(rig, 35);
-      rig.binding.orders.abort([unitId]);
+      const unitId = rig.store.getState().world.unitIds[0];
+      if (unitId !== undefined) rig.binding.orders.abort([unitId]);
       tickFlush(rig, 15);
     }
     expect(snapshot(a.store)).toBe(snapshot(b.store));

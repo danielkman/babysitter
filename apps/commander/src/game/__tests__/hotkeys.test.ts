@@ -100,21 +100,9 @@ describe('hotkey execution over the live store', () => {
     expect(after.selection.ids.slice().sort()).toEqual(idleIds.slice().sort());
   });
 
-  it('idle unit selected: Q primes dispatch targeting; W claims rally over camera pan', () => {
-    const rig = makeRig(42);
-    const unitId = rig.store.getState().world.unitIds[0]!;
-    rig.store.getState().clickSelect(unitId, false);
-
-    const state = rig.store.getState();
-    expect(findCommandByHotkey(state, 'Q')?.id).toBe('dispatch');
-    expect(findCommandByHotkey(state, 'W')?.id).toBe('rally');
-
-    expect(executeCommandHotkey('Q', rig.store, rig.binding.orders)).toBe(true);
-    expect(rig.store.getState().meta.targeting).toBe('dispatch');
-
-    expect(executeCommandHotkey('W', rig.store, rig.binding.orders)).toBe(true);
-    expect(rig.store.getState().meta.targeting).toBe('rally');
-  });
+  // RETIRED by V3: "idle unit selected: Q primes dispatch targeting" — the
+  // boot world has no idle units and the idle-unit command set is retired
+  // (SPEC-V3 §V3-2); the pure command-gen path is still covered above.
 
   it('unbound letters fall through (F with a 4-command card)', () => {
     const rig = makeRig(42);

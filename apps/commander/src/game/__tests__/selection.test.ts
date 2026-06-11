@@ -2,6 +2,9 @@
  * Selection reducer tests (SPEC §5/§6, AC2/AC3/AC8): click select / shift
  * toggle, marquee merge, control group assign/recall, recall-again camera
  * centering, Esc cascade. Uses the real seeded sim world (autoStart: false).
+ * V3 note: the boot world has ZERO units (SPEC-V3 §V3-2), so the slice is
+ * exercised over task-card entity ids; the F idle-cycle test was RETIRED
+ * with the idle-unit command set.
  */
 import { beforeEach, describe, expect, it } from 'vitest';
 
@@ -47,8 +50,9 @@ describe('store selection slice over the seeded world', () => {
     store = createCommanderStore();
     binding = bindBackendToStore(store, backend);
     binding.flush();
-    unitIds = store.getState().world.unitIds;
-    expect(unitIds.length).toBeGreaterThanOrEqual(10);
+    // V3 boot world: zero units; cards are the selectable entities.
+    unitIds = store.getState().world.taskIds;
+    expect(unitIds.length).toBeGreaterThanOrEqual(5);
   });
 
   it('clickSelect clears previous; shift-click adds/removes (AC2)', () => {
@@ -124,16 +128,5 @@ describe('store selection slice over the seeded world', () => {
     expect(store.getState().selection.ids).toEqual([]);
   });
 
-  it('cycleIdle walks idle units and centers the camera (SPEC §5 F key)', () => {
-    store.getState().cycleIdle();
-    const first = store.getState().selection.ids;
-    expect(first).toHaveLength(1);
-    store.getState().cycleIdle();
-    const second = store.getState().selection.ids;
-    expect(second).toHaveLength(1);
-    expect(second[0]).not.toBe(first[0]);
-    const pos = store.getState().world.positions[second[0]!]!;
-    expect(store.getState().camera.x).toBeCloseTo(pos.x, 6);
-    expect(store.getState().camera.y).toBeCloseTo(pos.y, 6);
-  });
+  // RETIRED by V3: cycleIdle (F idle-cycle) — no idle agents exist anymore.
 });
