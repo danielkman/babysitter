@@ -51,6 +51,7 @@ export function MemoryOverlay({ store }: MemoryOverlayProps): React.JSX.Element 
   const heldByCard = useStore(store, (s) => s.board.heldByCard);
   const [filter, setFilter] = useState<string | null>(null);
   const [focusId, setFocusId] = useState<string | null>(null);
+  const [hoverId, setHoverId] = useState<string | null>(null);
 
   const layout = useMemo(() => computeMemoryLayout(memory.records), [memory.records]);
 
@@ -141,9 +142,26 @@ export function MemoryOverlay({ store }: MemoryOverlayProps): React.JSX.Element 
               aria-label="Unified memory graph"
             >
               <g className="wr-mem-edges">
-                {layout.edges.map((edge) => (
-                  <path key={edge.key} className="wr-mem-edge" d={edge.d} fill="none" />
-                ))}
+                {layout.edges.map((edge) => {
+                  // Presentational only: edge.key is `<edgeKind>:<src>-><dst>`.
+                  const rel = edge.key.slice(edge.edgeKind.length + 1);
+                  const arrow = rel.lastIndexOf('->');
+                  const src = rel.slice(0, arrow);
+                  const dst = rel.slice(arrow + 2);
+                  const active = hoverId ?? focusId;
+                  const incident = active !== null && (src === active || dst === active);
+                  return (
+                    <path
+                      key={edge.key}
+                      className={clsx(
+                        'wr-mem-edge',
+                        active !== null && (incident ? 'is-incident' : 'is-faded'),
+                      )}
+                      d={edge.d}
+                      fill="none"
+                    />
+                  );
+                })}
               </g>
               <g className="wr-mem-nodes">
                 {layout.nodes.map((node) => {
@@ -168,6 +186,8 @@ export function MemoryOverlay({ store }: MemoryOverlayProps): React.JSX.Element 
                         e.stopPropagation();
                         setFocusId(node.id === focusId ? null : node.id);
                       }}
+                      onMouseEnter={() => setHoverId(node.id)}
+                      onMouseLeave={() => setHoverId((cur) => (cur === node.id ? null : cur))}
                     >
                       <circle className="wr-mem-node-ring" r="11.5" />
                       <circle className="wr-mem-node-dot" r="9" />
