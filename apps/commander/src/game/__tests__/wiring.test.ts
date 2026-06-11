@@ -146,6 +146,80 @@ describe('abort routing (AC5)', () => {
   });
 });
 
+describe('operator verbs routing (SPEC §8: Retire / Pause / Prioritize)', () => {
+  it('orders.retire despawns the idle unit, drops a fade ping and logs the ticker', () => {
+    const rig = makeRig(42);
+    const s0 = rig.store.getState();
+    const unitId = s0.world.unitIds[0]!;
+    const title = s0.world.units[unitId]?.view.title ?? '';
+    const before = s0.world.unitIds.length;
+
+    rig.binding.orders.retire([unitId]);
+
+    const s1 = rig.store.getState();
+    expect(s1.world.units[unitId]).toBeUndefined();
+    expect(s1.world.unitIds.length).toBe(before - 1);
+    expect(s1.meta.resources.unitCount).toBe(before - 1);
+    expect(s1.meta.pings.length).toBeGreaterThan(0);
+    const entry = s1.events.find((e) => /retired/i.test(e.text));
+    expect(entry).toBeDefined();
+    expect(entry?.text).toContain(title);
+  });
+
+  it('orders.retire on a busy selection warns instead of despawning', () => {
+    const rig = makeRig(42);
+    const unitId = rig.store.getState().world.unitIds[0]!;
+    const taskId = rig.store.getState().world.taskIds[0]!;
+    rig.binding.orders.dispatchToTask([unitId], taskId);
+
+    rig.binding.orders.retire([unitId]);
+
+    const s = rig.store.getState();
+    expect(s.world.units[unitId]).toBeDefined();
+    expect(s.events.some((e) => /retire ignored/i.test(e.text))).toBe(true);
+  });
+
+  it('orders.pauseUnits holds the run (view.paused), resumeUnits releases it', () => {
+    const rig = makeRig(42);
+    const unitId = rig.store.getState().world.unitIds[0]!;
+    const taskId = rig.store.getState().world.taskIds[0]!;
+    rig.binding.orders.dispatchToTask([unitId], taskId);
+    const working = tickUntil(rig, (s) => {
+      const st = s.world.units[unitId]?.view.state;
+      return st === 'thinking' || st === 'tool_running';
+    });
+    expect(working).toBe(true);
+
+    rig.binding.orders.pauseUnits([unitId]);
+    let s = rig.store.getState();
+    expect(s.world.units[unitId]?.view.paused).toBe(true);
+    expect(s.events.some((e) => /paused by operator/i.test(e.text))).toBe(true);
+
+    const stateBefore = s.world.units[unitId]?.view.state;
+    tickFlush(rig, 40);
+    s = rig.store.getState();
+    expect(s.world.units[unitId]?.view.state).toBe(stateBefore);
+
+    rig.binding.orders.resumeUnits([unitId]);
+    s = rig.store.getState();
+    expect(s.world.units[unitId]?.view.paused).toBe(false);
+    expect(s.events.some((e) => /back online/i.test(e.text))).toBe(true);
+  });
+
+  it('orders.prioritize bumps the task priority and logs the ticker', () => {
+    const rig = makeRig(42);
+    const taskId = rig.store.getState().world.taskIds[0]!;
+
+    rig.binding.orders.prioritize(taskId);
+
+    const s = rig.store.getState();
+    expect(s.world.tasks[taskId]?.view.priority).toBeGreaterThan(0);
+    const entry = s.events.find((e) => /priority/i.test(e.text));
+    expect(entry).toBeDefined();
+    expect(entry?.entityId).toBe(taskId);
+  });
+});
+
 describe('alert lifecycle (AC6)', () => {
   it('hook.request fills the alerts slice + ping; decision clears it', () => {
     const rig = makeRig(42);

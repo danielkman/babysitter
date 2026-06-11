@@ -13,6 +13,7 @@ import { useStore } from 'zustand';
 
 import { nextAlert, resolveShownAlert } from '../../game/alertQueue';
 import type { CommanderStore, Orders } from '../../game/store';
+import { generateIcon } from '../../microagent/mock/iconGen';
 
 export interface AlertBannerProps {
   store: CommanderStore;
@@ -27,7 +28,14 @@ export function AlertBanner({ store, orders }: AlertBannerProps): React.JSX.Elem
   const shown = resolveShownAlert(alerts, shownId);
   if (shown === undefined) return null;
 
-  const unitTitle = units[shown.unitId]?.view.title ?? shown.unitId;
+  const unit = units[shown.unitId];
+  const unitTitle = unit?.view.title ?? shown.unitId;
+  // Portrait of the requesting unit (SPEC §8: icons render everywhere).
+  const portrait = generateIcon({
+    entityId: shown.unitId,
+    kind: 'unit',
+    ...(unit !== undefined ? { adapter: unit.view.agent } : {}),
+  });
   const action = typeof shown.payload['action'] === 'string' ? shown.payload['action'] : shown.kind;
   const detail = typeof shown.payload['detail'] === 'string' ? shown.payload['detail'] : null;
   const more = alerts.length - 1;
@@ -54,6 +62,7 @@ export function AlertBanner({ store, orders }: AlertBannerProps): React.JSX.Elem
       <span className="wr-alert-count" aria-label={`${alerts.length} pending approvals`}>
         {alerts.length}
       </span>
+      <span className="wr-alert-portrait" aria-hidden dangerouslySetInnerHTML={{ __html: portrait.svg }} />
       <span className="wr-alert-text">
         <strong>{unitTitle}</strong> wants to {action}
         {detail !== null && <em className="wr-alert-detail"> — {detail}</em>}

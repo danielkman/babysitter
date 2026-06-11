@@ -74,13 +74,26 @@ export type SimTaskState = 'queued' | 'assigned' | 'in_progress' | 'review' | 'd
  * fields so the UI can route it uniformly with adapter events.
  */
 export interface TaskLifecycleEventPayload {
-  type: 'task_assigned' | 'task_progress' | 'task_completed' | 'task_failed';
+  type: 'task_assigned' | 'task_progress' | 'task_completed' | 'task_failed' | 'task_prioritized';
   runId: string;
   agent: string;
   timestamp: number;
   taskId: string;
   taskState: SimTaskState;
   progress: number;
+  unitId: string;
+}
+
+/**
+ * Sim-local operator-verb payload riding the open `run.event` envelope
+ * (same precedent as TaskLifecycleEventPayload): a unit decommissioned by
+ * the operator's Retire order leaves the world.
+ */
+export interface UnitRetiredEventPayload {
+  type: 'unit_retired';
+  runId: string;
+  agent: string;
+  timestamp: number;
   unitId: string;
 }
 
@@ -91,6 +104,8 @@ export interface SimUnitView {
   title: string;
   workspaceId: string;
   state: UnitLifecycleState;
+  /** Operator hold (Pause command): the unit's run is frozen mid-state. */
+  paused: boolean;
   taskId: string | null;
   runId: string | null;
   turnIndex: number;
@@ -118,6 +133,8 @@ export interface SimTaskView {
   phase: KradlePhase;
   progress: number;
   assigneeIds: string[];
+  /** Operator priority (Prioritize command): higher wins idle auto-assignment. */
+  priority: number;
 }
 
 export interface SimHookView {
@@ -153,6 +170,8 @@ interface UnitRecord {
   title: string;
   workspaceId: string;
   state: UnitLifecycleState;
+  /** Operator hold: advanceUnit() freezes this unit entirely while true. */
+  held: boolean;
   taskId: string | null;
   runId: string | null;
   latestRunId: string | null;
@@ -189,6 +208,8 @@ interface TaskRecord {
   progress: number;
   assigneeIds: string[];
   reviewTicks: number;
+  /** Operator priority: idle auto-assignment prefers the highest value. */
+  priority: number;
   lastRunId: string;
   lastAgent: string;
   lastUnitId: string;
@@ -322,6 +343,7 @@ export class Simulation {
         title: unit.title,
         workspaceId: unit.workspaceId,
         state: 'idle',
+        held: false,
         taskId: null,
         runId: null,
         latestRunId: null,
@@ -350,6 +372,7 @@ export class Simulation {
         progress: 0,
         assigneeIds: [],
         reviewTicks: 0,
+        priority: 0,
         lastRunId: '',
         lastAgent: '',
         lastUnitId: '',
@@ -525,6 +548,7 @@ export class Simulation {
       title: unit.title,
       workspaceId: unit.workspaceId,
       state: unit.state,
+      paused: unit.held,
       taskId: unit.taskId,
       runId: unit.runId,
       turnIndex: unit.turnIndex,
@@ -549,6 +573,7 @@ export class Simulation {
       phase: record.resource.status.phase,
       progress: roundTo(record.progress, 4),
       assigneeIds: [...record.assigneeIds],
+      priority: record.priority,
     }));
   }
 
@@ -659,8 +684,12 @@ export class Simulation {
     // Steer.
     unit.messageCount += 1;
     unit.updatedAt = this.now();
+    if (unit.held) {
+      // Operator steering releases the hold — new instructions imply "go".
+      this.releaseHold(unit);
+    }
     if (unit.state === 'blocked') {
-      this.resumeUnit(unit);
+      this.resumeFromBlocked(unit);
       return;
     }
     if (unit.state === 'idle') {
@@ -693,6 +722,114 @@ export class Simulation {
   }
 
   // -------------------------------------------------------------------------
+  // Operator verbs (mock-local command surface; deterministic — no RNG)
+  // -------------------------------------------------------------------------
+
+  /**
+   * Retire (decommission) an idle unit: it leaves the world permanently.
+   * Refuses units with an active run (`unit_busy` error frame). Emits a
+   * `unit_retired` run.event so the ticker logs the despawn.
+   */
+  retireUnit(unitId: string): boolean {
+    const unit = this.units.get(unitId);
+    if (!unit) {
+      this.emit({
+        type: 'error',
+        code: 'session_not_found',
+        message: `Unknown session: ${unitId}`,
+      });
+      return false;
+    }
+    if (unit.runId !== null) {
+      this.emit({
+        type: 'error',
+        code: 'unit_busy',
+        message: `Unit ${unitId} has an active run — abort it before retiring`,
+        runId: unit.runId,
+      });
+      return false;
+    }
+    this.emitRunEvent(unit, {
+      type: 'unit_retired',
+      runId: '',
+      agent: unit.agent,
+      timestamp: this.now(),
+      unitId: unit.unitId,
+    });
+    this.units.delete(unitId);
+    return true;
+  }
+
+  /**
+   * Hold a working unit: advanceUnit() freezes it entirely (no streaming, no
+   * transitions, no token burn) until resumeUnit()/steer/abort releases it.
+   * Emits the mirrored adapter `paused` event on the active run.
+   */
+  pauseUnit(unitId: string): boolean {
+    const unit = this.units.get(unitId);
+    if (!unit) {
+      this.emit({
+        type: 'error',
+        code: 'session_not_found',
+        message: `Unknown session: ${unitId}`,
+      });
+      return false;
+    }
+    if (unit.runId === null || unit.held || unit.state === 'awaiting_approval') {
+      return false;
+    }
+    unit.held = true;
+    unit.updatedAt = this.now();
+    this.emitRunEvent(unit, {
+      type: 'paused',
+      runId: unit.runId,
+      agent: unit.agent,
+      timestamp: this.now(),
+    });
+    return true;
+  }
+
+  /** Release an operator hold; the unit continues exactly where it froze. */
+  resumeUnit(unitId: string): boolean {
+    const unit = this.units.get(unitId);
+    if (!unit || !unit.held) return false;
+    this.releaseHold(unit);
+    return true;
+  }
+
+  /**
+   * Bump a task to the top of the assignment queue: idle auto-dispatch picks
+   * among the highest-priority queued tasks first. Emits `task_prioritized`.
+   */
+  prioritizeTask(taskId: string): boolean {
+    const task = this.tasks.get(taskId);
+    if (!task) {
+      this.emit({
+        type: 'error',
+        code: 'task_not_found',
+        message: `Unknown task: ${taskId}`,
+      });
+      return false;
+    }
+    if (task.state === 'done' || task.state === 'failed') return false;
+    const top = Math.max(0, ...[...this.tasks.values()].map((t) => t.priority));
+    task.priority = top + 1;
+    this.emitTaskEvent(task, 'task_prioritized');
+    return true;
+  }
+
+  private releaseHold(unit: UnitRecord): void {
+    unit.held = false;
+    unit.updatedAt = this.now();
+    this.emitRunEvent(unit, {
+      type: 'resumed',
+      runId: unit.runId ?? '',
+      agent: unit.agent,
+      timestamp: this.now(),
+    });
+  }
+
+  // -------------------------------------------------------------------------
   // Lifecycle engine
   // -------------------------------------------------------------------------
 
@@ -707,12 +844,15 @@ export class Simulation {
   }
 
   private advanceUnit(unit: UnitRecord): void {
+    // Operator hold (Pause): the unit is frozen mid-state — no tick budget,
+    // no streaming, no RNG draws — until resumed/steered/aborted.
+    if (unit.held) return;
     unit.stateTicks += 1;
     switch (unit.state) {
       case 'idle': {
         const queued = this.queuedTasks();
         if (queued.length > 0 && this.rng.chance(0.015)) {
-          this.dispatchUnit(unit, this.rng.pick(queued));
+          this.dispatchUnit(unit, this.pickQueuedTask(queued));
         }
         return;
       }
@@ -745,7 +885,7 @@ export class Simulation {
       case 'blocked': {
         if (unit.stateTicks >= unit.stateDuration) {
           if (this.rng.chance(0.7)) {
-            this.resumeUnit(unit);
+            this.resumeFromBlocked(unit);
           } else {
             this.failRun(unit, 'blocked beyond recovery window');
           }
@@ -806,6 +946,7 @@ export class Simulation {
       title: `recruit-${index}`,
       workspaceId: ws,
       state: 'idle',
+      held: false,
       taskId: null,
       runId: null,
       latestRunId: null,
@@ -1130,7 +1271,7 @@ export class Simulation {
     unit.updatedAt = this.now();
   }
 
-  private resumeUnit(unit: UnitRecord): void {
+  private resumeFromBlocked(unit: UnitRecord): void {
     if (unit.runId === null) return;
     this.emitRunEvent(unit, {
       type: 'resumed',
@@ -1177,6 +1318,7 @@ export class Simulation {
     unit.activeToolCallId = null;
     unit.activeToolName = null;
     unit.state = 'completed';
+    unit.held = false;
     unit.stateTicks = 0;
     unit.stateDuration = 2;
     unit.updatedAt = now;
@@ -1223,6 +1365,7 @@ export class Simulation {
     unit.activeToolCallId = null;
     unit.activeToolName = null;
     unit.state = 'failed';
+    unit.held = false;
     unit.stateTicks = 0;
     unit.stateDuration = 8;
     unit.updatedAt = now;
@@ -1281,6 +1424,7 @@ export class Simulation {
     unit.activeToolCallId = null;
     unit.activeToolName = null;
     unit.state = 'idle';
+    unit.held = false;
     unit.stateTicks = 0;
     unit.stateDuration = 0;
     unit.updatedAt = now;
@@ -1338,6 +1482,20 @@ export class Simulation {
     return [...this.tasks.values()].filter((task) => task.state === 'queued');
   }
 
+  /**
+   * Idle auto-assignment target: pick among the HIGHEST-priority queued tasks
+   * (operator Prioritize wins); ties resolved by one RNG draw — with no
+   * priorities set this is byte-identical to the old `rng.pick(queued)`.
+   */
+  private pickQueuedTask(queued: TaskRecord[]): TaskRecord {
+    let top = 0;
+    for (const task of queued) {
+      if (task.priority > top) top = task.priority;
+    }
+    const pool = top > 0 ? queued.filter((task) => task.priority === top) : queued;
+    return this.rng.pick(pool);
+  }
+
   private progressAssignedTask(unit: UnitRecord, amount: number): void {
     const task = unit.taskId ? this.tasks.get(unit.taskId) : undefined;
     if (!task || task.state === 'done' || task.state === 'failed' || task.state === 'review') {
@@ -1385,7 +1543,10 @@ export class Simulation {
     }
   }
 
-  private emitRunEvent(unit: UnitRecord, event: AgentEvent | TaskLifecycleEventPayload): void {
+  private emitRunEvent(
+    unit: UnitRecord,
+    event: AgentEvent | TaskLifecycleEventPayload | UnitRetiredEventPayload,
+  ): void {
     const runId = event.runId !== '' ? event.runId : (unit.runId ?? 'run-none');
     const run = this.runs.get(runId);
     const seq = run ? (run.seq += 1) : 0;

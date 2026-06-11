@@ -18,6 +18,8 @@ export interface UnitSpriteProps {
   title: string;
   agent: string;
   state: string;
+  /** Operator hold (Pause command) — orthogonal to the §3 visual state. */
+  paused: boolean;
   x: number;
   y: number;
   selected: boolean;
@@ -34,6 +36,7 @@ function UnitSpriteImpl({
   title,
   agent,
   state,
+  paused,
   x,
   y,
   selected,
@@ -48,18 +51,29 @@ function UnitSpriteImpl({
       data-testid={`unit-${id}`}
       data-entity-id={id}
       data-entity-kind="unit"
-      className={clsx('wr-unit', `wr-unit--${state}`, `wr-faction--${agent}`, selected && 'is-selected')}
+      className={clsx(
+        'wr-unit',
+        `wr-unit--${state}`,
+        `wr-faction--${agent}`,
+        selected && 'is-selected',
+        paused && 'is-paused',
+      )}
       style={{ transform: `translate3d(${x}px, ${y}px, 0)` }}
     >
       <div className="wr-unit-body">
         <div className="wr-unit-ring" aria-hidden />
         <div className="wr-unit-portrait" dangerouslySetInnerHTML={{ __html: iconSvg }} />
-        {state === 'blocked' && (
+        {paused && (
+          <span className="wr-unit-badge wr-unit-badge--paused" aria-hidden>
+            II
+          </span>
+        )}
+        {!paused && state === 'blocked' && (
           <span className="wr-unit-badge wr-unit-badge--warn" aria-hidden>
             !
           </span>
         )}
-        {state === 'awaiting_approval' && (
+        {!paused && state === 'awaiting_approval' && (
           <span className="wr-unit-badge wr-unit-badge--alert" aria-hidden>
             ?
           </span>

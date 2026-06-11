@@ -116,18 +116,25 @@ export function executeIntent(intent: CommandIntent, store: CommanderStore, orde
       return;
     }
     case 'retire':
-      state.pushEvent(
-        `Retire order acknowledged — ${unitIds.length} unit(s) will decommission at the next maintenance window`,
-        'info',
-        unitIds[0],
-      );
+      // Decommission: idle units despawn from the world (orders filters +
+      // drops the fade ping; the sim emits unit_retired for the ticker).
+      orders.retire(unitIds);
       return;
     case 'steer':
       state.openSteer();
       return;
-    case 'pause-unit':
-      state.pushEvent('Pause queued — units hold after the current step (adapter lacks hard pause)', 'warn');
+    case 'pause-unit': {
+      // Toggle semantics: if every active selected unit is already held,
+      // release the holds; otherwise hold the ones still running.
+      const active = units.filter((u) => u.view.runId !== null);
+      if (active.length === 0) return;
+      if (active.every((u) => u.view.paused)) {
+        orders.resumeUnits(active.map((u) => u.id));
+      } else {
+        orders.pauseUnits(active.filter((u) => !u.view.paused).map((u) => u.id));
+      }
       return;
+    }
     case 'inspect': {
       const first = unitIds[0];
       if (first !== undefined) state.openInspector(first);
@@ -149,10 +156,10 @@ export function executeIntent(intent: CommandIntent, store: CommanderStore, orde
       return;
     }
     case 'prioritize': {
+      // Real queue reorder: the sim bumps the task's priority so idle
+      // auto-assignment prefers it (chevron on the TaskNode + ticker log).
       const task = tasks[0];
-      if (task !== undefined) {
-        state.pushEvent(`Objective prioritized — ${task.view.title}`, 'info', task.id);
-      }
+      if (task !== undefined) orders.prioritize(task.id);
       return;
     }
     case 'cancel-task': {

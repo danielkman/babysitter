@@ -39,6 +39,7 @@ function UnitSlot({ store, id }: { store: CommanderStore; id: string }): React.J
       title={unit.view.title}
       agent={unit.view.agent}
       state={unit.view.state}
+      paused={unit.view.paused}
       x={pos.x}
       y={pos.y}
       selected={selected}
@@ -63,6 +64,7 @@ function TaskSlot({ store, id }: { store: CommanderStore; id: string }): React.J
       taskKind={task.view.taskKind}
       state={task.view.state}
       progress={task.view.progress}
+      priority={task.view.priority}
       x={pos.x}
       y={pos.y}
       selected={selected}

@@ -87,6 +87,7 @@ export function buildCommandContext(
     states: [...new Set(units.map((u) => u.view.state))],
     adapters: [...new Set(units.map((u) => u.view.agent))],
     taskStates: [...new Set(tasks.map((t) => t.view.state))],
+    pausedUnits: units.filter((u) => u.view.paused).length,
   };
   return {
     selection,

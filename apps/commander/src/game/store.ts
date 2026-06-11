@@ -53,7 +53,7 @@ import {
 // Entity & slice types (SPEC §6)
 // ---------------------------------------------------------------------------
 
-export const COMMANDER_VERSION = '0.2.0-core-game-ui';
+export const COMMANDER_VERSION = '0.3.0-microagent';
 
 /** Assumed context window per unit (tokens) → health bar = context headroom. */
 export const CONTEXT_WINDOW_TOKENS = 200_000;
@@ -302,6 +302,7 @@ function unitViewEqual(a: SimUnitView, b: SimUnitView): boolean {
     a.title === b.title &&
     a.workspaceId === b.workspaceId &&
     a.state === b.state &&
+    a.paused === b.paused &&
     a.taskId === b.taskId &&
     a.runId === b.runId &&
     a.turnIndex === b.turnIndex &&
@@ -327,6 +328,7 @@ function taskViewEqual(a: SimTaskView, b: SimTaskView): boolean {
     a.state === b.state &&
     a.phase === b.phase &&
     a.progress === b.progress &&
+    a.priority === b.priority &&
     a.assigneeIds.length === b.assigneeIds.length &&
     a.assigneeIds.every((id, i) => b.assigneeIds[i] === id)
   );
@@ -550,11 +552,44 @@ function routeRunEvent(
       }
       break;
     }
+    case 'paused': {
+      if (unitId !== undefined) {
+        transcript(unitId, { kind: 'note', text: 'holding — paused by operator' });
+        ticker({
+          ts,
+          severity: 'info',
+          text: `${unitTitle(unitId)} holding position — paused by operator`,
+          entityId: unitId,
+        });
+      }
+      break;
+    }
     case 'resumed': {
       if (unitId !== undefined) {
         transcript(unitId, { kind: 'note', text: 'resumed' });
         ticker({ ts, severity: 'info', text: `${unitTitle(unitId)} back online`, entityId: unitId });
       }
+      break;
+    }
+    case 'unit_retired': {
+      const retiredId = eventUnitIdOf(ev) ?? unitId;
+      // No entityId: the unit leaves the world this very commit — a ticker
+      // link to a despawned entity would be a dead click.
+      ticker({
+        ts,
+        severity: 'info',
+        text: `${unitTitle(retiredId)} retired — decommissioned from the fleet`,
+      });
+      break;
+    }
+    case 'task_prioritized': {
+      const taskId = asString(ev['taskId']);
+      ticker({
+        ts,
+        severity: 'info',
+        text: `Priority objective — ${taskTitle(taskId)} moved to the front of the queue`,
+        ...(taskId !== undefined ? { entityId: taskId } : {}),
+      });
       break;
     }
     case 'error': {
@@ -1116,6 +1151,14 @@ export interface Orders {
   decide(hookRequestId: string, decision: 'allow' | 'deny'): void;
   /** Clone: session.start WITHOUT sessionId spawns a fresh unit. */
   clone(agent: string, workspaceId?: string): void;
+  /** Retire: decommission idle units — they despawn from the world (SPEC §8). */
+  retire(unitIds: readonly string[]): void;
+  /** Pause: hold working units' runs mid-state (sim operator verb). */
+  pauseUnits(unitIds: readonly string[]): void;
+  /** Resume: release operator holds. */
+  resumeUnits(unitIds: readonly string[]): void;
+  /** Prioritize: bump a task to the front of the idle-assignment queue. */
+  prioritize(taskId: string): void;
   /** Pause/resume the simulation (global command card). */
   toggleSim(): void;
 }
@@ -1227,6 +1270,37 @@ export function bindBackendToStore(store: CommanderStore, backend: MockBackend):
       });
       flush();
       store.getState().pushEvent(`Reinforcement requested — new ${agent} unit inbound`, 'info');
+    },
+    retire(unitIds) {
+      const state = store.getState();
+      const ready = unitIds.filter((id) => state.world.units[id]?.view.runId === null);
+      if (ready.length === 0) {
+        state.pushEvent('Retire ignored — units must be idle to decommission', 'warn');
+        return;
+      }
+      for (const id of ready) {
+        // Despawn marker first (the position vanishes with the unit): an
+        // expand-and-fade ping marks where the veteran stood (SPEC §8 fade).
+        store.getState().addPing(id, 'info');
+        sim.retireUnit(id);
+      }
+      flush();
+    },
+    pauseUnits(unitIds) {
+      for (const id of unitIds) {
+        sim.pauseUnit(id);
+      }
+      flush();
+    },
+    resumeUnits(unitIds) {
+      for (const id of unitIds) {
+        sim.resumeUnit(id);
+      }
+      flush();
+    },
+    prioritize(taskId) {
+      sim.prioritizeTask(taskId);
+      flush();
     },
     toggleSim() {
       if (sim.paused) {

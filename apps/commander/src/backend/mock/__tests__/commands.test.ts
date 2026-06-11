@@ -215,6 +215,213 @@ describe('command effects on the simulation', () => {
   });
 });
 
+describe('operator verbs (SPEC §8: Retire / Pause / Prioritize)', () => {
+  it('retireUnit removes an idle unit from the world and emits unit_retired', () => {
+    const sim = new Simulation({ seed: 42 });
+    const frames: ServerFrame[] = [];
+    sim.onFrame((frame) => frames.push(frame));
+    const idle = firstIdleUnit(sim);
+    const before = sim.listUnitViews().length;
+
+    expect(sim.retireUnit(idle.unitId)).toBe(true);
+
+    expect(sim.listUnitViews().length).toBe(before - 1);
+    expect(sim.listUnitViews().find((u) => u.unitId === idle.unitId)).toBeUndefined();
+    const retired = frames.find(
+      (f) => f.type === 'run.event' && f.event['type'] === 'unit_retired',
+    );
+    expect(retired).toBeDefined();
+    expect(retired?.type === 'run.event' && retired.event['unitId']).toBe(idle.unitId);
+
+    // Subsequent ticks must not crash on the missing unit.
+    sim.tick(20);
+  });
+
+  it('retireUnit refuses a busy unit with a unit_busy error frame', () => {
+    const sim = new Simulation({ seed: 42 });
+    const frames: ServerFrame[] = [];
+    sim.onFrame((frame) => frames.push(frame));
+    const idle = firstIdleUnit(sim);
+    const taskId = firstQueuedTaskId(sim);
+    sim.handleClientFrame({
+      type: 'session.start',
+      agent: idle.agent,
+      sessionId: idle.unitId,
+      prompt: `task:${taskId}`,
+    });
+
+    expect(sim.retireUnit(idle.unitId)).toBe(false);
+
+    expect(sim.listUnitViews().find((u) => u.unitId === idle.unitId)).toBeDefined();
+    const error = frames.find((f) => f.type === 'error' && f.code === 'unit_busy');
+    expect(error).toBeDefined();
+  });
+
+  it('pauseUnit freezes a working unit across ticks; resumeUnit releases it', () => {
+    const sim = new Simulation({ seed: 42 });
+    const idle = firstIdleUnit(sim);
+    const taskId = firstQueuedTaskId(sim);
+    sim.handleClientFrame({
+      type: 'session.start',
+      agent: idle.agent,
+      sessionId: idle.unitId,
+      prompt: `task:${taskId}`,
+    });
+    // Reach a working state, then hold.
+    for (let i = 0; i < 200; i += 1) {
+      const view = unitView(sim, idle.unitId);
+      if (view.state === 'thinking' || view.state === 'tool_running') break;
+      sim.tick(1);
+    }
+    const before = unitView(sim, idle.unitId);
+    expect(['thinking', 'tool_running']).toContain(before.state);
+
+    expect(sim.pauseUnit(idle.unitId)).toBe(true);
+    sim.tick(60);
+
+    const frozen = unitView(sim, idle.unitId);
+    expect(frozen.paused).toBe(true);
+    expect(frozen.state).toBe(before.state);
+    expect(frozen.tokenUsage).toEqual(before.tokenUsage);
+    expect(frozen.turnIndex).toBe(before.turnIndex);
+
+    expect(sim.resumeUnit(idle.unitId)).toBe(true);
+    expect(unitView(sim, idle.unitId).paused).toBe(false);
+    // Released: bounded ticks must produce observable progress again.
+    let progressed = false;
+    for (let i = 0; i < 400 && !progressed; i += 1) {
+      sim.tick(1);
+      const now = unitView(sim, idle.unitId);
+      progressed =
+        now.state !== frozen.state ||
+        now.turnIndex !== frozen.turnIndex ||
+        now.tokenUsage.outputTokens !== frozen.tokenUsage.outputTokens ||
+        now.tokenUsage.thinkingTokens !== frozen.tokenUsage.thinkingTokens;
+    }
+    expect(progressed).toBe(true);
+  });
+
+  it('pauseUnit refuses idle units and double-holds; abort clears the hold', () => {
+    const sim = new Simulation({ seed: 42 });
+    const idle = firstIdleUnit(sim);
+    expect(sim.pauseUnit(idle.unitId)).toBe(false);
+
+    const taskId = firstQueuedTaskId(sim);
+    sim.handleClientFrame({
+      type: 'session.start',
+      agent: idle.agent,
+      sessionId: idle.unitId,
+      prompt: `task:${taskId}`,
+    });
+    expect(sim.pauseUnit(idle.unitId)).toBe(true);
+    expect(sim.pauseUnit(idle.unitId)).toBe(false);
+
+    sim.handleClientFrame({ type: 'session.message', sessionId: idle.unitId, prompt: '/abort' });
+    const view = unitView(sim, idle.unitId);
+    expect(view.state).toBe('idle');
+    expect(view.paused).toBe(false);
+  });
+
+  it('steering a held unit releases the hold', () => {
+    const sim = new Simulation({ seed: 42 });
+    const idle = firstIdleUnit(sim);
+    sim.handleClientFrame({
+      type: 'session.start',
+      agent: idle.agent,
+      sessionId: idle.unitId,
+      prompt: 'go',
+    });
+    sim.pauseUnit(idle.unitId);
+    expect(unitView(sim, idle.unitId).paused).toBe(true);
+    sim.handleClientFrame({
+      type: 'session.message',
+      sessionId: idle.unitId,
+      prompt: 'change of plans, soldier',
+    });
+    expect(unitView(sim, idle.unitId).paused).toBe(false);
+  });
+
+  it('prioritizeTask bumps view.priority and idle auto-dispatch prefers it', () => {
+    const sim = new Simulation({ seed: 42 });
+    const tasks = sim.listTaskViews().filter((t) => t.state === 'queued');
+    expect(tasks.length).toBeGreaterThanOrEqual(2);
+    const target = tasks[tasks.length - 1]!;
+
+    expect(sim.prioritizeTask(target.taskId)).toBe(true);
+    const view = sim.listTaskViews().find((t) => t.taskId === target.taskId);
+    expect(view?.priority).toBeGreaterThan(0);
+
+    // The FIRST auto-dispatch after prioritization must target it.
+    let dispatchedTo: string | null = null;
+    for (let i = 0; i < 3000 && dispatchedTo === null; i += 1) {
+      sim.tick(1);
+      const mover = sim.listUnitViews().find((u) => u.taskId !== null);
+      if (mover) dispatchedTo = mover.taskId;
+    }
+    expect(dispatchedTo).toBe(target.taskId);
+  });
+
+  it('re-prioritizing another task outranks the previous priority', () => {
+    const sim = new Simulation({ seed: 7 });
+    const queued = sim.listTaskViews().filter((t) => t.state === 'queued');
+    expect(queued.length).toBeGreaterThanOrEqual(2);
+    const first = queued[0]!;
+    const second = queued[1]!;
+    sim.prioritizeTask(first.taskId);
+    sim.prioritizeTask(second.taskId);
+    const views = sim.listTaskViews();
+    const p1 = views.find((t) => t.taskId === first.taskId)?.priority ?? 0;
+    const p2 = views.find((t) => t.taskId === second.taskId)?.priority ?? 0;
+    expect(p2).toBeGreaterThan(p1);
+  });
+
+  it('prioritizeTask on unknown task emits task_not_found, not a crash', () => {
+    const sim = new Simulation({ seed: 42 });
+    const frames: ServerFrame[] = [];
+    sim.onFrame((frame) => frames.push(frame));
+    expect(sim.prioritizeTask('no-such-task')).toBe(false);
+    expect(frames.some((f) => f.type === 'error' && f.code === 'task_not_found')).toBe(true);
+  });
+
+  it('determinism: same seed + same operator-verb sequence ⇒ identical snapshots and frames', () => {
+    const script = (sim: Simulation, frames: ServerFrame[]): void => {
+      sim.onFrame((frame) => frames.push(frame));
+      sim.tick(5);
+      const queued = sim.listTaskViews().find((t) => t.state === 'queued');
+      if (queued) sim.prioritizeTask(queued.taskId);
+      const idle = sim.listUnitViews().filter((u) => u.state === 'idle');
+      const retiree = idle[0];
+      if (retiree) sim.retireUnit(retiree.unitId);
+      const recruit = idle[1];
+      if (recruit && queued) {
+        sim.handleClientFrame({
+          type: 'session.start',
+          agent: recruit.agent,
+          sessionId: recruit.unitId,
+          prompt: `task:${queued.taskId}`,
+        });
+      }
+      sim.tick(30);
+      if (recruit) {
+        sim.pauseUnit(recruit.unitId);
+        sim.tick(25);
+        sim.resumeUnit(recruit.unitId);
+      }
+      sim.tick(60);
+    };
+
+    const a = new Simulation({ seed: 1337 });
+    const b = new Simulation({ seed: 1337 });
+    const framesA: ServerFrame[] = [];
+    const framesB: ServerFrame[] = [];
+    script(a, framesA);
+    script(b, framesB);
+    expect(b.snapshot()).toEqual(a.snapshot());
+    expect(framesB).toEqual(framesA);
+    expect(framesA.length).toBeGreaterThan(0);
+  });
+});
+
 describe('MockBackend over the simulation', () => {
   it('implements the CommanderBackend list surface from the seeded world', async () => {
     const backend = new MockBackend({ seed: 42, autoStart: false });

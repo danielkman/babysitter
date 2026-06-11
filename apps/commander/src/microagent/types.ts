@@ -16,6 +16,8 @@ export interface SelectionSummary {
   adapters: string[];
   /** Distinct task states in the selection. */
   taskStates: string[];
+  /** Selected units currently under an operator hold (Pause command). */
+  pausedUnits: number;
 }
 
 export interface AlertSummary {

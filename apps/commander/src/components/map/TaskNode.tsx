@@ -17,6 +17,8 @@ export interface TaskNodeProps {
   state: string;
   /** 0..1 */
   progress: number;
+  /** Operator priority (Prioritize command): > 0 shows the chevron. */
+  priority: number;
   x: number;
   y: number;
   selected: boolean;
@@ -30,6 +32,7 @@ function TaskNodeImpl({
   taskKind,
   state,
   progress,
+  priority,
   x,
   y,
   selected,
@@ -42,7 +45,12 @@ function TaskNodeImpl({
       data-testid={`task-${id}`}
       data-entity-id={id}
       data-entity-kind="task"
-      className={clsx('wr-task', `wr-task--${state}`, selected && 'is-selected')}
+      className={clsx(
+        'wr-task',
+        `wr-task--${state}`,
+        selected && 'is-selected',
+        priority > 0 && 'is-priority',
+      )}
       style={{ transform: `translate3d(${x}px, ${y}px, 0)` }}
     >
       <div className="wr-task-body">
@@ -58,6 +66,20 @@ function TaskNodeImpl({
           />
         </svg>
         <div className="wr-task-icon" dangerouslySetInnerHTML={{ __html: iconSvg }} />
+        {priority > 0 && (
+          <span className="wr-task-priority" title="Priority objective" aria-label="priority objective">
+            <svg viewBox="0 0 12 12" aria-hidden>
+              <path
+                d="M2.5 7.5 L6 3.5 L9.5 7.5 M2.5 10 L6 6 L9.5 10"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </span>
+        )}
         {assigneeCount > 0 && (
           <span className="wr-task-assignees" aria-hidden>
             {assigneeCount}

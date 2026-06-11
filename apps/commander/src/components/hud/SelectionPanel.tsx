@@ -52,7 +52,10 @@ function UnitVitals({ store, unit }: { store: CommanderStore; unit: UnitEntity }
           <span className={`wr-sel-adapter wr-faction-text--${unit.view.agent}`}>{unit.view.agent}</span>
           <span className="wr-sel-model">{unit.view.model}</span>
         </div>
-        <div className={`wr-sel-state wr-sel-state--${unit.view.state}`}>{unit.view.state}</div>
+        <div className="wr-sel-staterow">
+          <span className={`wr-sel-state wr-sel-state--${unit.view.state}`}>{unit.view.state}</span>
+          {unit.view.paused && <span className="wr-sel-paused">paused</span>}
+        </div>
         {taskId !== null && (
           <button
             type="button"
@@ -104,7 +107,10 @@ function UnitCardGrid({ store, units }: { store: CommanderStore; units: UnitEnti
           >
             <div className="wr-sel-card-portrait" dangerouslySetInnerHTML={{ __html: icon.svg }} />
             <div className="wr-sel-card-name">{unit.view.title}</div>
-            <div className="wr-sel-card-state">{unit.view.state}</div>
+            <div className="wr-sel-card-state">
+              {unit.view.state}
+              {unit.view.paused && <span className="wr-sel-paused">paused</span>}
+            </div>
           </button>
         );
       })}
@@ -125,7 +131,10 @@ function TaskDetails({ store, task }: { store: CommanderStore; task: TaskEntity 
           <span>{task.view.repository}</span>
           <span className="wr-sel-phase">{task.view.phase}</span>
         </div>
-        <div className={`wr-sel-state wr-sel-state--task-${task.view.state}`}>{task.view.state}</div>
+        <div className="wr-sel-staterow">
+          <span className={`wr-sel-state wr-sel-state--task-${task.view.state}`}>{task.view.state}</span>
+          {task.view.priority > 0 && <span className="wr-sel-priority">priority</span>}
+        </div>
       </div>
       <div className="wr-sel-vitals">
         <div className="wr-vital">

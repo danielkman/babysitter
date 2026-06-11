@@ -71,7 +71,14 @@ describe('mode arbiter precedence (SPEC §5 collisions)', () => {
 describe('positional hotkeys on the 3x4 grid', () => {
   it('cell i answers to COMMAND_HOTKEYS[i] (idle set → Q/W/E/R)', () => {
     const specs = generateCommands({
-      selection: { count: 1, kinds: ['unit'], states: ['idle'], adapters: ['pi'], taskStates: [] },
+      selection: {
+        count: 1,
+        kinds: ['unit'],
+        states: ['idle'],
+        adapters: ['pi'],
+        taskStates: [],
+        pausedUnits: 0,
+      },
       alerts: [],
       fleet: { totalUnits: 10, idleUnits: 4, busyUnits: 6, pendingAlerts: 0, simPaused: false },
     });

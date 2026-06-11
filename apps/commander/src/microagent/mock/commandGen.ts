@@ -50,7 +50,7 @@ const GLYPHS: Record<string, IconSpec> = {
   clone: glyph('<rect x="3" y="3" width="9" height="9" rx="2"/><rect x="8" y="8" width="9" height="9" rx="2"/>'),
   retire: glyph('<path d="M10 3 V13 M5 9 L10 14 L15 9 M4 17 H16"/>'),
   steer: glyph('<path d="M4 6 L9 10 L4 14 M10 6 L15 10 L10 14"/>'),
-  'pause-unit': glyph('<path d="M7 4 V16 M13 4 V16"/>'),
+  'pause-unit': glyph('<circle cx="10" cy="10" r="7"/><path d="M8 7 V13 M12 7 V13"/>'),
   inspect: glyph('<circle cx="9" cy="9" r="5"/><path d="M13 13 L17 17"/>'),
   abort: glyph('<circle cx="10" cy="10" r="7"/><path d="M6.5 6.5 L13.5 13.5"/>'),
   approve: glyph('<path d="M4 10.5 L8.5 15 L16 5"/>'),
@@ -60,7 +60,13 @@ const GLYPHS: Record<string, IconSpec> = {
   'cancel-task': glyph('<rect x="4" y="4" width="12" height="12" rx="2.5"/><path d="M7.5 7.5 L12.5 12.5 M12.5 7.5 L7.5 12.5"/>'),
   'select-all-idle': glyph('<path d="M3 6 V3 H6 M14 3 H17 V6 M17 14 V17 H14 M6 17 H3 V14"/><circle cx="10" cy="10" r="2.5"/>'),
   'jump-to-alert': glyph('<circle cx="10" cy="10" r="6.5"/><circle cx="10" cy="10" r="1.2"/><path d="M10 3.5 V6 M10 14 V16.5 M3.5 10 H6 M14 10 H16.5"/>'),
-  'toggle-sim': glyph('<path d="M6 4 L16 10 L6 16 Z"/>'),
+  'toggle-sim': glyph('<path d="M7 4 V16 M13 4 V16"/>'),
+};
+
+/** Presentation swaps for toggled commands (resolved in generateCommands). */
+const SWAP_GLYPHS: Record<string, IconSpec> = {
+  'resume-unit': glyph('<circle cx="10" cy="10" r="7"/><path d="M8.2 7 L13.5 10 L8.2 13 Z"/>'),
+  'resume-sim': glyph('<path d="M6 4 L16 10 L6 16 Z"/>'),
 };
 
 function fallbackGlyph(): IconSpec {
@@ -150,9 +156,9 @@ const WORKING_DEFS: CommandDef[] = [
   },
   {
     id: 'pause-unit',
-    label: 'Pause',
+    label: 'Pause', // flips to Resume when every selected unit is held
     intent: { kind: 'pause-unit' },
-    tooltip: 'Ask the unit to hold after its current step',
+    tooltip: 'Hold the unit in place — its run freezes until resumed',
   },
   {
     id: 'inspect',
@@ -244,10 +250,34 @@ export function generateCommands(ctx: CommandContext): CommandSpec[] {
   const specs = defs
     .slice(0, COMMAND_HOTKEYS.length)
     .map((def, index) => spec(def, ctx, COMMAND_HOTKEYS[index]));
-  // Dynamic label for the sim toggle.
-  return specs.map((s) =>
-    s.id === 'toggle-sim' ? { ...s, label: ctx.fleet.simPaused ? 'Resume Sim' : 'Pause Sim' } : s,
-  );
+  return specs.map((s) => applyDynamicPresentation(s, ctx));
+}
+
+/** Toggled commands swap label/icon/tooltip with the live context. */
+function applyDynamicPresentation(s: CommandSpec, ctx: CommandContext): CommandSpec {
+  if (s.id === 'toggle-sim') {
+    return ctx.fleet.simPaused
+      ? {
+          ...s,
+          label: 'Resume Sim',
+          icon: SWAP_GLYPHS['resume-sim'] ?? s.icon,
+          tooltip: 'Resume the simulation clock',
+        }
+      : { ...s, label: 'Pause Sim', tooltip: 'Pause the simulation clock' };
+  }
+  if (s.id === 'pause-unit') {
+    const allPaused =
+      ctx.selection.count > 0 && ctx.selection.pausedUnits === ctx.selection.count;
+    if (allPaused) {
+      return {
+        ...s,
+        label: 'Resume',
+        icon: SWAP_GLYPHS['resume-unit'] ?? s.icon,
+        tooltip: 'Release the hold and let the unit continue its run',
+      };
+    }
+  }
+  return s;
 }
 
 export const mockMicroagent: Microagent = {

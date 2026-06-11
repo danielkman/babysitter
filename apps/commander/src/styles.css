@@ -263,6 +263,21 @@
     background: var(--color-status-alert);
     animation: wr-urgent 0.9s ease-in-out infinite;
   }
+  .wr-unit-badge--paused {
+    background: var(--color-hud-bright);
+    font-size: 8px;
+    letter-spacing: 0.08em;
+  }
+
+  /* operator hold: freeze the ring animation + dim the unit honestly */
+  .wr-unit.is-paused .wr-unit-ring {
+    animation-play-state: paused;
+    opacity: 0.55;
+    border-style: double;
+  }
+  .wr-unit.is-paused .wr-unit-portrait {
+    filter: saturate(0.55) brightness(0.85);
+  }
 
   /* per-state ring color + animation */
   .wr-unit--idle .wr-unit-ring {
@@ -373,6 +388,30 @@
     align-items: center;
     justify-content: center;
     pointer-events: none;
+  }
+
+  /* operator priority chevron (Prioritize command, SPEC §8) */
+  .wr-task-priority {
+    position: absolute;
+    top: -7px;
+    right: -4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 9999px;
+    background: var(--color-deck-700);
+    border: 1px solid var(--color-status-warn);
+    color: var(--color-status-warn);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .wr-task-priority svg {
+    width: 10px;
+    height: 10px;
+  }
+  .wr-task.is-priority .wr-task-ring-track {
+    stroke: rgb(245 187 58 / 0.35);
   }
 
   .wr-task-label {
@@ -645,6 +684,15 @@
     align-items: center;
     justify-content: center;
     padding: 0 4px;
+  }
+  .wr-alert-portrait {
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    background: rgb(255 255 255 / 0.06);
+    border: 1px solid rgb(255 255 255 / 0.14);
+    padding: 1px;
   }
   .wr-alert-text {
     font-size: 12px;
@@ -921,6 +969,36 @@
     border-radius: 5px;
     border: 1px solid var(--color-hud-dim);
     color: var(--color-hud-text);
+  }
+  .wr-sel-staterow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .wr-sel-paused,
+  .wr-sel-priority {
+    display: inline-block;
+    margin-top: 6px;
+    font-family: var(--font-mono-hud);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 2px 6px;
+    border-radius: 5px;
+    text-transform: uppercase;
+  }
+  .wr-sel-paused {
+    border: 1px solid var(--color-hud-bright);
+    color: var(--color-hud-bright);
+  }
+  .wr-sel-priority {
+    border: 1px solid var(--color-status-warn);
+    color: var(--color-status-warn);
+  }
+  .wr-sel-card-state .wr-sel-paused {
+    margin-top: 0;
+    margin-left: 4px;
+    padding: 0 3px;
+    font-size: 8px;
   }
   .wr-sel-state--thinking,
   .wr-sel-state--dispatching {
