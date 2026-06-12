@@ -112,10 +112,34 @@ export function searchArchive(
   return matches;
 }
 
+/** Viewport-cull margin in SVG user units (a node just off-plate keeps its edges). */
+export const ARCHIVE_CULL_MARGIN = 32;
+
 /**
- * §V4-10 edge declutter predicate: at zoom ≥1 every edge renders; below 1
- * only intra-cluster (same-silo) edges plus edges incident to the
- * selected/hovered node survive.
+ * Is a layout node inside the visible plate under the current view
+ * transform? (translate-then-scale: screen = t + k·p.) Used by the zoom>1
+ * edge cull — declutter only, never selection.
+ */
+export function nodeInViewport(
+  view: ArchiveViewState,
+  x: number,
+  y: number,
+  viewWidth: number,
+  viewHeight: number,
+  margin: number = ARCHIVE_CULL_MARGIN,
+): boolean {
+  const sx = view.tx + view.k * x;
+  const sy = view.ty + view.k * y;
+  return sx >= -margin && sx <= viewWidth + margin && sy >= -margin && sy <= viewHeight + margin;
+}
+
+/**
+ * §V4-10 edge declutter predicate (v4-r0 tightening):
+ *   - edges incident to the focused/hovered node ALWAYS render;
+ *   - otherwise only intra-cluster (same-silo) edges survive — at every
+ *     zoom level (cross-silo hairlines were the main clutter source);
+ *   - at zoom > 1, an intra-cluster edge whose BOTH endpoints sit outside
+ *     the viewport is culled (`srcInView`/`dstInView` from nodeInViewport).
  */
 export function edgeVisible(
   zoom: number,
@@ -124,10 +148,13 @@ export function edgeVisible(
   src: string,
   dst: string,
   activeIds: ReadonlyArray<string | null>,
+  srcInView: boolean = true,
+  dstInView: boolean = true,
 ): boolean {
-  if (zoom >= 1) return true;
   for (const active of activeIds) {
     if (active !== null && (src === active || dst === active)) return true;
   }
-  return srcSilo === dstSilo;
+  if (srcSilo !== dstSilo) return false;
+  if (zoom > 1 && !srcInView && !dstInView) return false;
+  return true;
 }

@@ -17,6 +17,7 @@ import {
 import {
   DEFAULT_TICK_INTERVAL_MS,
   IN_PRODUCTION_COMPACT_TICKS,
+  pickReviewerNote,
   Simulation,
   type SimFileTreeNode,
 } from '../simulation';
@@ -523,6 +524,22 @@ describe('workspace file model (§V4-8)', () => {
     expect(lines.length).toBeLessThanOrEqual(80);
     // Unknown paths answer null.
     expect(sim.getFileContent(card.taskId, 'no/such/file.bin')).toBeNull();
+  });
+
+  it('pickReviewerNote (v4-r0): dedupes against inscribed notes and varies the pool per attempt', () => {
+    const a = pickReviewerNote('src/index.ts', 1, [], 0);
+    // identical inputs ⇒ identical pick (deterministic)
+    expect(pickReviewerNote('src/index.ts', 1, [], 0)).toBe(a);
+    // the same draw on a later attempt rotates the pool
+    const b = pickReviewerNote('src/index.ts', 2, [], 0);
+    expect(b).not.toBe(a);
+    // an already-inscribed note is skipped, never duplicated
+    const c = pickReviewerNote('src/index.ts', 1, [a], 0);
+    expect(c).not.toBe(a);
+    // accumulating notes keeps yielding fresh ones until the pool runs dry
+    const seen: string[] = [];
+    for (let i = 0; i < 6; i += 1) seen.push(pickReviewerNote('src/index.ts', 1, seen, 0));
+    expect(new Set(seen).size).toBe(6);
   });
 
   it('writeFile: overrides content, updates dirty count + a diff vs the PRE-EDIT content, emits workspace_change', () => {

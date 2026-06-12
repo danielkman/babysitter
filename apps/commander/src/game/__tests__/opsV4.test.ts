@@ -17,6 +17,7 @@ import {
   clampZoom,
   clientToSvg,
   edgeVisible,
+  nodeInViewport,
   isHomeView,
   panBy,
   searchArchive,
@@ -210,12 +211,39 @@ describe('archive view math (§V4-10)', () => {
     expect(searchArchive(records, '   ').size).toBe(0);
   });
 
-  it('declutters edges below zoom 1: intra-silo or incident-to-active only', () => {
-    expect(edgeVisible(1, 'a', 'b', 'n1', 'n2', [null, null])).toBe(true); // zoom ≥1: all
+  it('declutters edges: intra-silo or incident-to-active only — at EVERY zoom (v4-r0)', () => {
+    expect(edgeVisible(1, 'a', 'a', 'n1', 'n2', [null, null])).toBe(true); // intra-silo at 1
+    expect(edgeVisible(1, 'a', 'b', 'n1', 'n2', [null, null])).toBe(false); // cross-silo hidden at 1 too
+    expect(edgeVisible(2, 'a', 'b', 'n1', 'n2', ['n2', null])).toBe(true); // incident survives any zoom
     expect(edgeVisible(0.6, 'a', 'a', 'n1', 'n2', [null, null])).toBe(true); // intra-silo
     expect(edgeVisible(0.6, 'a', 'b', 'n1', 'n2', [null, null])).toBe(false); // cross-silo
     expect(edgeVisible(0.6, 'a', 'b', 'n1', 'n2', ['n2', null])).toBe(true); // incident
     expect(edgeVisible(0.6, 'a', 'b', 'n1', 'n2', [null, 'n1'])).toBe(true); // incident (focus)
+  });
+
+  it('culls edges with BOTH endpoints outside the viewport at zoom > 1 only', () => {
+    // both endpoints off-plate, zoom 2 → culled
+    expect(edgeVisible(2, 'a', 'a', 'n1', 'n2', [null, null], false, false)).toBe(false);
+    // one endpoint visible keeps the edge
+    expect(edgeVisible(2, 'a', 'a', 'n1', 'n2', [null, null], true, false)).toBe(true);
+    expect(edgeVisible(2, 'a', 'a', 'n1', 'n2', [null, null], false, true)).toBe(true);
+    // at zoom ≤ 1 viewport culling is off
+    expect(edgeVisible(1, 'a', 'a', 'n1', 'n2', [null, null], false, false)).toBe(true);
+    expect(edgeVisible(0.6, 'a', 'a', 'n1', 'n2', [null, null], false, false)).toBe(true);
+    // incident edges beat the cull even fully off-plate
+    expect(edgeVisible(2, 'a', 'a', 'n1', 'n2', ['n1', null], false, false)).toBe(true);
+  });
+
+  it('nodeInViewport applies the translate-then-scale transform with a cull margin', () => {
+    const home = { k: 1, tx: 0, ty: 0 };
+    expect(nodeInViewport(home, 600, 190, 1200, 380)).toBe(true);
+    expect(nodeInViewport(home, -100, 190, 1200, 380)).toBe(false);
+    // margin keeps just-off-plate nodes "in view"
+    expect(nodeInViewport(home, -20, 190, 1200, 380)).toBe(true);
+    // zoomed + panned: screen = t + k·p
+    const zoomed = { k: 2, tx: -1200, ty: -380 };
+    expect(nodeInViewport(zoomed, 600, 190, 1200, 380)).toBe(true); // → (0, 0)
+    expect(nodeInViewport(zoomed, 1300, 190, 1200, 380)).toBe(false); // → (1400, 0): past the right edge + margin
   });
 });
 

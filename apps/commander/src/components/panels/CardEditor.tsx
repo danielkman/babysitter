@@ -104,6 +104,7 @@ function CardEditorDialog({ store, orders, views, card }: DialogProps): React.JS
         </label>
         <div className="wr-foundry-field">
           <span className="wr-foundry-label">yolo posture</span>
+          {/* v4-r0: a real brass lever control (same draft wiring) */}
           <button
             type="button"
             role="switch"
@@ -111,7 +112,12 @@ function CardEditorDialog({ store, orders, views, card }: DialogProps): React.JS
             className={clsx('wr-card-editor-yolo', draft.yolo && 'is-on')}
             onClick={() => setDraft({ ...draft, yolo: !draft.yolo })}
           >
-            yolo {draft.yolo ? 'engaged — auto-approve on review pass' : 'off — human review stands'}
+            <span className="wr-yolo-lever" aria-hidden>
+              <span className="wr-yolo-lever-knob" />
+            </span>
+            <span className="wr-yolo-caption">
+              yolo {draft.yolo ? 'engaged — auto-approve on review pass' : 'off — human review stands'}
+            </span>
           </button>
         </div>
         <label className="wr-foundry-field">

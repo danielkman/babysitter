@@ -139,7 +139,9 @@ export function IdeOverlay({ store, orders, views }: IdeOverlayProps): React.JSX
   const backdropRef = useRef<HTMLDivElement | null>(null);
   const pendingCaret = useRef<number | null>(null);
 
-  // Fresh card (or reopen) → fresh session state.
+  // Fresh card (or reopen) → fresh session state. v4-r0: default-open the
+  // card's first changed file, preferring a .ts/.tsx so the token-span
+  // highlighting shows immediately (§V4-11 polish).
   useEffect(() => {
     setTabs([]);
     setActive(null);
@@ -149,7 +151,18 @@ export function IdeOverlay({ store, orders, views }: IdeOverlayProps): React.JSX
     setGhost(null);
     setCaret(0);
     setHlText('');
-  }, [taskId]);
+    if (taskId === null) return;
+    const files = views.getWorkspaceView(taskId)?.files ?? [];
+    const preferred =
+      files.find((f) => /\.tsx?$/.test(f.path) && f.status !== 'D') ??
+      files.find((f) => f.status !== 'D');
+    if (preferred === undefined) return;
+    const content = views.getFileContent(taskId, preferred.path) ?? '';
+    setTabs([preferred.path]);
+    setActive(preferred.path);
+    setBuffers({ [preferred.path]: content });
+    setHlText(content);
+  }, [taskId, views]);
 
   // Debounced re-highlight (~80ms) of the active buffer.
   const activeText = active !== null ? (buffers[active] ?? '') : '';

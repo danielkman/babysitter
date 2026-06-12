@@ -209,6 +209,31 @@ describe('inspector tab state', () => {
     expect(store.getState().meta.inspectorTab).toBe('workspace');
   });
 
+  it('an Inspector-opening intent closes the review panel — SAME task (Inspect/Terminal/Memory rule)', () => {
+    const store = createCommanderStore();
+    store.getState().openReview('task-1');
+    expect(store.getState().meta.reviewTaskId).toBe('task-1');
+    store.getState().openInspectorCard('task-1');
+    expect(store.getState().meta.reviewTaskId).toBeNull();
+    expect(store.getState().meta.inspectorTaskId).toBe('task-1');
+  });
+
+  it('an Inspector-opening intent closes the review panel — DIFFERENT task (inspector becomes primary)', () => {
+    const store = createCommanderStore();
+    store.getState().openReview('task-2');
+    store.getState().openInspectorCard('task-1');
+    expect(store.getState().meta.reviewTaskId).toBeNull();
+    expect(store.getState().meta.inspectorTaskId).toBe('task-1');
+  });
+
+  it('opening the Inspector on an AGENT also closes an open review panel', () => {
+    const store = createCommanderStore();
+    store.getState().openReview('task-2');
+    store.getState().openInspector('unit-1');
+    expect(store.getState().meta.reviewTaskId).toBeNull();
+    expect(store.getState().meta.inspectorUnitId).toBe('unit-1');
+  });
+
   it('Esc closes the card-mode inspector AFTER the review panel (§V3-7 cascade)', () => {
     const store = createCommanderStore();
     store.getState().openInspectorCard('task-1');

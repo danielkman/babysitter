@@ -686,7 +686,13 @@ export function KanbanBoard({ store, orders }: KanbanBoardProps): React.JSX.Elem
                   </div>
                 );
               })}
-              {lane.length === 0 && <div className="wr-lane-empty">— empty plate —</div>}
+              {lane.length === 0 &&
+                (columnId === 'merged' || columnId === 'in-production' ? (
+                  // §V4-1 release rail (v4-r0): etched empty-state caption
+                  <div className="wr-lane-empty wr-lane-empty--rail">awaiting the release train</div>
+                ) : (
+                  <div className="wr-lane-empty">— empty plate —</div>
+                ))}
             </div>
           </section>
         );

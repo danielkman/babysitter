@@ -1614,6 +1614,21 @@
     color: var(--color-ink-soft);
     opacity: 0.7;
   }
+  /* §V4-1 release-rail empty state (v4-r0): etched small-caps caption */
+  .wr-lane-empty--rail {
+    font-family: var(--font-serif-display);
+    font-variant-caps: small-caps;
+    letter-spacing: 0.18em;
+    font-style: italic;
+    font-size: 10px;
+    text-align: center;
+    opacity: 1;
+    color: var(--color-ink-soft);
+    text-shadow: 0 1px 0 rgb(255 248 224 / 0.7);
+    border-top: 1px solid rgb(148 112 44 / 0.35);
+    border-bottom: 1px solid rgb(148 112 44 / 0.35);
+    padding: 4px 8px;
+  }
 
   /* --- cards (tasks, §V3-1) ----------------------------------------------- */
   .wr-card {
@@ -2014,10 +2029,15 @@
   .wr-release-lever:active:not(:disabled) {
     transform: translateY(1px);
   }
+  /* v4-r0: the disarmed lever stays clearly visible brass at boot — dimmed
+     and de-glossed, never ghosted out */
   .wr-release-lever:disabled {
-    opacity: 0.45;
+    opacity: 0.8;
     cursor: default;
-    filter: grayscale(0.55);
+    filter: saturate(0.55) brightness(0.92);
+    box-shadow:
+      inset 0 1px 0 rgb(255 248 224 / 0.4),
+      0 1px 2px rgb(58 42 18 / 0.35);
   }
   .wr-release-lever-glyph {
     width: 12px;
@@ -2241,31 +2261,132 @@
     font-family: var(--font-mono-hud);
   }
 
-  /* --- card editor (§V4-5 parchment form) -------------------------------------- */
+  /* --- card editor (§V4-5 parchment form — v4-r0 re-skin to the parchment
+     form family: parchment dialog body, ink labels, dark inputs) ------------- */
   .wr-card-editor {
     width: 440px;
     max-height: calc(100% - 60px);
     overflow-y: auto;
+    background:
+      radial-gradient(ellipse at 30% 12%, rgb(255 248 224 / 0.55), transparent 60%),
+      linear-gradient(to bottom, #f4ebd0, #e6d7b2);
+    border: 2px solid var(--color-brass-500);
+    box-shadow:
+      inset 0 0 0 1px rgb(34 35 30 / 0.35),
+      inset 0 0 24px rgb(140 110 60 / 0.18),
+      0 20px 60px rgb(40 28 10 / 0.6);
+    color: var(--color-ink);
+  }
+  .wr-card-editor .wr-panel-title {
+    color: var(--color-ink);
+    border-bottom: 1px solid rgb(148 112 44 / 0.4);
+    padding-bottom: 6px;
+    text-shadow: 0 1px 0 rgb(255 248 224 / 0.7);
+  }
+  .wr-card-editor .wr-foundry-label {
+    color: var(--color-ink-soft);
+    text-shadow: 0 1px 0 rgb(255 248 224 / 0.7);
+  }
+  /* dark cogitator inputs sunk into the parchment */
+  .wr-card-editor .wr-foundry-input {
+    border-color: rgb(74 56 18 / 0.75);
+    box-shadow:
+      inset 0 1px 4px rgb(12 12 8 / 0.6),
+      0 1px 0 rgb(255 248 224 / 0.55);
+  }
+  .wr-card-editor .wr-modal-hint {
+    color: var(--color-ink-soft);
+  }
+  /* etched-chip action buttons on the parchment plate */
+  .wr-card-editor .wr-modal-actions button {
+    font-family: var(--font-mono-hud);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--color-ink-soft);
+    border: 1px solid rgb(185 145 63 / 0.6);
+    border-radius: 6px;
+    background: linear-gradient(to bottom, rgb(247 238 215 / 0.92), rgb(233 220 190 / 0.92));
+    text-shadow: 0 1px 0 rgb(255 248 224 / 0.8);
+    box-shadow: inset 0 1px 1px rgb(109 81 32 / 0.18);
+    padding: 4px 12px;
+    cursor: pointer;
+  }
+  .wr-card-editor .wr-modal-actions button:hover {
+    color: #6d4d12;
+    border-color: var(--color-brass-500);
+    box-shadow:
+      inset 0 1px 1px rgb(109 81 32 / 0.18),
+      0 0 6px rgb(232 181 74 / 0.45);
+  }
+  .wr-card-editor .wr-modal-actions .wr-alert-btn--approve {
+    color: #5c4516;
+    font-weight: 700;
+    border-color: var(--color-brass-500);
   }
   .wr-card-editor-desc {
     resize: vertical;
   }
+  /* v4-r0: the YOLO row is a brass LEVER — etched track, sliding brass knob */
   .wr-card-editor-yolo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     font-family: var(--font-mono-hud);
     font-size: 11px;
     letter-spacing: 0.06em;
     text-align: left;
-    color: var(--color-hud-dim);
-    background: rgb(22 23 15 / 0.85);
-    border: 1px solid var(--color-glass-border);
+    color: var(--color-ink-soft);
+    background: linear-gradient(to bottom, rgb(247 238 215 / 0.9), rgb(233 220 190 / 0.9));
+    border: 1px solid rgb(148 112 44 / 0.6);
     border-radius: 6px;
     padding: 6px 8px;
     cursor: pointer;
+    text-shadow: 0 1px 0 rgb(255 248 224 / 0.8);
+    box-shadow: inset 0 1px 1px rgb(109 81 32 / 0.18);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
   }
   .wr-card-editor-yolo.is-on {
-    color: var(--color-amber-glow);
+    color: #6d4d12;
     border-color: var(--color-brass-500);
-    box-shadow: inset 0 0 10px rgb(232 181 74 / 0.14);
+    box-shadow:
+      inset 0 1px 1px rgb(109 81 32 / 0.18),
+      0 0 10px rgb(232 181 74 / 0.35);
+  }
+  .wr-yolo-lever {
+    flex: none;
+    position: relative;
+    width: 42px;
+    height: 16px;
+    border-radius: 9999px;
+    border: 1px solid rgb(74 56 18 / 0.8);
+    background: linear-gradient(to bottom, rgb(22 23 15 / 0.92), rgb(44 45 37 / 0.92));
+    box-shadow:
+      inset 0 1px 3px rgb(0 0 0 / 0.7),
+      0 1px 0 rgb(255 248 224 / 0.55);
+  }
+  .wr-yolo-lever-knob {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: 16px;
+    height: 12px;
+    border-radius: 4px;
+    border: 1px solid var(--color-brass-700);
+    background: linear-gradient(to bottom, var(--color-brass-300), var(--color-brass-500) 60%, var(--color-brass-600));
+    box-shadow:
+      inset 0 1px 0 rgb(255 248 224 / 0.65),
+      0 1px 2px rgb(0 0 0 / 0.55);
+    transition: left 0.18s ease;
+  }
+  .wr-card-editor-yolo.is-on .wr-yolo-lever-knob {
+    left: 23px;
+    box-shadow:
+      inset 0 1px 0 rgb(255 248 224 / 0.7),
+      0 0 8px rgb(232 181 74 / 0.7);
+  }
+  .wr-yolo-caption {
+    flex: 1;
+    min-width: 0;
   }
   .wr-foundry-input:disabled {
     opacity: 0.55;
@@ -2495,8 +2616,14 @@
   .wr-mem-node-label {
     font-family: var(--font-mono-hud);
     font-size: 9px;
-    fill: var(--color-ink-soft);
+    fill: var(--color-ink);
     pointer-events: none;
+    /* crisp vector legibility halo (paint-order stroke — never a blurry
+       rasterized glow, §V4-10 as polished in v4-r0) */
+    stroke: rgb(247 238 215 / 0.9);
+    stroke-width: 2.4;
+    paint-order: stroke;
+    stroke-linejoin: round;
   }
   .wr-mem-card {
     position: absolute;
@@ -2931,12 +3058,18 @@
     margin: 2px 0 6px 20px;
     border: 1px solid var(--color-brass-600);
     border-radius: 7px;
-    /* long lines scroll horizontally instead of wrapping — continuation
-       lines never break the engraved gutter rhythm */
-    overflow-x: auto;
-    overflow-y: hidden;
+    overflow: hidden;
     background: linear-gradient(to bottom, #f0e6c9, #e9dcbe);
     box-shadow: inset 0 0 10px rgb(140 110 60 / 0.25);
+  }
+  /* v4-r0: inner scroll region — long rows scroll horizontally instead of
+     wrapping, and a mask-image gradient fades overflowing row text into the
+     plate's right edge (the brass border itself stays un-masked) */
+  .wr-diff-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    mask-image: linear-gradient(to right, #000 calc(100% - 22px), rgb(0 0 0 / 0.1));
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 22px), rgb(0 0 0 / 0.1));
   }
   .wr-diff-row {
     display: flex;
@@ -3409,11 +3542,23 @@
     border-bottom: none;
     padding-bottom: 0;
   }
+  /* v4-r0 ruled-ledger ground: faint horizontal rules + the red margin line
+     (an accountant's parchment ledger) behind both the Runs and Processes
+     tabs */
   .wr-runs-body {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
-    padding: 10px 14px;
+    padding: 10px 14px 10px 40px;
+    background:
+      linear-gradient(to right, transparent 27px, rgb(168 62 50 / 0.3) 27px, rgb(168 62 50 / 0.3) 28.5px, transparent 28.5px),
+      repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 23px,
+        rgb(122 99 60 / 0.14) 23px,
+        rgb(122 99 60 / 0.14) 24px
+      );
   }
   .wr-runs-table {
     display: flex;
@@ -3431,11 +3576,31 @@
     background: rgb(227 200 127 / 0.05);
     cursor: pointer;
     font-size: 11px;
-    color: var(--color-hud-dim);
+    color: var(--color-ink-soft);
   }
   .wr-runs-row:hover {
     border-color: var(--color-brass-500);
     background: rgb(232 181 74 / 0.09);
+  }
+  /* §V4-6 column-header row (v4-r0): etched small-caps, not clickable */
+  .wr-runs-colhead {
+    cursor: default;
+    border-color: rgb(148 112 44 / 0.5);
+    background: linear-gradient(to bottom, rgb(247 238 215 / 0.6), rgb(233 220 190 / 0.5));
+    box-shadow: inset 0 1px 1px rgb(109 81 32 / 0.18);
+    padding-top: 3px;
+    padding-bottom: 3px;
+  }
+  .wr-runs-colhead > span {
+    font-family: var(--font-serif-display);
+    font-variant-caps: small-caps;
+    letter-spacing: 0.12em;
+    font-size: 10px;
+    color: var(--color-ink-soft);
+    text-shadow: 0 1px 0 rgb(255 248 224 / 0.8);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .wr-runs-id,
   .wr-runs-process,
@@ -3447,14 +3612,86 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: var(--color-ink-soft);
   }
+  /* v4-r0 readability: the card-title column carries full ink weight */
   .wr-runs-title {
     font-family: var(--font-serif-display);
     font-size: 12px;
-    color: var(--color-parchment-100);
+    font-weight: 600;
+    color: var(--color-ink);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+  /* v4-r0 readability: pending-effects chips inked for parchment — etched
+     chip treatment instead of the HUD's dim glass (they read as data, not
+     as disabled controls) */
+  .wr-runs .wr-effect-chip {
+    border: 1px solid rgb(148 112 44 / 0.65);
+    background: linear-gradient(to bottom, rgb(247 238 215 / 0.92), rgb(233 220 190 / 0.92));
+    color: #5c4516;
+    text-shadow: 0 1px 0 rgb(255 248 224 / 0.8);
+    box-shadow: inset 0 1px 1px rgb(109 81 32 / 0.18);
+  }
+  .wr-runs .wr-effect-chip--pulse {
+    color: #8a3526;
+    border-color: rgb(138 53 38 / 0.7);
+  }
+  /* the promoted ProcessTab + journal sit on parchment inside the ledger —
+     re-ink the HUD-dim text */
+  .wr-runs .wr-journal-row {
+    color: var(--color-ink-soft);
+  }
+  .wr-runs .wr-journal-label {
+    color: var(--color-ink);
+  }
+  .wr-runs .wr-journal-type,
+  .wr-runs .wr-journal-ts {
+    color: var(--color-ink-soft);
+  }
+  .wr-runs .wr-journal-seq {
+    color: #8a6a1e;
+  }
+  .wr-runs .wr-journal-type--effect_resolved {
+    color: #2f6e4f;
+  }
+  .wr-runs .wr-journal-type--run_failed,
+  .wr-runs .wr-journal-type--process_runtime_error {
+    color: #8a3526;
+  }
+  .wr-runs .wr-runstate {
+    color: var(--color-ink-soft);
+    text-shadow: 0 1px 0 rgb(255 248 224 / 0.7);
+  }
+  .wr-runs .wr-tab-empty {
+    color: var(--color-ink-soft);
+    font-style: italic;
+  }
+  /* §V4-6 ornamental footer colophon (v4-r0) */
+  .wr-runs-colophon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 5px 14px 7px;
+    border-top: 1px solid rgb(148 112 44 / 0.35);
+    color: rgb(148 112 44 / 0.75);
+  }
+  .wr-runs-colophon-orn {
+    width: 60px;
+    height: 10px;
+    flex: none;
+  }
+  .wr-runs-colophon-text {
+    font-family: var(--font-serif-display);
+    font-variant-caps: small-caps;
+    font-style: italic;
+    letter-spacing: 0.22em;
+    font-size: 9.5px;
+    color: var(--color-ink-soft);
+    text-shadow: 0 1px 0 rgb(255 248 224 / 0.7);
+    white-space: nowrap;
   }
   .wr-runs-pipeline {
     display: inline-flex;
@@ -3496,13 +3733,19 @@
     border-bottom: 1px solid rgb(216 181 97 / 0.3);
     margin-bottom: 8px;
   }
+  /* v4-r0: the run-detail journal FILLS the ledger height (auto-follow
+     scroll region) instead of stopping at a 40vh plate */
   .wr-run-detail .wr-inspector-body {
     flex: 1;
     min-height: 0;
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
   .wr-run-detail .wr-journal {
-    max-height: 40vh;
+    flex: 1;
+    min-height: 0;
+    max-height: none;
     overflow-y: auto;
   }
   .wr-runs-back {
@@ -3550,7 +3793,7 @@
     background: rgb(227 200 127 / 0.05);
     cursor: pointer;
     font-size: 11px;
-    color: var(--color-hud-dim);
+    color: var(--color-ink-soft);
   }
   .wr-process-card:hover,
   .wr-process-card.is-open {
@@ -3560,19 +3803,27 @@
   .wr-process-card-id {
     font-family: var(--font-mono-hud);
     font-size: 10px;
-    color: var(--color-amber-glow);
+    font-weight: 600;
+    color: #8a6a1e;
   }
   .wr-process-card-phases {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: var(--color-ink);
   }
+  /* §V4-6 process editor (v4-r0 re-skin): etched brass-bordered parchment
+     plate; phase rows are engraved parchment fields */
   .wr-process-editor {
     width: 340px;
     flex-shrink: 0;
     border: 1px solid var(--color-brass-600);
     border-radius: 8px;
-    background: rgb(227 200 127 / 0.06);
+    background: linear-gradient(to bottom, rgb(252 245 226 / 0.85), rgb(236 221 184 / 0.85));
+    box-shadow:
+      inset 0 0 0 1px rgb(255 248 224 / 0.5),
+      inset 0 0 14px rgb(140 110 60 / 0.18),
+      0 4px 12px rgb(58 42 18 / 0.25);
     padding: 10px 12px;
   }
   .wr-process-editor-head {
@@ -3580,16 +3831,21 @@
     justify-content: space-between;
     align-items: baseline;
     margin-bottom: 8px;
+    border-bottom: 1px solid rgb(148 112 44 / 0.35);
+    padding-bottom: 5px;
   }
   .wr-process-editor-id {
     font-family: var(--font-mono-hud);
     font-size: 11px;
-    color: var(--color-amber-glow);
+    font-weight: 600;
+    color: #8a6a1e;
+    text-shadow: 0 1px 0 rgb(255 248 224 / 0.8);
   }
   .wr-process-editor-kind {
     font-size: 10px;
     font-variant-caps: small-caps;
-    color: var(--color-hud-dim);
+    letter-spacing: 0.1em;
+    color: var(--color-ink-soft);
   }
   .wr-process-editor-phases {
     display: flex;
@@ -3602,37 +3858,52 @@
     gap: 5px;
     align-items: center;
   }
+  /* etched brass-bordered parchment field (v4-r0): engraved inset writing
+     line, ink script */
   .wr-process-editor-phase input {
     flex: 1;
     min-width: 0;
     font-family: var(--font-mono-hud);
     font-size: 11px;
-    color: var(--color-parchment-100);
-    background: rgb(22 23 15 / 0.5);
-    border: 1px solid rgb(216 181 97 / 0.35);
+    color: var(--color-ink);
+    background: linear-gradient(to bottom, #f4ebd0, #e9dcbe);
+    border: 1px solid rgb(148 112 44 / 0.65);
     border-radius: 5px;
     padding: 3px 7px;
+    box-shadow:
+      inset 0 1px 3px rgb(109 81 32 / 0.3),
+      0 1px 0 rgb(255 248 224 / 0.6);
   }
   .wr-process-editor-phase input:focus {
     outline: none;
-    border-color: var(--color-amber-glow);
+    border-color: var(--color-amber-deep, #a8761c);
+    box-shadow:
+      inset 0 1px 3px rgb(109 81 32 / 0.3),
+      0 0 6px rgb(224 168 60 / 0.45);
   }
+  /* up/down/remove + actions: the etched-chip treatment (parchment fill ·
+     hairline brass border · letterpress type) */
   .wr-process-editor-phase button,
   .wr-process-editor-actions button {
     font-family: var(--font-mono-hud);
     font-size: 9px;
     letter-spacing: 0.05em;
-    color: var(--color-hud-dim);
-    border: 1px solid rgb(216 181 97 / 0.35);
+    color: var(--color-ink-soft);
+    border: 1px solid rgb(185 145 63 / 0.6);
     border-radius: 5px;
-    background: transparent;
+    background: linear-gradient(to bottom, rgb(247 238 215 / 0.92), rgb(233 220 190 / 0.92));
+    text-shadow: 0 1px 0 rgb(255 248 224 / 0.8);
+    box-shadow: inset 0 1px 1px rgb(109 81 32 / 0.18);
     padding: 3px 6px;
     cursor: pointer;
   }
   .wr-process-editor-phase button:hover:not(:disabled),
   .wr-process-editor-actions button:hover {
-    color: var(--color-amber-glow);
+    color: #6d4d12;
     border-color: var(--color-brass-500);
+    box-shadow:
+      inset 0 1px 1px rgb(109 81 32 / 0.18),
+      0 0 6px rgb(232 181 74 / 0.45);
   }
   .wr-process-editor-phase button:disabled {
     opacity: 0.35;
@@ -3644,20 +3915,21 @@
     margin-bottom: 8px;
   }
   .wr-process-editor-save {
-    color: var(--color-amber-glow) !important;
+    color: #5c4516 !important;
     border-color: var(--color-brass-500) !important;
+    font-weight: 700;
   }
   .wr-process-editor-error {
     font-size: 10px;
     font-style: italic;
-    color: var(--color-garnet, #b3504e);
+    color: #8a3526;
     margin-bottom: 6px;
   }
   .wr-process-editor-note {
     font-size: 9.5px;
     font-style: italic;
-    color: var(--color-hud-dim);
-    border-top: 1px solid rgb(216 181 97 / 0.2);
+    color: var(--color-ink-soft);
+    border-top: 1px solid rgb(148 112 44 / 0.3);
     padding-top: 6px;
   }
 
@@ -3790,10 +4062,11 @@
     font-size: 15px;
     fill: rgb(216 181 97 / 0.5);
   }
+  /* tight match halo (v4-r0): a snug amber ring, no wide blur bloom */
   .wr-mem-node.is-match .wr-mem-node-ring {
     stroke: var(--color-amber-glow);
-    stroke-width: 2.4;
-    filter: drop-shadow(0 0 5px rgb(232 181 74 / 0.8));
+    stroke-width: 2.6;
+    filter: drop-shadow(0 0 1.5px rgb(232 181 74 / 0.9));
   }
   .wr-mem-node.is-filtered {
     opacity: 0.18;

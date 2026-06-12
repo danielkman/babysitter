@@ -411,6 +411,18 @@ export function RunsOverlay({ store, orders, views }: RunsOverlayProps): React.J
               />
             ) : (
               <ul className="wr-runs-table" aria-label="All runs">
+                {/* §V4-6 ledger column headers (v4-r0): same grid as the rows */}
+                <li className="wr-runs-row wr-runs-colhead" aria-hidden>
+                  <span>rite</span>
+                  <span>card</span>
+                  <span>kind</span>
+                  <span>process</span>
+                  <span>state</span>
+                  <span>phases</span>
+                  <span>pending effects</span>
+                  <span>tokens · cost</span>
+                  <span>started → ended</span>
+                </li>
                 {runs.length === 0 && (
                   <li className="wr-tab-empty">no rites recorded — start a card working</li>
                 )}
@@ -427,6 +439,29 @@ export function RunsOverlay({ store, orders, views }: RunsOverlayProps): React.J
             ))}
           {tab === 'processes' && <ProcessesTab views={views} orders={orders} />}
         </div>
+
+        {/* §V4-6 ornamental footer colophon (v4-r0): both tabs share it */}
+        <footer className="wr-runs-colophon" aria-hidden>
+          <svg className="wr-runs-colophon-orn" viewBox="0 0 60 10" role="presentation">
+            <path
+              d="M2 5 H22 M38 5 H58 M26 5 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M30 3.4 a1.6 1.6 0 1 0 0 3.2 a1.6 1.6 0 1 0 0 -3.2"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1"
+            />
+          </svg>
+          <span className="wr-runs-colophon-text">
+            inscribed by the cogitator · ledger of rites · seal of the magos
+          </span>
+          <svg className="wr-runs-colophon-orn" viewBox="0 0 60 10" role="presentation">
+            <path
+              d="M2 5 H22 M38 5 H58 M26 5 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M30 3.4 a1.6 1.6 0 1 0 0 3.2 a1.6 1.6 0 1 0 0 -3.2"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1"
+            />
+          </svg>
+        </footer>
       </div>
     </div>
   );

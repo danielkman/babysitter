@@ -1291,11 +1291,19 @@ export function createCommanderStore(): CommanderStore {
     openInspector(unitId) {
       // §V4-3 retargeting: an already-open Inspector keeps its selected tab
       // (agents support every tab); a fresh open defaults to Transcript.
+      // An Inspector-opening intent (Inspect/Terminal/Memory) makes the
+      // Inspector primary: any open review panel closes — same task or not.
       set((state) => {
         const wasOpen = state.meta.inspectorUnitId !== null || state.meta.inspectorTaskId !== null;
         const tab: InspectorTab = wasOpen ? state.meta.inspectorTab : 'transcript';
         return {
-          meta: { ...state.meta, inspectorUnitId: unitId, inspectorTaskId: null, inspectorTab: tab },
+          meta: {
+            ...state.meta,
+            inspectorUnitId: unitId,
+            inspectorTaskId: null,
+            inspectorTab: tab,
+            reviewTaskId: null,
+          },
         };
       });
     },
@@ -1303,12 +1311,20 @@ export function createCommanderStore(): CommanderStore {
       // Agent-less cards default to the Process tab (SPEC-V2 §V2-5 under V3).
       // §V4-3 retargeting: preserve the selected tab when the card supports
       // it (Process/Workspace); Transcript falls back to Process (V3 rules).
+      // As with openInspector, the Inspector becomes primary: an open review
+      // panel (same task or different) closes.
       set((state) => {
         const wasOpen = state.meta.inspectorUnitId !== null || state.meta.inspectorTaskId !== null;
         const tab: InspectorTab =
           wasOpen && state.meta.inspectorTab !== 'transcript' ? state.meta.inspectorTab : 'process';
         return {
-          meta: { ...state.meta, inspectorUnitId: null, inspectorTaskId: taskId, inspectorTab: tab },
+          meta: {
+            ...state.meta,
+            inspectorUnitId: null,
+            inspectorTaskId: taskId,
+            inspectorTab: tab,
+            reviewTaskId: null,
+          },
         };
       });
     },

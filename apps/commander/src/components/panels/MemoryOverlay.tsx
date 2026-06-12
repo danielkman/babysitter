@@ -28,6 +28,7 @@ import {
   ARCHIVE_HOME_VIEW,
   clientToSvg,
   edgeVisible,
+  nodeInViewport,
   searchArchive,
   wheelZoomFactor,
   zoomAt,
@@ -106,6 +107,18 @@ export function MemoryOverlay({ store }: MemoryOverlayProps): React.JSX.Element 
   const focus = focusId !== null ? recordById.get(focusId) : undefined;
   const siloByNode = new Map<string, string>(layout.nodes.map((n) => [n.id, n.silo]));
 
+  // §V4-10 (v4-r0): per-node viewport flags feed the zoom>1 edge cull —
+  // edges whose BOTH endpoints sit off-plate vanish while zoomed in.
+  const inViewByNode = new Map<string, boolean>(
+    layout.nodes.map((n) => [
+      n.id,
+      nodeInViewport(view, n.x, n.y, MEMORY_VIEW.width, MEMORY_VIEW.height),
+    ]),
+  );
+  // Crisp labels at zoom ≥1: counter-scale the svg text so it paints at a
+  // constant ~10px screen size (vector-crisp; no rasterized glow).
+  const labelScale = 1 / Math.max(1, view.k);
+
   // §V4-10 search: match by title or id; non-matches dim while a query runs.
   const matches = searchArchive(memory.records, query);
   const searching = query.trim().length > 0;
@@ -170,7 +183,9 @@ export function MemoryOverlay({ store }: MemoryOverlayProps): React.JSX.Element 
               aria-label="Search memory records"
             />
             {searching && (
-              <span className="wr-mem-matches">{matches.size} matches</span>
+              <span className="wr-mem-matches">
+                {matches.size === 1 ? '1 match' : `${matches.size} matches`}
+              </span>
             )}
           </span>
           <span className="wr-memory-filters">
@@ -267,6 +282,8 @@ export function MemoryOverlay({ store }: MemoryOverlayProps): React.JSX.Element 
                         edge.src,
                         edge.dst,
                         [hoverId, focusId],
+                        inViewByNode.get(edge.src) ?? true,
+                        inViewByNode.get(edge.dst) ?? true,
                       )
                     ) {
                       return null;
@@ -322,7 +339,11 @@ export function MemoryOverlay({ store }: MemoryOverlayProps): React.JSX.Element 
                         <circle className="wr-mem-node-gloss" cx="-2.5" cy="-3" r="3" />
                         {pulsed && <circle className="wr-mem-node-pulse memory-pulse" r="9" />}
                         {labelled && (
-                          <text className="wr-mem-node-label" y="22" textAnchor="middle">
+                          <text
+                            className="wr-mem-node-label"
+                            textAnchor="middle"
+                            transform={`translate(0 ${13 + 9 * labelScale}) scale(${labelScale})`}
+                          >
                             {node.id.split(':').pop()}
                           </text>
                         )}

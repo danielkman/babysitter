@@ -57,9 +57,12 @@ export function GitStatusHeader({ ws }: { ws: SimWorkspaceView }): React.JSX.Ele
 
 export function DiffPlate({ diff }: { diff: string }): React.JSX.Element {
   const rows = parseDiffRows(diff);
+  // The scroll region is an inner wrapper so the v4-r0 mask-image fade on
+  // row overflow (right edge) never erodes the plate's brass border.
   return (
     <div className="wr-diff-plate">
-      {rows.map((row, index) => (
+      <div className="wr-diff-scroll">
+        {rows.map((row, index) => (
         <div
           key={index}
           className={clsx(
@@ -72,11 +75,12 @@ export function DiffPlate({ diff }: { diff: string }): React.JSX.Element {
           {/* engraved gutter number lives in CSS content so the row's
               textContent stays pure diff text (terminal `cat` cross-checks
               harvest the addition rows verbatim, AC42/§V4-8) */}
-          <span className="wr-diff-num" data-n={index + 1} aria-hidden />
-          <span className="wr-diff-marker">{row.marker}</span>
-          <span className="wr-diff-text">{row.text}</span>
-        </div>
-      ))}
+            <span className="wr-diff-num" data-n={index + 1} aria-hidden />
+            <span className="wr-diff-marker">{row.marker}</span>
+            <span className="wr-diff-text">{row.text}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

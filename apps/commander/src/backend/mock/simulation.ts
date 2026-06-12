@@ -568,6 +568,30 @@ const FILE_POOLS: Record<TaskKind, readonly string[]> = {
   migrate: ['migrations/0007-vault.sql', 'src/storage/vault.ts', 'src/storage/vault.test.ts', 'docs/migration-plan.md'],
 };
 
+/** §V4-8 (v4-r0) seed-picked vocabulary for plausible per-extension content. */
+const CONTENT_NOUNS = [
+  'manifold',
+  'regulator',
+  'flywheel',
+  'servo',
+  'plenum',
+  'dynamo',
+  'lattice',
+  'gimbal',
+  'capacitor',
+  'aether',
+] as const;
+const CONTENT_VERBS = [
+  'calibrate',
+  'engage',
+  'temper',
+  'align',
+  'transmute',
+  'regulate',
+  'prime',
+  'anneal',
+] as const;
+
 const THINKING_PHRASES = [
   'Scanning the objective perimeter... ',
   'Cross-referencing the failing assertions... ',
@@ -593,7 +617,29 @@ const REVIEW_NOTE_TEMPLATES = [
   (file: string) => `${file}: naming is clear; add a regression test for the edge case.`,
   (file: string) => `The diff in ${file} looks correct; verify the rollback path.`,
   (file: string) => `${file} duplicates logic from the registry — extract a helper.`,
+  (file: string) => `Second pass over ${file}: the boundary condition still worries me.`,
+  (file: string) => `${file} reads well now; document the invariant inline before merge.`,
 ] as const;
+
+/**
+ * v4-r0: pick a reviewer note, varying the pool per attempt and skipping
+ * notes already inscribed on the card (no duplicate ledger lines). Pure —
+ * `drawIndex` is the single rng draw the caller already consumed.
+ */
+export function pickReviewerNote(
+  file: string,
+  attempt: number,
+  existing: readonly string[],
+  drawIndex: number,
+): string {
+  const len = REVIEW_NOTE_TEMPLATES.length;
+  const start = (drawIndex + Math.max(0, attempt - 1)) % len;
+  for (let offset = 0; offset < len; offset += 1) {
+    const note = REVIEW_NOTE_TEMPLATES[(start + offset) % len]!(file);
+    if (!existing.includes(note)) return note;
+  }
+  return REVIEW_NOTE_TEMPLATES[start]!(file);
+}
 
 const REJECT_FEEDBACK = [
   'Changes requested: the verify phase is missing coverage for the failure path.',
@@ -1738,26 +1784,93 @@ export class Simulation {
     const title = this.titleOf(card);
     const lines: string[] = [];
     const ext = path.includes('.') ? path.slice(path.lastIndexOf('.') + 1) : '';
-    const lineCount = rng.int(20, 60);
+    const lineCount = rng.int(20, 56);
+    // v4-r0: seed-picked vocabulary so files read plausibly per extension —
+    // pure on the per-path rng (same seed ⇒ identical content, §V4-8).
+    const noun = (): string => rng.pick(CONTENT_NOUNS);
+    const verb = (): string => rng.pick(CONTENT_VERBS);
+    const cap = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
     if (ext === 'json') {
       lines.push('{', `  "name": "${this.workspaceOf(card.taskId) || 'workspace'}",`, `  "version": "0.${rng.int(1, 9)}.${rng.int(0, 9)}",`);
       for (let i = lines.length; i < lineCount - 1; i += 1) {
-        lines.push(`  "field${i}": "value-${rng.int(100, 999)}",`);
+        lines.push(`  "${noun()}-${i}": "${verb()}-${rng.int(100, 999)}",`);
       }
       lines.push('  "private": true', '}');
     } else if (ext === 'md') {
       lines.push(`# ${path.split('/').pop() ?? path}`, '', `Notes for "${title}".`, '');
       for (let i = lines.length; i < lineCount; i += 1) {
-        lines.push(`- entry ${i}: observation ${rng.int(100, 999)} recorded by the cogitator`);
+        const t = rng.int(0, 3);
+        if (t === 0) lines.push(`## ${cap(verb())} the ${noun()}`);
+        else if (t === 1) lines.push(`- the ${noun()} must ${verb()} before the ${noun()} engages`);
+        else if (t === 2) lines.push(`> the cogitator records: ${noun()} ${rng.int(100, 999)} holds within tolerance`);
+        else lines.push(`See \`src/core/${noun()}.ts\` for how we ${verb()} the ${noun()}.`);
+      }
+    } else if (ext === 'css') {
+      lines.push(`/* ${path} — plates for "${title}" */`, '');
+      while (lines.length < lineCount) {
+        lines.push(
+          `.wr-${noun()}-${rng.int(1, 9)} {`,
+          `  --${noun()}-gauge: ${rng.int(2, 24)}px;`,
+          `  ${rng.pick(['margin', 'padding', 'gap'])}: ${rng.int(1, 12)}px;`,
+          '}',
+        );
+      }
+    } else if (ext === 'sh') {
+      lines.push('#!/usr/bin/env bash', `# ${path} — rites for "${title}"`, 'set -euo pipefail', '');
+      while (lines.length < lineCount) {
+        lines.push(
+          `echo "${verb()} the ${noun()}…"`,
+          `./scripts/${verb()}.sh --target ${noun()} --retries ${rng.int(1, 5)}`,
+          `[ -f .${noun()}.lock ] && rm .${noun()}.lock`,
+        );
+      }
+    } else if (ext === 'sql') {
+      lines.push(`-- ${path} — vault rites for "${title}"`, '');
+      while (lines.length < lineCount) {
+        lines.push(
+          `CREATE TABLE IF NOT EXISTS ${noun()}_${rng.int(1, 9)} (`,
+          `  id INTEGER PRIMARY KEY,`,
+          `  ${noun()}_state TEXT NOT NULL DEFAULT '${verb()}ed'`,
+          ');',
+        );
+      }
+    } else if (ext === 'yaml' || ext === 'yml') {
+      lines.push(`# ${path} — manifest for "${title}"`, `apiVersion: cogitator/v${rng.int(1, 3)}`, `kind: ${cap(noun())}`);
+      while (lines.length < lineCount) {
+        lines.push(
+          `${noun()}:`,
+          `  ${verb()}: true`,
+          `  gauge: ${rng.int(1, 99)}`,
+          `  notes: "${verb()} the ${noun()} before dispatch"`,
+        );
       }
     } else {
-      lines.push(`// ${path} — part of "${title}"`, `// deterministic mock content (seed ${this.seed})`, '');
-      for (let i = lines.length; i < lineCount; i += 1) {
-        const pick = rng.int(0, 3);
-        if (pick === 0) lines.push(`export function mechanism${i}(): number { return ${rng.int(1, 99)}; }`);
-        else if (pick === 1) lines.push(`const gauge${i} = calibrate(${rng.int(1, 12)});`);
-        else if (pick === 2) lines.push(`// gear ${i}: torque within tolerance`);
-        else lines.push(`registry.set('cog-${i}', gauge${rng.int(0, 60)});`);
+      // ts/tsx/js and kin: import → typed surface → exported mechanisms.
+      lines.push(
+        `// ${path} — part of "${title}"`,
+        `import { ${verb()} } from '../util/${noun()}s';`,
+        '',
+        `export interface ${cap(noun())}Spec {`,
+        `  gauge: number;`,
+        `  ${verb()}ed: boolean;`,
+        '}',
+        '',
+      );
+      while (lines.length < lineCount) {
+        const t = rng.int(0, 3);
+        if (t === 0) {
+          lines.push(
+            `export function ${verb()}${cap(noun())}(spec: ${cap(noun())}Spec): number {`,
+            `  return ${verb()}(spec.gauge) * ${rng.int(2, 9)};`,
+            '}',
+          );
+        } else if (t === 1) {
+          lines.push(`const ${noun()}Gauge = ${verb()}(${rng.int(1, 12)});`);
+        } else if (t === 2) {
+          lines.push(`// ${noun()}: torque within tolerance (${rng.int(1, 99)} Nm)`);
+        } else {
+          lines.push(`registry.set('${noun()}-${rng.int(1, 60)}', ${noun()}Gauge);`);
+        }
       }
     }
 
@@ -2242,10 +2355,12 @@ export class Simulation {
     }
     card.reviewTicksLeft -= 1;
 
-    // A reviewer note lands midway.
+    // A reviewer note lands midway — varied per attempt, never a duplicate
+    // of a note already inscribed (v4-r0; one rng draw as before).
     if (card.reviewTicksLeft === 4 && reviewers[0]) {
       const file = card.ws.files[0]?.path ?? 'src/index.ts';
-      const note = this.rng.pick(REVIEW_NOTE_TEMPLATES)(file);
+      const drawIndex = this.rng.int(0, REVIEW_NOTE_TEMPLATES.length - 1);
+      const note = pickReviewerNote(file, card.attempt, card.ws.reviewerNotes, drawIndex);
       card.ws.reviewerNotes.push(note);
       this.emitSimEvent(card, {
         type: 'review_note',
