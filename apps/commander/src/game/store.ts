@@ -213,8 +213,8 @@ export interface MemoryPulse {
   ts: number;
 }
 
-/** Inspector tab ids (SPEC-V2 §V2-5/§V2-7). */
-export type InspectorTab = 'transcript' | 'process' | 'workspace';
+/** Inspector tab ids (SPEC-V2 §V2-5/§V2-7 as amended by SPEC-V4 §V4-9). */
+export type InspectorTab = 'transcript' | 'process' | 'workspace' | 'memory';
 
 export interface MetaSlice {
   resources: ResourcesSnapshot;
@@ -245,6 +245,13 @@ export interface MetaSlice {
   foundryOpen: boolean;
   /** The Archive overlay (§V2-3). */
   archiveOpen: boolean;
+  /**
+   * §V4-9 Archive deep-link: record id to focus+select when the overlay
+   * opens from a Memory I/O piece (null = no pending deep-link).
+   */
+  archiveFocusId: string | null;
+  /** The Runs ledger overlay (§V4-6 — top Esc tier with foundry/archive). */
+  runsOpen: boolean;
   /** taskId → in-flight automatic move (cleared by the board after the glide). */
   movingCards: Record<string, CardMove>;
   moveSeq: number;
@@ -313,6 +320,11 @@ export interface CommanderState {
   closeFoundry(): void;
   openArchive(): void;
   closeArchive(): void;
+  /** §V4-9: open the Archive focused on a node (closes the Inspector). */
+  openArchiveAt(recordId: string | null): void;
+  /** §V4-6: open/close the Runs ledger overlay. */
+  openRuns(): void;
+  closeRuns(): void;
   /** The board calls this when a card's §V3-3 glide animation finishes. */
   clearMoving(taskId: string): void;
   setMemory(memory: BoardMemory): void;
@@ -761,6 +773,16 @@ function routeRunEvent(
       });
       break;
     }
+    case 'process_updated': {
+      // §V4-6: template amendment — revision bump, future runs only.
+      const processId = asString(ev['processId']) ?? 'commander/?@v?';
+      ticker({
+        ts,
+        severity: 'success',
+        text: `Process amended — ${processId} inscribed; future runs only`,
+      });
+      break;
+    }
     case 'card_merged': {
       ticker({
         ts,
@@ -840,7 +862,7 @@ function routeRunEvent(
       ticker({
         ts,
         severity: 'info',
-        text: `Memory write-back — ${unitTitle(uUnit)} proposes changes to ${silo}`,
+        text: `Memory update — ${unitTitle(uUnit)} proposes changes to ${silo}`,
         ...(uUnit !== undefined ? { entityId: uUnit } : {}),
       });
       break;
@@ -910,6 +932,8 @@ export function createCommanderStore(): CommanderStore {
       steerOpen: false,
       foundryOpen: false,
       archiveOpen: false,
+      archiveFocusId: null,
+      runsOpen: false,
       movingCards: {},
       moveSeq: 0,
       memoryPulses: [],
@@ -1196,12 +1220,16 @@ export function createCommanderStore(): CommanderStore {
       );
     },
     escape() {
-      // Esc cascade (§V3-7 as amended by §V4-13): card-editor/foundry/archive
-      // tier > review panel > steer modal > inspector > selection. Modals
-      // close WITHOUT clearing the selection.
+      // Esc cascade (§V3-7 as amended by §V4-13): card-editor/runs/foundry/
+      // archive tier > review panel > steer modal > inspector > selection.
+      // Modals close WITHOUT clearing the selection.
       const state = get();
       if (state.meta.cardEditorTaskId !== null) {
         set({ meta: { ...state.meta, cardEditorTaskId: null } });
+        return;
+      }
+      if (state.meta.runsOpen) {
+        set({ meta: { ...state.meta, runsOpen: false } });
         return;
       }
       if (state.meta.foundryOpen) {
@@ -1322,10 +1350,29 @@ export function createCommanderStore(): CommanderStore {
       set((state) => ({ meta: { ...state.meta, foundryOpen: false } }));
     },
     openArchive() {
-      set((state) => ({ meta: { ...state.meta, archiveOpen: true } }));
+      set((state) => ({ meta: { ...state.meta, archiveOpen: true, archiveFocusId: null } }));
     },
     closeArchive() {
-      set((state) => ({ meta: { ...state.meta, archiveOpen: false } }));
+      set((state) => ({ meta: { ...state.meta, archiveOpen: false, archiveFocusId: null } }));
+    },
+    openArchiveAt(recordId) {
+      // §V4-9 deep-link: the Memory I/O piece "closes the inspector view
+      // into the Archive overlay focused+selected on that node".
+      set((state) => ({
+        meta: {
+          ...state.meta,
+          archiveOpen: true,
+          archiveFocusId: recordId,
+          inspectorUnitId: null,
+          inspectorTaskId: null,
+        },
+      }));
+    },
+    openRuns() {
+      set((state) => ({ meta: { ...state.meta, runsOpen: true } }));
+    },
+    closeRuns() {
+      set((state) => ({ meta: { ...state.meta, runsOpen: false } }));
     },
     clearMoving(taskId) {
       set((state) => {
@@ -1403,6 +1450,11 @@ export interface Orders {
   updateTask(taskId: string, patch: UpdateTaskPatch): boolean;
   /** SPEC-V4 §V4-5: stacks foundry save — forge or update an agent stack. */
   upsertStack(stack: KradleAgentStackInput): string | null;
+  /**
+   * SPEC-V4 §V4-6: process-editor save — amend a kind's phase pipeline
+   * TEMPLATE (revision bump, `process_updated` event, future runs only).
+   */
+  updateProcessTemplate(kind: TaskKind, phases: string[]): number | null;
 }
 
 export interface BackendBinding {
@@ -1588,6 +1640,13 @@ export function bindBackendToStore(store: CommanderStore, backend: MockBackend):
       const stackRef = sim.upsertStack(stack);
       flush();
       return stackRef;
+    },
+    updateProcessTemplate(kind, phases) {
+      // §V4-6: the sim emits `process_updated` — the frame router owns the
+      // ticker line; running runs keep their pinned revision.
+      const revision = sim.updateProcessTemplate(kind, phases);
+      flush();
+      return revision;
     },
   };
 

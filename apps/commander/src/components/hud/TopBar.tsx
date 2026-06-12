@@ -94,6 +94,21 @@ export function TopBar({ store, orders }: TopBarProps): React.JSX.Element {
       <button
         type="button"
         className="wr-sim-toggle"
+        data-testid="topbar-runs"
+        title="Open the Runs Ledger — every rite of the cogitator (§V4-6)"
+        onClick={() => {
+          if (meta.runsOpen) {
+            store.getState().closeRuns();
+          } else {
+            store.getState().openRuns();
+          }
+        }}
+      >
+        RUNS
+      </button>
+      <button
+        type="button"
+        className="wr-sim-toggle"
         data-testid="topbar-create"
         title="Open the Foundry — commission a task (N)"
         onClick={() => {

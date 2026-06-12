@@ -37,6 +37,7 @@ import type { SimInquiryView, SimRunObservationView } from '../../backend/mock/s
 import { generateIcon } from '../../microagent/mock/iconGen';
 import { generateOptionIcon } from '../../microagent/mock/optionIconGen';
 import { InquiryOptionRow } from '../hud/ChatDock';
+import { MemoryIOTab } from './MemoryIOTab';
 import { ChangedFileList, GitStatusHeader } from './WorkspaceView';
 
 export interface InspectorProps {
@@ -57,6 +58,7 @@ const TABS: ReadonlyArray<{ id: InspectorTab; label: string }> = [
   { id: 'transcript', label: 'Transcript' },
   { id: 'process', label: 'Process' },
   { id: 'workspace', label: 'Workspace' },
+  { id: 'memory', label: 'Memory' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -213,10 +215,11 @@ function TranscriptStream({
 }
 
 // ---------------------------------------------------------------------------
-// Process tab (SPEC-V2 §V2-5, AC20)
+// Process tab (SPEC-V2 §V2-5, AC20 — exported: the §V4-6 run-detail view
+// promotes/reuses this exact surface inside the Runs overlay)
 // ---------------------------------------------------------------------------
 
-function ProcessTab({
+export function ProcessTab({
   observation,
   simStartMs,
 }: {
@@ -516,6 +519,9 @@ export function Inspector({ store, orders, views }: InspectorProps): React.JSX.E
         ))}
       {tab === 'process' && <ProcessTab observation={observation} simStartMs={simStartMs} />}
       {tab === 'workspace' && <WorkspaceTab taskId={taskId} views={views} />}
+      {tab === 'memory' && (
+        <MemoryIOTab store={store} views={views} taskId={taskId} unitId={unit?.id ?? null} />
+      )}
       {unit !== undefined && <TokenFooter unit={unit} />}
     </aside>
   );

@@ -29,6 +29,7 @@ import { Foundry } from './panels/Foundry';
 import { Inspector } from './panels/Inspector';
 import { MemoryOverlay } from './panels/MemoryOverlay';
 import { ReviewPanel } from './panels/ReviewPanel';
+import { RunsOverlay } from './panels/RunsOverlay';
 import { SteerModal } from './panels/SteerModal';
 
 export interface WarRoomProps {
@@ -56,6 +57,7 @@ export function WarRoom({ store, orders, views }: WarRoomProps): React.JSX.Eleme
       <Foundry store={store} orders={orders} views={views} />
       <CardEditor store={store} orders={orders} views={views} />
       <MemoryOverlay store={store} />
+      <RunsOverlay store={store} orders={orders} views={views} />
       <div className="wr-narrow-gate" role="note">
         <div className="wr-narrow-gate-card">
           <h1>A5C Commander</h1>
