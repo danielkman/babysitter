@@ -144,6 +144,11 @@ describe('scenario determinism', () => {
   });
 });
 
+/** §V5-1: the FULL session registry (records + transcripts) of an engine. */
+function sessionRegistryOf(sim: Simulation): unknown[] {
+  return sim.listSessions().map((s) => sim.getSession(s.sessionId));
+}
+
 describe('engine determinism (two engines, 200 ticks)', () => {
   it('without verbs: deep-equal snapshots after 200 ticks (board never self-starts)', () => {
     const a = new Simulation({ seed: 42 });
@@ -157,6 +162,9 @@ describe('engine determinism (two engines, 200 ticks)', () => {
     // V3 boot: nothing moves until a verb does.
     expect(snapA.cards.every((c) => c.column === 'backlog')).toBe(true);
     expect(snapA.agents).toHaveLength(0);
+    // §V5-1: no sessions before any agent ever spawned — registries match.
+    expect(snapA.sessions).toEqual([]);
+    expect(sessionRegistryOf(b)).toEqual(sessionRegistryOf(a));
   });
 
   it('with the scripted verb sequence: identical snapshots AND identical frame streams', () => {
@@ -173,6 +181,11 @@ describe('engine determinism (two engines, 200 ticks)', () => {
     expect(snapA.rngDraws).toBeGreaterThan(0);
     // The script visibly moved the board.
     expect(snapA.cards.some((c) => c.column !== 'backlog')).toBe(true);
+    // §V5-1: identical session ids/titles/links AND transcripts (deep-equal
+    // registries — sessions persist after despawn on both engines alike).
+    const registryA = sessionRegistryOf(a);
+    expect(registryA.length).toBeGreaterThan(0);
+    expect(sessionRegistryOf(b)).toEqual(registryA);
   });
 
   it('v4 verb script (revert/release/rollback/updateTask/upsertStack/template/writeFile): identical snapshots AND frame streams', () => {
@@ -191,6 +204,10 @@ describe('engine determinism (two engines, 200 ticks)', () => {
     expect(snapA.counters.releases).toBeGreaterThanOrEqual(1);
     expect(snapA.counters.stacks).toBeGreaterThanOrEqual(1);
     expect(snapA.stacks.some((s) => s.name === 'Script Auditor')).toBe(true);
+    // §V5-1: full session registries (records + transcripts) deep-equal.
+    const registryA = sessionRegistryOf(a);
+    expect(registryA.length).toBeGreaterThan(0);
+    expect(sessionRegistryOf(b)).toEqual(registryA);
   });
 
   it('setSpeed affects real-time pacing ONLY: different speeds, same script, identical snapshots (§V4-4)', () => {

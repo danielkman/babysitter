@@ -271,6 +271,67 @@ export interface SimAgentView {
   updatedAt: number;
 }
 
+// --- v5 sessions (SPEC-V5 §V5-1) ---------------------------------------------
+
+/** SPEC-V5 §V5-1 session lifecycle status. */
+export type SessionStatus = 'active' | 'completed' | 'aborted';
+
+/**
+ * One persisted transcript entry (message / tool call) of a session. The
+ * ACTIVE agent streams straight into this ring (no forking): despawn merely
+ * flips the session status — the transcript is already persistent.
+ */
+export interface SimSessionTranscriptEntry {
+  seq: number;
+  tick: number;
+  timestamp: number;
+  kind: 'message' | 'thinking' | 'tool_call' | 'tool_result' | 'user' | 'event';
+  text: string;
+  toolName?: string;
+}
+
+/**
+ * SPEC-V5 §V5-1 SessionRecord view: persists after despawn. `sessionId` is
+ * the agent's unitId; `title` is "creature name + role". Coordination
+ * sessions (stack parent cards, one per attempt) carry `coordination: true`
+ * with role `worker` and a "<name> the Coordinator" title.
+ */
+export interface SimSessionView {
+  sessionId: string;
+  title: string;
+  creatureName: string;
+  agent: AdapterName;
+  model: string;
+  stackRef: string;
+  stackName: string;
+  role: AgentRole;
+  coordination: boolean;
+  taskId: string;
+  attempt: number;
+  runId: string | null;
+  parentSessionId: string | null;
+  reviewOfSessionId: string | null;
+  status: SessionStatus;
+  startedTick: number;
+  endedTick: number | null;
+  turnCount: number;
+  messageCount: number;
+  tokenUsage: {
+    inputTokens: number;
+    outputTokens: number;
+    thinkingTokens: number;
+    cachedTokens: number;
+  };
+  cost: CostRecord;
+  transcriptLength: number;
+}
+
+/** §V5-1 `getSession(sessionId)` envelope: record + transcript. */
+export interface SimSessionDetailView {
+  record: SimSessionView;
+  transcript: SimSessionTranscriptEntry[];
+}
+
 export interface SimInquiryView {
   hookRequestId: string;
   runId: string;
@@ -482,6 +543,8 @@ export interface SimSnapshot {
   stacks: SimStackView[];
   processTemplates: SimProcessTemplateView[];
   runLedger: SimRunView[];
+  /** §V5-1 persistent session registry (records; transcripts via getSession). */
+  sessions: SimSessionView[];
 }
 
 // ---------------------------------------------------------------------------
@@ -663,6 +726,52 @@ const HOOK_DEADLINE_MS = 15_000;
 const SERVER_VERSION = 'mock-commander/3.0.0';
 const JOURNAL_CAP = 100;
 
+/** §V5-1/§V5-6 memory bound: per-session transcript ring (~200 entries). */
+export const SESSION_TRANSCRIPT_CAP = 200;
+
+/** §V5-1: clockwork-creature names for session titles (deterministic mint). */
+const CREATURE_NAMES = [
+  'Brassbeak',
+  'Cogsworth',
+  'Pinion',
+  'Gearhart',
+  'Sprocketta',
+  'Tinwhistle',
+  'Boilerbun',
+  'Flywheel',
+  'Copperdove',
+  'Ratchet',
+  'Camshaft',
+  'Steamwick',
+  'Gimbal',
+  'Soldera',
+  'Rivetta',
+  'Clankston',
+  'Pendula',
+  'Axleby',
+  'Vapoura',
+  'Dynamo',
+  'Quillgear',
+  'Ironmoth',
+  'Bellowsby',
+  'Cinderlatch',
+  'Mainspring',
+  'Thimblecog',
+  'Valvette',
+  'Smokestack',
+  'Borewell',
+  'Latchkey',
+  'Turbina',
+  'Weldwyn',
+] as const;
+
+/** §V5-1 title suffix per role ("creature name + role"). */
+const ROLE_TITLES: Record<AgentRole, string> = {
+  worker: 'the Worker',
+  reviewer: 'the Reviewer',
+  integration: 'the Integrator',
+};
+
 // ---------------------------------------------------------------------------
 // Internal records
 // ---------------------------------------------------------------------------
@@ -751,11 +860,53 @@ interface CardRecord {
   /** Staggered release glide: ships when the countdown reaches zero. */
   shipTicksLeft: number | null;
   pendingReleaseId: string | null;
+  /** §V5-1: the parent card's COORDINATION session for the current attempt. */
+  coordSessionId: string | null;
+  /** §V5-1: the review session whose verdict approved the current attempt. */
+  approvingReviewSessionId: string | null;
   /** §V4-8: editor-written file contents (writeFile overrides). */
   fileOverrides: Map<string, string>;
   /** §V4-9 memory I/O ledgers (accumulated from memory_query/memory_update). */
   memoryReads: SimMemoryReadEntry[];
   memoryWrites: SimMemoryWriteEntry[];
+}
+
+/**
+ * §V5-1 persistent session record. The LIVE agent's transcript, counters and
+ * token/cost burn live HERE (the active `AgentRecord` references its session)
+ * so persistence is free: despawn only flips `status`/`endedTick`.
+ */
+interface SessionRecord {
+  sessionId: string;
+  /** Creation order (monotonic) — `listSessions` sorts newest first. */
+  order: number;
+  title: string;
+  creatureName: string;
+  agent: AdapterName;
+  model: string;
+  stackRef: string;
+  stackName: string;
+  role: AgentRole;
+  coordination: boolean;
+  taskId: string;
+  attempt: number;
+  runId: string | null;
+  parentSessionId: string | null;
+  reviewOfSessionId: string | null;
+  status: SessionStatus;
+  startedTick: number;
+  endedTick: number | null;
+  turnCount: number;
+  messageCount: number;
+  tokenUsage: {
+    inputTokens: number;
+    outputTokens: number;
+    thinkingTokens: number;
+    cachedTokens: number;
+  };
+  cost: { totalUsd: number; inputTokens: number; outputTokens: number; thinkingTokens: number };
+  transcript: SimSessionTranscriptEntry[];
+  transcriptSeq: number;
 }
 
 interface AgentRecord {
@@ -773,17 +924,15 @@ interface AgentRecord {
   pendingHookId: string | null;
   activeToolName: string | null;
   heldPieces: string[];
-  turnCount: number;
-  messageCount: number;
+  /** Frame-stream accumulation state (text_delta/thinking_delta envelopes). */
   accumulatedText: string;
   accumulatedThinking: string;
-  tokenUsage: {
-    inputTokens: number;
-    outputTokens: number;
-    thinkingTokens: number;
-    cachedTokens: number;
-  };
-  cost: { totalUsd: number; inputTokens: number; outputTokens: number; thinkingTokens: number };
+  /**
+   * §V5-1: the persistent session this agent streams into. Transcript,
+   * turn/message counters and token/cost burn are stored ON the session
+   * (same data live and persisted — no forking).
+   */
+  session: SessionRecord;
   createdAt: number;
   updatedAt: number;
 }
@@ -848,6 +997,10 @@ export class Simulation {
   private readonly rng: Prng;
   private readonly cards = new Map<string, CardRecord>();
   private readonly agents = new Map<string, AgentRecord>();
+  /** §V5-1: persistent session registry — survives agent despawn. */
+  private readonly sessions = new Map<string, SessionRecord>();
+  private readonly usedCreatureNames = new Set<string>();
+  private sessionOrderCounter = 0;
   private readonly runs = new Map<string, CardRunRecord>();
   private readonly inquiries = new Map<string, InquiryRecord>();
   private readonly listeners = new Set<(frame: ServerFrame) => void>();
@@ -1249,6 +1402,11 @@ export class Simulation {
     }
 
     if (agent) {
+      this.pushTranscript(
+        agent.session,
+        'event',
+        `Inquiry resolved: ${option.caption} (${option.id}).`,
+      );
       agent.pendingHookId = null;
       agent.state = 'thinking';
       agent.stateTicks = 0;
@@ -1678,7 +1836,12 @@ export class Simulation {
     }));
   }
 
-  listSessions(): SessionEntry[] {
+  /**
+   * Gateway-protocol session entries for ACTIVE agents (REST mirror).
+   * Renamed from `listSessions` in v5 — the §V5-1 persistent-session view now
+   * owns that name.
+   */
+  listSessionEntries(): SessionEntry[] {
     return [...this.agents.values()].map((agent) => {
       const runId = this.runIdOf(agent);
       const run = this.runs.get(runId);
@@ -1693,8 +1856,8 @@ export class Simulation {
         latestRunStartedAt: run ? run.entry.startedAt : null,
         latestRunEndedAt: run ? run.entry.endedAt : null,
         title: `${agent.role}:${agent.taskId}`,
-        turnCount: agent.turnCount,
-        messageCount: agent.messageCount,
+        turnCount: agent.session.turnCount,
+        messageCount: agent.session.messageCount,
         model: agent.model,
         cost: this.costOf(agent),
         cwd: `/ws/${this.workspaceOf(agent.taskId)}`,
@@ -1712,6 +1875,30 @@ export class Simulation {
   /** §V4-6 runs registry: every card attempt, newest first. */
   listRuns(): SimRunView[] {
     return [...this.runs.values()].map((run) => this.runViewOf(run)).reverse();
+  }
+
+  /**
+   * SPEC-V5 §V5-1 `listSessions(taskId?)`: every persisted session ever (all
+   * sessions, or one card's), NEWEST FIRST. Pure — no engine-rng draws.
+   */
+  listSessions(taskId?: string): SimSessionView[] {
+    return [...this.sessions.values()]
+      .filter((session) => taskId === undefined || session.taskId === taskId)
+      .sort((a, b) => b.order - a.order)
+      .map((session) => this.sessionViewOf(session));
+  }
+
+  /**
+   * SPEC-V5 §V5-1 `getSession(sessionId)`: record + transcript (deep copy).
+   * The transcript survives despawn — it IS the live agent's transcript.
+   */
+  getSession(sessionId: string): SimSessionDetailView | null {
+    const session = this.sessions.get(sessionId);
+    if (!session) return null;
+    return {
+      record: this.sessionViewOf(session),
+      transcript: session.transcript.map((entry) => ({ ...entry })),
+    };
   }
 
   /** §V4-5 `listStacks()`: 4 seeded + custom foundry stacks, stable order. */
@@ -1984,10 +2171,10 @@ export class Simulation {
       runId: this.runIdOf(agent),
       pendingHookId: agent.pendingHookId,
       heldPieces: [...agent.heldPieces],
-      tokenUsage: { ...agent.tokenUsage },
+      tokenUsage: { ...agent.session.tokenUsage },
       cost: this.costOf(agent),
-      turnCount: agent.turnCount,
-      messageCount: agent.messageCount,
+      turnCount: agent.session.turnCount,
+      messageCount: agent.session.messageCount,
       createdAt: agent.createdAt,
       updatedAt: agent.updatedAt,
     }));
@@ -2084,11 +2271,11 @@ export class Simulation {
       paused: agent.held,
       taskId: agent.taskId,
       runId: this.runIdOf(agent),
-      turnIndex: agent.turnCount,
-      turnCount: agent.turnCount,
-      messageCount: agent.messageCount,
+      turnIndex: agent.session.turnCount,
+      turnCount: agent.session.turnCount,
+      messageCount: agent.session.messageCount,
       pendingHookId: agent.pendingHookId,
-      tokenUsage: { ...agent.tokenUsage },
+      tokenUsage: { ...agent.session.tokenUsage },
       cost: this.costOf(agent),
       createdAt: agent.createdAt,
       updatedAt: agent.updatedAt,
@@ -2154,6 +2341,7 @@ export class Simulation {
       stacks: this.listStacks(),
       processTemplates: this.listProcessTemplates(),
       runLedger: this.listRuns(),
+      sessions: this.listSessions(),
     };
   }
 
@@ -2174,7 +2362,8 @@ export class Simulation {
       return;
     }
     // Steer: lands as user input; the agent replans its current phase.
-    agent.messageCount += 1;
+    agent.session.messageCount += 1;
+    this.pushTranscript(agent.session, 'user', prompt);
     if (agent.held) this.resumeUnit(agent.unitId);
     agent.stateDuration = Math.max(agent.stateDuration, agent.stateTicks + this.rng.int(1, 3));
     agent.updatedAt = this.now();
@@ -2183,7 +2372,7 @@ export class Simulation {
       runId: this.runIdOf(agent),
       agent: agent.agent,
       timestamp: this.now(),
-      turnIndex: agent.turnCount,
+      turnIndex: agent.session.turnCount,
     });
   }
 
@@ -2306,7 +2495,20 @@ export class Simulation {
       if (card.parentId === null) {
         this.completeWork(card);
       } else {
-        // Child done: its worker despawns; the parent aggregates.
+        // Child done: its worker despawns; the parent aggregates. §V5-1: the
+        // coordination session logs the child completion event.
+        const parent = this.cards.get(card.parentId);
+        const coordination =
+          parent !== undefined && parent.coordSessionId !== null
+            ? this.sessions.get(parent.coordSessionId)
+            : undefined;
+        if (coordination !== undefined) {
+          this.pushTranscript(
+            coordination,
+            'event',
+            `${card.taskId} completed by ${worker.session.title} — folded into the stack.`,
+          );
+        }
         this.despawnAgent(worker.unitId);
       }
       return;
@@ -2384,6 +2586,13 @@ export class Simulation {
         });
       }
     }
+    for (const reviewer of reviewers) {
+      this.pushTranscript(
+        reviewer.session,
+        'event',
+        `Review verdict on ${card.taskId} (attempt ${card.attempt}): ${pass ? 'pass' : 'reject'}.`,
+      );
+    }
     this.emitSimEvent(card, {
       type: 'review_verdict',
       runId: card.run?.runId ?? 'run-none',
@@ -2393,6 +2602,10 @@ export class Simulation {
       verdict: pass ? 'pass' : 'reject',
     });
     if (pass) {
+      // §V5-1 (c): remember the APPROVING review session for the integration link.
+      if (reviewers[0] !== undefined) {
+        card.approvingReviewSessionId = reviewers[0].session.sessionId;
+      }
       if (card.yolo) {
         this.transitionCard(card, 'approved', 'review-pass-yolo');
       } else {
@@ -2425,6 +2638,7 @@ export class Simulation {
     if (card.integrationTicksLeft > 0) return;
 
     const step = card.integrationSteps[card.integrationIndex]!;
+    this.pushTranscript(integrator.session, 'event', `Integration step: ${step}.`);
     this.emitSimEvent(card, {
       type: 'integration_step',
       runId: card.run?.runId ?? 'run-none',
@@ -2477,16 +2691,25 @@ export class Simulation {
     const from = card.column;
     if (from === to) return;
 
+    // §V5-1 status transitions: completed on normal despawn; aborted on the
+    // /abort (and other terminal-deny) paths.
+    const endStatus: SessionStatus = reason === 'aborted' ? 'aborted' : 'completed';
+
     // Agents despawn whenever their card leaves their column (SPEC-V3 §V3-2).
-    this.despawnAgentsOf(card);
+    this.despawnAgentsOf(card, endStatus);
     this.cancelInquiriesOf(card);
+    // §V5-1: the parent card's coordination session ends with the DO attempt.
+    if (from === 'do' && card.coordSessionId !== null) {
+      this.closeSession(card.coordSessionId, endStatus);
+      card.coordSessionId = null;
+    }
 
     card.column = to;
     for (const childId of card.childIds) {
       const child = this.cards.get(childId);
       if (child) {
         child.column = to;
-        this.despawnAgentsOf(child);
+        this.despawnAgentsOf(child, endStatus);
         this.cancelInquiriesOf(child);
       }
     }
@@ -2528,6 +2751,9 @@ export class Simulation {
     card.attempt += 1;
     card.inquiriesThisAttempt = 0;
     const leaves = card.childIds.length > 0 ? card.childIds.map((id) => this.cards.get(id)!) : [card];
+    // §V5-1 (a): a stack parent opens a lightweight per-attempt COORDINATION
+    // session; child worker sessions link to it via parentSessionId.
+    const coordination = card.childIds.length > 0 ? this.openCoordinationSession(card) : null;
     for (const leaf of leaves) {
       leaf.attempt = card.attempt;
       leaf.inquiriesThisAttempt = 0;
@@ -2539,7 +2765,20 @@ export class Simulation {
       const stackEntry = this.stacks.get(stackRef)!;
       const adapter = this.adapterOfStackSpec(stackEntry.stack.spec);
       leaf.workerAdapter = adapter;
-      this.spawnAgent(adapter, 'worker', leaf.taskId, stackEntry);
+      const worker = this.spawnAgent(
+        adapter,
+        'worker',
+        leaf.taskId,
+        stackEntry,
+        coordination !== null ? { parentSessionId: coordination.sessionId } : undefined,
+      );
+      if (coordination !== null) {
+        this.pushTranscript(
+          coordination,
+          'event',
+          `Assigned ${leaf.taskId} (attempt ${card.attempt}) to ${worker.session.title}.`,
+        );
+      }
       const run = leaf.run!;
       // Rework after a rejection re-opens the pipeline.
       if (run.phaseIndex >= run.phases.length) {
@@ -2558,8 +2797,17 @@ export class Simulation {
     const workerAdapter = card.workerAdapter ?? WORKER_ADAPTER_BY_KIND[card.taskKind];
     const pool = ADAPTERS.filter((a) => a !== workerAdapter);
     const count = this.rng.int(1, 2);
+    // §V5-1 (b): reviewers judge the attempt's worker session (a stack
+    // parent's "worker" is its coordination session — also role worker).
+    const judged = this.latestSession((s) => s.taskId === card.taskId && s.role === 'worker');
     for (let i = 0; i < count; i += 1) {
-      this.spawnAgent(this.rng.pick(pool), 'reviewer', card.taskId);
+      this.spawnAgent(
+        this.rng.pick(pool),
+        'reviewer',
+        card.taskId,
+        undefined,
+        judged !== undefined ? { reviewOfSessionId: judged.sessionId } : undefined,
+      );
     }
     // §V4-4: lifecycle phase durations roughly double the v3 values.
     card.reviewTicksLeft = this.rng.int(16, 28);
@@ -2570,7 +2818,19 @@ export class Simulation {
 
   private enterApproved(card: CardRecord): void {
     const integrationAdapter = this.rng.pick(ADAPTERS);
-    this.spawnAgent(integrationAdapter, 'integration', card.taskId);
+    // §V5-1 (c): the integration session's parent is the approving review
+    // session when one exists, else the attempt's worker session.
+    const parentSession =
+      (card.approvingReviewSessionId !== null
+        ? this.sessions.get(card.approvingReviewSessionId)
+        : undefined) ?? this.latestSession((s) => s.taskId === card.taskId && s.role === 'worker');
+    this.spawnAgent(
+      integrationAdapter,
+      'integration',
+      card.taskId,
+      undefined,
+      parentSession !== undefined ? { parentSessionId: parentSession.sessionId } : undefined,
+    );
     card.integrationSteps = this.rng.chance(0.4)
       ? ['rebase onto main', 'conflict-fix', 'integration-test', 'merge']
       : ['rebase onto main', 'integration-test', 'merge'];
@@ -2604,6 +2864,7 @@ export class Simulation {
     role: AgentRole,
     taskId: string,
     stackEntry?: { stackRef: string; stack: KradleAgentStack },
+    links?: { parentSessionId?: string; reviewOfSessionId?: string },
   ): AgentRecord {
     // §V4-5: every agent derives from a stack — explicit for workers, the
     // adapter family's seeded stack otherwise.
@@ -2612,10 +2873,31 @@ export class Simulation {
       this.stacks.get(SEEDED_STACKS.find((s) => s.stack.spec.adapter === adapter)!.stackRef)!;
     this.agentCounter += 1;
     const now = this.now();
-    const agent: AgentRecord = {
-      unitId: `agt-${String(this.agentCounter).padStart(3, '0')}-${role}`,
+    const unitId = `agt-${String(this.agentCounter).padStart(3, '0')}-${role}`;
+    const model = bound.stack.spec.model || MODELS_BY_ADAPTER[adapter][0]!;
+    const stateDuration = this.rng.int(2, 5);
+    const card = this.cards.get(taskId);
+    // §V5-1: the persistent session record — the agent's transcript and
+    // counters live here so they survive despawn unchanged.
+    const session = this.createSession({
+      sessionId: unitId,
+      role,
+      coordination: false,
+      taskId,
       agent: adapter,
-      model: bound.stack.spec.model || MODELS_BY_ADAPTER[adapter][0]!,
+      model,
+      stackRef: bound.stackRef,
+      stackName: bound.stack.metadata.name,
+      attempt: card?.attempt ?? 0,
+      runId: card?.run?.runId ?? null,
+      parentSessionId: links?.parentSessionId ?? null,
+      reviewOfSessionId: links?.reviewOfSessionId ?? null,
+    });
+    session.tokenUsage.inputTokens = this.rng.int(400, 1600);
+    const agent: AgentRecord = {
+      unitId,
+      agent: adapter,
+      model,
       stackRef: bound.stackRef,
       stackName: bound.stack.metadata.name,
       role,
@@ -2623,21 +2905,13 @@ export class Simulation {
       state: 'thinking',
       held: false,
       stateTicks: 0,
-      stateDuration: this.rng.int(2, 5),
+      stateDuration,
       pendingHookId: null,
       activeToolName: null,
       heldPieces: [],
-      turnCount: 0,
-      messageCount: 1,
       accumulatedText: '',
       accumulatedThinking: '',
-      tokenUsage: {
-        inputTokens: this.rng.int(400, 1600),
-        outputTokens: 0,
-        thinkingTokens: 0,
-        cachedTokens: 0,
-      },
-      cost: { totalUsd: 0, inputTokens: 0, outputTokens: 0, thinkingTokens: 0 },
+      session,
       createdAt: now,
       updatedAt: now,
     };
@@ -2654,6 +2928,7 @@ export class Simulation {
     const persona = bound.stack.spec.prompt.system.split('. ')[0]?.trim() ?? '';
     const greeting = `[${bound.stack.metadata.name}] ${persona !== '' ? `${persona}.` : 'Stack engaged.'} Taking up ${role} duty on ${taskId}. `;
     agent.accumulatedText = greeting;
+    this.appendStreamEntry(session, 'message', greeting);
     this.emitAgentEvent(agent, {
       type: 'text_delta',
       runId: this.runIdOf(agent),
@@ -2665,16 +2940,16 @@ export class Simulation {
     return agent;
   }
 
-  private despawnAgent(unitId: string): void {
+  private despawnAgent(unitId: string, endStatus: SessionStatus = 'completed'): void {
     const agent = this.agents.get(unitId);
     if (!agent) return;
     // §V4-6: fold the agent's burn into its run's registry totals.
     const run = this.runs.get(this.runIdOf(agent));
     if (run) {
-      run.tokens.inputTokens += agent.tokenUsage.inputTokens;
-      run.tokens.outputTokens += agent.tokenUsage.outputTokens;
-      run.tokens.thinkingTokens += agent.tokenUsage.thinkingTokens;
-      run.tokens.cachedTokens += agent.tokenUsage.cachedTokens;
+      run.tokens.inputTokens += agent.session.tokenUsage.inputTokens;
+      run.tokens.outputTokens += agent.session.tokenUsage.outputTokens;
+      run.tokens.thinkingTokens += agent.session.tokenUsage.thinkingTokens;
+      run.tokens.cachedTokens += agent.session.tokenUsage.cachedTokens;
       run.costUsd = roundTo(run.costUsd + this.costOf(agent).totalUsd, 6);
     }
     this.emitAgentEvent(agent, {
@@ -2683,16 +2958,193 @@ export class Simulation {
       agent: agent.agent,
       timestamp: this.now(),
       sessionId: agent.unitId,
-      turnCount: agent.turnCount,
+      turnCount: agent.session.turnCount,
       cost: this.costOf(agent),
     });
+    // §V5-1: the session record PERSISTS — only its status flips.
+    this.closeSession(agent.session.sessionId, endStatus);
     this.agents.delete(unitId);
   }
 
-  private despawnAgentsOf(card: CardRecord): void {
+  private despawnAgentsOf(card: CardRecord, endStatus: SessionStatus = 'completed'): void {
     for (const agent of [...this.agents.values()]) {
-      if (agent.taskId === card.taskId) this.despawnAgent(agent.unitId);
+      if (agent.taskId === card.taskId) this.despawnAgent(agent.unitId, endStatus);
     }
+  }
+
+  // -------------------------------------------------------------------------
+  // Persistent sessions (SPEC-V5 §V5-1)
+  // -------------------------------------------------------------------------
+
+  /**
+   * Deterministic creature-name mint: seed+counter hashed into the pool, with
+   * a linear probe for uniqueness (falls back to a numbered name when the
+   * pool is exhausted). No engine-rng draws — pure on seed + call order.
+   */
+  private mintCreatureName(): string {
+    const start = hashString(`${this.seed}:creature:${this.sessionOrderCounter}`) % CREATURE_NAMES.length;
+    for (let offset = 0; offset < CREATURE_NAMES.length; offset += 1) {
+      const name = CREATURE_NAMES[(start + offset) % CREATURE_NAMES.length]!;
+      if (!this.usedCreatureNames.has(name)) {
+        this.usedCreatureNames.add(name);
+        return name;
+      }
+    }
+    return `${CREATURE_NAMES[start]!} ${Math.floor(this.sessionOrderCounter / CREATURE_NAMES.length) + 1}`;
+  }
+
+  private createSession(init: {
+    sessionId: string;
+    role: AgentRole;
+    coordination: boolean;
+    taskId: string;
+    agent: AdapterName;
+    model: string;
+    stackRef: string;
+    stackName: string;
+    attempt: number;
+    runId: string | null;
+    parentSessionId?: string | null;
+    reviewOfSessionId?: string | null;
+  }): SessionRecord {
+    this.sessionOrderCounter += 1;
+    const creatureName = this.mintCreatureName();
+    const session: SessionRecord = {
+      sessionId: init.sessionId,
+      order: this.sessionOrderCounter,
+      title: `${creatureName} ${init.coordination ? 'the Coordinator' : ROLE_TITLES[init.role]}`,
+      creatureName,
+      agent: init.agent,
+      model: init.model,
+      stackRef: init.stackRef,
+      stackName: init.stackName,
+      role: init.role,
+      coordination: init.coordination,
+      taskId: init.taskId,
+      attempt: init.attempt,
+      runId: init.runId,
+      parentSessionId: init.parentSessionId ?? null,
+      reviewOfSessionId: init.reviewOfSessionId ?? null,
+      status: 'active',
+      startedTick: this.tickCount,
+      endedTick: null,
+      turnCount: 0,
+      messageCount: 1,
+      tokenUsage: { inputTokens: 0, outputTokens: 0, thinkingTokens: 0, cachedTokens: 0 },
+      cost: { totalUsd: 0, inputTokens: 0, outputTokens: 0, thinkingTokens: 0 },
+      transcript: [],
+      transcriptSeq: 0,
+    };
+    this.sessions.set(session.sessionId, session);
+    return session;
+  }
+
+  /** Flip an ACTIVE session to its terminal status (idempotent). */
+  private closeSession(sessionId: string, status: SessionStatus): void {
+    const session = this.sessions.get(sessionId);
+    if (!session || session.status !== 'active') return;
+    session.status = status;
+    session.endedTick = this.tickCount;
+    this.pushTranscript(
+      session,
+      'event',
+      status === 'aborted' ? 'Session aborted — duty cut short.' : 'Session completed — duty discharged.',
+    );
+  }
+
+  /** Append a transcript entry, ring-capped at SESSION_TRANSCRIPT_CAP. */
+  private pushTranscript(
+    session: SessionRecord,
+    kind: SimSessionTranscriptEntry['kind'],
+    text: string,
+    toolName?: string,
+  ): void {
+    session.transcriptSeq += 1;
+    session.transcript.push({
+      seq: session.transcriptSeq,
+      tick: this.tickCount,
+      timestamp: this.now(),
+      kind,
+      text,
+      ...(toolName !== undefined ? { toolName } : {}),
+    });
+    if (session.transcript.length > SESSION_TRANSCRIPT_CAP) {
+      session.transcript.splice(0, session.transcript.length - SESSION_TRANSCRIPT_CAP);
+    }
+  }
+
+  /** Stream coalescing: consecutive same-kind deltas grow ONE bubble entry. */
+  private appendStreamEntry(session: SessionRecord, kind: 'message' | 'thinking', delta: string): void {
+    const last = session.transcript[session.transcript.length - 1];
+    if (last && last.kind === kind) {
+      last.text += delta;
+      return;
+    }
+    this.pushTranscript(session, kind, delta);
+  }
+
+  /** Newest matching session (by creation order). */
+  private latestSession(predicate: (session: SessionRecord) => boolean): SessionRecord | undefined {
+    let best: SessionRecord | undefined;
+    for (const session of this.sessions.values()) {
+      if (predicate(session) && (best === undefined || session.order > best.order)) best = session;
+    }
+    return best;
+  }
+
+  /** §V5-1: per-attempt coordination session on a STACK parent card. */
+  private openCoordinationSession(card: CardRecord): SessionRecord {
+    const stackRef = this.stackRefOf(card);
+    const stackEntry = this.stacks.get(stackRef)!;
+    const adapter = this.adapterOfStackSpec(stackEntry.stack.spec);
+    this.agentCounter += 1;
+    const session = this.createSession({
+      sessionId: `agt-${String(this.agentCounter).padStart(3, '0')}-coordinator`,
+      role: 'worker',
+      coordination: true,
+      taskId: card.taskId,
+      agent: adapter,
+      model: stackEntry.stack.spec.model || MODELS_BY_ADAPTER[adapter][0]!,
+      stackRef,
+      stackName: stackEntry.stack.metadata.name,
+      attempt: card.attempt,
+      runId: card.run?.runId ?? null,
+    });
+    card.coordSessionId = session.sessionId;
+    this.pushTranscript(
+      session,
+      'event',
+      `Coordination opened for attempt ${card.attempt}: marshalling ${card.childIds.length} child cards of ${card.taskId}.`,
+    );
+    return session;
+  }
+
+  private sessionViewOf(session: SessionRecord): SimSessionView {
+    this.accrueSessionCost(session);
+    return {
+      sessionId: session.sessionId,
+      title: session.title,
+      creatureName: session.creatureName,
+      agent: session.agent,
+      model: session.model,
+      stackRef: session.stackRef,
+      stackName: session.stackName,
+      role: session.role,
+      coordination: session.coordination,
+      taskId: session.taskId,
+      attempt: session.attempt,
+      runId: session.runId,
+      parentSessionId: session.parentSessionId,
+      reviewOfSessionId: session.reviewOfSessionId,
+      status: session.status,
+      startedTick: session.startedTick,
+      endedTick: session.endedTick,
+      turnCount: session.turnCount,
+      messageCount: session.messageCount,
+      tokenUsage: { ...session.tokenUsage },
+      cost: { ...session.cost },
+      transcriptLength: session.transcript.length,
+    };
   }
 
   private cancelInquiriesOf(card: CardRecord): void {
@@ -2728,7 +3180,13 @@ export class Simulation {
           output: { ok: true, summary: `${agent.activeToolName ?? 'Bash'} finished cleanly` },
           durationMs: agent.stateDuration * TICK_MS,
         });
-        agent.tokenUsage.inputTokens += this.rng.int(60, 400);
+        this.pushTranscript(
+          agent.session,
+          'tool_result',
+          `${agent.activeToolName ?? 'Bash'} finished cleanly`,
+          agent.activeToolName ?? 'Bash',
+        );
+        agent.session.tokenUsage.inputTokens += this.rng.int(60, 400);
         agent.activeToolName = null;
         agent.state = 'thinking';
         agent.stateTicks = 0;
@@ -2742,7 +3200,8 @@ export class Simulation {
     if (this.rng.chance(0.5)) {
       const delta = this.rng.pick(THINKING_PHRASES);
       agent.accumulatedThinking += delta;
-      agent.tokenUsage.thinkingTokens += this.rng.int(6, 28);
+      this.appendStreamEntry(agent.session, 'thinking', delta);
+      agent.session.tokenUsage.thinkingTokens += this.rng.int(6, 28);
       this.emitAgentEvent(agent, {
         type: 'thinking_delta',
         runId: this.runIdOf(agent),
@@ -2754,7 +3213,8 @@ export class Simulation {
     } else {
       const delta = this.rng.pick(TEXT_PHRASES);
       agent.accumulatedText += delta;
-      agent.tokenUsage.outputTokens += this.rng.int(8, 40);
+      this.appendStreamEntry(agent.session, 'message', delta);
+      agent.session.tokenUsage.outputTokens += this.rng.int(8, 40);
       this.emitAgentEvent(agent, {
         type: 'text_delta',
         runId: this.runIdOf(agent),
@@ -2782,17 +3242,18 @@ export class Simulation {
           toolName,
           inputAccumulated: JSON.stringify({ description: `${toolName} sweep over the card` }),
         });
+        this.pushTranscript(agent.session, 'tool_call', `${toolName} sweep over the card`, toolName);
       } else {
         this.emitAgentEvent(agent, {
           type: 'turn_end',
           runId: this.runIdOf(agent),
           agent: agent.agent,
           timestamp: now,
-          turnIndex: agent.turnCount,
+          turnIndex: agent.session.turnCount,
           cost: this.costOf(agent),
         });
-        agent.turnCount += 1;
-        agent.messageCount += 2;
+        agent.session.turnCount += 1;
+        agent.session.messageCount += 2;
         agent.stateTicks = 0;
         agent.stateDuration = this.rng.int(2, 6);
       }
@@ -2803,9 +3264,9 @@ export class Simulation {
         runId: this.runIdOf(agent),
         agent: agent.agent,
         timestamp: now,
-        inputTokens: agent.tokenUsage.inputTokens,
-        outputTokens: agent.tokenUsage.outputTokens,
-        thinkingTokens: agent.tokenUsage.thinkingTokens,
+        inputTokens: agent.session.tokenUsage.inputTokens,
+        outputTokens: agent.session.tokenUsage.outputTokens,
+        thinkingTokens: agent.session.tokenUsage.thinkingTokens,
       });
     }
     this.accrueCost(agent);
@@ -2835,6 +3296,7 @@ export class Simulation {
       effectId,
     };
     this.inquiries.set(hookRequestId, inquiry);
+    this.pushTranscript(agent.session, 'event', `Inquiry raised: ${inquiry.question}`);
     agent.state = 'awaiting_input';
     agent.pendingHookId = hookRequestId;
     agent.stateTicks = 0;
@@ -3144,6 +3606,8 @@ export class Simulation {
       pendingFollowUps: [],
       inquiriesThisAttempt: 0,
       workerAdapter: null,
+      coordSessionId: null,
+      approvingReviewSessionId: null,
       stackRefOverride: null,
       description: '',
       releaseId: null,
@@ -3234,10 +3698,10 @@ export class Simulation {
     let costUsd = run.costUsd;
     for (const agent of this.agents.values()) {
       if (this.runIdOf(agent) !== run.runId) continue;
-      tokens.inputTokens += agent.tokenUsage.inputTokens;
-      tokens.outputTokens += agent.tokenUsage.outputTokens;
-      tokens.thinkingTokens += agent.tokenUsage.thinkingTokens;
-      tokens.cachedTokens += agent.tokenUsage.cachedTokens;
+      tokens.inputTokens += agent.session.tokenUsage.inputTokens;
+      tokens.outputTokens += agent.session.tokenUsage.outputTokens;
+      tokens.thinkingTokens += agent.session.tokenUsage.thinkingTokens;
+      tokens.cachedTokens += agent.session.tokenUsage.cachedTokens;
       costUsd += this.costOf(agent).totalUsd;
     }
     return {
@@ -3337,10 +3801,11 @@ export class Simulation {
     return this.cards.get(agent.taskId)?.run?.runId ?? 'run-none';
   }
 
-  private accrueCost(agent: AgentRecord): void {
-    const pricing = PRICING[agent.agent] ?? { input: 2e-6, output: 8e-6 };
-    const usage = agent.tokenUsage;
-    agent.cost = {
+  /** §V5-1: cost accrues on the SESSION (live agent and record share it). */
+  private accrueSessionCost(session: SessionRecord): void {
+    const pricing = PRICING[session.agent] ?? { input: 2e-6, output: 8e-6 };
+    const usage = session.tokenUsage;
+    session.cost = {
       totalUsd: roundTo(
         usage.inputTokens * pricing.input +
           (usage.outputTokens + usage.thinkingTokens) * pricing.output,
@@ -3352,9 +3817,13 @@ export class Simulation {
     };
   }
 
+  private accrueCost(agent: AgentRecord): void {
+    this.accrueSessionCost(agent.session);
+  }
+
   private costOf(agent: AgentRecord): CostRecord {
     this.accrueCost(agent);
-    return { ...agent.cost };
+    return { ...agent.session.cost };
   }
 
   private deterministicSha(key: string): string {

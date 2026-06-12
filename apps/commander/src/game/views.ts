@@ -1,10 +1,11 @@
 /**
  * Read-only sim view access for the panel surfaces (SPEC-V2 §V2-5/§V2-7,
- * SPEC-V3 §V3-4, SPEC-V4 §V4-6/§V4-9): the Inspector Process/Workspace/
- * Memory tabs, the Human Review panel and the Runs overlay read workspace +
- * run-observation + runs-registry + memory-I/O views straight from the sim
- * on every render; re-renders are driven by the per-tick store commit
- * (`meta.tickIndex`), so reads stay deterministic per seed + verb sequence.
+ * SPEC-V3 §V3-4, SPEC-V4 §V4-6/§V4-9, SPEC-V5 §V5-1): the Inspector Process/
+ * Workspace/Memory/Sessions tabs, the Human Review panel, the Runs overlay
+ * and the Registry read workspace + run-observation + runs-registry +
+ * memory-I/O + session views straight from the sim on every render;
+ * re-renders are driven by the per-tick store commit (`meta.tickIndex`), so
+ * reads stay deterministic per seed + verb sequence.
  */
 
 import type {
@@ -14,6 +15,8 @@ import type {
   SimProcessTemplateView,
   SimRunObservationView,
   SimRunView,
+  SimSessionDetailView,
+  SimSessionView,
   SimStackView,
   SimWorkspaceView,
 } from '../backend/mock/simulation';
@@ -35,4 +38,8 @@ export interface SimViews {
   getFileContent(taskId: string, path: string): string | null;
   /** §V4-7 journal-derived commit ledger (terminal `git log`). */
   getGitLog(taskId: string): SimGitCommitView[];
+  /** §V5-1 persistent sessions: all (or one card's), newest first. */
+  listSessions(taskId?: string): SimSessionView[];
+  /** §V5-1 one persisted session: record + transcript (survives despawn). */
+  getSession(sessionId: string): SimSessionDetailView | null;
 }

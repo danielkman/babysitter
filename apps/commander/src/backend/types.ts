@@ -24,8 +24,8 @@ export interface CommanderBackend {
   onFrame(cb: (frame: ServerFrame) => void): () => void;
   /** GET /api/v1/agents */
   listAgents(): Promise<AgentSummary[]>;
-  /** GET /api/v1/sessions */
-  listSessions(): Promise<SessionEntry[]>;
+  /** GET /api/v1/sessions (gateway entries for ACTIVE agents; the §V5-1 persistent-session views live on the sim/backend as `listSessions(taskId?)`/`getSession`). */
+  listSessionEntries(): Promise<SessionEntry[]>;
   /** GET /api/v1/runs */
   listRuns(): Promise<RunEntry[]>;
   /** kradle AgentDispatchRun list (mock-local for v1) */

@@ -42,6 +42,8 @@ import type {
   SimMemoryIOView,
   SimProcessTemplateView,
   SimRunView,
+  SimSessionDetailView,
+  SimSessionView,
   SimStackView,
   UpdateTaskPatch,
 } from './simulation';
@@ -161,6 +163,16 @@ export class MockBackend implements CommanderBackend {
     return this.sim.listRuns();
   }
 
+  // --- v5 views (SPEC-V5 §V5-1 persistent sessions) ----------------------------
+
+  listSessions(taskId?: string): SimSessionView[] {
+    return this.sim.listSessions(taskId);
+  }
+
+  getSession(sessionId: string): SimSessionDetailView | null {
+    return this.sim.getSession(sessionId);
+  }
+
   getWorkspaceTree(taskId: string): SimFileTreeNode | null {
     return this.sim.getWorkspaceTree(taskId);
   }
@@ -183,8 +195,8 @@ export class MockBackend implements CommanderBackend {
     return Promise.resolve(this.sim.listAgents());
   }
 
-  listSessions(): Promise<SessionEntry[]> {
-    return Promise.resolve(this.sim.listSessions());
+  listSessionEntries(): Promise<SessionEntry[]> {
+    return Promise.resolve(this.sim.listSessionEntries());
   }
 
   listRuns(): Promise<RunEntry[]> {

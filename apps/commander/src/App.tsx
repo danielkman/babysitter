@@ -23,6 +23,8 @@ import type {
   SimMemoryIOView,
   SimProcessTemplateView,
   SimRunView,
+  SimSessionDetailView,
+  SimSessionView,
   SimStackView,
   UpdateTaskPatch,
 } from './backend/mock/simulation';
@@ -66,6 +68,9 @@ interface CommanderTestApi {
     getFileContent(taskId: string, path: string): string | null;
     getMemoryIO(ref: string): SimMemoryIOView;
     getGitLog(taskId: string): SimGitCommitView[];
+    /** SPEC-V5 §V5-1 persistent-session views. */
+    listSessions(taskId?: string): SimSessionView[];
+    getSession(sessionId: string): SimSessionDetailView | null;
   };
   store: CommanderStore;
   version: string;
@@ -146,6 +151,9 @@ window.__commander = {
     getFileContent: (taskId: string, path: string) => backend.sim.getFileContent(taskId, path),
     getMemoryIO: (ref: string) => backend.sim.getMemoryIO(ref),
     getGitLog: (taskId: string) => backend.sim.getGitLog(taskId),
+    // --- SPEC-V5 §V5-1 persistent-session views --------------------------------
+    listSessions: (taskId?: string) => backend.sim.listSessions(taskId),
+    getSession: (sessionId: string) => backend.sim.getSession(sessionId),
   },
   store,
   version: COMMANDER_VERSION,
