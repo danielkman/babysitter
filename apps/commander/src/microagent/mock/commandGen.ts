@@ -85,6 +85,8 @@ export const GLYPHS: Record<string, IconSpec> = {
   'rollback-prod': glyph('<path d="M5 8.5 L4.5 4 L7.3 6.4 L10 2.8 L12.7 6.4 L15.5 4 L15 8.5 Z"/><path d="M14.5 14 a4.5 4.5 0 1 1 -1.3 -3.2"/><path d="M15 8.6 L14.5 11.4 L11.7 10.9"/>'),
   // Terminal: cogitator slate with a prompt chevron and input bar.
   'open-terminal': glyph('<rect x="3" y="4" width="14" height="12" rx="1.6"/><path d="M5.8 8 L8.8 10.4 L5.8 12.8"/><path d="M10.4 13.2 H14.2"/>'),
+  // Edit Card (§V4-5): a quill inscribing a parchment plate.
+  'edit-card': glyph('<rect x="3" y="3.5" width="14" height="13" rx="1.8"/><path d="M6.2 14 L6.9 11.2 L12.6 5.5 a1.15 1.15 0 0 1 1.65 1.6 L8.6 12.9 Z"/><path d="M6.9 11.2 L8.6 12.9"/>'),
   // --- approved ---------------------------------------------------------------
   'hold-merge': glyph('<path d="M6 3.5 V9 a4 4 0 0 0 4 4 a4 4 0 0 1 4 4"/><path d="M3.5 7 H8.5 M11.5 14 H16.5"/>'),
   'force-rebase': glyph('<circle cx="5.5" cy="5" r="1.8"/><circle cx="5.5" cy="15" r="1.8"/><path d="M5.5 7 V13 M7.5 5 H12 a3 3 0 0 1 3 3 V11 M12.5 9 L15 11.5 L17.5 9"/>'),
@@ -348,6 +350,14 @@ const KIND_DEFS: Record<string, CommandDef[]> = {
 // Column-aware card sets (SPEC-V3 §V3-7)
 // ---------------------------------------------------------------------------
 
+/** §V4-5 Edit Card: offered on every non-merged / non-in-production column. */
+const EDIT_CARD_DEF: CommandDef = {
+  id: 'edit-card',
+  label: 'Edit Card',
+  intent: { kind: 'edit-card' },
+  tooltip: 'Open the card editor — title, kind, description, yolo, parent, workspace, agent stack (§V4-5)',
+};
+
 const BACKLOG_DEFS: CommandDef[] = [
   {
     id: 'start-work',
@@ -373,6 +383,7 @@ const BACKLOG_DEFS: CommandDef[] = [
     intent: { kind: 'commission-task' },
     tooltip: 'Commission a new task into the backlog (the Foundry, §V2-6)',
   },
+  EDIT_CARD_DEF,
 ];
 
 const AI_REVIEW_DEFS: CommandDef[] = [
@@ -396,6 +407,7 @@ const AI_REVIEW_DEFS: CommandDef[] = [
     tooltip: 'Abort the review — the card bounces back to the backlog',
     severity: 'danger',
   },
+  EDIT_CARD_DEF,
 ];
 
 const HUMAN_REVIEW_DEFS: CommandDef[] = [
@@ -419,6 +431,7 @@ const HUMAN_REVIEW_DEFS: CommandDef[] = [
     tooltip: 'Send the card back to DO with feedback',
     severity: 'danger',
   },
+  EDIT_CARD_DEF,
 ];
 
 const APPROVED_DEFS: CommandDef[] = [
@@ -442,6 +455,7 @@ const APPROVED_DEFS: CommandDef[] = [
     intent: { kind: 'inspect' },
     tooltip: 'Open the integration agent’s transcript inspector',
   },
+  EDIT_CARD_DEF,
 ];
 
 const MERGED_DEFS: CommandDef[] = [
@@ -521,14 +535,16 @@ function doColumnDefs(cards: readonly CardContextSummary[]): CommandDef[] {
     kindLayer = first.filter((def) => sets.every((set) => set.some((d) => d.id === def.id)));
   }
   const merged = [...kindLayer];
-  for (const staple of WORKING_DEFS) {
+  // Staples + the §V4-5 Edit Card staple (DO is a non-merged column).
+  const keep = [...WORKING_DEFS, EDIT_CARD_DEF];
+  for (const staple of keep) {
     if (!merged.some((d) => d.id === staple.id)) merged.push(staple);
   }
-  // ≤12 with Abort never dropped: trim from the END of the kind layer if the
-  // grid overflows, keeping all four staples.
+  // ≤12 with Abort (and the staples) never dropped: trim from the END of the
+  // kind layer if the grid overflows.
   if (merged.length > COMMAND_HOTKEYS.length) {
-    const staples = merged.filter((d) => WORKING_DEFS.some((s) => s.id === d.id));
-    const layer = merged.filter((d) => !WORKING_DEFS.some((s) => s.id === d.id));
+    const staples = merged.filter((d) => keep.some((s) => s.id === d.id));
+    const layer = merged.filter((d) => !keep.some((s) => s.id === d.id));
     return [...layer.slice(0, COMMAND_HOTKEYS.length - staples.length), ...staples];
   }
   return merged;

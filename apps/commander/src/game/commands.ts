@@ -210,6 +210,13 @@ export function executeIntent(intent: CommandIntent, store: CommanderStore, orde
       }
       return;
     }
+    case 'edit-card': {
+      // §V4-5: open the parchment card editor for the selected card (or the
+      // card attended by the first selected agent).
+      const taskId = tasks[0]?.id ?? state.world.units[agentIds[0] ?? '']?.view.taskId ?? null;
+      if (taskId !== null) state.openCardEditor(taskId);
+      return;
+    }
     case 'jump-to-alert':
       state.jumpToLatestAlert();
       return;

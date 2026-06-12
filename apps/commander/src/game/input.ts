@@ -52,7 +52,7 @@ export function attachInput({ store, orders }: AttachInputOptions): () => void {
         if (e.ctrlKey || e.metaKey || e.altKey) break;
         // M acts only when no modal is open (SPEC-V2 §V2-9 guard).
         const meta = store.getState().meta;
-        if (meta.foundryOpen || meta.steerOpen) return;
+        if (meta.foundryOpen || meta.steerOpen || meta.cardEditorTaskId !== null) return;
         if (meta.archiveOpen) {
           store.getState().closeArchive();
         } else {
@@ -63,7 +63,7 @@ export function attachInput({ store, orders }: AttachInputOptions): () => void {
       case 'KeyN': {
         if (e.ctrlKey || e.metaKey || e.altKey) break;
         const meta = store.getState().meta;
-        if (meta.archiveOpen || meta.steerOpen) return;
+        if (meta.archiveOpen || meta.steerOpen || meta.cardEditorTaskId !== null) return;
         if (meta.foundryOpen) {
           store.getState().closeFoundry();
         } else {
@@ -82,7 +82,14 @@ export function attachInput({ store, orders }: AttachInputOptions): () => void {
     const letter = hotkeyFromCode(e.code);
     if (letter === null) return;
     const state = store.getState();
-    if (state.meta.foundryOpen || state.meta.archiveOpen || state.meta.steerOpen) return;
+    if (
+      state.meta.foundryOpen ||
+      state.meta.archiveOpen ||
+      state.meta.steerOpen ||
+      state.meta.cardEditorTaskId !== null
+    ) {
+      return;
+    }
     if (!e.repeat) {
       if (executeCommandHotkey(letter, store, orders)) e.preventDefault();
     } else {

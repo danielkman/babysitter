@@ -24,6 +24,7 @@ import { CommandCard } from './hud/CommandCard';
 import { EventTicker } from './hud/EventTicker';
 import { SelectionPanel } from './hud/SelectionPanel';
 import { TopBar } from './hud/TopBar';
+import { CardEditor } from './panels/CardEditor';
 import { Foundry } from './panels/Foundry';
 import { Inspector } from './panels/Inspector';
 import { MemoryOverlay } from './panels/MemoryOverlay';
@@ -52,7 +53,8 @@ export function WarRoom({ store, orders, views }: WarRoomProps): React.JSX.Eleme
       <Inspector store={store} orders={orders} views={views} />
       <ReviewPanel store={store} orders={orders} views={views} />
       <SteerModal store={store} orders={orders} />
-      <Foundry store={store} orders={orders} />
+      <Foundry store={store} orders={orders} views={views} />
+      <CardEditor store={store} orders={orders} views={views} />
       <MemoryOverlay store={store} />
       <div className="wr-narrow-gate" role="note">
         <div className="wr-narrow-gate-card">

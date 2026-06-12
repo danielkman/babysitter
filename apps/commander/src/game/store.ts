@@ -39,7 +39,9 @@ import type {
   SimMemorySiloView,
   SimTaskView,
   SimUnitView,
+  UpdateTaskPatch,
 } from '../backend/mock/simulation';
+import type { KradleAgentStackInput } from '../contracts/kradle-stack';
 import type { TaskKind } from '../backend/mock/scenario';
 
 // ---------------------------------------------------------------------------
@@ -234,6 +236,8 @@ export interface MetaSlice {
   inspectorTab: InspectorTab;
   /** Human-review side panel target (SPEC-V3 §V3-4). */
   reviewTaskId: string | null;
+  /** §V4-5 card editor target (the parchment form dialog); null = closed. */
+  cardEditorTaskId: string | null;
   /** Space-key pulse counter — the Inquiry Dock scrolls into view + flashes. */
   dockPulse: number;
   steerOpen: boolean;
@@ -300,6 +304,9 @@ export interface CommanderState {
   /** Open/close the human-review side panel for a card (SPEC-V3 §V3-4). */
   openReview(taskId: string): void;
   closeReview(): void;
+  /** Open/close the §V4-5 card-editor dialog for a card. */
+  openCardEditor(taskId: string): void;
+  closeCardEditor(): void;
   openSteer(): void;
   closeSteer(): void;
   openFoundry(): void;
@@ -731,6 +738,29 @@ function routeRunEvent(
       });
       break;
     }
+    // --- §V4-5 editor events ---------------------------------------------------
+    case 'task_updated': {
+      ticker({
+        ts,
+        severity: 'info',
+        text: `Card updated — ${taskTitle(taskId)}`,
+        ...(taskId !== undefined && taskId !== '' ? { entityId: taskId } : {}),
+      });
+      break;
+    }
+    case 'stack_forged': {
+      const name = asString(ev['name']) ?? 'unnamed stack';
+      const stackRef = asString(ev['stackRef']) ?? 'stk-c??';
+      const updated = ev['updated'] === true;
+      ticker({
+        ts,
+        severity: 'success',
+        text: updated
+          ? `Stack re-forged — ${name} (${stackRef}) updated in the foundry`
+          : `Stack forged — ${name} (${stackRef}) joins the roster`,
+      });
+      break;
+    }
     case 'card_merged': {
       ticker({
         ts,
@@ -875,6 +905,7 @@ export function createCommanderStore(): CommanderStore {
       inspectorTaskId: null,
       inspectorTab: 'transcript',
       reviewTaskId: null,
+      cardEditorTaskId: null,
       dockPulse: 0,
       steerOpen: false,
       foundryOpen: false,
@@ -1165,9 +1196,14 @@ export function createCommanderStore(): CommanderStore {
       );
     },
     escape() {
-      // Esc cascade (§V3-7): foundry/archive > review panel > steer modal >
-      // inspector > selection. Modals close WITHOUT clearing the selection.
+      // Esc cascade (§V3-7 as amended by §V4-13): card-editor/foundry/archive
+      // tier > review panel > steer modal > inspector > selection. Modals
+      // close WITHOUT clearing the selection.
       const state = get();
+      if (state.meta.cardEditorTaskId !== null) {
+        set({ meta: { ...state.meta, cardEditorTaskId: null } });
+        return;
+      }
       if (state.meta.foundryOpen) {
         set({ meta: { ...state.meta, foundryOpen: false } });
         return;
@@ -1267,6 +1303,12 @@ export function createCommanderStore(): CommanderStore {
     closeReview() {
       set((state) => ({ meta: { ...state.meta, reviewTaskId: null } }));
     },
+    openCardEditor(taskId) {
+      set((state) => ({ meta: { ...state.meta, cardEditorTaskId: taskId } }));
+    },
+    closeCardEditor() {
+      set((state) => ({ meta: { ...state.meta, cardEditorTaskId: null } }));
+    },
     openSteer() {
       set((state) => ({ meta: { ...state.meta, steerOpen: true } }));
     },
@@ -1357,6 +1399,10 @@ export interface Orders {
   rollbackCard(taskId: string): void;
   /** SPEC-V4 §V4-4: set the real-time pacing multiplier (0.5 | 1 | 2). */
   setSpeed(speed: number): boolean;
+  /** SPEC-V4 §V4-5: card editor save — applies ONLY the changed fields. */
+  updateTask(taskId: string, patch: UpdateTaskPatch): boolean;
+  /** SPEC-V4 §V4-5: stacks foundry save — forge or update an agent stack. */
+  upsertStack(stack: KradleAgentStackInput): string | null;
 }
 
 export interface BackendBinding {
@@ -1529,6 +1575,19 @@ export function bindBackendToStore(store: CommanderStore, backend: MockBackend):
         store.getState().pushEvent(`Cogitator pacing — ${speed}x`, 'info');
       }
       return ok;
+    },
+    updateTask(taskId, patch) {
+      // §V4-5: the sim emits `task_updated` — the frame router owns the
+      // ticker line; this verb only applies + flushes.
+      const ok = sim.updateTask(taskId, patch);
+      flush();
+      return ok;
+    },
+    upsertStack(stack) {
+      // §V4-5: the sim emits `stack_forged` (deterministic stk-cNN id).
+      const stackRef = sim.upsertStack(stack);
+      flush();
+      return stackRef;
     },
   };
 

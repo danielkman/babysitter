@@ -131,6 +131,8 @@ export type CommandIntent =
   | { kind: 'rollback-card' }
   /** SPEC-V4 §V4-7: open the cogitator terminal for the card's workspace. */
   | { kind: 'open-terminal' }
+  /** SPEC-V4 §V4-5: open the parchment card-editor dialog for the card. */
+  | { kind: 'edit-card' }
   | { kind: 'jump-to-alert' }
   | { kind: 'toggle-sim' };
 

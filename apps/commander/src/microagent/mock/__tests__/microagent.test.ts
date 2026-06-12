@@ -198,7 +198,7 @@ describe('generateCommands — global + column-aware sets (SPEC-V3 §V3-7)', () 
 
   it('backlog card → Start Work / Set Yolo / Prioritize / Commission Task', () => {
     const specs = generateCommands(cardCtx('backlog'));
-    expect(specs.map((s) => s.id)).toEqual(['start-work', 'set-yolo', 'prioritize', 'commission-task']);
+    expect(specs.map((s) => s.id)).toEqual(['start-work', 'set-yolo', 'prioritize', 'commission-task', 'edit-card']);
     expect(specs.find((s) => s.id === 'start-work')?.intent).toEqual({ kind: 'move-card', column: 'do' });
     expect(specs.find((s) => s.id === 'set-yolo')?.label).toBe('Set Yolo');
   });
@@ -218,7 +218,7 @@ describe('generateCommands — global + column-aware sets (SPEC-V3 §V3-7)', () 
     const ids = specs.map((s) => s.id);
     expect(ids).toEqual([
       'run-tests', 'root-cause', 'apply-patch', 'rollback',
-      'steer', 'pause-unit', 'inspect', 'abort',
+      'steer', 'pause-unit', 'inspect', 'abort', 'edit-card',
     ]);
     expect(specs.map((s) => s.label)).toContain('Steer…');
     expect(specs.find((s) => s.id === 'abort')?.severity).toBe('danger');
@@ -226,13 +226,13 @@ describe('generateCommands — global + column-aware sets (SPEC-V3 §V3-7)', () 
 
   it('ai-review card → Inspect Review / Expedite / Abort', () => {
     const specs = generateCommands(cardCtx('ai-review'));
-    expect(specs.map((s) => s.id)).toEqual(['inspect-review', 'expedite', 'abort']);
+    expect(specs.map((s) => s.id)).toEqual(['inspect-review', 'expedite', 'abort', 'edit-card']);
     expect(specs.find((s) => s.id === 'expedite')?.enabled).toBe(true); // a reviewer attends
   });
 
   it('human-review card → Open Review / Approve All / Request Changes (danger)', () => {
     const specs = generateCommands(cardCtx('human-review'));
-    expect(specs.map((s) => s.id)).toEqual(['open-review', 'approve-all', 'request-changes']);
+    expect(specs.map((s) => s.id)).toEqual(['open-review', 'approve-all', 'request-changes', 'edit-card']);
     expect(specs.find((s) => s.id === 'approve-all')?.intent).toEqual({ kind: 'move-card', column: 'approved' });
     const reject = specs.find((s) => s.id === 'request-changes');
     expect(reject?.intent).toEqual({ kind: 'move-card', column: 'do', danger: true });
@@ -241,7 +241,7 @@ describe('generateCommands — global + column-aware sets (SPEC-V3 §V3-7)', () 
 
   it('approved card → Hold Merge / Force Rebase / Inspect', () => {
     const specs = generateCommands(cardCtx('approved'));
-    expect(specs.map((s) => s.id)).toEqual(['hold-merge', 'force-rebase', 'inspect']);
+    expect(specs.map((s) => s.id)).toEqual(['hold-merge', 'force-rebase', 'inspect', 'edit-card']);
     expect(specs.find((s) => s.id === 'hold-merge')?.enabled).toBe(true); // integration agent attends
   });
 
@@ -250,10 +250,19 @@ describe('generateCommands — global + column-aware sets (SPEC-V3 §V3-7)', () 
     expect(specs.map((s) => s.id)).toEqual(['inspect']);
   });
 
-  it('mixed-column card selection → intersection, falling back to selection staples', () => {
+  it('mixed-column card selection → intersection by command id (V4: Edit Card is the backlog∩do common ground)', () => {
     const mixed = ctx({ count: 2, kinds: ['task'], taskStates: ['queued', 'in_progress'] }, {}, [
       card({ column: 'backlog', taskId: 'a' }),
       card({ column: 'do', taskId: 'b' }),
+    ]);
+    const specs = generateCommands(mixed);
+    expect(specs.map((s) => s.id)).toEqual(['edit-card']);
+  });
+
+  it('mixed-column selection with NO intersection falls back to the selection staples', () => {
+    const mixed = ctx({ count: 2, kinds: ['task'], taskStates: ['queued', 'done'] }, {}, [
+      card({ column: 'backlog', taskId: 'a' }),
+      card({ column: 'in-production', taskId: 'b', merged: true }),
     ]);
     const specs = generateCommands(mixed);
     expect(specs.map((s) => s.id)).toEqual(['inspect', 'abort']);
@@ -342,7 +351,8 @@ describe('generateCommands — grid invariants (≤12, icons, hotkeys)', () => {
 
   it('positional hotkeys: cell i answers to QWER/ASDF/ZXCV row-major', () => {
     const specs = generateCommands(cardCtx('do', 'fix'));
-    expect(specs.map((s) => s.hotkey)).toEqual(['Q', 'W', 'E', 'R', 'A', 'S', 'D', 'F']);
+    // V4: + Edit Card after the staples (§V4-5) → 9 cells, row-major.
+    expect(specs.map((s) => s.hotkey)).toEqual(['Q', 'W', 'E', 'R', 'A', 'S', 'D', 'F', 'Z']);
   });
 
   it('paused sim flips the toggle label (and icon)', () => {

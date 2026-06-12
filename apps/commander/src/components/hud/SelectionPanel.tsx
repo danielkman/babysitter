@@ -168,6 +168,14 @@ function TaskDetails({ store, task }: { store: CommanderStore; task: TaskEntity 
             </span>
           )}
           {task.view.priority > 0 && <span className="wr-sel-priority">priority</span>}
+          <button
+            type="button"
+            className="wr-sel-edit"
+            title="Open the card editor (§V4-5)"
+            onClick={() => store.getState().openCardEditor(task.id)}
+          >
+            EDIT CARD
+          </button>
         </div>
       </div>
       <div className="wr-sel-vitals">

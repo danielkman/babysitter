@@ -125,16 +125,9 @@ window.__commander = {
       binding.orders.rollbackCard(taskId);
     },
     setSpeed: (speed: number) => binding.orders.setSpeed(speed),
-    updateTask: (taskId: string, patch: UpdateTaskPatch) => {
-      const ok = backend.sim.updateTask(taskId, patch);
-      binding.flush();
-      return ok;
-    },
-    upsertStack: (stack: KradleAgentStackInput) => {
-      const stackRef = backend.sim.upsertStack(stack);
-      binding.flush();
-      return stackRef;
-    },
+    updateTask: (taskId: string, patch: UpdateTaskPatch) =>
+      binding.orders.updateTask(taskId, patch),
+    upsertStack: (stack: KradleAgentStackInput) => binding.orders.upsertStack(stack),
     updateProcessTemplate: (kind: string, phases: string[]) => {
       const revision = backend.sim.updateProcessTemplate(kind as TaskKind, phases);
       binding.flush();

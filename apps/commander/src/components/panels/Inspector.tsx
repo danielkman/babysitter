@@ -414,6 +414,8 @@ export function Inspector({ store, orders, views }: InspectorProps): React.JSX.E
   let head: React.JSX.Element;
   if (unit !== undefined) {
     const icon = generateIcon({ entityId: unit.id, kind: 'unit', adapter: unit.view.agent });
+    // §V4-5: the agent's stack identity (spawn-time binding) — header chip.
+    const stackName = board.agents[unit.id]?.stackName;
     head = (
       <>
         <div className="wr-inspector-portrait" dangerouslySetInnerHTML={{ __html: icon.svg }} />
@@ -421,6 +423,11 @@ export function Inspector({ store, orders, views }: InspectorProps): React.JSX.E
           <div className="wr-inspector-name">{unit.view.title}</div>
           <div className="wr-inspector-sub">
             {unit.view.agent} · {unit.view.model}
+            {stackName !== undefined && (
+              <span className="wr-inspector-stack" title="agent stack">
+                {stackName}
+              </span>
+            )}
           </div>
           {card !== undefined && (
             <div className="wr-inspector-sub wr-inspector-attended" title="attended card">

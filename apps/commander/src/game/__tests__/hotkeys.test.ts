@@ -76,7 +76,8 @@ describe('positional hotkeys on the 3x4 grid', () => {
         },
       ],
     });
-    expect(specs.map((s) => s.hotkey)).toEqual(['Q', 'W', 'E', 'R']);
+    // V4 adds the Edit Card staple to the backlog set (§V4-5) → 5 cells.
+    expect(specs.map((s) => s.hotkey)).toEqual(['Q', 'W', 'E', 'R', 'A']);
   });
 });
 

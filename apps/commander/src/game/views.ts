@@ -6,9 +6,15 @@
  * (`meta.tickIndex`), so reads stay deterministic per seed + verb sequence.
  */
 
-import type { SimRunObservationView, SimWorkspaceView } from '../backend/mock/simulation';
+import type {
+  SimRunObservationView,
+  SimStackView,
+  SimWorkspaceView,
+} from '../backend/mock/simulation';
 
 export interface SimViews {
   getWorkspaceView(taskId: string): SimWorkspaceView | null;
   getRunObservation(taskId: string): SimRunObservationView | null;
+  /** §V4-5 agent-stack roster (4 seeded + custom foundry-forged stacks). */
+  listStacks(): SimStackView[];
 }

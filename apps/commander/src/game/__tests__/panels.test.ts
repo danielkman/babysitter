@@ -43,6 +43,8 @@ function mockOrders(): Orders {
     release: vi.fn(() => null),
     rollbackCard: vi.fn(),
     setSpeed: vi.fn(() => true),
+    updateTask: vi.fn(() => true),
+    upsertStack: vi.fn(() => null),
   };
 }
 
