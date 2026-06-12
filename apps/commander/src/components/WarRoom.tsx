@@ -26,6 +26,7 @@ import { SelectionPanel } from './hud/SelectionPanel';
 import { TopBar } from './hud/TopBar';
 import { CardEditor } from './panels/CardEditor';
 import { Foundry } from './panels/Foundry';
+import { IdeOverlay } from './panels/IdeOverlay';
 import { Inspector } from './panels/Inspector';
 import { MemoryOverlay } from './panels/MemoryOverlay';
 import { ReviewPanel } from './panels/ReviewPanel';
@@ -58,6 +59,7 @@ export function WarRoom({ store, orders, views }: WarRoomProps): React.JSX.Eleme
       <CardEditor store={store} orders={orders} views={views} />
       <MemoryOverlay store={store} />
       <RunsOverlay store={store} orders={orders} views={views} />
+      <IdeOverlay store={store} orders={orders} views={views} />
       <div className="wr-narrow-gate" role="note">
         <div className="wr-narrow-gate-card">
           <h1>A5C Commander</h1>

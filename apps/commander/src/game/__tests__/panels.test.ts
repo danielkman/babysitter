@@ -46,6 +46,7 @@ function mockOrders(): Orders {
     updateTask: vi.fn(() => true),
     upsertStack: vi.fn(() => null),
     updateProcessTemplate: vi.fn(() => null),
+    writeFile: vi.fn(() => true),
   };
 }
 

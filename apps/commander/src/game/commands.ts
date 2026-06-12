@@ -199,15 +199,25 @@ export function executeIntent(intent: CommandIntent, store: CommanderStore, orde
       return;
     }
     case 'open-terminal': {
-      // §V4-7 delivers the dedicated Terminal tab in a later phase; until
-      // then the command surfaces the Inspector for the card's session.
+      // §V4-7: open the Inspector on the card's session and deep-link the
+      // Terminal tab (tab state is store-settable, same as Open Diff).
       const first = agentIds[0];
       const task = tasks[0];
       if (first !== undefined) {
         state.openInspector(first);
       } else if (task !== undefined) {
         state.openInspectorCard(task.id);
+      } else {
+        return;
       }
+      store.getState().setInspectorTab('terminal');
+      return;
+    }
+    case 'open-ide': {
+      // §V4-11: open the web IDE overlay on the selected card's workspace
+      // (or the card attended by the first selected agent).
+      const taskId = tasks[0]?.id ?? state.world.units[agentIds[0] ?? '']?.view.taskId ?? null;
+      if (taskId !== null) state.openIde(taskId);
       return;
     }
     case 'edit-card': {

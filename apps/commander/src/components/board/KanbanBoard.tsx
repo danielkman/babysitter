@@ -511,6 +511,7 @@ export function KanbanBoard({ store, orders }: KanbanBoardProps): React.JSX.Elem
   const board = useStore(store, (s) => s.board);
   const selectionIds = useStore(store, (s) => s.selection.ids);
   const movingCards = useStore(store, (s) => s.meta.movingCards);
+  const reviewTaskId = useStore(store, (s) => s.meta.reviewTaskId);
   const rootRef = useRef<HTMLDivElement | null>(null);
   /** taskId → last laid-out rect (FLIP "first" positions, §V3-3). */
   const rectsRef = useRef<Map<string, DOMRect>>(new Map());
@@ -664,15 +665,20 @@ export function KanbanBoard({ store, orders }: KanbanBoardProps): React.JSX.Elem
                     onHoverLane={onHoverLane}
                   />
                 );
-                // ONLY the DO lane wraps each top-level card in a slot
-                // element (frozen e2e contract: `cardsInColumn('do')
-                // .locator('[data-testid="card-<id>"]')` resolves the card as
-                // a DESCENDANT of a card-prefixed element). Every other lane
-                // stays bare so raw `cardsInColumn(col).count()` waits (e.g.
-                // AC30's "≥2 cards in HUMAN REVIEW") count REAL cards, not
-                // slot wrappers, and `singleCardsIn('backlog')` sees flat
-                // singles.
-                return columnId !== 'do' ? (
+                // Slot wrappers (frozen e2e contract: `cardsInColumn(col)
+                // .locator('[data-testid="card-<id>"]')` resolves the card
+                // as a DESCENDANT of a card-prefixed element):
+                //   - the DO lane wraps EVERY top-level card (v3 probes);
+                //   - HUMAN REVIEW wraps ONLY the card whose review panel is
+                //     open (AC45's tail asserts under an open panel), so
+                //     AC30's bare `cardsInColumn('human-review').count()`
+                //     wait keeps counting REAL cards 1:1 while no panel is
+                //     up. Every other lane stays bare (`singleCardsIn`
+                //     flat-singles contract).
+                const slotted =
+                  columnId === 'do' ||
+                  (columnId === 'human-review' && card.taskId === reviewTaskId);
+                return !slotted ? (
                   el
                 ) : (
                   <div key={card.taskId} className="wr-card-slot" data-testid={`card-slot-${card.taskId}`}>

@@ -121,14 +121,17 @@ export function MemoryIOTab({ store, views, taskId, unitId }: MemoryIOTabProps):
                   if (e.key === 'Enter' || e.key === ' ') openArchiveAt(entry.recordId);
                 }}
               >
-                <span className="wr-memio-id">{entry.recordId}</span>
+                {/* literal separators keep the row's textContent tokenized —
+                    the AC43 deep-link probe harvests the record id from the
+                    row text and must not see the spans run together */}
+                <span className="wr-memio-id">{entry.recordId}</span>{' '}
                 <span
                   className="wr-memio-kind"
                   style={{ ['--mem-hue' as string]: String(kindHue(entry.kind)) }}
                 >
                   {entry.kind}
-                </span>
-                <span className="wr-memio-silo">{entry.silo}</span>
+                </span>{' '}
+                <span className="wr-memio-silo">{entry.silo}</span>{' '}
                 <span className="wr-memio-tick">t{entry.tick}</span>
               </li>
             ))}
@@ -161,10 +164,10 @@ export function MemoryIOTab({ store, views, taskId, unitId }: MemoryIOTabProps):
                     }
                   }}
                 >
-                  <span className="wr-memio-id">{entry.updateId}</span>
-                  <span className="wr-memio-silo">→ {entry.silo}</span>
-                  <span className="wr-memio-phase">{entry.phase}</span>
-                  <span className="wr-memio-changes">{entry.changes.length} changes</span>
+                  <span className="wr-memio-id">{entry.updateId}</span>{' '}
+                  <span className="wr-memio-silo">→ {entry.silo}</span>{' '}
+                  <span className="wr-memio-phase">{entry.phase}</span>{' '}
+                  <span className="wr-memio-changes">{entry.changes.length} changes</span>{' '}
                   <span className="wr-memio-tick">t{entry.tick}</span>
                 </li>
               ))}

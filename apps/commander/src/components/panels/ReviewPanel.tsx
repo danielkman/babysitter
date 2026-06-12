@@ -65,6 +65,15 @@ export function ReviewPanel({ store, orders, views }: ReviewPanelProps): React.J
         </div>
         <button
           type="button"
+          data-testid="review-open-ide"
+          className="wr-review-btn wr-review-btn--ide"
+          aria-label="Open in IDE"
+          onClick={() => store.getState().openIde(taskId)}
+        >
+          Open in IDE
+        </button>
+        <button
+          type="button"
           className="wr-inspector-close"
           aria-label="Close review panel"
           onClick={() => store.getState().closeReview()}

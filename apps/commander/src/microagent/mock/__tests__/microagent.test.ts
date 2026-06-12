@@ -219,6 +219,7 @@ describe('generateCommands — global + column-aware sets (SPEC-V3 §V3-7)', () 
     expect(ids).toEqual([
       'run-tests', 'root-cause', 'apply-patch', 'rollback',
       'steer', 'pause-unit', 'inspect', 'abort', 'edit-card',
+      'open-terminal', 'open-ide',
     ]);
     expect(specs.map((s) => s.label)).toContain('Steer…');
     expect(specs.find((s) => s.id === 'abort')?.severity).toBe('danger');
@@ -226,13 +227,15 @@ describe('generateCommands — global + column-aware sets (SPEC-V3 §V3-7)', () 
 
   it('ai-review card → Inspect Review / Expedite / Abort', () => {
     const specs = generateCommands(cardCtx('ai-review'));
-    expect(specs.map((s) => s.id)).toEqual(['inspect-review', 'expedite', 'abort', 'edit-card']);
+    expect(specs.map((s) => s.id)).toEqual(['inspect-review', 'expedite', 'abort', 'edit-card', 'open-terminal']);
     expect(specs.find((s) => s.id === 'expedite')?.enabled).toBe(true); // a reviewer attends
   });
 
   it('human-review card → Open Review / Approve All / Request Changes (danger)', () => {
     const specs = generateCommands(cardCtx('human-review'));
-    expect(specs.map((s) => s.id)).toEqual(['open-review', 'approve-all', 'request-changes', 'edit-card']);
+    expect(specs.map((s) => s.id)).toEqual([
+      'open-review', 'approve-all', 'request-changes', 'edit-card', 'open-terminal', 'open-ide',
+    ]);
     expect(specs.find((s) => s.id === 'approve-all')?.intent).toEqual({ kind: 'move-card', column: 'approved' });
     const reject = specs.find((s) => s.id === 'request-changes');
     expect(reject?.intent).toEqual({ kind: 'move-card', column: 'do', danger: true });
@@ -241,7 +244,7 @@ describe('generateCommands — global + column-aware sets (SPEC-V3 §V3-7)', () 
 
   it('approved card → Hold Merge / Force Rebase / Inspect', () => {
     const specs = generateCommands(cardCtx('approved'));
-    expect(specs.map((s) => s.id)).toEqual(['hold-merge', 'force-rebase', 'inspect', 'edit-card']);
+    expect(specs.map((s) => s.id)).toEqual(['hold-merge', 'force-rebase', 'inspect', 'edit-card', 'open-terminal']);
     expect(specs.find((s) => s.id === 'hold-merge')?.enabled).toBe(true); // integration agent attends
   });
 
@@ -351,8 +354,9 @@ describe('generateCommands — grid invariants (≤12, icons, hotkeys)', () => {
 
   it('positional hotkeys: cell i answers to QWER/ASDF/ZXCV row-major', () => {
     const specs = generateCommands(cardCtx('do', 'fix'));
-    // V4: + Edit Card after the staples (§V4-5) → 9 cells, row-major.
-    expect(specs.map((s) => s.hotkey)).toEqual(['Q', 'W', 'E', 'R', 'A', 'S', 'D', 'F', 'Z']);
+    // V4: + Edit Card (§V4-5), Terminal (§V4-7) and Open in IDE (§V4-11)
+    // after the staples → 11 cells, row-major.
+    expect(specs.map((s) => s.hotkey)).toEqual(['Q', 'W', 'E', 'R', 'A', 'S', 'D', 'F', 'Z', 'X', 'C']);
   });
 
   it('paused sim flips the toggle label (and icon)', () => {

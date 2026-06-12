@@ -131,6 +131,8 @@ export type CommandIntent =
   | { kind: 'rollback-card' }
   /** SPEC-V4 §V4-7: open the cogitator terminal for the card's workspace. */
   | { kind: 'open-terminal' }
+  /** SPEC-V4 §V4-11: open the web IDE overlay on the card's workspace. */
+  | { kind: 'open-ide' }
   /** SPEC-V4 §V4-5: open the parchment card-editor dialog for the card. */
   | { kind: 'edit-card' }
   | { kind: 'jump-to-alert' }
@@ -147,6 +149,16 @@ export interface CommandSpec {
   severity?: 'normal' | 'danger' | 'urgent';
 }
 
+/** SPEC-V4 §V4-11: editor context the ghost completion derives from. */
+export interface CompletionContext {
+  /** Workspace-relative path of the buffer being edited. */
+  path: string;
+  /** Full text of the caret's line (the "preceding line content"). */
+  lineText: string;
+  /** 0-based line index of the caret. */
+  lineIndex: number;
+}
+
 export interface Microagent {
   /** Selection state → command set; mixed selections get the intersection; ≤12. */
   generateCommands(ctx: CommandContext): CommandSpec[];
@@ -154,4 +166,9 @@ export interface Microagent {
   generateIcon(ctx: IconContext): IconSpec;
   /** Deterministic per option: engraved-brass glyph for an inquiry option (§V3-5). */
   generateOptionIcon(option: InquiryOptionLike): IconSpec;
+  /**
+   * SPEC-V4 §V4-11 ghost completion: deterministic from path + preceding
+   * line content; empty string = no suggestion for that line.
+   */
+  suggestCompletion(context: CompletionContext): string;
 }

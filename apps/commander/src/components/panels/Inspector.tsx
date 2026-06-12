@@ -38,6 +38,7 @@ import { generateIcon } from '../../microagent/mock/iconGen';
 import { generateOptionIcon } from '../../microagent/mock/optionIconGen';
 import { InquiryOptionRow } from '../hud/ChatDock';
 import { MemoryIOTab } from './MemoryIOTab';
+import { TerminalTab } from './TerminalTab';
 import { ChangedFileList, GitStatusHeader } from './WorkspaceView';
 
 export interface InspectorProps {
@@ -59,6 +60,7 @@ const TABS: ReadonlyArray<{ id: InspectorTab; label: string }> = [
   { id: 'process', label: 'Process' },
   { id: 'workspace', label: 'Workspace' },
   { id: 'memory', label: 'Memory' },
+  { id: 'terminal', label: 'Terminal' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -521,6 +523,13 @@ export function Inspector({ store, orders, views }: InspectorProps): React.JSX.E
       {tab === 'workspace' && <WorkspaceTab taskId={taskId} views={views} />}
       {tab === 'memory' && (
         <MemoryIOTab store={store} views={views} taskId={taskId} unitId={unit?.id ?? null} />
+      )}
+      {tab === 'terminal' && (
+        <TerminalTab
+          taskId={taskId}
+          workspaceId={card?.view.workspaceId ?? unit?.view.workspaceId ?? ''}
+          views={views}
+        />
       )}
       {unit !== undefined && <TokenFooter unit={unit} />}
     </aside>

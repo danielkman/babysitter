@@ -69,7 +69,10 @@ export function DiffPlate({ diff }: { diff: string }): React.JSX.Element {
             row.kind === 'meta' && 'wr-diff-meta',
           )}
         >
-          <span className="wr-diff-num">{index + 1}</span>
+          {/* engraved gutter number lives in CSS content so the row's
+              textContent stays pure diff text (terminal `cat` cross-checks
+              harvest the addition rows verbatim, AC42/§V4-8) */}
+          <span className="wr-diff-num" data-n={index + 1} aria-hidden />
           <span className="wr-diff-marker">{row.marker}</span>
           <span className="wr-diff-text">{row.text}</span>
         </div>

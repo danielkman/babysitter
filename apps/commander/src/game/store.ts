@@ -213,8 +213,8 @@ export interface MemoryPulse {
   ts: number;
 }
 
-/** Inspector tab ids (SPEC-V2 §V2-5/§V2-7 as amended by SPEC-V4 §V4-9). */
-export type InspectorTab = 'transcript' | 'process' | 'workspace' | 'memory';
+/** Inspector tab ids (SPEC-V2 §V2-5/§V2-7 as amended by SPEC-V4 §V4-7/§V4-9). */
+export type InspectorTab = 'transcript' | 'process' | 'workspace' | 'memory' | 'terminal';
 
 export interface MetaSlice {
   resources: ResourcesSnapshot;
@@ -252,6 +252,8 @@ export interface MetaSlice {
   archiveFocusId: string | null;
   /** The Runs ledger overlay (§V4-6 — top Esc tier with foundry/archive). */
   runsOpen: boolean;
+  /** §V4-11 web IDE overlay target (full-screen plate); null = closed. */
+  ideTaskId: string | null;
   /** taskId → in-flight automatic move (cleared by the board after the glide). */
   movingCards: Record<string, CardMove>;
   moveSeq: number;
@@ -325,6 +327,9 @@ export interface CommanderState {
   /** §V4-6: open/close the Runs ledger overlay. */
   openRuns(): void;
   closeRuns(): void;
+  /** §V4-11: open/close the web IDE overlay for a card's workspace. */
+  openIde(taskId: string): void;
+  closeIde(): void;
   /** The board calls this when a card's §V3-3 glide animation finishes. */
   clearMoving(taskId: string): void;
   setMemory(memory: BoardMemory): void;
@@ -934,6 +939,7 @@ export function createCommanderStore(): CommanderStore {
       archiveOpen: false,
       archiveFocusId: null,
       runsOpen: false,
+      ideTaskId: null,
       movingCards: {},
       moveSeq: 0,
       memoryPulses: [],
@@ -1220,10 +1226,15 @@ export function createCommanderStore(): CommanderStore {
       );
     },
     escape() {
-      // Esc cascade (§V3-7 as amended by §V4-13): card-editor/runs/foundry/
-      // archive tier > review panel > steer modal > inspector > selection.
-      // Modals close WITHOUT clearing the selection.
+      // Esc cascade (§V3-7 as amended by §V4-13/§V4-11): ide > card-editor >
+      // runs > foundry > archive > review panel > steer modal > inspector >
+      // selection. Modals close WITHOUT clearing the selection; the review
+      // panel SURVIVES the IDE's Esc (AC45).
       const state = get();
+      if (state.meta.ideTaskId !== null) {
+        set({ meta: { ...state.meta, ideTaskId: null } });
+        return;
+      }
       if (state.meta.cardEditorTaskId !== null) {
         set({ meta: { ...state.meta, cardEditorTaskId: null } });
         return;
@@ -1374,6 +1385,12 @@ export function createCommanderStore(): CommanderStore {
     closeRuns() {
       set((state) => ({ meta: { ...state.meta, runsOpen: false } }));
     },
+    openIde(taskId) {
+      set((state) => ({ meta: { ...state.meta, ideTaskId: taskId } }));
+    },
+    closeIde() {
+      set((state) => ({ meta: { ...state.meta, ideTaskId: null } }));
+    },
     clearMoving(taskId) {
       set((state) => {
         if (state.meta.movingCards[taskId] === undefined) return state;
@@ -1455,6 +1472,11 @@ export interface Orders {
    * TEMPLATE (revision bump, `process_updated` event, future runs only).
    */
   updateProcessTemplate(kind: TaskKind, phases: string[]): number | null;
+  /**
+   * SPEC-V4 §V4-8/§V4-11: session-local editor write — the workspace view
+   * (dirty badges + diff plates) reflects it on the next read.
+   */
+  writeFile(taskId: string, path: string, content: string): boolean;
 }
 
 export interface BackendBinding {
@@ -1647,6 +1669,13 @@ export function bindBackendToStore(store: CommanderStore, backend: MockBackend):
       const revision = sim.updateProcessTemplate(kind, phases);
       flush();
       return revision;
+    },
+    writeFile(taskId, path, content) {
+      // §V4-11: the sim emits `workspace_change`; the workspace view picks
+      // up the new diff + dirty badge on the flushed re-read.
+      const ok = sim.writeFile(taskId, path, content);
+      flush();
+      return ok;
     },
   };
 

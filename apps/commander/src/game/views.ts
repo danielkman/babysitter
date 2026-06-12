@@ -8,6 +8,8 @@
  */
 
 import type {
+  SimFileTreeNode,
+  SimGitCommitView,
   SimMemoryIOView,
   SimProcessTemplateView,
   SimRunObservationView,
@@ -27,4 +29,10 @@ export interface SimViews {
   listProcessTemplates(): SimProcessTemplateView[];
   /** §V4-9 read/written memory ledgers for an agent unitId OR card taskId. */
   getMemoryIO(ref: string): SimMemoryIOView;
+  /** §V4-8 deterministic nested workspace file tree (terminal `ls` + IDE). */
+  getWorkspaceTree(taskId: string): SimFileTreeNode | null;
+  /** §V4-8 deterministic file content (diff hunks applied; writeFile wins). */
+  getFileContent(taskId: string, path: string): string | null;
+  /** §V4-7 journal-derived commit ledger (terminal `git log`). */
+  getGitLog(taskId: string): SimGitCommitView[];
 }

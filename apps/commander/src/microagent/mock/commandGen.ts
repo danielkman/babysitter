@@ -30,11 +30,13 @@ import type {
   CommandContext,
   CommandIntent,
   CommandSpec,
+  CompletionContext,
   IconContext,
   IconSpec,
   InquiryOptionLike,
   Microagent,
 } from '../types';
+import { suggestCompletion } from './completionGen';
 import { glyph } from './glyphs';
 import { generateIcon } from './iconGen';
 import { generateOptionIcon } from './optionIconGen';
@@ -87,6 +89,8 @@ export const GLYPHS: Record<string, IconSpec> = {
   'open-terminal': glyph('<rect x="3" y="4" width="14" height="12" rx="1.6"/><path d="M5.8 8 L8.8 10.4 L5.8 12.8"/><path d="M10.4 13.2 H14.2"/>'),
   // Edit Card (§V4-5): a quill inscribing a parchment plate.
   'edit-card': glyph('<rect x="3" y="3.5" width="14" height="13" rx="1.8"/><path d="M6.2 14 L6.9 11.2 L12.6 5.5 a1.15 1.15 0 0 1 1.65 1.6 L8.6 12.9 Z"/><path d="M6.9 11.2 L8.6 12.9"/>'),
+  // Open in IDE (§V4-11): a split editor plate with an etched code rune.
+  'open-ide': glyph('<rect x="3" y="3.5" width="14" height="13" rx="1.6"/><path d="M7.5 3.5 V16.5"/><path d="M9.8 8 L11.6 10 L9.8 12 M14.2 8 L12.4 10 L14.2 12"/><path d="M4.5 6.5 H6 M4.5 9.5 H6 M4.5 12.5 H6"/>'),
   // --- approved ---------------------------------------------------------------
   'hold-merge': glyph('<path d="M6 3.5 V9 a4 4 0 0 0 4 4 a4 4 0 0 1 4 4"/><path d="M3.5 7 H8.5 M11.5 14 H16.5"/>'),
   'force-rebase': glyph('<circle cx="5.5" cy="5" r="1.8"/><circle cx="5.5" cy="15" r="1.8"/><path d="M5.5 7 V13 M7.5 5 H12 a3 3 0 0 1 3 3 V11 M12.5 9 L15 11.5 L17.5 9"/>'),
@@ -358,6 +362,22 @@ const EDIT_CARD_DEF: CommandDef = {
   tooltip: 'Open the card editor — title, kind, description, yolo, parent, workspace, agent stack (§V4-5)',
 };
 
+/** §V4-7 Terminal: any card with a workspace (do → approved + the rail). */
+const TERMINAL_DEF: CommandDef = {
+  id: 'open-terminal',
+  label: 'Terminal',
+  intent: { kind: 'open-terminal' },
+  tooltip: 'Open a cogitator terminal bound to the card’s workspace (§V4-7)',
+};
+
+/** §V4-11 Open in IDE: human-review/do cards (and the review panel button). */
+const OPEN_IDE_DEF: CommandDef = {
+  id: 'open-ide',
+  label: 'Open in IDE',
+  intent: { kind: 'open-ide' },
+  tooltip: 'Open the web IDE on the card’s workspace — explorer, tabs, ghost completion (§V4-11)',
+};
+
 const BACKLOG_DEFS: CommandDef[] = [
   {
     id: 'start-work',
@@ -408,6 +428,7 @@ const AI_REVIEW_DEFS: CommandDef[] = [
     severity: 'danger',
   },
   EDIT_CARD_DEF,
+  TERMINAL_DEF,
 ];
 
 const HUMAN_REVIEW_DEFS: CommandDef[] = [
@@ -432,6 +453,8 @@ const HUMAN_REVIEW_DEFS: CommandDef[] = [
     severity: 'danger',
   },
   EDIT_CARD_DEF,
+  TERMINAL_DEF,
+  OPEN_IDE_DEF,
 ];
 
 const APPROVED_DEFS: CommandDef[] = [
@@ -456,6 +479,7 @@ const APPROVED_DEFS: CommandDef[] = [
     tooltip: 'Open the integration agent’s transcript inspector',
   },
   EDIT_CARD_DEF,
+  TERMINAL_DEF,
 ];
 
 const MERGED_DEFS: CommandDef[] = [
@@ -535,8 +559,9 @@ function doColumnDefs(cards: readonly CardContextSummary[]): CommandDef[] {
     kindLayer = first.filter((def) => sets.every((set) => set.some((d) => d.id === def.id)));
   }
   const merged = [...kindLayer];
-  // Staples + the §V4-5 Edit Card staple (DO is a non-merged column).
-  const keep = [...WORKING_DEFS, EDIT_CARD_DEF];
+  // Staples + the §V4-5 Edit Card, §V4-7 Terminal and §V4-11 Open in IDE
+  // staples (DO cards always carry a workspace).
+  const keep = [...WORKING_DEFS, EDIT_CARD_DEF, TERMINAL_DEF, OPEN_IDE_DEF];
   for (const staple of keep) {
     if (!merged.some((d) => d.id === staple.id)) merged.push(staple);
   }
@@ -593,7 +618,9 @@ function unitDefs(ctx: CommandContext): CommandDef[] {
     // card(s) over the staples — Abort never dropped (§V2-2).
     const doCards = ctx.cards.filter((c) => c.column === 'do');
     if (doCards.length > 0) return doColumnDefs(doCards);
-    return WORKING_DEFS;
+    // Agents off the DO lane (reviewer/integration) still carry their
+    // card's workspace — the §V4-7 Terminal rides the working staples.
+    return [...WORKING_DEFS, TERMINAL_DEF];
   }
   return MIXED_DEFS;
 }
@@ -662,4 +689,5 @@ export const mockMicroagent: Microagent = {
   generateCommands,
   generateIcon: (ctx: IconContext) => generateIcon(ctx),
   generateOptionIcon: (option: InquiryOptionLike) => generateOptionIcon(option),
+  suggestCompletion: (context: CompletionContext) => suggestCompletion(context),
 };
