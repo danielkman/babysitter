@@ -1486,7 +1486,8 @@
 @layer components {
   .wr-board {
     position: absolute;
-    inset: 48px 10px 218px 10px;
+    /* left is 356px to permanently cede the 336px inquiry-dock gutter */
+    inset: 48px 10px 218px 356px;
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 10px;
@@ -3353,11 +3354,9 @@
   }
 
   /* --- inquiry dock (§V3-5, AC32 — replaced the AlertBanner) ---------------
-   * The dock no longer floats OVER the BACKLOG lane: it owns a dedicated
-   * left-hand gutter column (below the top bar, above the bottom HUD row).
-   * While the dock has content the board cedes the gutter via the
-   * `.wr-root:has(.wr-dock)` rule below, so lanes shrink instead of being
-   * occluded — inquiry bubbles and backlog cards stay fully legible. */
+   * The dock is a PERSISTENT left-hand gutter column (always visible).
+   * It shows an engraved empty-state when no inquiries are pending.
+   * The board always cedes the gutter — no conditional :has() needed. */
   .wr-dock {
     position: absolute;
     left: 10px;
@@ -3368,13 +3367,78 @@
     flex-direction: column;
     z-index: 45;
     pointer-events: none;
+    /* etched brass-framed parchment column — same family as .wr-lane */
+    background:
+      linear-gradient(to bottom, rgb(255 248 224 / 0.035), transparent 30%),
+      linear-gradient(160deg, rgb(185 145 63 / 0.06) 0%, transparent 60%),
+      var(--color-glass-fill);
+    border: 1px solid var(--color-brass-600);
+    border-radius: 10px;
+    box-shadow:
+      inset 0 0 0 1px rgb(18 16 9 / 0.7),
+      inset 0 0 0 2px rgb(216 181 97 / 0.1),
+      0 4px 18px rgb(20 15 5 / 0.35);
+    padding: 8px 8px 10px;
   }
   .wr-dock > * {
     pointer-events: auto;
   }
-  /* honest layout: board lanes shrink while dock content exists */
-  .wr-root:has(.wr-dock) .wr-board {
-    left: 356px;
+  /* empty-state: centred engraved plate */
+  .wr-dock--empty .wr-dock-stack {
+    display: none;
+  }
+  .wr-dock-empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px 12px;
+    pointer-events: none;
+    user-select: none;
+  }
+  .wr-dock-empty-gear {
+    width: 52px;
+    height: 52px;
+    color: var(--color-brass-500);
+    opacity: 0.55;
+    fill: var(--color-brass-500);
+    filter: drop-shadow(0 2px 4px rgb(20 15 5 / 0.5));
+    animation: wr-dock-gear-spin 18s linear infinite;
+  }
+  @keyframes wr-dock-gear-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  .wr-dock-empty-quill {
+    width: 28px;
+    height: 28px;
+    color: var(--color-brass-400);
+    fill: var(--color-brass-400);
+    opacity: 0.4;
+    margin-top: -4px;
+  }
+  .wr-dock-empty-label {
+    font-family: var(--font-serif-display);
+    font-variant-caps: small-caps;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--color-brass-400);
+    text-align: center;
+    opacity: 0.7;
+    margin: 0;
+    text-shadow: 0 1px 3px rgb(20 15 5 / 0.6);
+  }
+  .wr-dock-empty-sub {
+    font-family: var(--font-mono-hud);
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    color: var(--color-brass-600);
+    text-align: center;
+    opacity: 0.55;
+    margin: 0;
+    line-height: 1.5;
   }
   .wr-dock.is-pulsing .wr-inq {
     box-shadow: 0 0 0 2px var(--color-selection-ring), 0 10px 24px rgb(58 42 18 / 0.5);
