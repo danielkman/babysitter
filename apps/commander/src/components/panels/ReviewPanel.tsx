@@ -15,7 +15,7 @@ import { approveAll, requestChanges } from '../../game/review';
 import type { CommanderStore, Orders } from '../../game/store';
 import type { SimViews } from '../../game/views';
 import { generateIcon } from '../../microagent/mock/iconGen';
-import { ChangedFileList, GitStatusHeader, shortSha } from './WorkspaceView';
+import { ChangedFileList, GitStatusHeader } from './WorkspaceView';
 
 export interface ReviewPanelProps {
   store: CommanderStore;
@@ -44,24 +44,15 @@ export function ReviewPanel({ store, orders, views }: ReviewPanelProps): React.J
   if (ws === null) return null;
 
   const seal = generateIcon({ entityId: taskId, kind: 'task', taskKind: card.view.taskKind });
-  const git = ws.gitStatus;
 
   return (
     <aside className="wr-review" data-testid="review-panel" aria-label="Human review">
+      {/* v5-r0: header = title + seal + actions ONLY — the branch/sha/tests
+          status row lives once, in the body's GitStatusHeader (no duplicate). */}
       <header className="wr-review-head">
         <span className="wr-review-seal" aria-hidden dangerouslySetInnerHTML={{ __html: seal.svg }} />
         <div className="wr-review-id">
           <div className="wr-review-title">{card.view.title}</div>
-          <div className="wr-review-sub">
-            <span className="wr-ws-branch">{git.branch}</span>
-            <span className="wr-ws-sha" title={git.headSha}>
-              {shortSha(git.headSha)}
-            </span>
-            <span className="wr-ws-aheadbehind">{`↑${git.ahead ?? 0} ↓${git.behind ?? 0}`}</span>
-            <span className={`wr-ws-evidence wr-ws-evidence--${ws.testEvidence.status}`} title={ws.testEvidence.summary ?? 'test evidence'}>
-              tests {ws.testEvidence.status}
-            </span>
-          </div>
         </div>
         <button
           type="button"

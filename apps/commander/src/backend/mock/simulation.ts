@@ -178,6 +178,12 @@ export interface CardMovedEventPayload {
     | 'reverted'
     | 'release-shipped'
     | 'rolled-back';
+  /**
+   * v5-r0 (§V4-1 as amended): release-train wagon index. Present ONLY on
+   * `release-shipped` moves — the SIM transition is atomic (all wagons move
+   * in the verb call); the ANIMATION layer staggers the glide per index.
+   */
+  stagger?: number;
 }
 
 export interface SimLocalEventPayload {
@@ -692,23 +698,84 @@ const CONTENT_VERBS = [
   'anneal',
 ] as const;
 
-const THINKING_PHRASES = [
-  'Scanning the objective perimeter... ',
-  'Cross-referencing the failing assertions... ',
-  'The diff suggests a deeper structural issue. ',
-  'Weighing two repair strategies... ',
-  'Tracing the regression to its origin commit. ',
-  'Formulating a minimal patch plan. ',
-] as const;
+/**
+ * v5-r0 transcript copy: each phrase SLOT now carries deterministic variants.
+ * The slot is still the single rng draw the caller always consumed; the
+ * variant is derived from the session's transcript step index (transcriptSeq)
+ * — NO new rng draws, so the deterministic stream is byte-identical across
+ * same-seed engines while transcripts stop parroting one fixed line per slot.
+ */
+const THINKING_PHRASES: ReadonlyArray<readonly string[]> = [
+  [
+    'Scanning the objective perimeter... ',
+    'Sweeping the objective perimeter a second time... ',
+    'Re-walking the objective perimeter for stragglers... ',
+  ],
+  [
+    'Cross-referencing the failing assertions... ',
+    'Collating the failing assertions against the ledger... ',
+    'Sifting the failing assertions for a common root... ',
+  ],
+  [
+    'The diff suggests a deeper structural issue. ',
+    'The diff hints the rot runs beneath this module. ',
+    'The diff points at a seam the tests never pressed. ',
+  ],
+  [
+    'Weighing two repair strategies... ',
+    'Balancing a quick patch against a proper mend... ',
+    'Holding both repair routes up to the light... ',
+  ],
+  [
+    'Tracing the regression to its origin commit. ',
+    'Following the regression back through the log. ',
+    'Bisecting the history toward the offending change. ',
+  ],
+  [
+    'Formulating a minimal patch plan. ',
+    'Sketching the smallest cut that heals the fault. ',
+    'Drafting a patch plan that touches nothing it need not. ',
+  ],
+];
 
-const TEXT_PHRASES = [
-  'Applying the fix to the affected module. ',
-  'Updating tests to cover the new branch. ',
-  'Refactoring the helper for clarity. ',
-  'Verifying the change against the spec. ',
-  'Documenting the decision inline. ',
-  'Consolidating duplicate logic. ',
-] as const;
+const TEXT_PHRASES: ReadonlyArray<readonly string[]> = [
+  [
+    'Applying the fix to the affected module. ',
+    'Landing the fix in the affected module. ',
+    'Threading the fix through the affected module. ',
+  ],
+  [
+    'Updating tests to cover the new branch. ',
+    'Adding a regression test over the new branch. ',
+    'Extending the suite to pin the new branch. ',
+  ],
+  [
+    'Refactoring the helper for clarity. ',
+    'Untangling the helper so it reads plainly. ',
+    'Tidying the helper before it calcifies. ',
+  ],
+  [
+    'Verifying the change against the spec. ',
+    'Checking the change clause by clause against the spec. ',
+    'Re-reading the spec to confirm the change holds. ',
+  ],
+  [
+    'Documenting the decision inline. ',
+    'Inscribing the rationale beside the code. ',
+    'Leaving a note for the next unfortunate reader. ',
+  ],
+  [
+    'Consolidating duplicate logic. ',
+    'Folding the duplicated logic into one place. ',
+    'Retiring the second copy of this logic. ',
+  ],
+];
+
+/** Pick the step-indexed variant of a drawn phrase slot (no rng involved). */
+function phraseVariant(pools: ReadonlyArray<readonly string[]>, slot: number, step: number): string {
+  const variants = pools[slot]!;
+  return variants[step % variants.length]!;
+}
 
 const TOOL_NAMES = ['Bash', 'Read', 'Edit', 'Grep', 'WebFetch'] as const;
 
@@ -894,9 +961,6 @@ interface CardRecord {
   /** §V4-1 release rail bookkeeping. */
   releaseId: string | null;
   inProductionAtTick: number | null;
-  /** Staggered release glide: ships when the countdown reaches zero. */
-  shipTicksLeft: number | null;
-  pendingReleaseId: string | null;
   /** §V5-1: the parent card's COORDINATION session for the current attempt. */
   coordSessionId: string | null;
   /** §V5-1: the review session whose verdict approved the current attempt. */
@@ -1477,8 +1541,6 @@ export class Simulation {
     }
     const feedback = `Reverted from staging: release verification flagged "${this.titleOf(card)}" — iterate and re-land.`;
     card.feedback = feedback;
-    card.shipTicksLeft = null;
-    card.pendingReleaseId = null;
     card.releaseId = null;
     this.unseal(card);
     this.emitSimEvent(card, {
@@ -1494,14 +1556,16 @@ export class Simulation {
   }
 
   /**
-   * §V4-1 `release()`: ship ALL merged cards to IN PRODUCTION as one release
-   * train `rel-NN` — the first wagon immediately, the rest staggered one tick
-   * apart (`release_shipped` events + staggered card_moved). Returns the
+   * §V4-1 `release()` (v5-r0 amendment): ship ALL merged cards to IN
+   * PRODUCTION as one release train `rel-NN` — ATOMICALLY, in this verb call
+   * (single deterministic transition; a PAUSED sim can never strand wagons).
+   * Each wagon's `card_moved` payload carries an explicit `stagger` index;
+   * the staggered glide is purely an ANIMATION-layer affair. Returns the
    * release id, or null when the MERGED lane is empty.
    */
   release(): string | null {
     const train = [...this.cards.values()].filter(
-      (c) => c.parentId === null && c.column === 'merged' && c.shipTicksLeft === null,
+      (c) => c.parentId === null && c.column === 'merged',
     );
     if (train.length === 0) {
       this.emit({ type: 'error', code: 'empty_release', message: 'No merged cards to release' });
@@ -1510,12 +1574,7 @@ export class Simulation {
     this.releaseCounter += 1;
     const releaseId = `rel-${String(this.releaseCounter).padStart(2, '0')}`;
     train.forEach((card, index) => {
-      if (index === 0) {
-        this.shipCard(card, releaseId);
-      } else {
-        card.pendingReleaseId = releaseId;
-        card.shipTicksLeft = index;
-      }
+      this.shipCard(card, releaseId, index);
     });
     return releaseId;
   }
@@ -2530,19 +2589,11 @@ export class Simulation {
         if (card.parentId === null && !card.merged) this.advanceIntegration(card);
         return;
       case 'merged':
-        if (card.parentId === null) this.advanceMergedShipping(card);
+        // v5-r0: nothing ticks here — release() ships the whole train
+        // atomically in the verb call (§V4-1 as amended).
         return;
       case 'in-production':
         return;
-    }
-  }
-
-  /** §V4-1 staggered release glide: ship a queued wagon when its countdown hits 0. */
-  private advanceMergedShipping(card: CardRecord): void {
-    if (card.shipTicksLeft === null || card.pendingReleaseId === null) return;
-    card.shipTicksLeft -= 1;
-    if (card.shipTicksLeft <= 0) {
-      this.shipCard(card, card.pendingReleaseId);
     }
   }
 
@@ -2786,7 +2837,12 @@ export class Simulation {
   // Column transitions (the state machine core)
   // -------------------------------------------------------------------------
 
-  private transitionCard(card: CardRecord, to: ColumnId, reason: CardMovedEventPayload['reason']): void {
+  private transitionCard(
+    card: CardRecord,
+    to: ColumnId,
+    reason: CardMovedEventPayload['reason'],
+    stagger?: number,
+  ): void {
     const from = card.column;
     if (from === to) return;
 
@@ -2813,7 +2869,7 @@ export class Simulation {
       }
     }
 
-    this.emitSimMove(card, from, to, reason);
+    this.emitSimMove(card, from, to, reason, stagger);
 
     switch (to) {
       case 'do':
@@ -3297,7 +3353,10 @@ export class Simulation {
     }
     // thinking
     if (this.rng.chance(0.5)) {
-      const delta = this.rng.pick(THINKING_PHRASES);
+      // One draw for the SLOT (as before); the variant rides deterministic
+      // step inputs (tick + per-session transcript seq) — no extra draws.
+      const slot = this.rng.int(0, THINKING_PHRASES.length - 1);
+      const delta = phraseVariant(THINKING_PHRASES, slot, this.tickCount + agent.session.transcriptSeq);
       agent.accumulatedThinking += delta;
       this.appendStreamEntry(agent.session, 'thinking', delta);
       agent.session.tokenUsage.thinkingTokens += this.rng.int(6, 28);
@@ -3310,7 +3369,8 @@ export class Simulation {
         accumulated: agent.accumulatedThinking,
       });
     } else {
-      const delta = this.rng.pick(TEXT_PHRASES);
+      const slot = this.rng.int(0, TEXT_PHRASES.length - 1);
+      const delta = phraseVariant(TEXT_PHRASES, slot, this.tickCount + agent.session.transcriptSeq);
       agent.accumulatedText += delta;
       this.appendStreamEntry(agent.session, 'message', delta);
       agent.session.tokenUsage.outputTokens += this.rng.int(8, 40);
@@ -3711,8 +3771,6 @@ export class Simulation {
       description: '',
       releaseId: null,
       inProductionAtTick: null,
-      shipTicksLeft: null,
-      pendingReleaseId: null,
       fileOverrides: new Map(),
       memoryReads: [],
       memoryWrites: [],
@@ -3767,11 +3825,9 @@ export class Simulation {
     }
   }
 
-  /** §V4-1: one wagon of the release train ships to IN PRODUCTION. */
-  private shipCard(card: CardRecord, releaseId: string): void {
+  /** §V4-1: one wagon of the release train ships to IN PRODUCTION (v5-r0: atomic, stagger index rides the payload). */
+  private shipCard(card: CardRecord, releaseId: string, stagger: number): void {
     card.releaseId = releaseId;
-    card.pendingReleaseId = null;
-    card.shipTicksLeft = null;
     for (const childId of card.childIds) {
       const child = this.cards.get(childId);
       if (child) child.releaseId = releaseId;
@@ -3783,8 +3839,9 @@ export class Simulation {
       timestamp: this.now(),
       taskId: card.taskId,
       releaseId,
+      stagger,
     });
-    this.transitionCard(card, 'in-production', 'release-shipped');
+    this.transitionCard(card, 'in-production', 'release-shipped', stagger);
   }
 
   /** §V4-6: project a run record into its registry row (live agents add on top). */
@@ -3957,6 +4014,7 @@ export class Simulation {
     from: ColumnId,
     to: ColumnId,
     reason: CardMovedEventPayload['reason'],
+    stagger?: number,
   ): void {
     const payload: CardMovedEventPayload = {
       type: 'card_moved',
@@ -3967,6 +4025,7 @@ export class Simulation {
       from,
       to,
       reason,
+      ...(stagger !== undefined ? { stagger } : {}),
     };
     this.emitEnveloped(payload.runId, payload.agent, { ...payload });
   }

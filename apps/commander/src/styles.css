@@ -3243,13 +3243,6 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .wr-review-sub {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 6px;
-    margin-top: 2px;
-  }
   .wr-review-body {
     flex: 1;
     min-height: 0;
@@ -5148,5 +5141,71 @@
   .wr-registry .wr-sess-row,
   .wr-registry .wr-sess-transcript {
     color: var(--color-ink-soft);
+  }
+
+  /* --- v5-r0 design polish ------------------------------------------------ */
+  /* (3) agent detail: transcript column capped to a readable measure,
+     left-anchored — matches the inspector transcript plate. */
+  .wr-reg-detail--agent {
+    max-width: 760px;
+    width: 100%;
+    align-self: flex-start;
+  }
+  /* (4) parchment-legible session status chips inside the registry —
+     completed reads as pressed ink, aborted as garnet on parchment. */
+  .wr-registry .wr-sess-status--completed {
+    color: #4a3a1c;
+    border-color: rgb(148 112 44 / 0.5);
+    background: linear-gradient(to bottom, rgb(247 238 215 / 0.8), rgb(233 220 190 / 0.8));
+    text-shadow: 0 1px 0 rgb(255 248 224 / 0.7);
+  }
+  .wr-registry .wr-sess-status--aborted {
+    color: #8a3326;
+    border-color: rgb(168 62 50 / 0.55);
+    background: rgb(168 62 50 / 0.08);
+  }
+  .wr-registry .wr-sess-role,
+  .wr-registry .wr-sess-stack {
+    text-shadow: none;
+  }
+  /* (5) stacks tab: ledger column captions row */
+  .wr-reg-captions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 10px 2px;
+    list-style: none;
+    border-bottom: 1px solid rgb(148 112 44 / 0.4);
+  }
+  .wr-reg-cap {
+    font-family: var(--font-mono-hud);
+    font-size: 8px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+    opacity: 0.85;
+    white-space: nowrap;
+  }
+  .wr-reg-captions .wr-reg-cap:first-child {
+    flex: 0 0 132px;
+  }
+  .wr-reg-cap--right {
+    margin-left: auto;
+  }
+  /* (8) workspaces tab: boxed parchment group plates */
+  .wr-reg-row--ws {
+    border: 1px solid rgb(148 112 44 / 0.5);
+    background: linear-gradient(to bottom, rgb(247 238 215 / 0.55), rgb(233 220 190 / 0.45));
+    box-shadow: inset 0 1px 1px rgb(109 81 32 / 0.15), 0 1px 2px rgb(46 33 12 / 0.12);
+  }
+  /* (8) status chips fall into an aligned right-hand column */
+  .wr-reg-ws-cardline .wr-reg-dirty {
+    margin-left: auto;
+    min-width: 52px;
+    text-align: center;
+  }
+  .wr-reg-ws-head .wr-reg-dirty {
+    min-width: 52px;
+    text-align: center;
   }
 }

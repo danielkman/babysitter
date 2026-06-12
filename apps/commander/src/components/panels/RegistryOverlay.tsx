@@ -89,11 +89,12 @@ function StackChips({ stack }: { stack: SimStackView }): React.JSX.Element {
     <>
       <span className={`wr-sel-adapter wr-faction-text--${spec.adapter}`}>{spec.adapter}</span>
       <span className="wr-reg-model">{spec.model}</span>
+      {/* v5-r0: bare chips carry their field label (approval: / phase:). */}
       <span className="wr-reg-approval" title="approval mode">
-        {spec.approvalMode}
+        approval: {spec.approvalMode}
       </span>
       <span className="wr-reg-phase" title="stack phase">
-        {stack.stack.status.phase}
+        phase: {stack.stack.status.phase}
       </span>
       {stack.custom && <span className="wr-reg-custom">CUSTOM</span>}
     </>
@@ -104,6 +105,12 @@ function StacksList({ views, nav }: { views: SimViews; nav: RegistryNav }): Reac
   const stacks = views.listStacks();
   return (
     <ul className="wr-reg-table" aria-label="Agent stacks">
+      {/* v5-r0: column captions row (ledger-style headstone over the roster). */}
+      <li className="wr-reg-captions" aria-hidden>
+        <span className="wr-reg-cap">stack</span>
+        <span className="wr-reg-cap">adapter · model · approval · phase</span>
+        <span className="wr-reg-cap wr-reg-cap--right">personality (prompt.system)</span>
+      </li>
       {stacks.map((stack) => (
         <li
           key={stack.stackRef}
@@ -370,7 +377,9 @@ function AgentDetail({
 }): React.JSX.Element {
   const record = views.getSession(sessionId)?.record;
   return (
-    <div className="wr-reg-detail" data-testid="registry-agent-detail">
+    // v5-r0: the agent detail (chips + transcript) is capped to a readable
+    // left-anchored measure matching the inspector transcript (~760px).
+    <div className="wr-reg-detail wr-reg-detail--agent" data-testid="registry-agent-detail">
       {record !== undefined && (
         // Link chips render ABOVE the transcript (DOM-first for the stack
         // chip — §V5-3: "clicking its stack chip navigates to stack detail").

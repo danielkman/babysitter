@@ -14,6 +14,7 @@ import {
   ARCHIVE_HOME_VIEW,
   ARCHIVE_ZOOM_MAX,
   ARCHIVE_ZOOM_MIN,
+  clampPanToContent,
   clampZoom,
   clientToSvg,
   edgeVisible,
@@ -181,6 +182,42 @@ describe('archive view math (§V4-10)', () => {
     expect(view.k).toBe(ARCHIVE_ZOOM_MAX);
     const more = zoomAt(view, 1.5, { x: 500, y: 400 });
     expect(more).toBe(view); // AC44: further wheel-up must not move the view
+  });
+
+  it('clampPanToContent biases the pan toward the content centroid when zoomed in (v5-r0)', () => {
+    const bounds = { minX: 200, minY: 100, maxX: 1000, maxY: 300 }; // centroid (600, 200)
+    const W = 1200;
+    const H = 380;
+
+    // k ≤ 1: untouched (same reference), wherever the pan sits.
+    const flat = { k: 1, tx: -5000, ty: -5000 };
+    expect(clampPanToContent(flat, bounds, W, H)).toBe(flat);
+
+    // Zoomed in, centroid already on-plate: untouched (same reference) —
+    // preserves the AC44 clamp-boundary identity through the zoom path.
+    const centered = { k: 2, tx: W / 2 - 2 * 600, ty: H / 2 - 2 * 200 };
+    expect(clampPanToContent(centered, bounds, W, H)).toBe(centered);
+
+    // Zoomed in with the content dragged far off-plate: the clamp pulls the
+    // translation back so the centroid re-enters the biased band.
+    const lost = { k: 2, tx: -9000, ty: -9000 };
+    const pulled = clampPanToContent(lost, bounds, W, H);
+    expect(pulled).not.toBe(lost);
+    expect(pulled.k).toBe(2); // translation-only correction
+    const sx = pulled.tx + pulled.k * 600;
+    const sy = pulled.ty + pulled.k * 200;
+    expect(sx).toBeGreaterThanOrEqual(0);
+    expect(sx).toBeLessThanOrEqual(W);
+    expect(sy).toBeGreaterThanOrEqual(0);
+    expect(sy).toBeLessThanOrEqual(H);
+
+    // The bias TIGHTENS with zoom: at max zoom the centroid lands deeper
+    // inside the plate than at a mild zoom (stronger pull toward content).
+    const mild = clampPanToContent({ k: 1.2, tx: -9000, ty: -9000 }, bounds, W, H);
+    const deep = clampPanToContent({ k: ARCHIVE_ZOOM_MAX, tx: -9000, ty: -9000 }, bounds, W, H);
+    const mildSx = mild.tx + mild.k * 600;
+    const deepSx = deep.tx + deep.k * 600;
+    expect(deepSx).toBeGreaterThan(mildSx);
   });
 
   it('pans by deltas and reports the home view', () => {

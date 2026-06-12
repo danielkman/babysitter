@@ -26,6 +26,7 @@ import clsx from 'clsx';
 
 import {
   ARCHIVE_HOME_VIEW,
+  clampPanToContent,
   clientToSvg,
   edgeVisible,
   nodeInViewport,
@@ -33,6 +34,7 @@ import {
   wheelZoomFactor,
   zoomAt,
   panBy,
+  type ArchiveContentBounds,
   type ArchiveViewState,
 } from '../../game/archiveView';
 import {
@@ -76,6 +78,24 @@ export function MemoryOverlay({ store }: MemoryOverlayProps): React.JSX.Element 
     [memory.records, memory.silos],
   );
 
+  // v5-r0: content bounding box feeds the zoom-in pan clamp (centroid bias).
+  const contentBounds = useMemo<ArchiveContentBounds>(() => {
+    if (layout.nodes.length === 0) {
+      return { minX: 0, minY: 0, maxX: MEMORY_VIEW.width, maxY: MEMORY_VIEW.height };
+    }
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    for (const node of layout.nodes) {
+      if (node.x < minX) minX = node.x;
+      if (node.y < minY) minY = node.y;
+      if (node.x > maxX) maxX = node.x;
+      if (node.y > maxY) maxY = node.y;
+    }
+    return { minX, minY, maxX, maxY };
+  }, [layout.nodes]);
+
   // Fresh navigation per open + §V4-9 deep-link focus.
   useEffect(() => {
     if (open) {
@@ -95,11 +115,20 @@ export function MemoryOverlay({ store }: MemoryOverlayProps): React.JSX.Element 
       e.preventDefault();
       const rect = svg.getBoundingClientRect();
       const point = clientToSvg(rect, e.clientX, e.clientY, MEMORY_VIEW.width, MEMORY_VIEW.height);
-      setView((v) => zoomAt(v, wheelZoomFactor(e.deltaY), point));
+      // v5-r0: the zoom path biases the pan toward the content centroid
+      // (clampPanToContent no-ops at k ≤ 1 and when already in band).
+      setView((v) =>
+        clampPanToContent(
+          zoomAt(v, wheelZoomFactor(e.deltaY), point),
+          contentBounds,
+          MEMORY_VIEW.width,
+          MEMORY_VIEW.height,
+        ),
+      );
     };
     svg.addEventListener('wheel', onWheel, { passive: false });
     return () => svg.removeEventListener('wheel', onWheel);
-  }, [open]);
+  }, [open, contentBounds]);
 
   if (!open) return null;
 

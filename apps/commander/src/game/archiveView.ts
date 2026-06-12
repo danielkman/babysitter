@@ -51,6 +51,52 @@ export function zoomAt(
   };
 }
 
+/** Content bounding box of the laid-out graph (SVG user units). */
+export interface ArchiveContentBounds {
+  minX: number;
+  minY: number;
+  maxX: number;
+  maxY: number;
+}
+
+/**
+ * v5-r0 (§V4-10 polish): bias the pan toward the CONTENT bounding-box
+ * centroid when zoomed in. Under translate-then-scale (screen = t + k·p) a
+ * deep zoom at a plate corner can carry the whole graph off-canvas; this
+ * clamp pulls the translation back so the content centroid stays on the
+ * plate, with the allowed band tightening as the zoom deepens (stronger
+ * pull toward the content at higher k). View-only — never touches sim
+ * state; at k ≤ 1 (or when no correction is needed) the SAME view object
+ * is returned, preserving the AC44 "clamped wheel input does not move the
+ * view" identity.
+ */
+export function clampPanToContent(
+  view: ArchiveViewState,
+  bounds: ArchiveContentBounds,
+  viewWidth: number,
+  viewHeight: number,
+): ArchiveViewState {
+  if (view.k <= 1) return view;
+  const cx = (bounds.minX + bounds.maxX) / 2;
+  const cy = (bounds.minY + bounds.maxY) / 2;
+  // Screen-space centroid under the current transform.
+  const sx = view.tx + view.k * cx;
+  const sy = view.ty + view.k * cy;
+  // Zoom-in bias: 0 just past k=1, 1 at ARCHIVE_ZOOM_MAX. The centroid must
+  // stay within an inset band of the plate; the inset grows with the bias.
+  // 0.35 at full bias: the centroid is held within the central 30% of the
+  // plate at max zoom, so the visible window always overlaps content sectors
+  // (an 0.18 inset proved too lax — a corner deep-zoom could land the window
+  // on an empty sector cell beside the centroid).
+  const bias = Math.min(1, (view.k - 1) / (ARCHIVE_ZOOM_MAX - 1));
+  const insetX = viewWidth * 0.35 * bias;
+  const insetY = viewHeight * 0.35 * bias;
+  const clampedX = Math.min(viewWidth - insetX, Math.max(insetX, sx));
+  const clampedY = Math.min(viewHeight - insetY, Math.max(insetY, sy));
+  if (clampedX === sx && clampedY === sy) return view;
+  return { k: view.k, tx: view.tx + (clampedX - sx), ty: view.ty + (clampedY - sy) };
+}
+
 /** Pan by a delta in SVG user units. */
 export function panBy(view: ArchiveViewState, dx: number, dy: number): ArchiveViewState {
   if (dx === 0 && dy === 0) return view;

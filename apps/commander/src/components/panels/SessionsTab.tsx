@@ -101,6 +101,8 @@ function SessionRow({
           <span className="wr-sess-chiprow">
             <SessionChips session={s} />
             {reviewed !== undefined && (
+              // v5-r0: chip label drops the role suffix (the full title rides
+              // the tooltip) so creature names survive the ellipsis.
               <button
                 type="button"
                 className="wr-sess-reviewed"
@@ -110,7 +112,7 @@ function SessionRow({
                   onOpen(reviewed.sessionId);
                 }}
               >
-                reviewed ⟶ {reviewed.title}
+                reviewed ⟶ {reviewed.creatureName}
               </button>
             )}
           </span>
@@ -281,7 +283,7 @@ export function SessionTranscript({
             title={`open the reviewed session — ${reviewed.title}`}
             onClick={() => onOpen(reviewed.sessionId)}
           >
-            reviewed ⟶ {reviewed.title}
+            reviewed ⟶ {reviewed.creatureName}
           </button>
         )}
       </div>

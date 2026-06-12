@@ -202,6 +202,8 @@ export interface CardMove {
   to: ColumnId;
   reason: string;
   seq: number;
+  /** v5-r0 (§V4-1): release-train wagon index — drives the FLIP glide delay. */
+  stagger: number;
 }
 
 /** §V2-3 live memory-transfer pulse (Archive overlay animation source). */
@@ -467,6 +469,8 @@ interface CardMoveSource {
   from: ColumnId;
   to: ColumnId;
   reason: string;
+  /** v5-r0: explicit release-train wagon index from the card_moved payload. */
+  stagger: number;
 }
 
 interface PulseSource {
@@ -743,8 +747,9 @@ function routeRunEvent(
       const from = asString(ev['from']) as ColumnId | undefined;
       const to = asString(ev['to']) as ColumnId | undefined;
       const reason = asString(ev['reason']) ?? 'user-move';
+      const stagger = typeof ev['stagger'] === 'number' ? ev['stagger'] : 0;
       if (taskId !== undefined && from !== undefined && to !== undefined) {
-        routing.cardMoves.push({ taskId, from, to, reason });
+        routing.cardMoves.push({ taskId, from, to, reason, stagger });
         if (!SILENT_MOVE_REASONS.has(reason)) {
           // User moves are logged by the Orders layer; §V4-1 rail verbs carry
           // their own dedicated events; remaining auto-moves ticker here.
@@ -1128,7 +1133,13 @@ export function createCommanderStore(): CommanderStore {
           movingCards = { ...movingCards };
           for (const move of routing.cardMoves) {
             moveSeq += 1;
-            movingCards[move.taskId] = { from: move.from, to: move.to, reason: move.reason, seq: moveSeq };
+            movingCards[move.taskId] = {
+              from: move.from,
+              to: move.to,
+              reason: move.reason,
+              seq: moveSeq,
+              stagger: move.stagger,
+            };
           }
         }
 

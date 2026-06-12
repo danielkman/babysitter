@@ -109,7 +109,7 @@ describe('release rail (§V4-1)', () => {
     expect(sim.revertCard('adr-99-nope')).toBe(false);
   });
 
-  it('release(): ALL merged cards ship to in-production as one staggered rel-NN train', () => {
+  it('release(): ALL merged cards ship to in-production ATOMICALLY as one rel-NN train (v5-r0: stagger is animation-only)', () => {
     const sim = new Simulation({ seed: 42 });
     const frames = collectFrames(sim);
     const merged = driveToMerged(sim, 2);
@@ -117,10 +117,8 @@ describe('release rail (§V4-1)', () => {
 
     const releaseId = sim.release();
     expect(releaseId).toBe('rel-01');
-    // Staggered: the first wagon ships immediately, the rest over later ticks.
-    expect(cardView(sim, merged[0]!).column).toBe('in-production');
-    expect(cardView(sim, merged[1]!).column).toBe('merged');
-    sim.tick(merged.length);
+    // Atomic: EVERY wagon moves state-side inside the verb call — no ticks
+    // needed; a PAUSED sim can never strand the train (v5-r0 §V4-1 amendment).
     for (const id of merged) {
       const view = cardView(sim, id);
       expect(view.column).toBe('in-production');
@@ -134,6 +132,22 @@ describe('release rail (§V4-1)', () => {
     const shippedEvents = simEvents(frames, 'release_shipped');
     expect(shippedEvents.length).toBeGreaterThanOrEqual(merged.length);
     expect(shippedEvents.every((e) => e['releaseId'] === 'rel-01')).toBe(true);
+    // The wagons carry explicit, distinct stagger indices for the animation
+    // layer (one release id, per-card card_moved + release_shipped frames).
+    const staggers = shippedEvents.map((e) => e['stagger']);
+    expect(new Set(staggers).size).toBe(shippedEvents.length);
+    expect(staggers).toContain(0);
+    const releaseMoves = frames.flatMap((f) =>
+      f.type === 'run.event' &&
+      f.event['type'] === 'card_moved' &&
+      f.event['reason'] === 'release-shipped'
+        ? [f.event]
+        : [],
+    );
+    expect(releaseMoves.length).toBe(shippedEvents.length);
+    for (const event of releaseMoves) {
+      expect(typeof event['stagger']).toBe('number');
+    }
 
     // An empty MERGED lane refuses the lever.
     expect(sim.release()).toBeNull();

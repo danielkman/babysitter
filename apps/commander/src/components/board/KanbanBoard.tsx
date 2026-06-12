@@ -50,6 +50,12 @@ import { generateIcon } from '../../microagent/mock/iconGen';
 
 const DRAG_THRESHOLD_PX = 4;
 const MOVE_ANIM_MS = 600;
+/**
+ * v5-r0 (§V4-1 as amended): release-train wagon glide delay per stagger
+ * index. The SIM ships the whole train atomically; the visual stagger is
+ * purely an animation-layer affair (paused sims never strand wagons).
+ */
+const RELEASE_STAGGER_MS = 140;
 const SNAPBACK_MS = 220;
 const DESPAWN_MS = 450;
 /** Double-click grace before a single click opens the review panel (§V5-2). */
@@ -633,6 +639,9 @@ export function KanbanBoard({ store, orders }: KanbanBoardProps): React.JSX.Elem
       // Arc lift, clamped so the apex stays on the board plate.
       const apexHeadroom = Math.max(0, Math.min(originY, next.top) - (board.top + 4));
       const arcLift = Math.min(64, Math.max(24, Math.hypot(dx, dy) * 0.18), Math.max(8, apexHeadroom));
+      // v5-r0: release wagons glide with a per-index delay (fill backwards
+      // holds the wagon at its origin while it waits its turn in the train).
+      const staggerDelay = move.stagger * RELEASE_STAGGER_MS;
       const animation = el.animate(
         [
           { transform: `translate(${dx}px, ${dy}px)` },
@@ -640,7 +649,7 @@ export function KanbanBoard({ store, orders }: KanbanBoardProps): React.JSX.Elem
           { transform: 'translate(0px, 3px)', offset: 0.88 },
           { transform: 'translate(0px, 0px)' },
         ],
-        { duration: MOVE_ANIM_MS, easing: 'ease-in-out' },
+        { duration: MOVE_ANIM_MS, delay: staggerDelay, fill: 'backwards', easing: 'ease-in-out' },
       );
       liveAnimsRef.current.set(taskId, animation);
       const settle = (): void => {
