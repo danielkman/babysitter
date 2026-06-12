@@ -582,6 +582,7 @@ function Card({ card, allCards, agents, rosterAgents, store, orders, selected, o
     e.stopPropagation();
     if (suppressClickRef.current) return;
     store.getState().clickSelect(card.taskId, e.shiftKey);
+    if (e.shiftKey) return; // shift-click is multi-select only
     // SPEC-V3 §V3-4: a SINGLE click on a HUMAN REVIEW card opens the review
     // side panel (AC30). Deferred one double-click grace so a DOUBLE click
     // can cancel it and open the Inspector instead (§V5-2/AC46) — otherwise
@@ -592,6 +593,14 @@ function Card({ card, allCards, agents, rosterAgents, store, orders, selected, o
         reviewTimerRef.current = null;
         store.getState().openReview(card.taskId);
       }, REVIEW_CLICK_GRACE_MS);
+    } else {
+      // Single click opens the Inspector immediately for all other columns.
+      const first = card.agentIds[0];
+      if (first !== undefined) {
+        store.getState().openInspector(first);
+      } else {
+        store.getState().openInspectorCard(card.taskId);
+      }
     }
   };
 
