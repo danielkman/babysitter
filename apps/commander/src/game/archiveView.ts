@@ -97,6 +97,62 @@ export function clampPanToContent(
   return { k: view.k, tx: view.tx + (clampedX - sx), ty: view.ty + (clampedY - sy) };
 }
 
+/** A cluster (silo) centroid — same coordinate space as the wheel point. */
+export interface ArchiveClusterCentroid {
+  x: number;
+  y: number;
+}
+
+/**
+ * v5-r1 (§V4-10 polish): dead-space radius (SVG user units). A wheel cursor
+ * within this distance of a cluster centroid is honored EXACTLY; beyond it
+ * the cursor sits in dead space and the focal point is biased.
+ */
+export const ARCHIVE_FOCAL_DEAD_RADIUS = 120;
+
+/**
+ * Maximum focal-bias pull (fraction of cursor→centroid). A FULL pin (1) in
+ * deep dead space is required for convergence: each wheel notch expands the
+ * view ×1.25 around the focal point, so any partial pull still lets the
+ * cluster drift off-plate (1.25·(1−b)+b > 1 for every b < 1). Pinning the
+ * nearest centroid keeps it fixed under repeated notches — the cluster
+ * magnifies in place instead of vacating the plate.
+ */
+export const ARCHIVE_FOCAL_BIAS_MAX = 1;
+
+/**
+ * v5-r1: bias the zoom focal point toward the NEAREST cluster centroid when
+ * the wheel cursor sits in dead space (no centroid within `radius`). The
+ * pull ramps from 0 at the dead-space boundary to a full centroid pin at 2×
+ * the radius, so a deep zoom from empty parchment magnifies the nearest
+ * cluster instead of vacuum. Pure + view-only; when the cursor is near a
+ * cluster (or no centroids exist) the SAME point object is returned, so
+ * cursor-anchored zoom behavior (AC44) is untouched.
+ */
+export function biasFocalPoint(
+  point: { x: number; y: number },
+  centroids: readonly ArchiveClusterCentroid[],
+  radius: number = ARCHIVE_FOCAL_DEAD_RADIUS,
+): { x: number; y: number } {
+  if (centroids.length === 0) return point;
+  let nearest = centroids[0];
+  let best = Math.hypot(nearest.x - point.x, nearest.y - point.y);
+  for (let i = 1; i < centroids.length; i += 1) {
+    const c = centroids[i];
+    const d = Math.hypot(c.x - point.x, c.y - point.y);
+    if (d < best) {
+      best = d;
+      nearest = c;
+    }
+  }
+  if (best <= radius) return point;
+  const t = Math.min(1, (best - radius) / radius) * ARCHIVE_FOCAL_BIAS_MAX;
+  return {
+    x: point.x + (nearest.x - point.x) * t,
+    y: point.y + (nearest.y - point.y) * t,
+  };
+}
+
 /** Pan by a delta in SVG user units. */
 export function panBy(view: ArchiveViewState, dx: number, dy: number): ArchiveViewState {
   if (dx === 0 && dy === 0) return view;

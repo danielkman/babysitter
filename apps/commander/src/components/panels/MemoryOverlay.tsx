@@ -26,6 +26,7 @@ import clsx from 'clsx';
 
 import {
   ARCHIVE_HOME_VIEW,
+  biasFocalPoint,
   clampPanToContent,
   clientToSvg,
   edgeVisible,
@@ -34,6 +35,7 @@ import {
   wheelZoomFactor,
   zoomAt,
   panBy,
+  type ArchiveClusterCentroid,
   type ArchiveContentBounds,
   type ArchiveViewState,
 } from '../../game/archiveView';
@@ -78,6 +80,21 @@ export function MemoryOverlay({ store }: MemoryOverlayProps): React.JSX.Element 
     [memory.records, memory.silos],
   );
 
+  // v5-r1 (6): per-silo cluster centroids (layout space) feed the dead-space
+  // focal bias — a wheel cursor over empty parchment zooms toward the
+  // nearest cluster instead of magnifying vacuum.
+  const siloCentroids = useMemo<ArchiveClusterCentroid[]>(() => {
+    const sums = new Map<string, { x: number; y: number; n: number }>();
+    for (const node of layout.nodes) {
+      const s = sums.get(node.silo) ?? { x: 0, y: 0, n: 0 };
+      s.x += node.x;
+      s.y += node.y;
+      s.n += 1;
+      sums.set(node.silo, s);
+    }
+    return Array.from(sums.values()).map((s) => ({ x: s.x / s.n, y: s.y / s.n }));
+  }, [layout.nodes]);
+
   // v5-r0: content bounding box feeds the zoom-in pan clamp (centroid bias).
   const contentBounds = useMemo<ArchiveContentBounds>(() => {
     if (layout.nodes.length === 0) {
@@ -115,20 +132,34 @@ export function MemoryOverlay({ store }: MemoryOverlayProps): React.JSX.Element 
       e.preventDefault();
       const rect = svg.getBoundingClientRect();
       const point = clientToSvg(rect, e.clientX, e.clientY, MEMORY_VIEW.width, MEMORY_VIEW.height);
+      const factor = wheelZoomFactor(e.deltaY);
       // v5-r0: the zoom path biases the pan toward the content centroid
       // (clampPanToContent no-ops at k ≤ 1 and when already in band).
-      setView((v) =>
-        clampPanToContent(
-          zoomAt(v, wheelZoomFactor(e.deltaY), point),
-          contentBounds,
-          MEMORY_VIEW.width,
-          MEMORY_VIEW.height,
-        ),
-      );
+      // v5-r1 (6): zoom-IN from dead space biases the focal point toward the
+      // nearest cluster centroid (centroids mapped to screen space under the
+      // current transform; biasFocalPoint no-ops near content).
+      setView((v) => {
+        const focal =
+          factor > 1
+            ? biasFocalPoint(
+                point,
+                siloCentroids.map((c) => ({ x: v.tx + v.k * c.x, y: v.ty + v.k * c.y })),
+              )
+            : point;
+        const zoomed = zoomAt(v, factor, focal);
+        // The biased path PINS (or pulls toward) the nearest cluster centroid,
+        // which itself keeps content on-plate — the global-centroid clamp
+        // would fight the pin (re-translating every notch migrates the
+        // cluster), so it only runs on the unbiased (cursor-on-content) path.
+        // biasFocalPoint returns the SAME point object when unbiased.
+        return focal === point
+          ? clampPanToContent(zoomed, contentBounds, MEMORY_VIEW.width, MEMORY_VIEW.height)
+          : zoomed;
+      });
     };
     svg.addEventListener('wheel', onWheel, { passive: false });
     return () => svg.removeEventListener('wheel', onWheel);
-  }, [open, contentBounds]);
+  }, [open, contentBounds, siloCentroids]);
 
   if (!open) return null;
 

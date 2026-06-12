@@ -48,11 +48,16 @@ export function ReviewPanel({ store, orders, views }: ReviewPanelProps): React.J
   return (
     <aside className="wr-review" data-testid="review-panel" aria-label="Human review">
       {/* v5-r0: header = title + seal + actions ONLY — the branch/sha/tests
-          status row lives once, in the body's GitStatusHeader (no duplicate). */}
+          status row lives once, in the body's GitStatusHeader (no duplicate).
+          v5-r1 (2): the title wraps to at most TWO lines (no truncation) and
+          the chip cluster is compressed — Close is icon-only (tooltip carries
+          the caption) and the action chips wear tighter padding. */}
       <header className="wr-review-head">
         <span className="wr-review-seal" aria-hidden dangerouslySetInnerHTML={{ __html: seal.svg }} />
         <div className="wr-review-id">
-          <div className="wr-review-title">{card.view.title}</div>
+          <div className="wr-review-title" title={card.view.title}>
+            {card.view.title}
+          </div>
         </div>
         <button
           type="button"
@@ -73,21 +78,24 @@ export function ReviewPanel({ store, orders, views }: ReviewPanelProps): React.J
         </button>
         <button
           type="button"
-          className="wr-inspector-close"
+          className="wr-inspector-close wr-review-close"
           aria-label="Close review panel"
+          title="Close review panel"
           onClick={() => store.getState().closeReview()}
         >
-          CLOSE
+          <svg viewBox="0 0 12 12" role="presentation" aria-hidden="true">
+            <path
+              d="M2.5 2.5 L9.5 9.5 M9.5 2.5 L2.5 9.5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+          </svg>
         </button>
       </header>
       <div className="wr-review-body">
         <GitStatusHeader ws={ws} />
-        <div className="wr-review-section">CHANGED FILES</div>
-        <ChangedFileList
-          files={ws.files}
-          openIndex={openIndex}
-          onToggle={(index) => setOpenIndex((cur) => (cur === index ? null : index))}
-        />
         {ws.reviewerNotes.length > 0 && (
           <>
             <div className="wr-review-section">REVIEWER NOTES</div>
@@ -100,6 +108,14 @@ export function ReviewPanel({ store, orders, views }: ReviewPanelProps): React.J
             </ul>
           </>
         )}
+        {/* v5-r1 (7): the changed-files list + inline diff plates render in
+            the MIDDLE region — between REVIEWER NOTES and the action bar. */}
+        <div className="wr-review-section">CHANGED FILES</div>
+        <ChangedFileList
+          files={ws.files}
+          openIndex={openIndex}
+          onToggle={(index) => setOpenIndex((cur) => (cur === index ? null : index))}
+        />
       </div>
       <footer className="wr-review-bar">
         {asking ? (

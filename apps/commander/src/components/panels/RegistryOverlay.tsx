@@ -104,34 +104,58 @@ function StackChips({ stack }: { stack: SimStackView }): React.JSX.Element {
 function StacksList({ views, nav }: { views: SimViews; nav: RegistryNav }): React.JSX.Element {
   const stacks = views.listStacks();
   return (
+    // v5-r1 (3): the captions row and every stack row share ONE fixed grid
+    // template (wr-reg-grid-stacks) so STACK / ADAPTER / MODEL / APPROVAL /
+    // PHASE captions sit exactly over the content beneath them.
     <ul className="wr-reg-table" aria-label="Agent stacks">
-      {/* v5-r0: column captions row (ledger-style headstone over the roster). */}
-      <li className="wr-reg-captions" aria-hidden>
+      <li className="wr-reg-captions wr-reg-grid-stacks" aria-hidden>
         <span className="wr-reg-cap">stack</span>
-        <span className="wr-reg-cap">adapter · model · approval · phase</span>
-        <span className="wr-reg-cap wr-reg-cap--right">personality (prompt.system)</span>
+        <span className="wr-reg-cap">adapter</span>
+        <span className="wr-reg-cap">model</span>
+        <span className="wr-reg-cap">approval</span>
+        <span className="wr-reg-cap">phase</span>
+        <span className="wr-reg-cap">personality (prompt.system)</span>
       </li>
-      {stacks.map((stack) => (
-        <li
-          key={stack.stackRef}
-          data-testid={`registry-row-${stack.stackRef}`}
-          className="wr-reg-row"
-          role="button"
-          tabIndex={0}
-          onClick={() => nav.openDetail('stacks', stack.stackRef)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') nav.openDetail('stacks', stack.stackRef);
-          }}
-        >
-          <span className="wr-reg-name">{stack.name}</span>
-          <span className="wr-reg-chiprow">
-            <StackChips stack={stack} />
-          </span>
-          <span className="wr-reg-excerpt" title="personality (prompt.system)">
-            {personalityExcerpt(stack)}
-          </span>
-        </li>
-      ))}
+      {stacks.map((stack) => {
+        const spec = stack.stack.spec;
+        return (
+          <li
+            key={stack.stackRef}
+            data-testid={`registry-row-${stack.stackRef}`}
+            className="wr-reg-row wr-reg-grid-stacks"
+            role="button"
+            tabIndex={0}
+            onClick={() => nav.openDetail('stacks', stack.stackRef)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') nav.openDetail('stacks', stack.stackRef);
+            }}
+          >
+            <span className="wr-reg-cell">
+              <span className="wr-reg-name">{stack.name}</span>
+              {stack.custom && <span className="wr-reg-custom">CUSTOM</span>}
+            </span>
+            <span className="wr-reg-cell">
+              <span className={`wr-sel-adapter wr-faction-text--${spec.adapter}`}>{spec.adapter}</span>
+            </span>
+            <span className="wr-reg-cell">
+              <span className="wr-reg-model">{spec.model}</span>
+            </span>
+            <span className="wr-reg-cell">
+              <span className="wr-reg-approval" title="approval mode">
+                {spec.approvalMode}
+              </span>
+            </span>
+            <span className="wr-reg-cell">
+              <span className="wr-reg-phase" title="stack phase">
+                {stack.stack.status.phase}
+              </span>
+            </span>
+            <span className="wr-reg-excerpt" title="personality (prompt.system)">
+              {personalityExcerpt(stack)}
+            </span>
+          </li>
+        );
+      })}
     </ul>
   );
 }
@@ -385,11 +409,14 @@ function AgentDetail({
         // chip — §V5-3: "clicking its stack chip navigates to stack detail").
         <AgentLinkChips session={record} cards={cards} views={views} nav={nav} />
       )}
+      {/* v5-r1 (5): the sub-header AgentLinkChips above already carry the
+          parent link — suppress the duplicate in the transcript's trail. */}
       <SessionTranscript
         sessionId={sessionId}
         views={views}
         onOpen={(id) => nav.openDetail('agents', id)}
         onBack={onBack}
+        hideParentLink
       />
     </div>
   );

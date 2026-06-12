@@ -11,9 +11,12 @@ import { describe, expect, it } from 'vitest';
 
 import { MockBackend } from '../../backend/mock/mockBackend';
 import {
+  ARCHIVE_FOCAL_BIAS_MAX,
+  ARCHIVE_FOCAL_DEAD_RADIUS,
   ARCHIVE_HOME_VIEW,
   ARCHIVE_ZOOM_MAX,
   ARCHIVE_ZOOM_MIN,
+  biasFocalPoint,
   clampPanToContent,
   clampZoom,
   clientToSvg,
@@ -218,6 +221,65 @@ describe('archive view math (§V4-10)', () => {
     const mildSx = mild.tx + mild.k * 600;
     const deepSx = deep.tx + deep.k * 600;
     expect(deepSx).toBeGreaterThan(mildSx);
+  });
+
+  it('biasFocalPoint honors a cursor near a cluster EXACTLY (same reference) (v5-r1)', () => {
+    const centroids = [
+      { x: 300, y: 200 },
+      { x: 900, y: 250 },
+    ];
+    // Inside the dead-space radius of the first cluster: untouched.
+    const near = { x: 320, y: 230 };
+    expect(biasFocalPoint(near, centroids)).toBe(near);
+    // Exactly ON a centroid: untouched.
+    const onTop = { x: 900, y: 250 };
+    expect(biasFocalPoint(onTop, centroids)).toBe(onTop);
+    // No centroids at all: untouched.
+    const anywhere = { x: 5, y: 5 };
+    expect(biasFocalPoint(anywhere, [])).toBe(anywhere);
+  });
+
+  it('biasFocalPoint pulls a dead-space cursor toward the NEAREST centroid along the cursor→centroid segment (v5-r1)', () => {
+    const centroids = [
+      { x: 300, y: 200 },
+      { x: 1100, y: 350 },
+    ];
+    const r = ARCHIVE_FOCAL_DEAD_RADIUS;
+    // MODERATE dead space nearer the SECOND cluster (between r and 2r away):
+    // a partial pull on the cursor→centroid segment.
+    const d = 1.5 * r;
+    const moderate = { x: 1100, y: 350 - d };
+    const biased = biasFocalPoint(moderate, centroids);
+    expect(biased).not.toBe(moderate);
+    const after = Math.hypot(1100 - biased.x, 350 - biased.y);
+    expect(after).toBeLessThan(d); // moved toward the nearest centroid…
+    expect(after).toBeGreaterThan(0); // …partially (not yet a full pin)
+    // The pull axis is cursor→NEAREST centroid (vertical here): a pull toward
+    // the far cluster (300,200) would drag x off the segment.
+    expect(biased.x).toBeCloseTo(1100, 8);
+    expect(biased.y).toBeGreaterThan(moderate.y);
+    expect(biased.y).toBeLessThan(350);
+  });
+
+  it('biasFocalPoint pull strengthens with distance and saturates at a full centroid pin (v5-r1)', () => {
+    const centroids = [{ x: 0, y: 0 }];
+    const at = (d: number) => biasFocalPoint({ x: d, y: 0 }, centroids);
+    const r = ARCHIVE_FOCAL_DEAD_RADIUS;
+    // Just past the boundary: barely pulled.
+    const justPast = at(r + 1);
+    expect(r + 1 - justPast.x).toBeGreaterThan(0);
+    expect(r + 1 - justPast.x).toBeLessThan(2);
+    // Deeper dead space pulls FURTHER (monotonic fraction)…
+    const mid = at(1.5 * r);
+    const deep = at(2 * r);
+    expect((1.5 * r - mid.x) / (1.5 * r)).toBeLessThan((2 * r - deep.x) / (2 * r));
+    // …and saturates at ARCHIVE_FOCAL_BIAS_MAX (a FULL pin — required so
+    // repeated ×1.25 wheel notches cannot drift the cluster off-plate).
+    const beyond = at(5 * r);
+    expect(deep.x / (2 * r)).toBeCloseTo(1 - ARCHIVE_FOCAL_BIAS_MAX, 8);
+    expect(beyond.x / (5 * r)).toBeCloseTo(1 - ARCHIVE_FOCAL_BIAS_MAX, 8);
+    expect(beyond.x).toBeCloseTo(0, 8); // pinned ON the centroid
+    expect(beyond.y).toBeCloseTo(0, 8);
   });
 
   it('pans by deltas and reports the home view', () => {

@@ -46,7 +46,7 @@ export interface SessionsTabProps {
 // Shared row chips
 // ---------------------------------------------------------------------------
 
-function SessionChips({ session }: { session: SimSessionView }): React.JSX.Element {
+function RoleStackChips({ session }: { session: SimSessionView }): React.JSX.Element {
   return (
     <>
       <span className={clsx('wr-sess-role', `wr-sess-role--${session.role}`)}>{session.role}</span>
@@ -54,9 +54,23 @@ function SessionChips({ session }: { session: SimSessionView }): React.JSX.Eleme
       <span className="wr-sess-stack" title="agent stack">
         {session.stackName}
       </span>
-      <span className={clsx('wr-sess-status', `wr-sess-status--${session.status}`)}>
-        {session.status}
-      </span>
+    </>
+  );
+}
+
+function StatusChip({ session }: { session: SimSessionView }): React.JSX.Element {
+  return (
+    <span className={clsx('wr-sess-status', `wr-sess-status--${session.status}`)}>
+      {session.status}
+    </span>
+  );
+}
+
+function SessionChips({ session }: { session: SimSessionView }): React.JSX.Element {
+  return (
+    <>
+      <RoleStackChips session={session} />
+      <StatusChip session={session} />
     </>
   );
 }
@@ -98,8 +112,14 @@ function SessionRow({
         <span className="wr-sess-portrait" aria-hidden dangerouslySetInnerHTML={{ __html: icon.svg }} />
         <span className="wr-sess-main">
           <span className="wr-sess-title">{s.title}</span>
-          <span className="wr-sess-chiprow">
-            <SessionChips session={s} />
+          {/* v5-r1 (8): chips flow on two fixed lines — role + stack on line
+              one, status + reviewed-link on line two — so every row keeps the
+              same height whether or not a reviewed-link chip exists. */}
+          <span className="wr-sess-chiprow wr-sess-chiprow--line">
+            <RoleStackChips session={s} />
+          </span>
+          <span className="wr-sess-chiprow wr-sess-chiprow--line">
+            <StatusChip session={s} />
             {reviewed !== undefined && (
               // v5-r0: chip label drops the role suffix (the full title rides
               // the tooltip) so creature names survive the ellipsis.
@@ -214,11 +234,18 @@ export function SessionTranscript({
   views,
   onOpen,
   onBack,
+  hideParentLink = false,
 }: {
   sessionId: string;
   views: SimViews;
   onOpen: (sessionId: string) => void;
   onBack: () => void;
+  /**
+   * v5-r1 (5): the Registry agent detail renders its own sub-header link
+   * chips (AgentLinkChips) above this view — suppress the breadcrumb-trail
+   * parent chip there so the link appears exactly once.
+   */
+  hideParentLink?: boolean;
 }): React.JSX.Element {
   const detail = views.getSession(sessionId);
   const listRef = useRef<HTMLOListElement | null>(null);
@@ -266,7 +293,7 @@ export function SessionTranscript({
         <button type="button" className="wr-sess-back" onClick={onBack}>
           ‹ back to sessions
         </button>
-        {parent !== undefined && (
+        {parent !== undefined && !hideParentLink && (
           <button
             type="button"
             className="wr-sess-linkchip"
