@@ -71,9 +71,6 @@ export function buildExternalProcessDefinitionPrompt(args: {
     "- The module must export `async function process(inputs, ctx)`.",
     "- The process must orchestrate the work through babysitter tasks instead of doing the main implementation directly in `process(inputs, ctx)`.",
     "- Define at least one task with `defineTask(...)`, and invoke tasks from `process(inputs, ctx)` via `await ctx.task(...)`.",
-    "- DELEGATE THE DELIVERABLE TO AGENT TASKS: the user's deliverable MUST be produced by `kind: \"agent\"` tasks (created with `defineTask(...)`, invoked via `await ctx.task(...)`), not directly inside `process(inputs, ctx)` and not via a `node`/inline `fs.writeFile`.",
-    "- AUTHOR EXACTLY TWO SEQUENTIAL AGENT TASKS: (1) a producer `agent` task that generates the full final content AND writes it to the user's exact output path in a single file write; then (2) a verifier `agent` task that reads that exact path back and confirms the file exists with the required content. Two delegated agent tasks are required so the bound run emits enough journal activity to complete; a single task is not enough.",
-    "- When the user names a specific output file, embed that EXACT relative path verbatim in both agent tasks' `agent.prompt` and instruct the producer to write that exact path in a single file write — do not paraphrase, rename, or regenerate the filename.",
     "- Use `agent` tasks for planning, implementation, analysis, and verification work.",
     preferAgentOnlyTasks
       ? "- Do not generate `shell` tasks for this run shape unless the user explicitly requires an existing CLI command. Prefer wrapped `agent` or `skill` tasks for verification too."
