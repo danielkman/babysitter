@@ -91,6 +91,14 @@ describe("harnessPrompts", () => {
     expect(prompt).toContain("EXACT OUTPUT PATH (mandatory)");
     expect(prompt).toContain("write that exact path verbatim");
     expect(prompt).toContain("Do NOT recompute the workspace root from the module location");
+    // #956: deliverable must be delegated to TWO sequential agent tasks (producer +
+    // verifier) so the run emits enough journal events to pass run-completion (a
+    // single task only emits 4 events; the run needs >=5 — two task effects give 6).
+    expect(prompt).toContain("DELEGATE THE DELIVERABLE TO AGENT TASKS (mandatory)");
+    expect(prompt).toContain("AUTHOR EXACTLY TWO SEQUENTIAL AGENT TASKS");
+    expect(prompt).toContain("a single task does not emit enough journal events");
+    expect(prompt).toContain("too few journal events and fails run-completion");
+    expect(prompt).toContain("do NOT use a `node`/direct `fs.writeFile`/inline file write");
     expect(prompt).toContain("import.meta.url");
     expect(prompt).toContain("syntactically valid ESM");
     expect(prompt).toContain("raw nested template literals");
@@ -300,13 +308,32 @@ describe("harnessPrompts", () => {
     expect(prompt).toContain("inspect only the most relevant local babysitter process references");
     expect(prompt).toContain("Do not inspect unrelated directories");
     expect(prompt).toContain("real babysitter process, not a direct one-shot script");
-    expect(prompt).toContain("Put the main implementation in one or more `agent` tasks");
+    expect(prompt).toContain("Put the main implementation in `agent` tasks");
+    // #956: deliverable must be delegated to TWO sequential agent tasks so the run emits enough journal events.
+    expect(prompt).toContain("Author exactly TWO sequential `kind: \"agent\"` tasks");
+    expect(prompt).toContain("Two delegated agent tasks are required");
+    expect(prompt).toContain("a single task is not enough");
     expect(prompt).toContain("Do not add internal worker guardrail metadata");
     expect(prompt).toContain("The generated process must directly execute the user's requested work");
     expect(prompt).toContain("Write the process with the normal file tools now");
     expect(prompt).toContain("call babysitter_report_process_definition exactly once");
     expect(prompt).toContain("Keep generated asset strings syntax-safe");
     expect(prompt).toContain("raw nested template literals");
+  });
+
+  test("external plan-process prompt mandates delegating the deliverable to one agent task (#956)", () => {
+    const prompt = buildExternalProcessDefinitionPrompt({
+      prompt: "write a summary to .a5c-live-test/x-odyssey.md",
+      outputDir: "/tmp/processes",
+      workspace: "/repo/workspace",
+      workspaceAssessment: { kind: "empty", entries: [] },
+      promptContext: context,
+    });
+
+    expect(prompt).toContain("DELEGATE THE DELIVERABLE TO AGENT TASKS");
+    expect(prompt).toContain("AUTHOR EXACTLY TWO SEQUENTIAL AGENT TASKS");
+    expect(prompt).toContain("a single task is not enough");
+    expect(prompt).toContain("embed that EXACT relative path verbatim");
   });
 
   test("PhasePlanProcess user prompt reinforces AskUserQuestion for interactive discovery", () => {
@@ -330,8 +357,8 @@ describe("harnessPrompts", () => {
       preferAgentOnlyTasks: true,
     });
 
-    expect(prompt).toContain("Do not generate `shell` tasks for this run shape");
-    expect(prompt).toContain("`agent` or `skill` tasks");
+    expect(prompt).toContain("Do not generate `shell`, `node`, or `breakpoint` tasks for this run shape");
+    expect(prompt).toContain("Put all implementation in `agent` tasks");
     expect(prompt).toContain("Do not add `breakpoint` tasks for this run shape");
   });
 
