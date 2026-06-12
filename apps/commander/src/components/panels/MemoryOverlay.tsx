@@ -106,6 +106,10 @@ export function MemoryOverlay({ store }: MemoryOverlayProps): React.JSX.Element 
   const recordById = new Map<string, GraphRecord>(memory.records.map((r) => [r.id, r]));
   const focus = focusId !== null ? recordById.get(focusId) : undefined;
   const siloByNode = new Map<string, string>(layout.nodes.map((n) => [n.id, n.silo]));
+  /** v4-r1: node positions feed the incident-edge taper gradients (§V4-10). */
+  const posByNode = new Map<string, { x: number; y: number }>(
+    layout.nodes.map((n) => [n.id, { x: n.x, y: n.y }]),
+  );
 
   // §V4-10 (v4-r0): per-node viewport flags feed the zoom>1 edge cull —
   // edges whose BOTH endpoints sit off-plate vanish while zoomed in.
@@ -260,6 +264,17 @@ export function MemoryOverlay({ store }: MemoryOverlayProps): React.JSX.Element 
                 <g className="wr-mem-sectors" aria-hidden>
                   {layout.captions.map((caption) => (
                     <g key={caption.silo} className="wr-mem-sector">
+                      {/* v4-r1: faint per-silo gear sigil watermark behind the
+                          cluster (circle/path only — census-safe) */}
+                      <g
+                        className="wr-mem-sector-sigil"
+                        transform={`translate(${caption.rect.x + caption.rect.width / 2} ${caption.rect.y + caption.rect.height / 2})`}
+                        aria-hidden
+                      >
+                        <circle className="wr-mem-sigil-teeth" r="46" />
+                        <circle className="wr-mem-sigil-rim" r="29" />
+                        <circle className="wr-mem-sigil-hub" r="9" />
+                      </g>
                       <path
                         className="wr-mem-sector-plate"
                         d={`M ${caption.rect.x} ${caption.rect.y} h ${caption.rect.width} v ${caption.rect.height} h ${-caption.rect.width} Z`}
@@ -290,13 +305,50 @@ export function MemoryOverlay({ store }: MemoryOverlayProps): React.JSX.Element 
                     }
                     const incident =
                       active !== null && (edge.src === active || edge.dst === active);
+                    // v4-r1 focused-edge taper: incident edges stroke a
+                    // userSpaceOnUse gradient that falls off from the active
+                    // node (~0.55) toward the far end (~0.1) — a quiet inked
+                    // thread instead of a bold 0.85 wire. Edges stay BENEATH
+                    // the node discs (this group renders before wr-mem-nodes).
+                    if (incident && active !== null) {
+                      const near = posByNode.get(active);
+                      const far = posByNode.get(edge.src === active ? edge.dst : edge.src);
+                      const gid = `memg-${edge.key.replace(/[^a-zA-Z0-9_-]/g, '-')}`;
+                      return (
+                        <g key={edge.key}>
+                          {near !== undefined && far !== undefined && (
+                            <defs>
+                              <linearGradient
+                                id={gid}
+                                gradientUnits="userSpaceOnUse"
+                                x1={near.x}
+                                y1={near.y}
+                                x2={far.x}
+                                y2={far.y}
+                              >
+                                <stop offset="0" stopColor="#947030" stopOpacity="0.55" />
+                                <stop offset="0.55" stopColor="#947030" stopOpacity="0.32" />
+                                <stop offset="1" stopColor="#947030" stopOpacity="0.1" />
+                              </linearGradient>
+                            </defs>
+                          )}
+                          <path
+                            className="wr-mem-edge is-incident"
+                            d={edge.d}
+                            fill="none"
+                            style={
+                              near !== undefined && far !== undefined
+                                ? { stroke: `url(#${gid})` }
+                                : undefined
+                            }
+                          />
+                        </g>
+                      );
+                    }
                     return (
                       <path
                         key={edge.key}
-                        className={clsx(
-                          'wr-mem-edge',
-                          active !== null && (incident ? 'is-incident' : 'is-faded'),
-                        )}
+                        className={clsx('wr-mem-edge', active !== null && 'is-faded')}
                         d={edge.d}
                         fill="none"
                       />

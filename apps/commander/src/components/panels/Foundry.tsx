@@ -40,6 +40,12 @@ export interface FoundryProps {
 
 type FoundryTab = 'commission' | 'stacks';
 
+/** v4-r1: small anvil glyph for the Forge From chip (path-only — census). */
+const ANVIL_GLYPH =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width="100%" height="100%" aria-hidden="true">' +
+  '<path d="M3 6.5 H17 C16.4 9.2 14.2 10.6 11.6 10.9 L11.6 13.2 H13.6 C14.3 13.2 14.8 13.7 14.8 14.4 V15.4 H5.2 V14.4 C5.2 13.7 5.7 13.2 6.4 13.2 H8.4 L8.4 10.9 C6.6 10.7 5.4 9.9 4.8 8.6 L3 8.2 Z" fill="currentColor"/>' +
+  '</svg>';
+
 // ---------------------------------------------------------------------------
 // Commission Task tab (V3 surface, unchanged)
 // ---------------------------------------------------------------------------
@@ -156,7 +162,8 @@ function StackRow({
       </div>
       <div className="wr-stack-row-excerpt">{personalityExcerpt(spec.prompt.system)}</div>
       <div className="wr-stack-row-actions">
-        <button type="button" className="wr-alert-btn wr-stack-btn" onClick={onForgeFrom}>
+        <button type="button" className="wr-alert-btn wr-stack-btn wr-stack-btn--forge" onClick={onForgeFrom}>
+          <span className="wr-forge-glyph" aria-hidden dangerouslySetInnerHTML={{ __html: ANVIL_GLYPH }} />
           Forge From
         </button>
         {stack.custom && (

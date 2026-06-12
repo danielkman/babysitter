@@ -58,6 +58,23 @@ function reducedMotion(): boolean {
 }
 
 /**
+ * v4-r1 FLIP bug fix (§V3-3): the card's SETTLED layout rect. While a prior
+ * move animation is still in flight, `getBoundingClientRect()` reports the
+ * transient mid-arc position (translate keyframes included) — recording THAT
+ * as a FLIP "first" rect poisoned the next move's origin and launched cards
+ * hundreds of px off-canvas. The move keyframes are translate-only, so
+ * subtracting the live computed-transform translation recovers the true slot.
+ */
+function settledRect(el: HTMLElement): DOMRect {
+  const rect = el.getBoundingClientRect();
+  const t = getComputedStyle(el).transform;
+  if (t === 'none' || t === '') return rect;
+  const m = new DOMMatrixReadOnly(t);
+  if (m.e === 0 && m.f === 0) return rect;
+  return new DOMRect(rect.x - m.e, rect.y - m.f, rect.width, rect.height);
+}
+
+/**
  * §V4-2 drop resolution: the drag ghost is hit-testable (so AC36's
  * elementFromPoint probe finds it topmost), so the lane under the pointer is
  * resolved from the full hit stack, skipping the ghost layer.
@@ -517,6 +534,8 @@ export function KanbanBoard({ store, orders }: KanbanBoardProps): React.JSX.Elem
   const rectsRef = useRef<Map<string, DOMRect>>(new Map());
   /** taskId → movingCards seq already animated. */
   const animatedRef = useRef<Map<string, number>>(new Map());
+  /** taskId → the live move Animation (cancelled when a new move supersedes it). */
+  const liveAnimsRef = useRef<Map<string, Animation>>(new Map());
   const [hover, setHover] = useState<{ from: ColumnId; lane: ColumnId } | null>(null);
 
   const cardViews = board.cardIds
@@ -545,8 +564,16 @@ export function KanbanBoard({ store, orders }: KanbanBoardProps): React.JSX.Elem
         store.getState().clearMoving(taskId);
         continue;
       }
+      // v4-r1: a still-running previous move (e.g. landing in MERGED as the
+      // release lever fires) must not contaminate the LIVE target rect — and
+      // its late finish must not strip the new move's is-moving class.
+      const stale = liveAnimsRef.current.get(taskId);
+      if (stale !== undefined) {
+        liveAnimsRef.current.delete(taskId);
+        stale.cancel();
+      }
       const prev = rectsRef.current.get(taskId);
-      const next = el.getBoundingClientRect();
+      const next = settledRect(el);
       const finish = (): void => {
         el.classList.remove('is-moving');
         store.getState().clearMoving(taskId);
@@ -560,14 +587,22 @@ export function KanbanBoard({ store, orders }: KanbanBoardProps): React.JSX.Elem
         }, 50);
         continue;
       }
-      const dx = prev.left - next.left;
-      const dy = prev.top - next.top;
+      // v4-r1: clamp the glide ORIGIN to the visible board plate so a stale
+      // first-rect can never launch the card off-canvas (belt and braces on
+      // top of the settledRect fix).
+      const board = root.getBoundingClientRect();
+      const originX = Math.min(Math.max(prev.left, board.left + 4), Math.max(board.left + 4, board.right - next.width - 4));
+      const originY = Math.min(Math.max(prev.top, board.top + 4), Math.max(board.top + 4, board.bottom - next.height - 4));
+      const dx = originX - next.left;
+      const dy = originY - next.top;
       if (dx === 0 && dy === 0) {
         finish();
         continue;
       }
       el.classList.add('is-moving');
-      const arcLift = Math.min(64, Math.max(24, Math.hypot(dx, dy) * 0.18));
+      // Arc lift, clamped so the apex stays on the board plate.
+      const apexHeadroom = Math.max(0, Math.min(originY, next.top) - (board.top + 4));
+      const arcLift = Math.min(64, Math.max(24, Math.hypot(dx, dy) * 0.18), Math.max(8, apexHeadroom));
       const animation = el.animate(
         [
           { transform: `translate(${dx}px, ${dy}px)` },
@@ -577,14 +612,24 @@ export function KanbanBoard({ store, orders }: KanbanBoardProps): React.JSX.Elem
         ],
         { duration: MOVE_ANIM_MS, easing: 'ease-in-out' },
       );
-      animation.addEventListener('finish', finish);
-      animation.addEventListener('cancel', finish);
+      liveAnimsRef.current.set(taskId, animation);
+      const settle = (): void => {
+        // Only the animation still registered for this card may retire the
+        // move (a superseding move cancels this one AFTER re-registering).
+        if (liveAnimsRef.current.get(taskId) === animation) {
+          liveAnimsRef.current.delete(taskId);
+          finish();
+        }
+      };
+      animation.addEventListener('finish', settle);
+      animation.addEventListener('cancel', settle);
     }
 
-    // Record "first" rects for the next pass.
+    // Record "first" rects for the next pass — SETTLED positions only
+    // (v4-r1: never snapshot a transient mid-flight transform as an origin).
     const nextRects = new Map<string, DOMRect>();
     for (const [taskId, el] of els) {
-      nextRects.set(taskId, el.getBoundingClientRect());
+      nextRects.set(taskId, settledRect(el));
     }
     rectsRef.current = nextRects;
   });
@@ -593,6 +638,9 @@ export function KanbanBoard({ store, orders }: KanbanBoardProps): React.JSX.Elem
   useEffect(() => {
     for (const taskId of [...animatedRef.current.keys()]) {
       if (movingCards[taskId] === undefined) animatedRef.current.delete(taskId);
+    }
+    for (const taskId of [...liveAnimsRef.current.keys()]) {
+      if (movingCards[taskId] === undefined) liveAnimsRef.current.delete(taskId);
     }
   }, [movingCards]);
 

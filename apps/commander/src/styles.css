@@ -884,19 +884,24 @@
     border-color: var(--color-amber-glow);
     animation: wr-cmd-urgent 1.4s ease-in-out infinite;
   }
-  /* empty command cell = blanked brass keyhole plate (subtle, inert) */
+  /* v4-r1: empty command cell = CLOSED-SOCKET COVER — a deliberately dormant
+     blanking plate: corner screw heads, engraved cover seam, center boss */
   .wr-cmd--empty {
     border-style: solid;
-    border-color: rgb(148 112 44 / 0.28);
+    border-color: rgb(148 112 44 / 0.32);
     opacity: 1;
     cursor: default;
     background:
-      radial-gradient(circle 4.5px at 50% 40%, rgb(18 16 9 / 0.5) 0 42%, rgb(185 145 63 / 0.4) 52% 66%, transparent 74%),
-      linear-gradient(rgb(18 16 9 / 0.45), rgb(18 16 9 / 0.45)) 50% 68% / 3px 9px no-repeat,
-      linear-gradient(to bottom, rgb(58 59 48 / 0.4), rgb(34 35 30 / 0.35));
+      radial-gradient(circle 1.6px at 6px 6px, rgb(185 145 63 / 0.55) 0 58%, transparent 72%),
+      radial-gradient(circle 1.6px at calc(100% - 6px) 6px, rgb(185 145 63 / 0.55) 0 58%, transparent 72%),
+      radial-gradient(circle 1.6px at 6px calc(100% - 6px), rgb(185 145 63 / 0.55) 0 58%, transparent 72%),
+      radial-gradient(circle 1.6px at calc(100% - 6px) calc(100% - 6px), rgb(185 145 63 / 0.55) 0 58%, transparent 72%),
+      radial-gradient(circle 10px at 50% 46%, transparent 0 6.6px, rgb(18 16 9 / 0.45) 7.2px 7.8px, rgb(216 181 97 / 0.2) 8.4px 9px, transparent 9.8px),
+      radial-gradient(circle 3.2px at 50% 46%, rgb(62 63 51 / 0.9) 0 52%, rgb(18 16 9 / 0.55) 68%, transparent 80%),
+      linear-gradient(to bottom, rgb(54 55 45 / 0.5), rgb(30 31 26 / 0.45));
     box-shadow:
-      inset 0 1px 2px rgb(18 16 9 / 0.55),
-      inset 0 -1px 0 rgb(216 181 97 / 0.12);
+      inset 0 1px 2px rgb(18 16 9 / 0.5),
+      inset 0 -1px 0 rgb(216 181 97 / 0.1);
   }
   .wr-cmd-icon {
     width: 16px;
@@ -1693,6 +1698,15 @@
     transition: transform 220ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
     transform: translate(0, 0) rotate(0deg);
   }
+  /* v4-r1: a gliding card must stay visible BETWEEN lanes — while a FLIP
+     move runs, the destination lane unclips its card well and rides above
+     its neighbours so the arc never disappears behind a lane frame. */
+  .wr-lane:has(.wr-card.is-moving) {
+    z-index: 30;
+  }
+  .wr-lane-cards:has(.wr-card.is-moving) {
+    overflow: visible;
+  }
   /* §V3-3 e2e hook + brass trail while gliding between lanes */
   .wr-card.is-moving {
     z-index: 50;
@@ -1947,10 +1961,11 @@
     cursor: pointer;
   }
 
-  /* --- merged seal rows (§V3-2 terminal state) ------------------------------ */
+  /* --- merged seal rows (§V3-2 terminal state) ------------------------------
+     v4-r1: full ink at rest — dimming is reserved for in-production
+     compacted crown rows (.wr-card--compact). */
   .wr-card--merged {
     padding: 4px 8px;
-    opacity: 0.82;
     background:
       linear-gradient(to bottom, rgb(236 224 192 / 0.9), rgb(220 202 158 / 0.9));
   }
@@ -2239,6 +2254,33 @@
     font-size: 10px;
     padding: 2px 10px;
   }
+  /* v4-r1: Forge From is an etched BRASS chip with a small anvil glyph */
+  .wr-stack-btn--forge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #3b2f17;
+    border: 1px solid var(--color-brass-700);
+    background: linear-gradient(to bottom, #e3c87f, #c4a050 55%, #a8853a);
+    text-shadow: 0 1px 0 rgb(255 240 200 / 0.5);
+    box-shadow:
+      inset 0 1px 0 rgb(255 240 200 / 0.55),
+      0 1px 2px rgb(20 15 5 / 0.5);
+  }
+  .wr-stack-btn--forge:hover {
+    color: #241b0a;
+    filter: brightness(1.08);
+    box-shadow:
+      inset 0 1px 0 rgb(255 240 200 / 0.6),
+      0 0 8px rgb(232 181 74 / 0.55);
+  }
+  .wr-forge-glyph {
+    width: 11px;
+    height: 11px;
+    display: inline-flex;
+    color: #4a3812;
+    filter: drop-shadow(0 1px 0 rgb(255 240 200 / 0.4));
+  }
   .wr-stack-editor {
     margin-top: 8px;
     border-top: 1px solid rgb(216 181 97 / 0.3);
@@ -2287,12 +2329,31 @@
     color: var(--color-ink-soft);
     text-shadow: 0 1px 0 rgb(255 248 224 / 0.7);
   }
-  /* dark cogitator inputs sunk into the parchment */
+  /* v4-r1: engraved parchment INK-WELLS — dark ink script on a recessed
+     cream well (no near-black plates inside the parchment dialog) */
   .wr-card-editor .wr-foundry-input {
-    border-color: rgb(74 56 18 / 0.75);
+    color: var(--color-ink);
+    background: linear-gradient(to bottom, #ece0bd, #f5ecd2 35%, #efe4c4);
+    border-color: rgb(148 112 44 / 0.7);
     box-shadow:
-      inset 0 1px 4px rgb(12 12 8 / 0.6),
-      0 1px 0 rgb(255 248 224 / 0.55);
+      inset 0 1px 3px rgb(109 81 32 / 0.38),
+      inset 0 0 0 1px rgb(255 248 224 / 0.35),
+      0 1px 0 rgb(255 248 224 / 0.6);
+  }
+  .wr-card-editor .wr-foundry-input::placeholder {
+    color: rgb(109 81 32 / 0.55);
+  }
+  /* brass focus ring on the engraved well */
+  .wr-card-editor .wr-foundry-input:focus {
+    border-color: var(--color-brass-500);
+    box-shadow:
+      inset 0 1px 3px rgb(109 81 32 / 0.32),
+      0 0 0 2px rgb(185 145 63 / 0.45),
+      0 0 8px rgb(232 181 74 / 0.35);
+  }
+  .wr-card-editor .wr-foundry-input:disabled {
+    opacity: 0.55;
+    background: rgb(220 204 164 / 0.7);
   }
   .wr-card-editor .wr-modal-hint {
     color: var(--color-ink-soft);
@@ -2570,9 +2631,12 @@
     stroke-width: 1;
     transition: stroke 150ms ease, stroke-width 150ms ease, opacity 150ms ease;
   }
+  /* v4-r1: incident edges are tapered inked threads — the stroke is a
+     per-edge userSpaceOnUse gradient (MemoryOverlay) falling off from the
+     focused node; the fallback stroke sits at ~0.4 */
   .wr-mem-edge.is-incident {
-    stroke: rgb(148 112 44 / 0.85);
-    stroke-width: 1.7;
+    stroke: rgb(148 112 44 / 0.4);
+    stroke-width: 1.6;
   }
   .wr-mem-edge.is-faded {
     opacity: 0.3;
@@ -3881,33 +3945,49 @@
       inset 0 1px 3px rgb(109 81 32 / 0.3),
       0 0 6px rgb(224 168 60 / 0.45);
   }
-  /* up/down/remove + actions: the etched-chip treatment (parchment fill ·
-     hairline brass border · letterpress type) */
+  /* v4-r1: ADD PHASE/SAVE/CANCEL/REMOVE/↑↓ are BRASS-ETCHED CHIPS — struck
+     brass keycap fill, engraved umber type, crisp bevel */
   .wr-process-editor-phase button,
   .wr-process-editor-actions button {
     font-family: var(--font-mono-hud);
     font-size: 9px;
     letter-spacing: 0.05em;
-    color: var(--color-ink-soft);
-    border: 1px solid rgb(185 145 63 / 0.6);
+    color: #3b2f17;
+    border: 1px solid var(--color-brass-700);
     border-radius: 5px;
-    background: linear-gradient(to bottom, rgb(247 238 215 / 0.92), rgb(233 220 190 / 0.92));
-    text-shadow: 0 1px 0 rgb(255 248 224 / 0.8);
-    box-shadow: inset 0 1px 1px rgb(109 81 32 / 0.18);
-    padding: 3px 6px;
+    background: linear-gradient(to bottom, #e3c87f, #c4a050 55%, #a8853a);
+    text-shadow: 0 1px 0 rgb(255 240 200 / 0.5);
+    box-shadow:
+      inset 0 1px 0 rgb(255 240 200 / 0.55),
+      0 1px 2px rgb(58 42 18 / 0.4);
+    padding: 3px 7px;
     cursor: pointer;
+    transition: filter 0.12s ease, box-shadow 0.12s ease, transform 0.08s ease;
   }
   .wr-process-editor-phase button:hover:not(:disabled),
-  .wr-process-editor-actions button:hover {
-    color: #6d4d12;
-    border-color: var(--color-brass-500);
+  .wr-process-editor-actions button:hover:not(:disabled) {
+    color: #241b0a;
+    filter: brightness(1.08);
     box-shadow:
-      inset 0 1px 1px rgb(109 81 32 / 0.18),
-      0 0 6px rgb(232 181 74 / 0.45);
+      inset 0 1px 0 rgb(255 240 200 / 0.6),
+      0 0 7px rgb(232 181 74 / 0.5);
   }
-  .wr-process-editor-phase button:disabled {
-    opacity: 0.35;
+  .wr-process-editor-phase button:active:not(:disabled),
+  .wr-process-editor-actions button:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+  /* clear RECESSED disabled state: the chip sinks into the parchment —
+     de-brassed, inset shadow, engraving dimmed (no floating ghost) */
+  .wr-process-editor-phase button:disabled,
+  .wr-process-editor-actions button:disabled {
     cursor: default;
+    color: rgb(74 56 18 / 0.45);
+    background: linear-gradient(to bottom, #ddcda2, #e7d9b4);
+    border-color: rgb(148 112 44 / 0.45);
+    text-shadow: 0 1px 0 rgb(255 248 224 / 0.5);
+    box-shadow:
+      inset 0 1px 3px rgb(109 81 32 / 0.32),
+      0 1px 0 rgb(255 248 224 / 0.55);
   }
   .wr-process-editor-actions {
     display: flex;
@@ -4027,19 +4107,46 @@
     align-items: center;
     gap: 8px;
   }
+  /* v4-r1: etched parchment-inset search well — brass border, ink script,
+     small engraved monocle glyph on the left */
   .wr-mem-search {
     font-family: var(--font-mono-hud);
     font-size: 11px;
-    color: var(--color-parchment-100);
-    background: rgb(22 23 15 / 0.5);
-    border: 1px solid rgb(216 181 97 / 0.35);
+    color: var(--color-ink);
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='6.8' cy='6.8' r='4.2' fill='none' stroke='%23947030' stroke-width='1.7'/%3E%3Cpath d='M10.1 10.1 L13.6 13.6' fill='none' stroke='%23947030' stroke-width='1.9' stroke-linecap='round'/%3E%3C/svg%3E")
+        7px 50% / 12px 12px no-repeat,
+      linear-gradient(to bottom, #ece0bd, #f5ecd2 35%, #efe4c4);
+    border: 1px solid var(--color-brass-600);
     border-radius: 6px;
-    padding: 3px 9px;
-    width: 180px;
+    padding: 3px 9px 3px 24px;
+    width: 190px;
+    box-shadow:
+      inset 0 1px 3px rgb(109 81 32 / 0.4),
+      inset 0 0 0 1px rgb(255 248 224 / 0.3),
+      0 1px 0 rgb(255 248 224 / 0.12);
+  }
+  .wr-mem-search::placeholder {
+    color: rgb(109 81 32 / 0.6);
+  }
+  /* the native blue search-cancel cross clashes with the parchment well */
+  .wr-mem-search::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 10px;
+    height: 10px;
+    cursor: pointer;
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M2 2 L8 8 M8 2 L2 8' fill='none' stroke='%23947030' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E")
+        center / 10px 10px no-repeat;
   }
   .wr-mem-search:focus {
     outline: none;
     border-color: var(--color-amber-glow);
+    box-shadow:
+      inset 0 1px 3px rgb(109 81 32 / 0.35),
+      0 0 0 2px rgb(185 145 63 / 0.4),
+      0 0 8px rgb(232 181 74 / 0.35);
   }
   .wr-mem-matches {
     font-family: var(--font-mono-hud);
@@ -4054,6 +4161,23 @@
     stroke: rgb(216 181 97 / 0.22);
     stroke-width: 1;
     stroke-dasharray: 7 5;
+  }
+  /* v4-r1: faint per-silo gear sigil watermark behind each cluster sector —
+     umber ink (the lane-watermark tone reads on parchment; light brass
+     vanished) */
+  .wr-mem-sigil-teeth {
+    fill: none;
+    stroke: rgb(111 84 48 / 0.13);
+    stroke-width: 13;
+    stroke-dasharray: 8 6.5;
+  }
+  .wr-mem-sigil-rim {
+    fill: none;
+    stroke: rgb(111 84 48 / 0.14);
+    stroke-width: 4;
+  }
+  .wr-mem-sigil-hub {
+    fill: rgb(111 84 48 / 0.12);
   }
   .wr-mem-sector-caption {
     font-family: var(--font-serif-display);
@@ -4409,9 +4533,16 @@
     background: rgb(232 181 74 / 0.25);
     color: transparent;
   }
-  /* review panel affordance (§V4-11 Open in IDE) */
+  /* review panel affordance (§V4-11 Open in IDE) — v4-r1: the header chip
+     must NOT inherit the action-row flex-grow; the TITLE owns the spare
+     width (wr-review-id flex-grow + min-width:0) and ellipsizes only when
+     the header is truly out of room */
   .wr-review-btn--ide {
+    flex: 0 0 auto;
     margin-left: auto;
+    padding: 4px 9px;
+    font-size: 11px;
+    white-space: nowrap;
     border-color: var(--color-brass-500);
     color: var(--color-amber-glow);
   }
