@@ -96,7 +96,8 @@ declare global {
 // SPEC-LIVE-BACKEND §7.1: the sole runtime-construction edit. The mock branch
 // returns today's `MockBackend`; the real branch returns `RealBackend`. Mock is
 // the default (and the fail-safe for a misconfigured real config).
-const backend = createBackend(resolveBackendConfig(import.meta.env, window.location.search));
+const config = resolveBackendConfig(import.meta.env, window.location.search);
+const backend = createBackend(config);
 const store = createCommanderStore();
 
 // §7.2 boot gating: the full sim-coupled binding + `views={backend.sim}` path
@@ -192,9 +193,11 @@ if (backend instanceof MockBackend) {
     version: COMMANDER_VERSION,
   };
 } else {
-  // Real mode (§7.2): frame-only binding + empty `SimViews` stub. The live board
-  // population from gateway frames is the next deliverable; this ships transport.
-  const realBinding = bootReal(store, backend);
+  // Real mode (§7.2 + SPEC-KRADLE-CONTROLPLANE §4.3): the resolved config is
+  // passed so `bootReal` can see `kradleApiUrl` and construct the kradle snapshot
+  // cache (board/stack/run/session/workspace/memory reads + lifecycle Orders)
+  // when set; absent it, this is the unchanged gateway-only frame binding.
+  const realBinding = bootReal(store, backend, config);
   binding = realBinding;
   views = realBinding.views;
 }

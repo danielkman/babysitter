@@ -1,0 +1,1377 @@
+/**
+ * Pure kradle-resource → Commander-view mappers (SPEC-KRADLE-CONTROLPLANE §2/§6.2,
+ * AC10–AC13, AC12).
+ *
+ * Every function here is PURE and deterministic: it consumes a controller
+ * snapshot (`KradleControllerSnapshot`, §1.2) plus an optional on-demand memory
+ * result, and produces the `Sim*View` surface (`simulation.ts`) + the
+ * `TickCommitInput` board payload (§6.2). No `Date.now()`, no rng — the caller
+ * injects `nowMs`; UI-only fields with no kradle source use the documented stable
+ * defaults (never random).
+ *
+ * The snapshot's CRD items are typed as the wide `KradleResourceItem` structural
+ * shape (`controllerClient.ts`); these mappers narrow each `spec`/`status`/`labels`
+ * field through the local `read*` helpers (mirroring `realBackend.ts:141`
+ * `asServerFrame` — narrow `unknown`, never `any`).
+ */
+
+import type { CostRecord } from '../../contracts/adapter-events';
+import type { ObservedRunState, PendingEffectsByKind } from '../../contracts/babysitter-run';
+import type { GraphQueryResult, GraphRecord, MemoryNodeKind } from '../../contracts/kradle-memory';
+import type { KradleAgentStack } from '../../contracts/kradle-stack';
+import type { AgentWorkspacePhase, WorkspaceGitStatus } from '../../contracts/kradle-workspace';
+import type {
+  ColumnId,
+  SessionStatus,
+  SimAgentView,
+  SimCardView,
+  SimHookView,
+  SimMemoryIOView,
+  SimMemoryReadEntry,
+  SimMemorySiloView,
+  SimMemoryWriteEntry,
+  SimProcessTemplateView,
+  SimRosterAgentView,
+  SimRunObservationView,
+  SimRunView,
+  SimSessionDetailView,
+  SimSessionTranscriptEntry,
+  SimSessionView,
+  SimStackView,
+  SimTaskState,
+  SimTaskView,
+  SimUnitView,
+  SimWorkspaceCardGitView,
+  SimWorkspaceSummaryView,
+  SimWorkspaceView,
+} from '../mock/simulation';
+import { PHASES_BY_KIND } from '../mock/simulation';
+import type { AdapterName, TaskKind } from '../mock/scenario';
+import { ADAPTERS, MODELS_BY_ADAPTER, TASK_KINDS } from '../mock/scenario';
+import type {
+  KradleControllerSnapshot,
+  KradleResourceItem,
+} from './controllerClient';
+
+// ---------------------------------------------------------------------------
+// Commander label conventions (§2.1/§2.3 — the sanctioned representation for
+// concepts kradle has no first-class CRD field for).
+// ---------------------------------------------------------------------------
+
+export const LABEL_ROSTER_NAME = 'commander.a5c.ai/roster-name';
+export const LABEL_STACK_REF = 'commander.a5c.ai/stack-ref';
+export const LABEL_ROLE = 'commander.a5c.ai/role';
+export const LABEL_ORIGIN = 'kradle.a5c.ai/origin';
+export const LABEL_MERGED = 'commander.a5c.ai/merged';
+export const LABEL_RELEASE_ID = 'commander.a5c.ai/release-id';
+export const LABEL_YOLO = 'commander.a5c.ai/yolo';
+export const LABEL_PARENT = 'commander.a5c.ai/parent';
+export const LABEL_WORKER = 'commander.a5c.ai/worker';
+export const LABEL_REVIEWER = 'commander.a5c.ai/reviewer';
+export const LABEL_HUMAN = 'commander.a5c.ai/human';
+export const LABEL_DEFAULT_FOR = 'commander.a5c.ai/default-for';
+export const LABEL_CREATURE = 'commander.a5c.ai/creature';
+export const LABEL_COORDINATION = 'commander.a5c.ai/coordination';
+export const LABEL_AGENT_ROLE = 'kradle.a5c.ai/agent-role';
+
+/** §6.2 default inquiry deadline window (ms) for synthesized hooks. */
+export const DEFAULT_INQUIRY_MS = 15_000;
+
+const EMPTY_COST: CostRecord = {
+  totalUsd: 0,
+  inputTokens: 0,
+  outputTokens: 0,
+  thinkingTokens: 0,
+  cachedTokens: 0,
+};
+
+const EMPTY_TOKENS = {
+  inputTokens: 0,
+  outputTokens: 0,
+  thinkingTokens: 0,
+  cachedTokens: 0,
+};
+
+// ---------------------------------------------------------------------------
+// `unknown` narrowers (mirror realBackend.ts:141 `asServerFrame` — never `any`).
+// ---------------------------------------------------------------------------
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function asString(value: unknown): string | undefined {
+  return typeof value === 'string' ? value : undefined;
+}
+
+function asNumber(value: unknown): number | undefined {
+  return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
+}
+
+function asRecord(value: unknown): Record<string, unknown> | undefined {
+  return isRecord(value) ? value : undefined;
+}
+
+function asArray(value: unknown): unknown[] | undefined {
+  return Array.isArray(value) ? value : undefined;
+}
+
+/** A CRD item's `spec` as a record (empty when absent). */
+function spec(item: KradleResourceItem): Record<string, unknown> {
+  return asRecord(item.spec) ?? {};
+}
+
+/** A CRD item's `status` as a record (empty when absent). */
+function status(item: KradleResourceItem): Record<string, unknown> {
+  return asRecord(item.status) ?? {};
+}
+
+/** A CRD item's labels (empty when absent). */
+function labels(item: KradleResourceItem): Record<string, string> {
+  const raw = item.metadata.labels;
+  if (!isRecord(raw)) return {};
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(raw)) {
+    if (typeof v === 'string') out[k] = v;
+  }
+  return out;
+}
+
+function statusPhase(item: KradleResourceItem): string | undefined {
+  return asString(status(item).phase);
+}
+
+/** ISO timestamp → epoch ms; `undefined` when unparseable. */
+function isoToMs(value: unknown): number | undefined {
+  const s = asString(value);
+  if (s === undefined) return undefined;
+  const ms = Date.parse(s);
+  return Number.isFinite(ms) ? ms : undefined;
+}
+
+function creationMs(item: KradleResourceItem): number | undefined {
+  return isoToMs(item.metadata.creationTimestamp);
+}
+
+// ---------------------------------------------------------------------------
+// Narrowing helpers for the kradle→Commander enum maps.
+// ---------------------------------------------------------------------------
+
+const ADAPTER_SET = new Set<string>(ADAPTERS);
+const TASK_KIND_SET = new Set<string>(TASK_KINDS);
+
+function narrowAdapter(value: string | undefined, fallback: AdapterName = 'claude-code'): AdapterName {
+  if (value !== undefined && ADAPTER_SET.has(value)) return value as AdapterName;
+  return fallback;
+}
+
+/**
+ * §2.3.2 kradle `taskKind` → Commander `TaskKind`. Known kinds pass through; the
+ * documented fallback table maps kradle-native kinds, else `'implement'`.
+ */
+export function narrowTaskKind(value: string | undefined): TaskKind {
+  if (value !== undefined && TASK_KIND_SET.has(value)) return value as TaskKind;
+  switch (value) {
+    case 'ci-repair':
+    case 'diagnostic':
+      return 'fix';
+    default:
+      return 'implement';
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Snapshot projection access (§1.2): canonical `model.agents.*`, fallback
+// `model.resources[].kind`. Tolerant of a kind appearing in either place (AC2).
+// ---------------------------------------------------------------------------
+
+export type AgentsCollectionKey =
+  | 'stacks'
+  | 'runs'
+  | 'rules'
+  | 'sessions'
+  | 'workspaces'
+  | 'approvals'
+  | 'adapters'
+  | 'providers'
+  | 'projects'
+  | 'transcripts'
+  | 'memoryRepositories'
+  | 'memorySnapshots'
+  | 'memoryImports';
+
+function collectionItems(
+  snapshot: KradleControllerSnapshot,
+  key: AgentsCollectionKey,
+): KradleResourceItem[] {
+  const fromAgents = snapshot.agents?.[key]?.items;
+  if (Array.isArray(fromAgents) && fromAgents.length > 0) return fromAgents;
+  return [];
+}
+
+function collectionPending(
+  snapshot: KradleControllerSnapshot,
+  key: AgentsCollectionKey,
+): KradleResourceItem[] {
+  const fromAgents = snapshot.agents?.[key]?.pending;
+  if (Array.isArray(fromAgents)) return fromAgents;
+  return [];
+}
+
+/** All items of a CRD kind from `model.resources[]` (the §1.2 fallback source). */
+function resourceItemsByKind(snapshot: KradleControllerSnapshot, kind: string): KradleResourceItem[] {
+  const out: KradleResourceItem[] = [];
+  for (const entry of snapshot.resources ?? []) {
+    if (entry.kind === kind && Array.isArray(entry.items)) {
+      for (const item of entry.items) {
+        if (isRecord(item) && isRecord((item as KradleResourceItem).metadata)) {
+          out.push(item);
+        }
+      }
+    }
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------------
+// §2.1 — AgentStack / AgentDefinition → SimStackView
+// ---------------------------------------------------------------------------
+
+function buildStackResource(item: KradleResourceItem): KradleAgentStack {
+  const sp = spec(item);
+  const adapter = asString(sp.adapter) ?? 'claude-code';
+  const baseAgent = asString(sp.baseAgent) ?? adapter;
+  const adapterModels = MODELS_BY_ADAPTER[narrowAdapter(adapter)] ?? [];
+  const model = asString(sp.model) ?? adapterModels[0] ?? '';
+
+  const promptRaw = asRecord(sp.prompt) ?? asRecord(sp.promptTemplates);
+  const promptSystem = asString(promptRaw?.system) ?? '';
+  const promptDeveloper = asString(promptRaw?.developer);
+
+  const stack: KradleAgentStack = {
+    apiVersion: asString(item.apiVersion) ?? 'kradle.a5c.ai/v1alpha1',
+    kind: 'AgentStack',
+    metadata: {
+      name: item.metadata.name,
+      ...(asString(item.metadata.namespace) !== undefined
+        ? { namespace: item.metadata.namespace }
+        : {}),
+      labels: labels(item),
+    },
+    spec: {
+      baseAgent,
+      adapter,
+      ...(asString(sp.provider) !== undefined ? { provider: asString(sp.provider) } : {}),
+      model,
+      prompt: promptDeveloper !== undefined
+        ? { system: promptSystem, developer: promptDeveloper }
+        : { system: promptSystem },
+      approvalMode: asString(sp.approvalMode) ?? 'prompt',
+      ...(asString(sp.toolProfileRef) !== undefined
+        ? { toolProfileRef: asString(sp.toolProfileRef) }
+        : {}),
+      ...(asArray(sp.skillRefs) !== undefined
+        ? { skillRefs: (asArray(sp.skillRefs) as unknown[]).filter((x): x is string => typeof x === 'string') }
+        : {}),
+      ...(asArray(sp.subagentRefs) !== undefined
+        ? { subagentRefs: (asArray(sp.subagentRefs) as unknown[]).filter((x): x is string => typeof x === 'string') }
+        : {}),
+      ...(asString(sp.runnerPool) !== undefined ? { runnerPool: asString(sp.runnerPool) } : {}),
+    },
+    status: { phase: statusPhase(item) ?? 'Ready' },
+  };
+  return stack;
+}
+
+function mapStackView(item: KradleResourceItem): SimStackView {
+  const sp = spec(item);
+  const name = asString(sp.displayName) ?? item.metadata.name;
+  const custom = labels(item)[LABEL_ORIGIN] === 'foundry';
+  return {
+    stackRef: item.metadata.name,
+    name,
+    custom,
+    stack: buildStackResource(item),
+  };
+}
+
+/**
+ * §2.1 stack source set: `agents.stacks.items` (AgentStack) PLUS any
+ * `AgentDefinition` summary, deduplicated by `metadata.name` (AgentStack wins),
+ * sorted by name (stable).
+ */
+export function mapStacks(snapshot: KradleControllerSnapshot): SimStackView[] {
+  const byName = new Map<string, SimStackView>();
+  for (const def of resourceItemsByKind(snapshot, 'AgentDefinition')) {
+    byName.set(def.metadata.name, mapStackView(def));
+  }
+  // AgentStack wins on conflict — apply last.
+  for (const stack of collectionItems(snapshot, 'stacks')) {
+    byName.set(stack.metadata.name, mapStackView(stack));
+  }
+  return [...byName.values()].sort((a, b) => a.name.localeCompare(b.name));
+}
+
+// ---------------------------------------------------------------------------
+// §2.1 — roster agents (AgentDefinition labeled `commander.a5c.ai/roster-name`)
+// ---------------------------------------------------------------------------
+
+/**
+ * §2.1 roster agents. Source: AgentDefinitions carrying `LABEL_ROSTER_NAME`.
+ * `status`/`assignedTaskId`/`assignedRole` are derived from the cards (a roster
+ * agent is `assigned` iff any card references it via the worker/reviewer label).
+ */
+export function mapRosterAgents(snapshot: KradleControllerSnapshot): SimRosterAgentView[] {
+  const stacks = mapStacks(snapshot);
+  const stackByRef = new Map(stacks.map((s) => [s.stackRef, s]));
+  const cards = mapCards(snapshot);
+
+  const defs = resourceItemsByKind(snapshot, 'AgentDefinition');
+  const out: SimRosterAgentView[] = [];
+  for (const def of defs) {
+    const lab = labels(def);
+    const rosterName = lab[LABEL_ROSTER_NAME];
+    if (rosterName === undefined) continue;
+
+    const agentId = def.metadata.name;
+    const stackRef = lab[LABEL_STACK_REF] ?? def.metadata.name;
+    const stack = stackByRef.get(stackRef);
+    const adapter = narrowAdapter(stack?.stack.spec.adapter);
+    const model = stack?.stack.spec.model ?? MODELS_BY_ADAPTER[adapter][0] ?? '';
+    const role = lab[LABEL_ROLE] === 'reviewer' ? 'reviewer' : 'worker';
+
+    // Derived assignment: the first card referencing this agent.
+    let assignedTaskId: string | null = null;
+    let assignedRole: 'worker' | 'reviewer' | null = null;
+    for (const card of cards) {
+      if (card.workerAgentId === agentId) {
+        assignedTaskId = card.taskId;
+        assignedRole = 'worker';
+        break;
+      }
+      if (card.reviewerAgentId === agentId) {
+        assignedTaskId = card.taskId;
+        assignedRole = 'reviewer';
+        break;
+      }
+    }
+
+    out.push({
+      agentId,
+      name: rosterName,
+      stackRef,
+      stackName: stack?.name ?? stackRef,
+      adapter,
+      model,
+      role,
+      status: assignedTaskId !== null ? 'assigned' : 'available',
+      assignedTaskId,
+      assignedRole,
+    });
+  }
+  return out.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+// ---------------------------------------------------------------------------
+// §2.3.1 — AgentDispatchRun phase (+ refinement) → board column (AC12)
+// ---------------------------------------------------------------------------
+
+/**
+ * §2.3.1 total, deterministic phase→column map. `phase` is the run's
+ * `status.phase`; `refine` carries the refinement signals the table keys on.
+ */
+export function runPhaseToColumn(
+  phase: string | undefined,
+  refine: {
+    taskKind: TaskKind;
+    hasPendingReviewApproval: boolean;
+    hasPendingWriteBackApproval: boolean;
+    hasApprovedWriteBack: boolean;
+    merged: boolean;
+    released: boolean;
+  },
+): ColumnId {
+  switch (phase) {
+    case 'Pending':
+    case 'Queued':
+      return 'backlog';
+    case 'Running': {
+      if (refine.hasPendingReviewApproval || refine.taskKind === 'review') return 'ai-review';
+      return 'do';
+    }
+    case 'AwaitingApproval':
+      return 'human-review';
+    case 'Succeeded': {
+      if (refine.released) return 'in-production';
+      if (refine.merged) return 'merged';
+      if (refine.hasApprovedWriteBack) return 'approved';
+      // Succeeded with no integration signal — treat as approved (passed,
+      // awaiting integration). The merge/release labels move it onward.
+      return 'approved';
+    }
+    case 'Failed':
+    case 'Cancelled':
+      return 'backlog';
+    default:
+      // Forward-compatible: an unknown phase lands in the backlog (total map).
+      return 'backlog';
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Approval helpers (§2.3.3) — pending AgentApprovals keyed by run.
+// ---------------------------------------------------------------------------
+
+interface ApprovalIndex {
+  /** All approvals for a run (`spec.dispatchRun`). */
+  byRun: Map<string, KradleResourceItem[]>;
+  /** Pending approvals for a run (phase 'Pending' or unset). */
+  pendingByRun: Map<string, KradleResourceItem[]>;
+}
+
+function approvalDispatchRun(item: KradleResourceItem): string | undefined {
+  return asString(spec(item).dispatchRun);
+}
+
+function approvalActionType(item: KradleResourceItem): string | undefined {
+  const action = asRecord(spec(item).action);
+  return asString(action?.type);
+}
+
+function isPendingApproval(item: KradleResourceItem): boolean {
+  const phase = statusPhase(item);
+  return phase === undefined || phase === 'Pending';
+}
+
+function buildApprovalIndex(snapshot: KradleControllerSnapshot): ApprovalIndex {
+  const byRun = new Map<string, KradleResourceItem[]>();
+  const pendingByRun = new Map<string, KradleResourceItem[]>();
+  const all = collectionItems(snapshot, 'approvals');
+  const pending = collectionPending(snapshot, 'approvals');
+  for (const item of all) {
+    const run = approvalDispatchRun(item);
+    if (run === undefined) continue;
+    (byRun.get(run) ?? byRun.set(run, []).get(run)!).push(item);
+  }
+  const pendingSource = pending.length > 0 ? pending : all.filter(isPendingApproval);
+  for (const item of pendingSource) {
+    const run = approvalDispatchRun(item);
+    if (run === undefined) continue;
+    (pendingByRun.get(run) ?? pendingByRun.set(run, []).get(run)!).push(item);
+  }
+  return { byRun, pendingByRun };
+}
+
+const REVIEW_ACTION_TYPES = new Set(['review', 'ai-review']);
+const WRITE_BACK_ACTION_TYPES = new Set(['write-back', 'release', 'tool-use']);
+
+// ---------------------------------------------------------------------------
+// Session indexing (§2.2) — sessions keyed by their dispatch run.
+// ---------------------------------------------------------------------------
+
+function sessionDispatchRun(item: KradleResourceItem): string | undefined {
+  return asString(spec(item).dispatchRun);
+}
+
+function isActiveSession(item: KradleResourceItem): boolean {
+  return statusPhase(item) === 'Active';
+}
+
+function activeSessionsByRun(snapshot: KradleControllerSnapshot): Map<string, KradleResourceItem[]> {
+  const out = new Map<string, KradleResourceItem[]>();
+  for (const session of collectionItems(snapshot, 'sessions')) {
+    if (!isActiveSession(session)) continue;
+    const run = sessionDispatchRun(session);
+    if (run === undefined) continue;
+    (out.get(run) ?? out.set(run, []).get(run)!).push(session);
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------------
+// Workspace indexing (§2.5) — workspaces by name.
+// ---------------------------------------------------------------------------
+
+const WORKSPACE_PHASE_MAP: Record<string, AgentWorkspacePhase> = {
+  Pending: 'created',
+  Provisioning: 'created',
+  Ready: 'ready',
+  InUse: 'ready',
+  Released: 'ready',
+  Archived: 'archived',
+  Terminating: 'missing',
+};
+
+function mapWorkspacePhase(phase: string | undefined): AgentWorkspacePhase {
+  if (phase !== undefined && phase in WORKSPACE_PHASE_MAP) return WORKSPACE_PHASE_MAP[phase]!;
+  return 'missing';
+}
+
+function workspaceGitStatus(item: KradleResourceItem): WorkspaceGitStatus {
+  const raw = asRecord(status(item).gitStatus);
+  const branch = asString(raw?.branch) ?? 'main';
+  const headSha = asString(raw?.headSha) ?? '';
+  const dirty = raw?.dirty === true;
+  const result: WorkspaceGitStatus = { branch, headSha, dirty };
+  const ahead = asNumber(raw?.ahead);
+  const behind = asNumber(raw?.behind);
+  const uncommittedCount = asNumber(raw?.uncommittedCount);
+  if (ahead !== undefined) result.ahead = ahead;
+  if (behind !== undefined) result.behind = behind;
+  if (uncommittedCount !== undefined) result.uncommittedCount = uncommittedCount;
+  return result;
+}
+
+function workspacesByName(snapshot: KradleControllerSnapshot): Map<string, KradleResourceItem> {
+  const out = new Map<string, KradleResourceItem>();
+  for (const ws of collectionItems(snapshot, 'workspaces')) {
+    out.set(ws.metadata.name, ws);
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------------
+// §2.3.2 — AgentDispatchRun → SimCardView (the central mapping, AC12)
+// ---------------------------------------------------------------------------
+
+function runProgress(phase: string | undefined): number {
+  switch (phase) {
+    case 'Running':
+      return 0.5;
+    case 'Succeeded':
+      return 1;
+    default:
+      return 0;
+  }
+}
+
+/**
+ * §2.3.2 `mapCards`. Maps every `model.agents.runs.items` to a `SimCardView`,
+ * column per §2.3.1, with stable per-column ordering by creationTimestamp.
+ */
+export function mapCards(snapshot: KradleControllerSnapshot): SimCardView[] {
+  const runs = collectionItems(snapshot, 'runs');
+  const approvals = buildApprovalIndex(snapshot);
+  const wsByName = workspacesByName(snapshot);
+  const activeByRun = activeSessionsByRun(snapshot);
+
+  // Parent → children (by LABEL_PARENT).
+  const childrenByParent = new Map<string, string[]>();
+  for (const run of runs) {
+    const parent = labels(run)[LABEL_PARENT];
+    if (parent !== undefined) {
+      (childrenByParent.get(parent) ?? childrenByParent.set(parent, []).get(parent)!).push(
+        run.metadata.name,
+      );
+    }
+  }
+
+  // First pass: build each card (column + sort key).
+  interface Built {
+    view: SimCardView;
+    sortKey: number;
+    seq: number;
+  }
+  const built: Built[] = [];
+  let seq = 0;
+  for (const run of runs) {
+    const sp = spec(run);
+    const lab = labels(run);
+    const taskId = run.metadata.name;
+    const taskKind = narrowTaskKind(asString(sp.taskKind));
+    const phase = statusPhase(run);
+
+    const runApprovals = approvals.pendingByRun.get(taskId) ?? [];
+    const hasPendingReviewApproval = runApprovals.some((a) =>
+      REVIEW_ACTION_TYPES.has(approvalActionType(a) ?? ''),
+    );
+    const hasPendingWriteBackApproval = runApprovals.some((a) =>
+      WRITE_BACK_ACTION_TYPES.has(approvalActionType(a) ?? ''),
+    );
+    const hasApprovedWriteBack = (approvals.byRun.get(taskId) ?? []).some(
+      (a) =>
+        WRITE_BACK_ACTION_TYPES.has(approvalActionType(a) ?? '') &&
+        (statusPhase(a) === 'Approved' || asString(status(a).decision) === 'approved'),
+    );
+    const merged = lab[LABEL_MERGED] === 'true' || asString(status(run).mergedAt) !== undefined;
+    const released =
+      lab[LABEL_RELEASE_ID] !== undefined || asString(status(run).releasedAt) !== undefined;
+
+    const column = runPhaseToColumn(phase, {
+      taskKind,
+      hasPendingReviewApproval,
+      hasPendingWriteBackApproval,
+      hasApprovedWriteBack,
+      merged,
+      released,
+    });
+
+    const workspaceId = asString(sp.workspaceRef) ?? '';
+    const ws = workspaceId !== '' ? wsByName.get(workspaceId) : undefined;
+    const dirtyFileCount = ws !== undefined ? workspaceGitStatus(ws).uncommittedCount ?? 0 : 0;
+
+    const sourceRefs = asRecord(sp.sourceRefs);
+    const pullRequest = asString(sourceRefs?.pullRequest);
+    const repository = asString(sp.repository) ?? '';
+    const title = pullRequest ?? (repository !== '' ? `${repository}:${taskKind}` : taskId);
+
+    const sourceEvent = asRecord(sp.sourceEvent);
+    const description = asString(sourceEvent?.name) ?? '';
+
+    const feedbackApproval = (approvals.byRun.get(taskId) ?? []).find(
+      (a) => asString(status(a).feedback) !== undefined,
+    );
+    const feedback = feedbackApproval ? asString(status(feedbackApproval).feedback) ?? null : null;
+
+    const agentIds = (activeByRun.get(taskId) ?? []).map((s) => s.metadata.name);
+
+    const attempt =
+      asNumber(status(run).attempt) ??
+      countAttempts(snapshot, taskId) ??
+      1;
+
+    const view: SimCardView = {
+      taskId,
+      taskKind,
+      title,
+      repository,
+      workspaceId,
+      column,
+      order: 0, // assigned in the per-column ordering pass below.
+      yolo: lab[LABEL_YOLO] === 'true',
+      merged: column === 'merged' || column === 'in-production',
+      progress: runProgress(phase),
+      parentId: lab[LABEL_PARENT] ?? null,
+      childIds: childrenByParent.get(taskId) ?? [],
+      agentIds,
+      attempt,
+      feedback,
+      dirtyFileCount,
+      hasPendingInquiry: runApprovals.length > 0,
+      stackRef: asString(sp.agentStack) ?? '',
+      description,
+      releaseId: lab[LABEL_RELEASE_ID] ?? null,
+      compacted: false,
+      workerAgentId: lab[LABEL_WORKER] ?? null,
+      reviewerAgentId: lab[LABEL_REVIEWER] ?? null,
+      humanAssigneeId: lab[LABEL_HUMAN] ?? null,
+    };
+    built.push({ view, sortKey: creationMs(run) ?? seq, seq });
+    seq += 1;
+  }
+
+  // Second pass: stable per-column ordering by creationTimestamp (then seq).
+  const byColumn = new Map<ColumnId, Built[]>();
+  for (const b of built) {
+    (byColumn.get(b.view.column) ?? byColumn.set(b.view.column, []).get(b.view.column)!).push(b);
+  }
+  for (const group of byColumn.values()) {
+    group.sort((a, b) => a.sortKey - b.sortKey || a.seq - b.seq);
+    group.forEach((b, index) => {
+      b.view.order = index;
+    });
+  }
+  return built.map((b) => b.view);
+}
+
+/** Count of `AgentDispatchAttempt` items referencing a run (best-effort). */
+function countAttempts(snapshot: KradleControllerSnapshot, runName: string): number | undefined {
+  const attempts = resourceItemsByKind(snapshot, 'AgentDispatchAttempt');
+  if (attempts.length === 0) return undefined;
+  const count = attempts.filter((a) => asString(spec(a).dispatchRun) === runName).length;
+  return count > 0 ? count : undefined;
+}
+
+// ---------------------------------------------------------------------------
+// §2.3.3 — AgentDispatchRun → SimRunView + getRunObservation (AC12)
+// ---------------------------------------------------------------------------
+
+/**
+ * §2.3.3 `status.phase` → `ObservedRunState`. NOTE: `ObservedRunState`
+ * (`babysitter-run.ts`) is the journal-derived union
+ * `'created'|'waiting'|'completed'|'halted'|'failed'` — it has no `'running'`/
+ * `'pending'` members (the spec's prose names are mapped to the nearest journal
+ * state): a Running/AwaitingApproval run is `'waiting'` (it has live/open
+ * effects); a Pending/Queued run is `'created'` (no effects yet).
+ */
+const OBSERVED_STATE_MAP: Record<string, ObservedRunState> = {
+  Running: 'waiting',
+  Succeeded: 'completed',
+  Failed: 'failed',
+  Cancelled: 'failed',
+  Pending: 'created',
+  Queued: 'created',
+  AwaitingApproval: 'waiting',
+};
+
+function mapObservedState(phase: string | undefined): ObservedRunState {
+  if (phase !== undefined && phase in OBSERVED_STATE_MAP) return OBSERVED_STATE_MAP[phase]!;
+  return 'created';
+}
+
+function phasePipeline(
+  taskKind: TaskKind,
+  phase: string | undefined,
+): Array<{ label: string; status: 'done' | 'current' | 'pending' }> {
+  const phases = PHASES_BY_KIND[taskKind];
+  const progress = runProgress(phase);
+  // Map progress to a current-phase index: 0 → first, 0.5 → middle, 1 → all done.
+  if (progress >= 1) {
+    return phases.map((label) => ({ label, status: 'done' as const }));
+  }
+  const currentIndex = progress <= 0 ? 0 : Math.min(phases.length - 1, Math.floor(phases.length / 2));
+  return phases.map((label, index) => ({
+    label,
+    status: index < currentIndex ? ('done' as const) : index === currentIndex ? ('current' as const) : ('pending' as const),
+  }));
+}
+
+function pendingEffectsByKindForRun(
+  snapshot: KradleControllerSnapshot,
+  runName: string,
+): PendingEffectsByKind {
+  const approvals = buildApprovalIndex(snapshot);
+  const pending = approvals.pendingByRun.get(runName) ?? [];
+  if (pending.length === 0) return {};
+  return { breakpoint: pending.length };
+}
+
+function processIdFor(taskKind: TaskKind): string {
+  return `commander/${taskKind}@v1`;
+}
+
+/** §2.3.3 `mapRuns`. `model.agents.runs.items` → run-ledger rows, newest-first. */
+export function mapRuns(snapshot: KradleControllerSnapshot): SimRunView[] {
+  const runs = collectionItems(snapshot, 'runs');
+  const out: SimRunView[] = runs.map((run) => {
+    const sp = spec(run);
+    const st = status(run);
+    const taskKind = narrowTaskKind(asString(sp.taskKind));
+    const phase = statusPhase(run);
+    const startedAt = isoToMs(st.queuedAt) ?? creationMs(run) ?? 0;
+    const endedAtRaw = isoToMs(st.completedAt) ?? isoToMs(st.failedAt);
+    return {
+      runId: run.metadata.name,
+      taskId: run.metadata.name,
+      taskKind,
+      processId: processIdFor(taskKind),
+      processRevision: 1,
+      observedState: mapObservedState(phase),
+      phases: phasePipeline(taskKind, phase),
+      pendingEffectsByKind: pendingEffectsByKindForRun(snapshot, run.metadata.name),
+      tokens: { ...EMPTY_TOKENS },
+      costUsd: asNumber(st.cost) ?? 0,
+      startedAt,
+      endedAt: endedAtRaw ?? null,
+    };
+  });
+  return out.sort((a, b) => b.startedAt - a.startedAt);
+}
+
+/** §2.3.3 `getRunObservation(taskId)`. Journal is documented-empty (AC12). */
+export function mapRunObservation(
+  snapshot: KradleControllerSnapshot,
+  taskId: string,
+): SimRunObservationView | null {
+  const run = collectionItems(snapshot, 'runs').find((r) => r.metadata.name === taskId);
+  if (run === undefined) return null;
+  const taskKind = narrowTaskKind(asString(spec(run).taskKind));
+  const phase = statusPhase(run);
+  return {
+    runId: run.metadata.name,
+    taskId: run.metadata.name,
+    observedState: mapObservedState(phase),
+    pendingEffectsByKind: pendingEffectsByKindForRun(snapshot, taskId),
+    phases: phasePipeline(taskKind, phase),
+    journal: [],
+  };
+}
+
+// ---------------------------------------------------------------------------
+// §2.2 — AgentSession → SimSessionView / SimSessionDetailView (AC11)
+// ---------------------------------------------------------------------------
+
+const SESSION_STATUS_MAP: Record<string, SessionStatus> = {
+  Active: 'active',
+  Completed: 'completed',
+  Failed: 'aborted',
+  Cancelled: 'aborted',
+};
+
+function mapSessionStatus(phase: string | undefined): SessionStatus {
+  if (phase !== undefined && phase in SESSION_STATUS_MAP) return SESSION_STATUS_MAP[phase]!;
+  return 'active';
+}
+
+interface TranscriptIndex {
+  /** Transcript items keyed by `spec.sessionRef`. */
+  bySession: Map<string, KradleResourceItem>;
+}
+
+function buildTranscriptIndex(snapshot: KradleControllerSnapshot): TranscriptIndex {
+  const bySession = new Map<string, KradleResourceItem>();
+  for (const t of collectionItems(snapshot, 'transcripts')) {
+    const ref = asString(spec(t).sessionRef);
+    if (ref !== undefined) bySession.set(ref, t);
+  }
+  return { bySession };
+}
+
+function transcriptCost(transcript: KradleResourceItem | undefined): {
+  tokenUsage: SimSessionView['tokenUsage'];
+  cost: CostRecord;
+  messageCount: number;
+  transcriptLength: number;
+} {
+  if (transcript === undefined) {
+    return { tokenUsage: { ...EMPTY_TOKENS }, cost: { ...EMPTY_COST }, messageCount: 0, transcriptLength: 0 };
+  }
+  const sp = spec(transcript);
+  const costRaw = asRecord(sp.cost);
+  const messages = asArray(sp.messages) ?? [];
+  const inputTokens = asNumber(costRaw?.inputTokens) ?? 0;
+  const outputTokens = asNumber(costRaw?.outputTokens) ?? 0;
+  const thinkingTokens = asNumber(costRaw?.thinkingTokens) ?? 0;
+  const cachedTokens = asNumber(costRaw?.cachedTokens) ?? 0;
+  const totalUsd = asNumber(costRaw?.totalUsd) ?? 0;
+  return {
+    tokenUsage: { inputTokens, outputTokens, thinkingTokens, cachedTokens },
+    cost: { totalUsd, inputTokens, outputTokens, thinkingTokens },
+    messageCount: messages.length,
+    transcriptLength: messages.length,
+  };
+}
+
+function runStackRef(snapshot: KradleControllerSnapshot, runName: string | undefined): string {
+  if (runName === undefined) return '';
+  const run = collectionItems(snapshot, 'runs').find((r) => r.metadata.name === runName);
+  return run !== undefined ? asString(spec(run).agentStack) ?? '' : '';
+}
+
+function mapSessionView(
+  snapshot: KradleControllerSnapshot,
+  session: KradleResourceItem,
+  transcripts: TranscriptIndex,
+  stackNameByRef: Map<string, string>,
+): SimSessionView {
+  const sp = spec(session);
+  const lab = labels(session);
+  const sessionId = session.metadata.name;
+  const dispatchRun = asString(sp.dispatchRun);
+  const creatureName = lab[LABEL_CREATURE] ?? sessionId;
+  const adapter = narrowAdapter(asString(sp.adapter));
+  const model = asString(sp.model) ?? MODELS_BY_ADAPTER[adapter][0] ?? '';
+  const role = lab[LABEL_AGENT_ROLE] === 'reviewer'
+    ? 'reviewer'
+    : lab[LABEL_AGENT_ROLE] === 'integration'
+      ? 'integration'
+      : 'worker';
+  const sessionStatus = mapSessionStatus(statusPhase(session));
+  const stackRef = runStackRef(snapshot, dispatchRun);
+  const transcript = transcripts.bySession.get(sessionId);
+  const cost = transcriptCost(transcript);
+  const title = asString(sp.title) ?? `${creatureName} — ${role}`;
+  const endedTick = sessionStatus === 'active' ? null : 0;
+
+  return {
+    sessionId,
+    title,
+    creatureName,
+    agent: adapter,
+    model,
+    stackRef,
+    stackName: stackNameByRef.get(stackRef) ?? stackRef,
+    role,
+    coordination: lab[LABEL_COORDINATION] === 'true',
+    taskId: dispatchRun ?? '',
+    attempt: asNumber(sp.attempt) ?? 1,
+    runId: dispatchRun ?? null,
+    parentSessionId: lab['commander.a5c.ai/parent-session'] ?? asString(sp.parentSession) ?? null,
+    reviewOfSessionId: lab['commander.a5c.ai/review-of'] ?? asString(sp.reviewOfSession) ?? null,
+    status: sessionStatus,
+    startedTick: 0,
+    endedTick,
+    turnCount: 0,
+    messageCount: cost.messageCount,
+    tokenUsage: cost.tokenUsage,
+    cost: cost.cost,
+    transcriptLength: cost.transcriptLength,
+  };
+}
+
+/** §2.2 `listSessions(taskId?)`. Filtered by `spec.dispatchRun`; newest-first. */
+export function mapSessions(snapshot: KradleControllerSnapshot, taskId?: string): SimSessionView[] {
+  const transcripts = buildTranscriptIndex(snapshot);
+  const stackNameByRef = new Map(mapStacks(snapshot).map((s) => [s.stackRef, s.name]));
+  const sessions = collectionItems(snapshot, 'sessions');
+
+  interface Built {
+    view: SimSessionView;
+    sortKey: number;
+    seq: number;
+  }
+  const built: Built[] = [];
+  let seq = 0;
+  for (const session of sessions) {
+    if (taskId !== undefined && sessionDispatchRun(session) !== taskId) {
+      seq += 1;
+      continue;
+    }
+    built.push({
+      view: mapSessionView(snapshot, session, transcripts, stackNameByRef),
+      sortKey: creationMs(session) ?? seq,
+      seq,
+    });
+    seq += 1;
+  }
+  // Newest-first by creationTimestamp (fallback insertion order).
+  built.sort((a, b) => b.sortKey - a.sortKey || b.seq - a.seq);
+  return built.map((b) => b.view);
+}
+
+const TRANSCRIPT_KIND_MAP: Record<string, SimSessionTranscriptEntry['kind']> = {
+  user: 'user',
+  assistant: 'message',
+  system: 'event',
+  tool: 'tool_call',
+};
+
+/** §2.2 `getSession(sessionId)` → record + transcript entries. */
+export function mapSessionDetail(
+  snapshot: KradleControllerSnapshot,
+  sessionId: string,
+): SimSessionDetailView | null {
+  const session = collectionItems(snapshot, 'sessions').find((s) => s.metadata.name === sessionId);
+  if (session === undefined) return null;
+  const transcripts = buildTranscriptIndex(snapshot);
+  const stackNameByRef = new Map(mapStacks(snapshot).map((s) => [s.stackRef, s.name]));
+  const record = mapSessionView(snapshot, session, transcripts, stackNameByRef);
+
+  const transcriptItem = transcripts.bySession.get(sessionId);
+  const messages = transcriptItem !== undefined ? asArray(spec(transcriptItem).messages) ?? [] : [];
+  const transcript: SimSessionTranscriptEntry[] = messages.map((raw, index) => {
+    const msg = asRecord(raw) ?? {};
+    const role = asString(msg.role) ?? 'assistant';
+    const kind = TRANSCRIPT_KIND_MAP[role] ?? 'message';
+    const entry: SimSessionTranscriptEntry = {
+      seq: index,
+      tick: 0,
+      timestamp: isoToMs(msg.timestamp) ?? 0,
+      kind,
+      text: asString(msg.content) ?? '',
+    };
+    const toolName = asString(msg.toolName);
+    if (toolName !== undefined) entry.toolName = toolName;
+    return entry;
+  });
+  return { record, transcript };
+}
+
+// ---------------------------------------------------------------------------
+// §2.5 — KradleWorkspace → SimWorkspaceView / SimWorkspaceSummaryView (AC13)
+// ---------------------------------------------------------------------------
+
+/** §2.5 `getWorkspaceView(taskId)`. `files`/`testEvidence` documented-empty. */
+export function mapWorkspaceView(
+  snapshot: KradleControllerSnapshot,
+  taskId: string,
+): SimWorkspaceView | null {
+  const run = collectionItems(snapshot, 'runs').find((r) => r.metadata.name === taskId);
+  if (run === undefined) return null;
+  const workspaceRef = asString(spec(run).workspaceRef);
+  const ws = workspaceRef !== undefined ? workspacesByName(snapshot).get(workspaceRef) : undefined;
+
+  const approvals = buildApprovalIndex(snapshot);
+  const reviewerNotes = (approvals.byRun.get(taskId) ?? [])
+    .map((a) => asString(status(a).feedback))
+    .filter((f): f is string => f !== undefined);
+
+  return {
+    taskId,
+    phase: ws !== undefined ? mapWorkspacePhase(statusPhase(ws)) : 'missing',
+    gitStatus: ws !== undefined ? workspaceGitStatus(ws) : { branch: 'main', headSha: '', dirty: false },
+    files: [],
+    testEvidence: { status: 'unknown' },
+    reviewerNotes,
+  };
+}
+
+/** §2.5 `listWorkspaces()`. One row per KradleWorkspace. */
+export function mapWorkspaces(snapshot: KradleControllerSnapshot): SimWorkspaceSummaryView[] {
+  const cards = mapCards(snapshot);
+  const wsItems = collectionItems(snapshot, 'workspaces');
+  const activeByRun = activeSessionsByRun(snapshot);
+
+  return wsItems.map((ws) => {
+    const name = ws.metadata.name;
+    const gitStatus = workspaceGitStatus(ws);
+    const phase = mapWorkspacePhase(statusPhase(ws));
+    const cardsForWs = cards.filter((c) => c.workspaceId === name);
+    const cardIds = cardsForWs.map((c) => c.taskId);
+    const cardGit: SimWorkspaceCardGitView[] = cardsForWs.map((c) => ({
+      taskId: c.taskId,
+      title: c.title,
+      branch: gitStatus.branch,
+      headSha: gitStatus.headSha,
+      dirty: gitStatus.dirty,
+      dirtyFileCount: c.dirtyFileCount,
+    }));
+    const activeSessionIds = cardsForWs.flatMap((c) =>
+      (activeByRun.get(c.taskId) ?? []).map((s) => s.metadata.name),
+    );
+    return {
+      workspaceId: name,
+      name,
+      repository: asString(spec(ws).repository) ?? '',
+      phase,
+      gitStatus: cardsForWs.length > 0 ? gitStatus : null,
+      dirty: gitStatus.dirty,
+      cardIds,
+      cards: cardGit,
+      activeSessionIds,
+    };
+  });
+}
+
+// ---------------------------------------------------------------------------
+// §2.6 — memory → SimMemoryIOView + silos (AC13)
+// ---------------------------------------------------------------------------
+
+function repoFromRecordId(id: string): string {
+  const colon = id.indexOf(':');
+  return colon > 0 ? id.slice(0, colon) : id;
+}
+
+/**
+ * §2.6 `getMemoryIO(ref)`. `read[]` from the memory-query result; `written[]`
+ * from `model.agents.memoryImports.items` / AgentMemoryUpdate records whose
+ * `spec.sourceRun === ref`. Empty (never throws) when the query is unavailable.
+ */
+export function mapMemoryIO(
+  snapshot: KradleControllerSnapshot,
+  ref: string,
+  memoryResult: GraphQueryResult | undefined,
+): SimMemoryIOView {
+  const read: SimMemoryReadEntry[] = (memoryResult?.matches ?? []).map((match) => ({
+    recordId: match.record.id,
+    kind: match.record.nodeKind,
+    silo: repoFromRecordId(match.record.id),
+    tick: 0,
+    unitId: ref,
+  }));
+
+  const written: SimMemoryWriteEntry[] = [];
+  const imports = [
+    ...collectionItems(snapshot, 'memoryImports'),
+    ...resourceItemsByKind(snapshot, 'AgentMemoryUpdate'),
+  ];
+  for (const item of imports) {
+    const sp = spec(item);
+    if (asString(sp.sourceRun) !== ref) continue;
+    const changesRaw = asArray(sp.changes) ?? [];
+    const changes = changesRaw.map((c) => {
+      const rec = asRecord(c) ?? {};
+      return {
+        path: asString(rec.path) ?? '',
+        action: asString(rec.action) ?? 'modify',
+        reason: asString(rec.reason) ?? '',
+      };
+    });
+    written.push({
+      updateId: item.metadata.name,
+      silo: asString(sp.memoryRepository) ?? '',
+      changes,
+      phase: statusPhase(item) ?? 'Pending',
+      tick: 0,
+      unitId: ref,
+    });
+  }
+
+  return { read, written };
+}
+
+/** §2.6 memory silos from `model.agents.memoryRepositories.items`. */
+export function mapSilos(snapshot: KradleControllerSnapshot): SimMemorySiloView[] {
+  return collectionItems(snapshot, 'memoryRepositories').map((repo) => {
+    const st = status(repo);
+    return {
+      name: repo.metadata.name,
+      phase: ((): SimMemorySiloView['phase'] => {
+        const phase = statusPhase(repo);
+        return phase === 'Ready' || phase === 'Pending' || phase === 'Failed' ? phase : 'Ready';
+      })(),
+      currentCommit: asString(st.currentCommit) ?? '',
+      recordCount: 0,
+      owner: asString(spec(repo).repositoryRef) ?? '',
+      recordIds: [],
+    };
+  });
+}
+
+/** Map a broad memory query result to `GraphRecord[]` for the Archive. */
+export function mapMemoryRecords(memoryResult: GraphQueryResult | undefined): GraphRecord[] {
+  return (memoryResult?.matches ?? []).map((m) => m.record);
+}
+
+// ---------------------------------------------------------------------------
+// §2.7 — synthesized process templates (AC13)
+// ---------------------------------------------------------------------------
+
+/** §2.7 `listProcessTemplates()`. Synthesized per `TaskKind` from `PHASES_BY_KIND`. */
+export function mapProcessTemplates(): SimProcessTemplateView[] {
+  return TASK_KINDS.map((kind) => ({
+    kind,
+    processId: processIdFor(kind),
+    revision: 1,
+    phases: [...PHASES_BY_KIND[kind]],
+  }));
+}
+
+// ---------------------------------------------------------------------------
+// §6.2 — kradle → TickCommitInput board halves
+// ---------------------------------------------------------------------------
+
+function mapActiveAgentView(
+  snapshot: KradleControllerSnapshot,
+  session: KradleResourceItem,
+  stackNameByRef: Map<string, string>,
+  transcripts: TranscriptIndex,
+  nowMs: number,
+): SimAgentView {
+  const sp = spec(session);
+  const lab = labels(session);
+  const dispatchRun = asString(sp.dispatchRun);
+  const adapter = narrowAdapter(asString(sp.adapter));
+  const model = asString(sp.model) ?? MODELS_BY_ADAPTER[adapter][0] ?? '';
+  const stackRef = runStackRef(snapshot, dispatchRun);
+  const role = lab[LABEL_AGENT_ROLE] === 'reviewer'
+    ? 'reviewer'
+    : lab[LABEL_AGENT_ROLE] === 'integration'
+      ? 'integration'
+      : 'worker';
+  const cost = transcriptCost(transcripts.bySession.get(session.metadata.name));
+  return {
+    unitId: session.metadata.name,
+    agent: adapter,
+    model,
+    creatureName: lab[LABEL_CREATURE] ?? session.metadata.name,
+    stackRef,
+    stackName: stackNameByRef.get(stackRef) ?? stackRef,
+    role,
+    taskId: dispatchRun ?? '',
+    state: 'thinking',
+    paused: false,
+    runId: dispatchRun ?? '',
+    pendingHookId: null,
+    heldPieces: [],
+    tokenUsage: cost.tokenUsage,
+    cost: cost.cost,
+    turnCount: 0,
+    messageCount: cost.messageCount,
+    createdAt: creationMs(session) ?? nowMs,
+    updatedAt: nowMs,
+  };
+}
+
+const TASK_STATE_MAP: Record<string, SimTaskState> = {
+  Running: 'in_progress',
+  Succeeded: 'done',
+  Failed: 'failed',
+  Cancelled: 'failed',
+  Pending: 'queued',
+  Queued: 'queued',
+  AwaitingApproval: 'review',
+};
+
+function mapTaskState(phase: string | undefined): SimTaskState {
+  if (phase !== undefined && phase in TASK_STATE_MAP) return TASK_STATE_MAP[phase]!;
+  return 'queued';
+}
+
+function mapTaskView(run: KradleResourceItem): SimTaskView {
+  const sp = spec(run);
+  const phase = statusPhase(run);
+  const taskKind = narrowTaskKind(asString(sp.taskKind));
+  const kradlePhase =
+    phase === 'Succeeded' ? 'Ready' : phase === 'Failed' || phase === 'Cancelled' ? 'Failed' : 'Pending';
+  return {
+    taskId: run.metadata.name,
+    taskKind,
+    repository: asString(sp.repository) ?? '',
+    workspaceId: asString(sp.workspaceRef) ?? '',
+    title: asString(asRecord(sp.sourceRefs)?.pullRequest) ?? run.metadata.name,
+    state: mapTaskState(phase),
+    phase: kradlePhase,
+    progress: runProgress(phase),
+    assigneeIds: [],
+    priority: 0,
+  };
+}
+
+function mapUnitView(
+  session: KradleResourceItem,
+  transcripts: TranscriptIndex,
+  nowMs: number,
+): SimUnitView {
+  const sp = spec(session);
+  const dispatchRun = asString(sp.dispatchRun);
+  const adapter = narrowAdapter(asString(sp.adapter));
+  const model = asString(sp.model) ?? MODELS_BY_ADAPTER[adapter][0] ?? '';
+  const cost = transcriptCost(transcripts.bySession.get(session.metadata.name));
+  return {
+    unitId: session.metadata.name,
+    agent: adapter,
+    model,
+    title: asString(sp.title) ?? session.metadata.name,
+    workspaceId: '',
+    state: 'thinking',
+    paused: false,
+    taskId: dispatchRun ?? null,
+    runId: dispatchRun ?? null,
+    turnIndex: 0,
+    turnCount: 0,
+    messageCount: cost.messageCount,
+    pendingHookId: null,
+    tokenUsage: cost.tokenUsage,
+    cost: cost.cost,
+    createdAt: creationMs(session) ?? nowMs,
+    updatedAt: nowMs,
+  };
+}
+
+function mapHookViews(snapshot: KradleControllerSnapshot, nowMs: number): SimHookView[] {
+  const approvals = buildApprovalIndex(snapshot);
+  const activeByRun = activeSessionsByRun(snapshot);
+  const out: SimHookView[] = [];
+  for (const [runName, pending] of approvals.pendingByRun) {
+    const unit = activeByRun.get(runName)?.[0]?.metadata.name ?? '';
+    for (const approval of pending) {
+      const action = asRecord(spec(approval).action);
+      const summary = asString(action?.summary) ?? 'Approval requested';
+      out.push({
+        hookRequestId: approval.metadata.name,
+        runId: runName,
+        unitId: unit,
+        hookKind: asString(action?.type) ?? 'breakpoint',
+        payload: {
+          taskId: runName,
+          question: summary,
+          options: [
+            { id: 'approve', caption: 'Approve' },
+            { id: 'deny', caption: 'Deny' },
+          ],
+        },
+        deadlineTs: nowMs + DEFAULT_INQUIRY_MS,
+      });
+    }
+  }
+  return out;
+}
+
+function mapInquiryViews(snapshot: KradleControllerSnapshot, nowMs: number): TickInquiry[] {
+  const approvals = buildApprovalIndex(snapshot);
+  const activeByRun = activeSessionsByRun(snapshot);
+  const out: TickInquiry[] = [];
+  for (const [runName, pending] of approvals.pendingByRun) {
+    const unit = activeByRun.get(runName)?.[0]?.metadata.name ?? '';
+    for (const approval of pending) {
+      const action = asRecord(spec(approval).action);
+      const summary = asString(action?.summary) ?? 'Approval requested';
+      out.push({
+        hookRequestId: approval.metadata.name,
+        runId: runName,
+        taskId: runName,
+        unitId: unit,
+        inquiryKind: 'tool-approval',
+        question: summary,
+        options: [
+          { id: 'approve', caption: 'Approve', tone: 'primary' },
+          { id: 'deny', caption: 'Deny', tone: 'danger' },
+        ],
+        deadlineTs: nowMs + DEFAULT_INQUIRY_MS,
+      });
+    }
+  }
+  return out;
+}
+
+/** The §6.2 inquiry view shape (matches `SimInquiryView` without importing it directly). */
+interface TickInquiry {
+  hookRequestId: string;
+  runId: string;
+  taskId: string;
+  unitId: string;
+  inquiryKind: 'tool-approval';
+  question: string;
+  options: Array<{ id: string; caption: string; tone?: 'normal' | 'danger' | 'primary' }>;
+  deadlineTs: number;
+}
+
+/** The board-half payload the boot layer feeds into `commitTick` (§6.2). */
+export interface KradleTickInput {
+  cards: SimCardView[];
+  agents: SimAgentView[];
+  units: SimUnitView[];
+  tasks: SimTaskView[];
+  hooks: SimHookView[];
+  inquiries: TickInquiry[];
+  runStages: Record<string, string | null>;
+  rosterAgents: SimRosterAgentView[];
+}
+
+/**
+ * §6.2 `mapToTickInput(snapshot, nowMs)`. Builds the kradle-owned board halves
+ * for one `commitTick`. `frames` stays empty (the gateway owns it) — the boot
+ * layer assembles the full `TickCommitInput` (§6.1 additive merge).
+ */
+export function mapToTickInput(snapshot: KradleControllerSnapshot, nowMs: number): KradleTickInput {
+  const cards = mapCards(snapshot);
+  const transcripts = buildTranscriptIndex(snapshot);
+  const stackNameByRef = new Map(mapStacks(snapshot).map((s) => [s.stackRef, s.name]));
+
+  const activeSessions = collectionItems(snapshot, 'sessions').filter(isActiveSession);
+  const agents = activeSessions.map((s) =>
+    mapActiveAgentView(snapshot, s, stackNameByRef, transcripts, nowMs),
+  );
+  const units = activeSessions.map((s) => mapUnitView(s, transcripts, nowMs));
+  const tasks = collectionItems(snapshot, 'runs').map((r) => mapTaskView(r));
+  const hooks = mapHookViews(snapshot, nowMs);
+  const inquiries = mapInquiryViews(snapshot, nowMs);
+
+  const runStages: Record<string, string | null> = {};
+  for (const card of cards) {
+    if (card.agentIds.length === 0) continue;
+    const observation = mapRunObservation(snapshot, card.taskId);
+    runStages[card.taskId] = observation?.phases.find((p) => p.status === 'current')?.label ?? null;
+  }
+
+  return {
+    cards,
+    agents,
+    units,
+    tasks,
+    hooks,
+    inquiries,
+    runStages,
+    rosterAgents: mapRosterAgents(snapshot),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// §4.2 — buildSimViews: the SimViews surface over a cached snapshot + memory.
+// ---------------------------------------------------------------------------
+
+/** A lazily-populated memory cache the SimViews close over (§2.6, per snapshot gen). */
+export interface MemoryCache {
+  /** Per-`ref` memory-query result for `getMemoryIO(ref)`. */
+  ioByRef: Map<string, GraphQueryResult>;
+  /** The broad Archive query result (`query.text:''`, graph-only). */
+  archive?: GraphQueryResult;
+}
+
+export function createMemoryCache(): MemoryCache {
+  return { ioByRef: new Map() };
+}
+
+/** Memory-query node-kind list used by the broad Archive query (§2.6). */
+export const ARCHIVE_QUERY_KINDS: MemoryNodeKind[] = [];
