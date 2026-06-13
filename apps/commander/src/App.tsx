@@ -16,7 +16,10 @@
  */
 
 import { WarRoom } from './components/WarRoom';
-import { createMockBackendFromSearch } from './backend/mock/mockBackend';
+import { MockBackend } from './backend/mock/mockBackend';
+import { createBackend } from './backend/factory';
+import { resolveBackendConfig } from './backend/config';
+import { bootReal } from './backend/real/realBoot';
 import type {
   SimCardView,
   SimFileTreeNode,
@@ -30,12 +33,14 @@ import type {
   SimWorkspaceSummaryView,
   UpdateTaskPatch,
 } from './backend/mock/simulation';
+import type { SimViews } from './game/views';
 import type { KradleAgentStackInput } from './contracts/kradle-stack';
 import type { TaskKind } from './backend/mock/scenario';
 import {
   bindBackendToStore,
   COMMANDER_VERSION,
   createCommanderStore,
+  type BackendBinding,
   type CommanderStore,
 } from './game/store';
 
@@ -88,84 +93,111 @@ declare global {
   }
 }
 
-const backend = createMockBackendFromSearch(window.location.search);
+// SPEC-LIVE-BACKEND §7.1: the sole runtime-construction edit. The mock branch
+// returns today's `MockBackend`; the real branch returns `RealBackend`. Mock is
+// the default (and the fail-safe for a misconfigured real config).
+const backend = createBackend(resolveBackendConfig(import.meta.env, window.location.search));
 const store = createCommanderStore();
-const binding = bindBackendToStore(store, backend);
 
-// SPEC §9 test hooks API — exposed before connect() so pause-on-boot wins the
-// race against the first 250ms auto-tick.
-window.__commander = {
-  sim: {
-    pause: () => {
-      backend.sim.pause();
-      store.getState().setPaused(true);
+// §7.2 boot gating: the full sim-coupled binding + `views={backend.sim}` path
+// runs ONLY for the mock; real mode wires the frame-only binding (`bootReal`)
+// and a `SimViews` stub. Mock mode is byte-identical to before.
+let binding: BackendBinding;
+let views: SimViews;
+
+if (backend instanceof MockBackend) {
+  const mockBackend = backend;
+  const mockBinding = bindBackendToStore(store, mockBackend);
+  binding = mockBinding;
+  views = mockBackend.sim;
+
+  // SPEC §9 test hooks API — exposed before connect() so pause-on-boot wins the
+  // race against the first 250ms auto-tick.
+  window.__commander = {
+    sim: {
+      pause: () => {
+        mockBackend.sim.pause();
+        store.getState().setPaused(true);
+      },
+      resume: () => {
+        mockBackend.sim.resume();
+        store.getState().setPaused(false);
+      },
+      tick: (n: number) => {
+        mockBackend.sim.tick(n);
+        mockBinding.flush();
+      },
+      seed: mockBackend.sim.seed,
+      // §V4-4 pacing scalars — live getters over the sim (frozen-suite probes).
+      get speed(): number {
+        return mockBackend.sim.speed;
+      },
+      get tickIntervalMs(): number {
+        return mockBackend.sim.tickIntervalMs;
+      },
+      moveCard: (taskId: string, column: string) => {
+        mockBinding.orders.moveCard(
+          taskId,
+          column as Parameters<typeof mockBinding.orders.moveCard>[1],
+        );
+      },
+      setYolo: (taskId: string, on: boolean) => {
+        mockBinding.orders.setYolo(taskId, on);
+      },
+      createTask: (input: { taskKind: string; title?: string; parentId?: string }) =>
+        mockBinding.orders.createTask(
+          input as Parameters<typeof mockBinding.orders.createTask>[0],
+        ),
+      answerInquiry: (hookRequestId: string, optionId: string | null) => {
+        mockBinding.orders.answerInquiry(hookRequestId, optionId);
+      },
+      // --- SPEC-V4 verbs (route through Orders so the store flushes/mirrors) ---
+      revertCard: (taskId: string) => {
+        mockBinding.orders.revertCard(taskId);
+      },
+      release: () => mockBinding.orders.release(),
+      rollbackCard: (taskId: string) => {
+        mockBinding.orders.rollbackCard(taskId);
+      },
+      setSpeed: (speed: number) => mockBinding.orders.setSpeed(speed),
+      updateTask: (taskId: string, patch: UpdateTaskPatch) =>
+        mockBinding.orders.updateTask(taskId, patch),
+      upsertStack: (stack: KradleAgentStackInput) => mockBinding.orders.upsertStack(stack),
+      updateProcessTemplate: (kind: string, phases: string[]) => {
+        const revision = mockBackend.sim.updateProcessTemplate(kind as TaskKind, phases);
+        mockBinding.flush();
+        return revision;
+      },
+      writeFile: (taskId: string, path: string, content: string) => {
+        const ok = mockBackend.sim.writeFile(taskId, path, content);
+        mockBinding.flush();
+        return ok;
+      },
+      // --- SPEC-V4 read-only views ---------------------------------------------
+      listStacks: () => mockBackend.sim.listStacks(),
+      listProcessTemplates: () => mockBackend.sim.listProcessTemplates(),
+      listRuns: () => mockBackend.sim.listRuns(),
+      getWorkspaceTree: (taskId: string) => mockBackend.sim.getWorkspaceTree(taskId),
+      getFileContent: (taskId: string, path: string) =>
+        mockBackend.sim.getFileContent(taskId, path),
+      getMemoryIO: (ref: string) => mockBackend.sim.getMemoryIO(ref),
+      getGitLog: (taskId: string) => mockBackend.sim.getGitLog(taskId),
+      // --- SPEC-V5 §V5-1 persistent-session views --------------------------------
+      listSessions: (taskId?: string) => mockBackend.sim.listSessions(taskId),
+      getSession: (sessionId: string) => mockBackend.sim.getSession(sessionId),
+      listCardViews: () => mockBackend.sim.listCardViews(),
+      listWorkspaces: () => mockBackend.sim.listWorkspaces(),
     },
-    resume: () => {
-      backend.sim.resume();
-      store.getState().setPaused(false);
-    },
-    tick: (n: number) => {
-      backend.sim.tick(n);
-      binding.flush();
-    },
-    seed: backend.sim.seed,
-    // §V4-4 pacing scalars — live getters over the sim (frozen-suite probes).
-    get speed(): number {
-      return backend.sim.speed;
-    },
-    get tickIntervalMs(): number {
-      return backend.sim.tickIntervalMs;
-    },
-    moveCard: (taskId: string, column: string) => {
-      binding.orders.moveCard(taskId, column as Parameters<typeof binding.orders.moveCard>[1]);
-    },
-    setYolo: (taskId: string, on: boolean) => {
-      binding.orders.setYolo(taskId, on);
-    },
-    createTask: (input: { taskKind: string; title?: string; parentId?: string }) =>
-      binding.orders.createTask(input as Parameters<typeof binding.orders.createTask>[0]),
-    answerInquiry: (hookRequestId: string, optionId: string | null) => {
-      binding.orders.answerInquiry(hookRequestId, optionId);
-    },
-    // --- SPEC-V4 verbs (route through Orders so the store flushes/mirrors) ---
-    revertCard: (taskId: string) => {
-      binding.orders.revertCard(taskId);
-    },
-    release: () => binding.orders.release(),
-    rollbackCard: (taskId: string) => {
-      binding.orders.rollbackCard(taskId);
-    },
-    setSpeed: (speed: number) => binding.orders.setSpeed(speed),
-    updateTask: (taskId: string, patch: UpdateTaskPatch) =>
-      binding.orders.updateTask(taskId, patch),
-    upsertStack: (stack: KradleAgentStackInput) => binding.orders.upsertStack(stack),
-    updateProcessTemplate: (kind: string, phases: string[]) => {
-      const revision = backend.sim.updateProcessTemplate(kind as TaskKind, phases);
-      binding.flush();
-      return revision;
-    },
-    writeFile: (taskId: string, path: string, content: string) => {
-      const ok = backend.sim.writeFile(taskId, path, content);
-      binding.flush();
-      return ok;
-    },
-    // --- SPEC-V4 read-only views ---------------------------------------------
-    listStacks: () => backend.sim.listStacks(),
-    listProcessTemplates: () => backend.sim.listProcessTemplates(),
-    listRuns: () => backend.sim.listRuns(),
-    getWorkspaceTree: (taskId: string) => backend.sim.getWorkspaceTree(taskId),
-    getFileContent: (taskId: string, path: string) => backend.sim.getFileContent(taskId, path),
-    getMemoryIO: (ref: string) => backend.sim.getMemoryIO(ref),
-    getGitLog: (taskId: string) => backend.sim.getGitLog(taskId),
-    // --- SPEC-V5 §V5-1 persistent-session views --------------------------------
-    listSessions: (taskId?: string) => backend.sim.listSessions(taskId),
-    getSession: (sessionId: string) => backend.sim.getSession(sessionId),
-    listCardViews: () => backend.sim.listCardViews(),
-    listWorkspaces: () => backend.sim.listWorkspaces(),
-  },
-  store,
-  version: COMMANDER_VERSION,
-};
+    store,
+    version: COMMANDER_VERSION,
+  };
+} else {
+  // Real mode (§7.2): frame-only binding + empty `SimViews` stub. The live board
+  // population from gateway frames is the next deliverable; this ships transport.
+  const realBinding = bootReal(store, backend);
+  binding = realBinding;
+  views = realBinding.views;
+}
 
 backend.connect().catch((error: unknown) => {
   // eslint-disable-next-line no-console -- boot failure is terminal
@@ -181,5 +213,5 @@ if (import.meta.hot) {
 }
 
 export default function App(): React.JSX.Element {
-  return <WarRoom store={store} orders={binding.orders} views={backend.sim} />;
+  return <WarRoom store={store} orders={binding.orders} views={views} />;
 }
