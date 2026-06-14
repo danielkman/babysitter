@@ -1,12 +1,14 @@
 /**
- * Real-mode kradle `Orders` tests (SPEC-KRADLE-CONTROLPLANE §3, AC14).
+ * Real-mode kradle `Orders` tests (SPEC-KRADLE-MODEL §3/§4, AC4).
  *
  * Driven by a fake `KradleControllerClient` (records calls, resolves
- * immediately) + a fake gateway `Orders`. Each test cites AC14 and the §3 row.
- *   §3.1 — createTask → dispatch body (agentDefinition/repository/ref/taskKind/actor).
+ * immediately) + a fake gateway `Orders`. Each test cites AC4 and the §3 row.
+ *   §3.4 — createTask → dispatch body BY STACK (agentStack/stackRef/repository/
+ *          ref/taskKind/actor) — Commander has no persona system.
  *   §3.3 — decide / answerInquiry plane routing (approval vs gateway).
- *   §3   — abort card→cancelRun vs agent→gateway; upsertStack create/patch;
- *          createRosterAgent labels; deleteRosterAgent → deleteDefinition;
+ *   §3   — abort card→cancelRun vs agent→gateway; upsertStack → applyResource
+ *          (the AgentStack via the generic CRD gateway);
+ *          roster verbs are documented no-ops (roster REMOVED, AC3);
  *          documented-no-op verbs warn-once + never throw.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -24,9 +26,14 @@ import type {
   KradleControllerClient,
   KradleControllerSnapshot,
   KradleResourceItem,
+  ResourceApplyBody,
+  ResourceApplyResult,
+  ResourceListResult,
+  RunActionInput,
 } from '../controllerClient';
+import { KradleProposedRouteError } from '../controllerClient';
 import { makeKradleOrders, resolveDispatchStack } from '../kradleOrders';
-import { LABEL_DEFAULT_FOR, LABEL_ROLE, LABEL_ROSTER_NAME, LABEL_STACK_REF } from '../mappers';
+import { LABEL_DEFAULT_FOR } from '../mappers';
 
 // ---------------------------------------------------------------------------
 // Fake client — records every mutating call; reads resolve immediately.
@@ -43,6 +50,22 @@ function makeFakeClient(): { client: KradleControllerClient; calls: RecordedCall
   const client: KradleControllerClient = {
     org: 'acme',
     snapshot: () => Promise.resolve({}),
+    listResources: (kind: string): Promise<ResourceListResult> => {
+      calls.push({ method: 'listResources', arg: kind });
+      return Promise.resolve({ items: [] });
+    },
+    applyResource: (body: ResourceApplyBody): Promise<ResourceApplyResult> => {
+      calls.push({ method: 'applyResource', arg: body });
+      return Promise.resolve({ resource: { metadata: { name: body.metadata.name } } });
+    },
+    getResource: (kind: string, name: string): Promise<ResourceApplyResult> => {
+      calls.push({ method: 'getResource', arg: kind, arg2: name });
+      return Promise.resolve({ resource: { metadata: { name } } });
+    },
+    deleteResource: (kind: string, name: string): Promise<unknown> => {
+      calls.push({ method: 'deleteResource', arg: kind, arg2: name });
+      return Promise.resolve({});
+    },
     listDefinitions: () => Promise.resolve({ items: [] }),
     createDefinition: (body: DefinitionWriteBody): Promise<DefinitionResourceResult> => {
       calls.push({ method: 'createDefinition', arg: body });
@@ -65,12 +88,29 @@ function makeFakeClient(): { client: KradleControllerClient; calls: RecordedCall
       calls.push({ method: 'cancelRun', arg: name });
       return Promise.resolve({ error: false, run: { metadata: { name } } });
     },
+    retryRun: (input: DispatchInput): Promise<DispatchResult> => {
+      calls.push({ method: 'retryRun', arg: input });
+      return Promise.resolve({ run: { metadata: { name: 'run-retry' } } });
+    },
     queryMemory: () => Promise.resolve({ matches: [], totalMatches: 0 }),
     decideApproval: (name: string, decision: ApprovalDecision): Promise<DecideResult> => {
       calls.push({ method: 'decideApproval', arg: name, arg2: decision });
       return Promise.resolve({ resource: { metadata: { name } } });
     },
+    resumeRun: (name: string, input?: RunActionInput): Promise<DispatchResult> => {
+      calls.push({ method: 'resumeRun', arg: name, arg2: input });
+      return Promise.reject(new KradleProposedRouteError('runs/<run>/resume'));
+    },
+    forkRun: (name: string): Promise<DispatchResult> => {
+      calls.push({ method: 'forkRun', arg: name });
+      return Promise.reject(new KradleProposedRouteError('runs/<run>/fork'));
+    },
+    continueRun: (name: string): Promise<DispatchResult> => {
+      calls.push({ method: 'continueRun', arg: name });
+      return Promise.reject(new KradleProposedRouteError('runs/<run>/continue'));
+    },
     openEventStream: () => () => {},
+    openResourceWatch: () => () => {},
   };
   return { client, calls };
 }
@@ -151,8 +191,8 @@ afterEach(() => {
 // AC14 §3.1 — createTask → dispatch
 // ===========================================================================
 
-describe('AC14 §3.1 — createTask → dispatch body', () => {
-  it('AC14: createTask resolves the stack and sends the §3.1 dispatch body', async () => {
+describe('AC4 §3.4 — createTask → dispatch body (by stack)', () => {
+  it('AC4: createTask resolves the stack and sends the by-stack dispatch body', async () => {
     const snapshot = snapshotWith({ stacks: { items: [stackItem('stk-cc', 'claude-code')] } });
     const { client, calls } = makeFakeClient();
     const orders = makeKradleOrders(client, noopOptions(snapshot));
@@ -160,7 +200,10 @@ describe('AC14 §3.1 — createTask → dispatch body', () => {
     await Promise.resolve();
     expect(calls).toHaveLength(1);
     const body = calls[0].arg as DispatchInput;
-    expect(body.agentDefinition).toBe('stk-cc');
+    // §3.4: Commander dispatches BY STACK, not by AgentDefinition.
+    expect(body.agentStack).toBe('stk-cc');
+    expect(body.stackRef).toBe('stk-cc');
+    expect(body.agentDefinition).toBeUndefined();
     expect(body.repository).toBe('default');
     expect(body.ref).toBe('main');
     expect(body.taskKind).toBe('implement');
@@ -304,10 +347,10 @@ describe('AC14 §3 — abort routing (card→cancelRun, agent→gateway)', () =>
 });
 
 // ===========================================================================
-// AC14 §3 — upsertStack, roster verbs
+// AC4 §3 — upsertStack (AgentStack via generic CRD gateway); roster REMOVED
 // ===========================================================================
 
-describe('AC14 §3 — upsertStack / roster verbs', () => {
+describe('AC4 §3 — upsertStack → applyResource; roster verbs are no-ops (AC3)', () => {
   function stackInput(name: string, stackRef?: string) {
     return {
       ...(stackRef !== undefined ? { stackRef } : {}),
@@ -323,46 +366,43 @@ describe('AC14 §3 — upsertStack / roster verbs', () => {
     };
   }
 
-  it('AC14: upsertStack with no stackRef → createDefinition, returns metadata.name', async () => {
+  it('AC4: upsertStack with no stackRef → applyResource(AgentStack), returns metadata.name', async () => {
     const { client, calls } = makeFakeClient();
     const orders = makeKradleOrders(client, noopOptions(null));
     const result = orders.upsertStack(stackInput('stk-new'));
     await Promise.resolve();
     expect(result).toBe('stk-new');
-    expect(calls[0].method).toBe('createDefinition');
-    const body = calls[0].arg as DefinitionWriteBody;
+    expect(calls[0].method).toBe('applyResource');
+    const body = calls[0].arg as ResourceApplyBody;
+    expect(body.kind).toBe('AgentStack');
     expect(body.metadata.name).toBe('stk-new');
     expect(body.spec.adapter).toBe('claude-code');
   });
 
-  it('AC14: upsertStack with a stackRef → patchDefinition(<ref>), returns the ref', async () => {
+  it('AC4: upsertStack with a stackRef → applyResource named by the ref, returns the ref', async () => {
     const { client, calls } = makeFakeClient();
     const orders = makeKradleOrders(client, noopOptions(null));
     const result = orders.upsertStack(stackInput('stk-x', 'stk-existing'));
     await Promise.resolve();
     expect(result).toBe('stk-existing');
-    expect(calls[0].method).toBe('patchDefinition');
-    expect(calls[0].arg).toBe('stk-existing');
+    expect(calls[0].method).toBe('applyResource');
+    const body = calls[0].arg as ResourceApplyBody;
+    expect(body.kind).toBe('AgentStack');
+    expect(body.metadata.name).toBe('stk-existing'); // the ref names the resource
   });
 
-  it('AC14: createRosterAgent → createDefinition with the roster labels', async () => {
+  it('AC4/AC3: createRosterAgent is a no-op (returns null, no client call) — roster removed', () => {
     const { client, calls } = makeFakeClient();
     const orders = makeKradleOrders(client, noopOptions(null));
-    const id = orders.createRosterAgent({ stackRef: 'stk-1', role: 'reviewer', name: 'Pendula' });
-    await Promise.resolve();
-    expect(id).toBe('Pendula');
-    const body = calls[0].arg as DefinitionWriteBody;
-    expect(body.metadata.labels?.[LABEL_ROSTER_NAME]).toBe('Pendula');
-    expect(body.metadata.labels?.[LABEL_STACK_REF]).toBe('stk-1');
-    expect(body.metadata.labels?.[LABEL_ROLE]).toBe('reviewer');
+    expect(orders.createRosterAgent({ stackRef: 'stk-1', role: 'reviewer', name: 'Pendula' })).toBeNull();
+    expect(calls).toHaveLength(0);
   });
 
-  it('AC14: deleteRosterAgent → deleteDefinition (the one extra wired verb)', async () => {
+  it('AC4/AC3: deleteRosterAgent is a no-op (no client call) — roster removed', () => {
     const { client, calls } = makeFakeClient();
     const orders = makeKradleOrders(client, noopOptions(null));
-    orders.deleteRosterAgent('ra-1');
-    await Promise.resolve();
-    expect(calls).toEqual([{ method: 'deleteDefinition', arg: 'ra-1' }]);
+    expect(() => orders.deleteRosterAgent('ra-1')).not.toThrow();
+    expect(calls).toHaveLength(0);
   });
 });
 

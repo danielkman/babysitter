@@ -1,22 +1,21 @@
 /**
- * KradleControllerClient — kradle CRD control-plane REST client
- * (SPEC-KRADLE-CONTROLPLANE §1, AC1–AC9).
+ * KradleControllerClient — kradle CRD control-plane REST client targeting the
+ * LIVE, org-scoped kradle web BFF (SPEC-KRADLE-MODEL §3, AC4).
  *
  * Driven entirely by an INJECTED fake `fetch` and a hand-rolled fake
- * `EventSource` — no real network, no new deps (§6 invariant 5). Each test
- * cites the acceptance criterion it pins:
- *   AC1 — Bearer + Accept on every request; CSRF (`Content-Type` +
+ * `EventSource` — no real network, no new deps. Tests are grouped by the SPEC §3
+ * surface and pin AC4 (the real BFF contract):
+ *   §3 auth — Bearer + Accept on every request; CSRF (`Content-Type` +
  *         `X-Kradle-Request`) on mutating requests; `credentials:'include'`;
  *         org scoping (default `'default'`); GETs `cache:'no-store'`.
- *   AC2 — `snapshot()` → `GET /api/controller?org=<org>`; degraded never throws.
- *   AC3 — definitions create/patch/get/delete bodies + paths; 422 typed.
- *   AC4 — `dispatch()` → `POST /agents/dispatch`; body shape.
- *   AC5 — `cancelRun()` → `POST /agents/runs/<name>/cancel` (no body).
- *   AC6 — `openEventStream()` via `EventSource` (`withCredentials:true`);
- *         heartbeat ignored; frames forwarded; unsubscribe closes.
- *   AC7 — `queryMemory()` → `POST /agents/memory/query`.
- *   AC8 — `decideApproval()` → `POST /agents/approvals/<name>/decide`.
- *   AC9 — non-2xx → `KradleControlPlaneError{status,endpoint,bodyExcerpt}`;
+ *   §3.1 — generic CRD gateway: `listResources`/`applyResource`/`getResource`/
+ *         `deleteResource` on `/api/orgs/<org>/resources*` (no server-forced fields).
+ *   §3.2 — `/api/agents/*` actions: snapshot, definitions CRUD, `dispatch` (by
+ *         stack), `cancelRun`, `retryRun` (re-dispatch), `decideApproval`,
+ *         `queryMemory`; PROPOSED `resumeRun`/`forkRun`/`continueRun` throw.
+ *   §3.3 — watch: `openEventStream()` (aggregated) + `openResourceWatch()`
+ *         (generic CRD) via `EventSource`; heartbeat ignored; unsubscribe closes.
+ *   AC4 errors — non-2xx → `KradleControlPlaneError{status,endpoint,bodyExcerpt}`;
  *         5000ms abort timeout; verbs reject.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -24,6 +23,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   createKradleControllerClient,
   KradleControlPlaneError,
+  KradleProposedRouteError,
   KRADLE_REQUEST_TIMEOUT_MS,
 } from '../controllerClient';
 import type {
@@ -337,16 +337,17 @@ describe('AC3 — AgentDefinition list/create/get/patch/delete', () => {
 // AC4 — dispatch
 // ===========================================================================
 
-describe('AC4 — dispatch (create a run)', () => {
-  it('AC4: dispatch() → POST /agents/dispatch with the full body, returns { run }', async () => {
+describe('AC4 — dispatch (create a run, by stack per §3.4)', () => {
+  it('AC4: dispatch() → POST /agents/dispatch with the by-stack body, returns { run }', async () => {
     const { fetch, calls } = makeFetch({
       ok: true,
       status: 201,
-      json: { run: { metadata: { name: 'run-1' } } },
+      json: { run: { metadata: { name: 'run-1' } }, attempt: { metadata: { name: 'att-1' } } },
     });
     const client = createKradleControllerClient(baseConfig(), { fetch, eventSourceFactory: factory });
     const result = await client.dispatch({
-      agentDefinition: 'stack-a',
+      agentStack: 'stk-a',
+      stackRef: 'stk-a',
       repository: 'default',
       ref: 'main',
       taskKind: 'diagnostic',
@@ -355,12 +356,26 @@ describe('AC4 — dispatch (create a run)', () => {
     expect(calls[0].method).toBe('POST');
     expect(calls[0].url).toBe('https://kradle.example.com/api/orgs/acme/agents/dispatch');
     const body = calls[0].body as Record<string, unknown>;
-    expect(body.agentDefinition).toBe('stack-a');
+    // Commander dispatches BY STACK (no persona system) — §3.4.
+    expect(body.agentStack).toBe('stk-a');
+    expect(body.stackRef).toBe('stk-a');
+    expect(body.agentDefinition).toBeUndefined();
     expect(body.repository).toBe('default');
     expect(body.ref).toBe('main');
     expect(body.taskKind).toBe('diagnostic');
     expect(body.actor).toBe('owner');
     expect(result.run?.metadata.name).toBe('run-1');
+    // The route surfaces the first attempt (§3.2 `{run, attempt?, links?}`).
+    expect(result.attempt?.metadata.name).toBe('att-1');
+  });
+
+  it('AC4: retryRun() re-dispatches via POST /agents/dispatch (retry = re-dispatch, §3.2)', async () => {
+    const { fetch, calls } = makeFetch({ ok: true, status: 201, json: { run: { metadata: { name: 'run-2' } } } });
+    const client = createKradleControllerClient(baseConfig(), { fetch, eventSourceFactory: factory });
+    await client.retryRun({ stackRef: 'stk-a', taskKind: 'fix', repository: 'r' });
+    expect(calls[0].method).toBe('POST');
+    expect(calls[0].url).toBe('https://kradle.example.com/api/orgs/acme/agents/dispatch');
+    expect((calls[0].body as Record<string, unknown>).stackRef).toBe('stk-a');
   });
 
   it('AC4: a 400 domain failure throws a typed error (caller maps to null)', async () => {
@@ -647,5 +662,137 @@ describe('construction', () => {
     await client.snapshot();
     expect(calls[0].headers.Authorization).toBeUndefined();
     expect(calls[0].credentials).toBe('include');
+  });
+});
+
+// ===========================================================================
+// AC4 §3.1 — generic CRD gateway (`/api/orgs/<org>/resources*`)
+// ===========================================================================
+
+describe('AC4 §3.1 — generic resource CRUD on /api/orgs/<org>/resources', () => {
+  it('AC4: listResources(kind) → GET /resources?kind=<Kind>, returns { items }', async () => {
+    const { fetch, calls } = makeFetch({ ok: true, json: { items: [{ metadata: { name: 'r1' } }] } });
+    const client = createKradleControllerClient(baseConfig(), { fetch, eventSourceFactory: factory });
+    const result = await client.listResources('AgentDispatchAttempt');
+    expect(calls[0].method).toBe('GET');
+    expect(calls[0].url).toBe(
+      'https://kradle.example.com/api/orgs/acme/resources?kind=AgentDispatchAttempt',
+    );
+    expect(calls[0].cache).toBe('no-store');
+    expect(result.items).toHaveLength(1);
+  });
+
+  it('AC4: listResources passes limit/offset for the paginated envelope', async () => {
+    const { fetch, calls } = makeFetch({
+      ok: true,
+      json: { items: [], total: 0, limit: 10, offset: 5, hasMore: false },
+    });
+    const client = createKradleControllerClient(baseConfig(), { fetch, eventSourceFactory: factory });
+    const result = await client.listResources('AgentSession', { limit: 10, offset: 5 });
+    expect(calls[0].url).toBe(
+      'https://kradle.example.com/api/orgs/acme/resources?kind=AgentSession&limit=10&offset=5',
+    );
+    expect(result.hasMore).toBe(false);
+  });
+
+  it('AC4: applyResource() → POST /resources with the full resource; no server-forced fields', async () => {
+    const { fetch, calls } = makeFetch({ ok: true, status: 201, json: { resource: { metadata: { name: 'stk-1' } } } });
+    const client = createKradleControllerClient(baseConfig(), { fetch, eventSourceFactory: factory });
+    await client.applyResource({
+      kind: 'AgentStack',
+      metadata: { name: 'stk-1', labels: { 'kradle.a5c.ai/origin': 'foundry' } },
+      spec: { baseAgent: 'claude-code', adapter: 'claude-code' },
+    });
+    expect(calls[0].method).toBe('POST');
+    expect(calls[0].url).toBe('https://kradle.example.com/api/orgs/acme/resources');
+    expect(calls[0].headers['X-Kradle-Request']).toBe('commander');
+    const body = calls[0].body as {
+      kind: string;
+      metadata: { name: string; namespace?: string; labels: Record<string, string> };
+      spec: Record<string, unknown>;
+    };
+    expect(body.kind).toBe('AgentStack');
+    expect(body.metadata.name).toBe('stk-1');
+    // The server scopes the resource — the client never sends these.
+    expect(body.metadata.namespace).toBeUndefined();
+    expect(body.spec.organizationRef).toBeUndefined();
+    expect(body.metadata.labels['kradle.a5c.ai/org']).toBeUndefined();
+  });
+
+  it('AC4: getResource(kind,name) → GET /resources/<kind>/<name>', async () => {
+    const { fetch, calls } = makeFetch({ ok: true, json: { resource: { metadata: { name: 'ws-1' } } } });
+    const client = createKradleControllerClient(baseConfig(), { fetch, eventSourceFactory: factory });
+    const result = await client.getResource('KradleWorkspace', 'ws-1');
+    expect(calls[0].method).toBe('GET');
+    expect(calls[0].url).toBe('https://kradle.example.com/api/orgs/acme/resources/KradleWorkspace/ws-1');
+    expect(result.resource?.metadata.name).toBe('ws-1');
+  });
+
+  it('AC4: deleteResource(kind,name) → DELETE /resources/<kind>/<name> (CSRF, no body)', async () => {
+    const { fetch, calls } = makeFetch({ ok: true, json: {} });
+    const client = createKradleControllerClient(baseConfig(), { fetch, eventSourceFactory: factory });
+    await client.deleteResource('AgentDispatchRun', 'run-1');
+    expect(calls[0].method).toBe('DELETE');
+    expect(calls[0].url).toBe('https://kradle.example.com/api/orgs/acme/resources/AgentDispatchRun/run-1');
+    expect(calls[0].headers['X-Kradle-Request']).toBe('commander');
+    expect(calls[0].body).toBeUndefined();
+  });
+});
+
+// ===========================================================================
+// AC4 §3.2 — PROPOSED run-lifecycle actions are gated (not live)
+// ===========================================================================
+
+describe('AC4 §3.2 — proposed resume/fork/continue are gated, never hit the network', () => {
+  it('AC4: resumeRun rejects with KradleProposedRouteError and makes NO fetch', async () => {
+    const { fetch, calls } = makeFetch({ ok: true, json: {} });
+    const client = createKradleControllerClient(baseConfig(), { fetch, eventSourceFactory: factory });
+    await expect(client.resumeRun('run-1', { reason: 'resume' })).rejects.toBeInstanceOf(
+      KradleProposedRouteError,
+    );
+    expect(calls).toHaveLength(0);
+  });
+
+  it('AC4: forkRun and continueRun are likewise gated (proposed-only, documented gap)', async () => {
+    const { fetch, calls } = makeFetch({ ok: true, json: {} });
+    const client = createKradleControllerClient(baseConfig(), { fetch, eventSourceFactory: factory });
+    await expect(client.forkRun('run-1')).rejects.toBeInstanceOf(KradleProposedRouteError);
+    await expect(client.continueRun('run-1')).rejects.toBeInstanceOf(KradleProposedRouteError);
+    expect(calls).toHaveLength(0);
+  });
+});
+
+// ===========================================================================
+// AC4 §3.3 — generic CRD watch (`/api/watch/orgs/<org>/<plural>`)
+// ===========================================================================
+
+describe('AC4 §3.3 — generic resource watch via EventSource', () => {
+  it('AC4: openResourceWatch opens /api/watch/orgs/<org>/<plural> with withCredentials:true', () => {
+    const { fetch } = makeFetch({ ok: true, json: {} });
+    const client = createKradleControllerClient(baseConfig(), { fetch, eventSourceFactory: factory });
+    const unsubscribe = client.openResourceWatch('agentdispatchattempts', () => {});
+    expect(FakeEventSource.instances).toHaveLength(1);
+    const es = FakeEventSource.instances[0];
+    expect(es.url).toBe('https://kradle.example.com/api/watch/orgs/acme/agentdispatchattempts');
+    expect(es.withCredentials).toBe(true);
+    unsubscribe();
+  });
+
+  it('AC4: a SYNC frame and per-resource object frames are forwarded; heartbeat dropped', () => {
+    const { fetch } = makeFetch({ ok: true, json: {} });
+    const client = createKradleControllerClient(baseConfig(), { fetch, eventSourceFactory: factory });
+    const received: unknown[] = [];
+    const unsubscribe = client.openResourceWatch('agentsessions', (frame) => received.push(frame));
+    const es = FakeEventSource.instances[0];
+    es.emit({ type: 'SYNC', resource: 'orgs/acme/agentsessions' });
+    // A bare per-resource line frame (no `type`) is still forwarded.
+    es.emit({ kind: 'AgentSession', metadata: { name: 's1' } });
+    es.emit({ type: 'heartbeat' });
+    expect(received).toHaveLength(2);
+    expect((received[0] as { type: string }).type).toBe('SYNC');
+    // The untyped line frame is tagged 'resource' so subscribers can switch on type.
+    expect((received[1] as { type: string }).type).toBe('resource');
+    unsubscribe();
+    expect(es.closed).toBe(true);
   });
 });

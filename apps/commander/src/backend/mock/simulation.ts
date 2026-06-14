@@ -390,6 +390,31 @@ export interface SimSessionDetailView {
 }
 
 /**
+ * SPEC-KRADLE-MODEL §4.1 — one `AgentDispatchAttempt` under a run: the
+ * retry/resume/fork/continuation unit (`AgentDispatchRun → AgentDispatchAttempt
+ * → AgentSession`). A card surfaces its attempts; sessions roll up from the
+ * active attempt. This is a kradle-only projection (the mock sim has no attempt
+ * records yet); UI-only metadata stays out.
+ */
+export interface SimAttemptView {
+  attemptId: string;
+  /** The owning `AgentDispatchRun` (card) name. */
+  taskId: string;
+  /** Why this attempt was created (`initial|retry|resume|repair|…`). */
+  attemptReason: string;
+  /** The attempt lifecycle phase as reported by kradle (both casings tolerated). */
+  phase: string;
+  /** True for the newest attempt of the run (drives the card's live state). */
+  active: boolean;
+  /** Terminal reason, when the attempt has completed. */
+  exitReason: string | null;
+  /** `AgentSession` ids attached to this attempt. */
+  sessionIds: string[];
+  startedAt: number | null;
+  endedAt: number | null;
+}
+
+/**
  * A recruited agent in the operator's roster — a named, stackbound worker
  * or reviewer available to be assigned to specific tasks before they enter
  * their working column. Distinct from auto-spawned ephemeral AgentRecords.

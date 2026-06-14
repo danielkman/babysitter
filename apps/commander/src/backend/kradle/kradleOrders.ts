@@ -1,15 +1,22 @@
 /**
- * Real-mode `Orders` over the kradle control plane (SPEC-KRADLE-CONTROLPLANE §3,
- * AC14). Resource-lifecycle verbs call the §1 client; runtime verbs route to the
- * optional gateway `Orders` via the §3.3 plane resolution; everything else stays
- * a documented warn-once no-op with the SAME signature (never throws).
+ * Real-mode `Orders` over the kradle control plane (SPEC-KRADLE-MODEL §3/§4,
+ * AC4). Resource-lifecycle verbs call the client; runtime verbs route to the
+ * optional gateway `Orders` via the plane resolution; everything else stays a
+ * documented warn-once no-op with the SAME signature (never throws).
  *
- * `makeKradleOrders(client, options)` is built once in `bootReal` (§4.2). It
- * fires client calls fire-and-forget (mirroring the gateway's frame verbs): on
- * success it asks the boot layer to schedule a debounced snapshot refresh
- * (§6.3) so the board reflects the write within ≤500ms; on failure it logs and
- * swallows (no retry loop, AC9). The snapshot accessor lets `decide`/`abort`
- * resolve a pending approval name / run id for plane routing.
+ * Commander dispatches **by stack** (`agentStack`/`stackRef`, SPEC §3.4) — it
+ * has no persona system. The invented roster is removed from the model (SPEC
+ * §2.4/§5.2); the roster `Orders` verbs (`createRosterAgent`/`deleteRosterAgent`/
+ * `assignTaskAgent`/`assignTaskHuman`) survive here ONLY as documented no-ops
+ * until the store slice is removed in the UI phase (they no longer write
+ * definitions).
+ *
+ * `makeKradleOrders(client, options)` is built once in `bootReal`. It fires
+ * client calls fire-and-forget (mirroring the gateway's frame verbs): on success
+ * it asks the boot layer to schedule a debounced snapshot refresh so the board
+ * reflects the write; on failure it logs and swallows (no retry loop). The
+ * snapshot accessor lets `decide`/`abort` resolve a pending approval name / run
+ * id for plane routing.
  */
 
 import type { KradleAgentStackInput } from '../../contracts/kradle-stack';
@@ -19,19 +26,13 @@ import { DEFAULT_STACK_BY_KIND, WORKER_ADAPTER_BY_KIND } from '../mock/scenario'
 import type { Orders } from '../../game/store';
 import type {
   ApprovalDecision,
-  DefinitionPatchBody,
-  DefinitionWriteBody,
   DispatchInput,
   KradleControllerClient,
   KradleControllerSnapshot,
   KradleResourceItem,
+  ResourceApplyBody,
 } from './controllerClient';
-import {
-  LABEL_DEFAULT_FOR,
-  LABEL_ROLE,
-  LABEL_ROSTER_NAME,
-  LABEL_STACK_REF,
-} from './mappers';
+import { LABEL_DEFAULT_FOR } from './mappers';
 
 export interface KradleOrdersOptions {
   /** Default dispatch repository (`config.kradleRepo`, §3.1). */
@@ -133,10 +134,14 @@ export function resolveDispatchStack(
 }
 
 // ---------------------------------------------------------------------------
-// Inverse stack mapping (§2.1) for upsertStack → AgentDefinition spec (§3).
+// Inverse stack mapping (§4.5) for upsertStack → an `AgentStack` resource
+// applied via the generic CRD gateway (SPEC §3.1/§3.2: the live builder POSTs an
+// AgentStack to `/api/orgs/<org>/resources`, `stack-builder.jsx:77`). The server
+// scopes the resource (namespace / org label / `spec.organizationRef`), so the
+// client omits those server-forced fields.
 // ---------------------------------------------------------------------------
 
-function stackInputToWriteBody(stack: KradleAgentStackInput): DefinitionWriteBody {
+function stackInputToResourceBody(stack: KradleAgentStackInput): ResourceApplyBody {
   const sp = stack.spec;
   const name = stack.metadata.name;
   const labels: Record<string, string> = { ...(stack.metadata.labels ?? {}) };
@@ -152,12 +157,12 @@ function stackInputToWriteBody(stack: KradleAgentStackInput): DefinitionWriteBod
   if (sp.skillRefs !== undefined) spec.skillRefs = sp.skillRefs;
   if (sp.subagentRefs !== undefined) spec.subagentRefs = sp.subagentRefs;
   if (sp.runnerPool !== undefined) spec.runnerPool = sp.runnerPool;
-  return { metadata: { name, labels }, spec };
-}
-
-function stackInputToPatchBody(stack: KradleAgentStackInput): DefinitionPatchBody {
-  const write = stackInputToWriteBody(stack);
-  return { metadata: { labels: write.metadata.labels }, spec: write.spec };
+  return {
+    apiVersion: stack.apiVersion ?? 'kradle.a5c.ai/v1alpha1',
+    kind: 'AgentStack',
+    metadata: { name, labels },
+    spec,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -272,8 +277,12 @@ export function makeKradleOrders(
         noop('createTask');
         return null;
       }
+      // Dispatch BY STACK (SPEC §3.4): Commander has no persona system, so the
+      // resolved stack name is sent as `agentStack`/`stackRef`, not as an
+      // `agentDefinition`. The live route accepts either (`dispatch/route.js:15`).
       const body: DispatchInput = {
-        agentDefinition: stackRef,
+        agentStack: stackRef,
+        stackRef,
         repository: repo,
         ref: 'main',
         taskKind: input.taskKind,
@@ -288,38 +297,29 @@ export function makeKradleOrders(
       return null;
     },
     upsertStack(stack: KradleAgentStackInput) {
+      // Apply the AgentStack via the generic CRD gateway (SPEC §3.1/§3.2). Apply
+      // is an upsert, so the create/patch distinction collapses; when a stackRef
+      // is supplied it names the resource being updated, else the stack's own
+      // metadata.name is the new resource name.
+      const body = stackInputToResourceBody(stack);
       if (stack.stackRef !== undefined && stack.stackRef !== '') {
-        run('upsertStack/patchDefinition', () =>
-          client.patchDefinition(stack.stackRef!, stackInputToPatchBody(stack)),
-        );
+        body.metadata.name = stack.stackRef;
+        run('upsertStack/applyResource', () => client.applyResource(body));
         return stack.stackRef;
       }
-      run('upsertStack/createDefinition', () =>
-        client.createDefinition(stackInputToWriteBody(stack)),
-      );
+      run('upsertStack/applyResource', () => client.applyResource(body));
       return stack.metadata.name;
     },
-    createRosterAgent(input) {
-      const name =
-        input.name !== undefined && input.name !== ''
-          ? input.name
-          : `${input.role}-${input.stackRef}`;
-      const body: DefinitionWriteBody = {
-        metadata: {
-          name,
-          labels: {
-            [LABEL_ROSTER_NAME]: input.name ?? name,
-            [LABEL_STACK_REF]: input.stackRef,
-            [LABEL_ROLE]: input.role,
-          },
-        },
-        spec: { baseAgent: 'claude-code', adapter: 'claude-code' },
-      };
-      run('createRosterAgent/createDefinition', () => client.createDefinition(body));
-      return name;
+    // --- roster verbs: REMOVED from the model (SPEC §2.4/§5.2) ----------------
+    // kradle has no roster CRD; these survive only as documented no-ops until
+    // the store slice is removed in the UI phase. They no longer write
+    // definitions (the prior cut faked the roster onto AgentDefinition + labels).
+    createRosterAgent(): string | null {
+      noop('createRosterAgent');
+      return null;
     },
-    deleteRosterAgent(agentId) {
-      run('deleteRosterAgent/deleteDefinition', () => client.deleteDefinition(agentId));
+    deleteRosterAgent() {
+      noop('deleteRosterAgent');
     },
 
     // --- documented gaps (warn-once no-ops; same signatures, never throw) -----

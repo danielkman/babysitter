@@ -1,16 +1,14 @@
 /**
- * Pure kradle-resource → Commander-view mapper tests
- * (SPEC-KRADLE-CONTROLPLANE §2/§6.2, AC10–AC13, AC2).
+ * Pure kradle-resource → Commander-view mapper tests (SPEC-KRADLE-MODEL §4,
+ * AC2/AC4).
  *
- * Authored from the spec's mapping tables. Every test cites the AC it pins:
+ * Authored from the spec's §4 mapping tables. Every test cites the AC it pins:
  *   AC2  — empty/degraded snapshot → empty views (never throws); model.resources
- *          fallback by kind.
- *   AC10 — AgentStack/AgentDefinition → SimStackView; roster labels → SimRosterAgentView.
- *   AC11 — AgentSession (+transcript) → SimSessionView/SimSessionDetailView.
- *   AC12 — the FULL §2.3.1 phase→column table (every phase + refinement) and the
- *          §2.3.2/§2.3.3 SimCardView/SimRunView field maps.
- *   AC13 — KradleWorkspace → SimWorkspaceView/Summary; memory I/O + silos;
- *          synthesized process templates.
+ *          fallback by kind. (Faithful entity model — corrected kinds/phases.)
+ *   AC4  — §4.1 Run→Attempt→Session hierarchy (attempt count, active-attempt
+ *          sessions, `mapAttempts`); §4.2 the FULL phase→column table in BOTH
+ *          casings; §4.3 SimCardView/SimRunView field maps; §4.4/§4.5 workspaces,
+ *          memory, stacks. The invented roster is REMOVED (no `mapRosterAgents`).
  */
 import { describe, expect, it } from 'vitest';
 
@@ -23,15 +21,12 @@ import {
   LABEL_MERGED,
   LABEL_PARENT,
   LABEL_RELEASE_ID,
-  LABEL_ROLE,
-  LABEL_ROSTER_NAME,
-  LABEL_STACK_REF,
   LABEL_WORKER,
   LABEL_YOLO,
+  mapAttempts,
   mapCards,
   mapMemoryIO,
   mapProcessTemplates,
-  mapRosterAgents,
   mapRunObservation,
   mapRuns,
   mapSessionDetail,
@@ -92,6 +87,27 @@ function session(
   return { kind: 'AgentSession', metadata: { name, labels }, spec, status: { phase } };
 }
 
+/** An `AgentDispatchAttempt` fixture (lives in `resources[]` by kind). */
+function attempt(
+  name: string,
+  agentDispatchRun: string,
+  attemptReason: string,
+  phase: string | undefined,
+  creationTimestamp?: string,
+): KradleResourceItem {
+  return {
+    kind: 'AgentDispatchAttempt',
+    metadata: { name, ...(creationTimestamp ? { creationTimestamp } : {}) },
+    spec: { agentDispatchRun, attemptReason },
+    status: { ...(phase !== undefined ? { phase } : {}) },
+  };
+}
+
+/** Wrap attempt items in the `resources[]` fallback the mappers read. */
+function attemptsResource(items: KradleResourceItem[]): KradleControllerSnapshot['resources'] {
+  return [{ kind: 'AgentDispatchAttempt', items }];
+}
+
 function snap(over: Partial<KradleControllerSnapshot['agents']> = {}): KradleControllerSnapshot {
   return {
     status: 'ready',
@@ -114,13 +130,13 @@ function snap(over: Partial<KradleControllerSnapshot['agents']> = {}): KradleCon
 // ===========================================================================
 
 describe('AC2 — empty/degraded snapshot never throws, yields empty views', () => {
-  it('AC2: an empty snapshot maps to empty card/run/session/workspace/roster lists', () => {
+  it('AC2: an empty snapshot maps to empty card/run/session/workspace/attempt lists', () => {
     const s = snap();
     expect(mapCards(s)).toEqual([]);
     expect(mapRuns(s)).toEqual([]);
     expect(mapSessions(s)).toEqual([]);
     expect(mapWorkspaces(s)).toEqual([]);
-    expect(mapRosterAgents(s)).toEqual([]);
+    expect(mapAttempts(s)).toEqual([]);
     expect(mapSilos(s)).toEqual([]);
   });
 
@@ -167,11 +183,11 @@ describe('AC2 — empty/degraded snapshot never throws, yields empty views', () 
 });
 
 // ===========================================================================
-// AC10 — AgentStack / AgentDefinition → SimStackView + roster
+// AC4 — AgentStack / AgentDefinition → SimStackView (§4.5)
 // ===========================================================================
 
-describe('AC10 — stacks and roster agents', () => {
-  it('AC10: maps each §2.1 field, defaulting model/prompt/approvalMode when absent', () => {
+describe('AC4 — stacks (roster REMOVED, AC3)', () => {
+  it('AC4: maps each §4.5 stack field, defaulting model/prompt/approvalMode when absent', () => {
     const s = snap({
       stacks: {
         items: [
@@ -197,7 +213,7 @@ describe('AC10 — stacks and roster agents', () => {
     expect(view.stack.status.phase).toBe('Ready'); // default
   });
 
-  it('AC10: custom is false for an unlabeled stack; displayName overrides name', () => {
+  it('AC4: custom is false for an unlabeled stack; displayName overrides name', () => {
     const s = snap({
       stacks: {
         items: [
@@ -216,7 +232,7 @@ describe('AC10 — stacks and roster agents', () => {
     expect(view.stack.spec.model).toBe('pi-2.5');
   });
 
-  it('AC10: AgentStack wins over an AgentDefinition of the same name (dedup)', () => {
+  it('AC4: AgentStack wins over an AgentDefinition of the same name (dedup)', () => {
     const s: KradleControllerSnapshot = {
       status: 'ready',
       agents: {
@@ -246,83 +262,98 @@ describe('AC10 — stacks and roster agents', () => {
     expect(stacks[0].custom).toBe(true);
   });
 
-  it('AC10: roster agents come ONLY from definitions carrying commander.a5c.ai/roster-name', () => {
-    const s: KradleControllerSnapshot = {
-      status: 'ready',
-      agents: { stacks: { items: [] } },
-      resources: [
-        {
-          kind: 'AgentDefinition',
-          items: [
-            {
-              kind: 'AgentDefinition',
-              metadata: {
-                name: 'ra-1',
-                labels: {
-                  [LABEL_ROSTER_NAME]: 'Cogsworth',
-                  [LABEL_STACK_REF]: 'stk-1',
-                  [LABEL_ROLE]: 'reviewer',
-                },
-              },
-              spec: { baseAgent: 'claude-code', adapter: 'claude-code' },
-              status: {},
-            },
-            // No roster-name label → excluded from the roster.
-            {
-              kind: 'AgentDefinition',
-              metadata: { name: 'plain-def' },
-              spec: { baseAgent: 'pi', adapter: 'pi' },
-              status: {},
-            },
-          ],
-        },
-      ],
-    };
-    const roster = mapRosterAgents(s);
-    expect(roster).toHaveLength(1);
-    expect(roster[0].agentId).toBe('ra-1');
-    expect(roster[0].name).toBe('Cogsworth');
-    expect(roster[0].stackRef).toBe('stk-1');
-    expect(roster[0].role).toBe('reviewer');
-    expect(roster[0].status).toBe('available'); // no card references it
-    expect(roster[0].assignedTaskId).toBeNull();
+});
+
+// ===========================================================================
+// AC4 — §4.1 Run → Attempt → Session hierarchy (the headline fix)
+// ===========================================================================
+
+describe('AC4 §4.1 — Run → Attempt → Session hierarchy', () => {
+  it('AC4: SimCardView.attempt is the COUNT of AgentDispatchAttempt records for the run', () => {
+    const s = snap({
+      runs: { items: [run('adr-1', { repository: 'r', taskKind: 'fix' }, 'Running')] },
+    });
+    s.resources = attemptsResource([
+      attempt('att-1', 'adr-1', 'initial', 'Failed', '2026-01-01T00:00:00Z'),
+      attempt('att-2', 'adr-1', 'retry', 'Running', '2026-01-02T00:00:00Z'),
+    ]);
+    expect(mapCards(s)[0].attempt).toBe(2);
   });
 
-  it('AC10: a roster agent referenced by a card worker label is "assigned"', () => {
-    const s: KradleControllerSnapshot = {
-      status: 'ready',
-      agents: {
-        stacks: { items: [] },
-        runs: {
-          items: [run('adr-1', { repository: 'r', taskKind: 'implement' }, 'Running', { [LABEL_WORKER]: 'ra-1' })],
-        },
+  it('AC4: with NO attempt records the count defaults to 1', () => {
+    const s = snap({ runs: { items: [run('adr-1', { repository: 'r', taskKind: 'fix' }, 'Running')] } });
+    expect(mapCards(s)[0].attempt).toBe(1);
+  });
+
+  it('AC4: agentIds are the ACTIVE sessions of the ACTIVE attempt (not a prior attempt)', () => {
+    const s = snap({
+      runs: { items: [run('adr-1', { repository: 'r', taskKind: 'implement' }, 'Running')] },
+      sessions: {
+        items: [
+          // Session of the OLD (terminal) attempt — must NOT surface.
+          session('sess-old', { dispatchRun: 'adr-1', dispatchAttempt: 'att-1' }, 'Active'),
+          // Active session of the ACTIVE attempt — surfaces.
+          session('sess-new', { dispatchRun: 'adr-1', dispatchAttempt: 'att-2' }, 'Active'),
+          // Completed session of the active attempt — excluded (not Active).
+          session('sess-done', { dispatchRun: 'adr-1', dispatchAttempt: 'att-2' }, 'Completed'),
+        ],
       },
-      resources: [
-        {
-          kind: 'AgentDefinition',
-          items: [
-            {
-              kind: 'AgentDefinition',
-              metadata: { name: 'ra-1', labels: { [LABEL_ROSTER_NAME]: 'Cog', [LABEL_ROLE]: 'worker' } },
-              spec: { baseAgent: 'claude-code', adapter: 'claude-code' },
-              status: {},
-            },
-          ],
-        },
-      ],
-    };
-    const [agent] = mapRosterAgents(s);
-    expect(agent.status).toBe('assigned');
-    expect(agent.assignedTaskId).toBe('adr-1');
-    expect(agent.assignedRole).toBe('worker');
+    });
+    s.resources = attemptsResource([
+      attempt('att-1', 'adr-1', 'initial', 'Failed', '2026-01-01T00:00:00Z'),
+      attempt('att-2', 'adr-1', 'retry', 'Running', '2026-01-02T00:00:00Z'),
+    ]);
+    expect(mapCards(s)[0].agentIds).toEqual(['sess-new']);
+  });
+
+  it('AC4: with no attempt records, agentIds fall back to the run\'s active sessions', () => {
+    const s = snap({
+      runs: { items: [run('adr-1', { repository: 'r', taskKind: 'implement' }, 'Running')] },
+      sessions: {
+        items: [
+          session('sess-a', { dispatchRun: 'adr-1' }, 'Active'),
+          session('sess-done', { dispatchRun: 'adr-1' }, 'Completed'),
+        ],
+      },
+    });
+    expect(mapCards(s)[0].agentIds).toEqual(['sess-a']);
+  });
+
+  it('AC4: mapAttempts projects attempts oldest→newest and flags the ACTIVE (newest non-terminal) one', () => {
+    const s = snap({
+      runs: { items: [run('adr-1', { repository: 'r', taskKind: 'fix' }, 'Running')] },
+      sessions: { items: [session('sess-x', { dispatchRun: 'adr-1', dispatchAttempt: 'att-2' }, 'Active')] },
+    });
+    s.resources = attemptsResource([
+      attempt('att-2', 'adr-1', 'retry', 'Running', '2026-01-02T00:00:00Z'),
+      attempt('att-1', 'adr-1', 'initial', 'Failed', '2026-01-01T00:00:00Z'),
+    ]);
+    const attempts = mapAttempts(s, 'adr-1');
+    expect(attempts.map((a) => a.attemptId)).toEqual(['att-1', 'att-2']); // oldest→newest
+    expect(attempts[0].attemptReason).toBe('initial');
+    expect(attempts[0].active).toBe(false);
+    expect(attempts[1].attemptReason).toBe('retry');
+    expect(attempts[1].active).toBe(true); // newest non-terminal
+    expect(attempts[1].phase).toBe('running'); // normalized to lowercase
+    expect(attempts[1].sessionIds).toEqual(['sess-x']);
+  });
+
+  it('AC4: when every attempt is terminal, the NEWEST is flagged active (fallback)', () => {
+    const s = snap({ runs: { items: [run('adr-1', { repository: 'r', taskKind: 'fix' }, 'Succeeded')] } });
+    s.resources = attemptsResource([
+      attempt('att-1', 'adr-1', 'initial', 'Failed', '2026-01-01T00:00:00Z'),
+      attempt('att-2', 'adr-1', 'retry', 'Succeeded', '2026-01-02T00:00:00Z'),
+    ]);
+    const attempts = mapAttempts(s, 'adr-1');
+    expect(attempts.find((a) => a.active)!.attemptId).toBe('att-2');
   });
 });
 
 // ===========================================================================
-// AC12 — the FULL §2.3.1 phase→column table (every phase + refinement)
+// AC4 — the FULL §4.2 phase→column table (every phase + refinement, BOTH casings)
 // ===========================================================================
 
-describe('AC12 — runPhaseToColumn: the total §2.3.1 phase→column table', () => {
+describe('AC4 §4.2 — runPhaseToColumn: the total phase→column table (both casings)', () => {
   const base = {
     taskKind: 'implement' as const,
     hasPendingReviewApproval: false,
@@ -332,46 +363,73 @@ describe('AC12 — runPhaseToColumn: the total §2.3.1 phase→column table', ()
     released: false,
   };
 
-  it('AC12: Pending → backlog', () => {
+  // --- capitalized terminals the live BFF emits ----------------------------
+  it('AC4: Pending → backlog', () => {
     expect(runPhaseToColumn('Pending', base)).toBe('backlog');
   });
-  it('AC12: Queued → backlog', () => {
+  it('AC4: Queued → backlog', () => {
     expect(runPhaseToColumn('Queued', base)).toBe('backlog');
   });
-  it('AC12: Running → do', () => {
+  it('AC4: Running → do', () => {
     expect(runPhaseToColumn('Running', base)).toBe('do');
   });
-  it('AC12: Running + pending review approval → ai-review', () => {
+  it('AC4: Running + pending review approval → ai-review', () => {
     expect(runPhaseToColumn('Running', { ...base, hasPendingReviewApproval: true })).toBe('ai-review');
   });
-  it('AC12: Running + taskKind=review → ai-review', () => {
+  it('AC4: Running + taskKind=review → ai-review', () => {
     expect(runPhaseToColumn('Running', { ...base, taskKind: 'review' })).toBe('ai-review');
   });
-  it('AC12: AwaitingApproval → human-review', () => {
+  it('AC4: AwaitingApproval → human-review', () => {
     expect(runPhaseToColumn('AwaitingApproval', base)).toBe('human-review');
   });
-  it('AC12: Succeeded + approved write-back (not merged) → approved', () => {
+  it('AC4: Succeeded + approved write-back (not merged) → approved', () => {
     expect(runPhaseToColumn('Succeeded', { ...base, hasApprovedWriteBack: true })).toBe('approved');
   });
-  it('AC12: Succeeded + merged label → merged', () => {
+  it('AC4: Completed (live terminal alias) maps like Succeeded → approved', () => {
+    expect(runPhaseToColumn('Completed', base)).toBe('approved');
+  });
+  it('AC4: Succeeded + merged label → merged', () => {
     expect(runPhaseToColumn('Succeeded', { ...base, merged: true })).toBe('merged');
   });
-  it('AC12: Succeeded + release-id → in-production', () => {
+  it('AC4: Succeeded + release-id → in-production', () => {
     expect(runPhaseToColumn('Succeeded', { ...base, released: true })).toBe('in-production');
   });
-  it('AC12: Succeeded with no integration signal → approved (passed, awaiting integration)', () => {
+  it('AC4: Succeeded with no integration signal → approved (passed, awaiting integration)', () => {
     expect(runPhaseToColumn('Succeeded', base)).toBe('approved');
   });
-  it('AC12: release-id wins over merged (in-production precedence)', () => {
+  it('AC4: release-id wins over merged (in-production precedence)', () => {
     expect(runPhaseToColumn('Succeeded', { ...base, merged: true, released: true })).toBe('in-production');
   });
-  it('AC12: Failed → backlog (returned for rework)', () => {
+  it('AC4: Failed → backlog (returned for rework)', () => {
     expect(runPhaseToColumn('Failed', base)).toBe('backlog');
   });
-  it('AC12: Cancelled → backlog', () => {
+  it('AC4: Cancelled → backlog', () => {
     expect(runPhaseToColumn('Cancelled', base)).toBe('backlog');
   });
-  it('AC12: an unknown/forward-compat phase → backlog (total map)', () => {
+
+  // --- the lowercase lifecycle union the generic CRD list surfaces ----------
+  it('AC4: lowercase pending/queued → backlog', () => {
+    expect(runPhaseToColumn('pending', base)).toBe('backlog');
+    expect(runPhaseToColumn('queued', base)).toBe('backlog');
+  });
+  it('AC4: lowercase running → do (and → ai-review under a review gate)', () => {
+    expect(runPhaseToColumn('running', base)).toBe('do');
+    expect(runPhaseToColumn('running', { ...base, hasPendingReviewApproval: true })).toBe('ai-review');
+  });
+  it('AC4: lowercase waiting-for-approval → human-review', () => {
+    expect(runPhaseToColumn('waiting-for-approval', base)).toBe('human-review');
+  });
+  it('AC4: lowercase succeeded → approved (merged/in-production via labels)', () => {
+    expect(runPhaseToColumn('succeeded', base)).toBe('approved');
+    expect(runPhaseToColumn('succeeded', { ...base, merged: true })).toBe('merged');
+    expect(runPhaseToColumn('succeeded', { ...base, released: true })).toBe('in-production');
+  });
+  it('AC4: lowercase failed/cancelled → backlog', () => {
+    expect(runPhaseToColumn('failed', base)).toBe('backlog');
+    expect(runPhaseToColumn('cancelled', base)).toBe('backlog');
+  });
+
+  it('AC4: an unknown/forward-compat phase → backlog (total map)', () => {
     expect(runPhaseToColumn('SomethingNew', base)).toBe('backlog');
     expect(runPhaseToColumn(undefined, base)).toBe('backlog');
   });
@@ -858,7 +916,8 @@ describe('AC12 — mapToTickInput board halves (§6.2)', () => {
     expect(tick.hooks[0].hookRequestId).toBe('appr-1');
     expect(tick.inquiries).toHaveLength(1);
     expect(tick.inquiries[0].hookRequestId).toBe('appr-1');
-    expect(tick.rosterAgents).toEqual([]);
+    // Roster is REMOVED from the tick input (AC3): no `rosterAgents` key.
+    expect('rosterAgents' in tick).toBe(false);
     // runStages: the active card surfaces its current phase label.
     expect(Object.keys(tick.runStages)).toContain('adr-1');
   });
@@ -877,12 +936,11 @@ describe('AC12 — mapToTickInput board halves (§6.2)', () => {
 });
 
 // ===========================================================================
-// AC13 — the LABEL_DEFAULT_FOR export exists (used by §3.1 dispatch resolution)
+// AC4 — the LABEL_DEFAULT_FOR export exists (used by §3 dispatch resolution)
 // ===========================================================================
 
 describe('label conventions', () => {
-  it('exports the documented Commander label keys', () => {
+  it('exports the documented Commander label key used by dispatch resolution', () => {
     expect(LABEL_DEFAULT_FOR).toBe('commander.a5c.ai/default-for');
-    expect(LABEL_ROSTER_NAME).toBe('commander.a5c.ai/roster-name');
   });
 });

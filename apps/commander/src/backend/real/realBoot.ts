@@ -52,7 +52,6 @@ import {
 import {
   mapMemoryIO,
   mapProcessTemplates,
-  mapRosterAgents,
   mapRunObservation,
   mapRuns,
   mapSessionDetail,
@@ -264,7 +263,9 @@ class KradleControllerCache {
       getRunObservation: (taskId) =>
         this.snapshot ? mapRunObservation(this.snapshot, taskId) : null,
       listStacks: () => (this.snapshot ? mapStacks(this.snapshot) : []),
-      listRosterAgents: () => (this.snapshot ? mapRosterAgents(this.snapshot) : []),
+      // Roster removed from the model (SPEC §2.4/§5.2); the SimViews method is
+      // kept returning empty until the UI phase drops it from the interface.
+      listRosterAgents: () => [],
       listRuns: () => (this.snapshot ? mapRuns(this.snapshot) : []),
       listProcessTemplates: () => mapProcessTemplates(),
       getMemoryIO: (ref) => {
@@ -476,7 +477,8 @@ export function bootReal(
       agents: tickInput.agents,
       inquiries: tickInput.inquiries,
       runStages: tickInput.runStages,
-      rosterAgents: tickInput.rosterAgents,
+      // Roster removed (SPEC §2.4/§5.2); kradle never writes a roster slice.
+      rosterAgents: [],
       nowMs,
       tickIndex,
       paused: false,

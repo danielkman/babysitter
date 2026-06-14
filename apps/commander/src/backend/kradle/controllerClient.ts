@@ -1,25 +1,42 @@
 /**
  * KradleControllerClient — browser REST client for the kradle CRD control plane
- * (SPEC-KRADLE-CONTROLPLANE §1, AC1–AC9).
+ * (SPEC-KRADLE-MODEL §3, AC4).
  *
- * Commander stays a static SPA: this client hand-rolls HTTP against the kradle
- * **web BFF routes** (`packages/kradle/web/app/api/...`) exactly as `RealBackend`
- * mirrors the gateway protocol. It does NOT import `@a5c-ai/kradle-sdk`.
+ * Commander stays a static SPA: this client hand-rolls HTTP against the **live,
+ * org-scoped** kradle web BFF routes (`packages/kradle/web/app/api/...`) exactly
+ * as `RealBackend` mirrors the gateway protocol. It does NOT import
+ * `@a5c-ai/kradle-sdk` (AC7) — it mirrors the SDK's surface.
+ *
+ * Two resource gateways exist; the SPEC distinguishes LIVE from PROPOSED-only.
+ * Commander targets the **live org-scoped** routes; the `/api/controller/resources*`
+ * alias and the typed `runs/<run>/{resume,fork,continue}` actions are PROPOSED and
+ * are surfaced as gated, typed methods that throw `KradleProposedRouteError`
+ * rather than inventing a live route (SPEC §3 / AC4).
  *
  * Testing seam (mirrors `RealBackendDeps`, `realBackend.ts:77`): the `fetch` and
  * the `EventSource` factory are INJECTABLE (constructor options; production
  * default = the ambient browser globals) so the unit tests drive a fake `fetch`
- * + fake `EventSource` with no live kradle and no new dependency (§6 invariant 5).
+ * + fake `EventSource` with no live kradle and no new dependency.
  *
  * Endpoints (org `<org>` from config; base from `kradleApiUrl`):
- *   - GET  /api/controller?org=<org>                               snapshot (§1.2)
- *   - GET  /api/orgs/<org>/agents/definitions[/<name>]            definitions (§1.3)
- *   - POST/PATCH/DELETE the same                                  definitions CRUD
- *   - POST /api/orgs/<org>/agents/dispatch                        dispatch (§1.4)
- *   - POST /api/orgs/<org>/agents/runs/<name>/cancel             cancel (§1.5)
- *   - GET  /api/orgs/<org>/agents/events/stream  (EventSource)    SSE (§1.6)
- *   - POST /api/orgs/<org>/agents/memory/query                    memory (§1.7)
- *   - POST /api/orgs/<org>/agents/approvals/<name>/decide         approvals (§1.8)
+ *   LIVE — generic CRD gateway (SPEC §3.1):
+ *     - GET    /api/controller?org=<org>                          snapshot
+ *     - GET    /api/orgs/<org>/resources?kind=<Kind>[&limit&offset] list a kind
+ *     - POST   /api/orgs/<org>/resources                          apply (create/update)
+ *     - GET    /api/orgs/<org>/resources/<kind>/<name>            read one
+ *     - DELETE /api/orgs/<org>/resources/<kind>/<name>           delete one
+ *   LIVE — /api/agents/* actions (SPEC §3.2):
+ *     - GET/POST/PATCH/DELETE /api/orgs/<org>/agents/definitions[/<name>] persona path
+ *     - POST   /api/orgs/<org>/agents/dispatch                    dispatch (by stack)
+ *     - POST   /api/orgs/<org>/agents/runs/<name>/cancel          cancel (no body)
+ *     - POST   /api/orgs/<org>/agents/approvals/<name>/decide     approval decide
+ *     - POST   /api/orgs/<org>/agents/memory/query                memory query
+ *   LIVE — watch / SSE (SPEC §3.3):
+ *     - GET    /api/orgs/<org>/agents/events/stream  (EventSource) aggregated stream
+ *     - GET    /api/watch/orgs/<org>/<plural>        (EventSource) generic CRD watch
+ *   PROPOSED — typed, gated, NOT live (SPEC §3.2; throw KradleProposedRouteError):
+ *     - POST   /api/orgs/<org>/agents/runs/<name>/{resume,fork,continue}
+ *     - GET/POST /api/controller/resources*  (the controller-path alias)
  */
 
 import type { GraphQueryResult, AgentMemoryQuerySpec } from '../../contracts/kradle-memory';
@@ -211,12 +228,21 @@ export interface DefinitionPatchBody {
   spec?: Record<string, unknown>;
 }
 
-/** The dispatch body (§1.4 / AC4). */
+/**
+ * The dispatch body (SPEC §3.2/§3.4 / AC4). The live route accepts EITHER an
+ * `agentStack`/`stackRef` (legacy AgentStack path, Commander's default — it has
+ * no persona system) OR an `agentDefinition` (persona identity path). At least
+ * one of the three is required (`dispatch/route.js:16`). All three keys are
+ * mirrored so the Orders layer can dispatch by stack and a future persona
+ * feature can dispatch by definition.
+ */
 export interface DispatchInput {
-  /** Persona identity ref (preferred). */
-  agentDefinition?: string;
-  /** Legacy AgentStack ref (fallback). At least one of the two is required. */
+  /** Legacy AgentStack name — Commander's default dispatch key (§3.4). */
   agentStack?: string;
+  /** Alias the live route also accepts for the AgentStack (`body.stackRef`). */
+  stackRef?: string;
+  /** Persona identity ref (the `AgentDefinition` path). */
+  agentDefinition?: string;
   repository?: string;
   ref?: string;
   taskKind?: string;
@@ -226,6 +252,10 @@ export interface DispatchInput {
 
 export interface DispatchResult {
   run?: KradleResourceItem;
+  /** The first `AgentDispatchAttempt`, when the route surfaces it (SPEC §3.2). */
+  attempt?: KradleResourceItem;
+  /** Optional follow-on links (SPEC §3.2 — `{run, attempt?, links?}`). */
+  links?: DispatchLinks;
   error?: boolean;
   message?: string;
 }
@@ -251,21 +281,142 @@ export type StreamCallback = (frame: KradleStreamFrame) => void;
 export type Unsubscribe = () => void;
 
 // ---------------------------------------------------------------------------
+// Generic CRD gateway (SPEC §3.1) — `/api/orgs/<org>/resources*`.
+// ---------------------------------------------------------------------------
+
+/**
+ * `GET /api/orgs/<org>/resources?kind=<Kind>` result. Without `limit` the route
+ * returns the raw controller list (`{ items }`); with `limit` it returns the
+ * paginated envelope (`orgs/[org]/resources/route.js:16-34`). Both are modelled.
+ */
+export interface ResourceListResult<T = KradleResourceItem> {
+  items?: T[];
+  total?: number;
+  limit?: number;
+  offset?: number;
+  hasMore?: boolean;
+}
+
+/** Optional pagination for `listResources` (SPEC §3.1). */
+export interface ResourceListOptions {
+  limit?: number;
+  offset?: number;
+}
+
+/**
+ * The full resource body POSTed to apply a kind (SPEC §3.1). The server scopes
+ * it (injects `metadata.namespace`, the `kradle.a5c.ai/org` label and
+ * `spec.organizationRef`), so the client MUST NOT send those server-forced
+ * fields (`orgs/[org]/resources/route.js:46-49`).
+ */
+export interface ResourceApplyBody {
+  apiVersion?: string;
+  kind: string;
+  metadata: { name: string; labels?: Record<string, string> };
+  spec: Record<string, unknown>;
+}
+
+/** `POST /api/orgs/<org>/resources` → `{ resource }` (the applied resource). */
+export interface ResourceApplyResult {
+  resource?: KradleResourceItem;
+}
+
+/** The dispatch result also surfaces the first attempt + links (SPEC §3.2). */
+export interface DispatchLinks {
+  [key: string]: unknown;
+}
+
+/** The doc plurals the generic CRD watch accepts (SPEC §3.3). */
+export type KradleWatchPlural =
+  | 'agentdispatchruns'
+  | 'agentdispatchattempts'
+  | 'agentsessions'
+  | 'agentapprovals'
+  | 'kradleworkspaces'
+  | 'agenttriggerrules';
+
+/** The reason a run-lifecycle action is gated (SPEC §3.2 — proposed routes). */
+export type RunActionReason =
+  | 'initial'
+  | 'retry'
+  | 'resume'
+  | 'repair'
+  | 'rerun-after-fix'
+  | 'continuation';
+
+/** The body of a proposed `resume`/`fork`/`continue` action (SPEC §3.2). */
+export interface RunActionInput {
+  reason?: RunActionReason;
+  message?: string;
+  expectedGeneration?: number;
+}
+
+/**
+ * Thrown by the typed, PROPOSED-only run-lifecycle methods
+ * (`resumeRun`/`forkRun`/`continueRun`) and the `/api/controller/resources`
+ * alias. The SPEC marks these as not-live (`api-contract-spec.md:152-154`,
+ * E-RUNACTIONS); Commander documents the gap rather than inventing a live route.
+ * The UI gates the action (disabled with a "kradle-gap" tooltip) so this is
+ * never reached at runtime, but the method exists + is typed for the day the
+ * route ships.
+ */
+export class KradleProposedRouteError extends Error {
+  readonly action: string;
+  constructor(action: string) {
+    super(
+      `kradle ${action} is a proposed (not-live) route — gated per SPEC §3.2 / E-RUNACTIONS`,
+    );
+    this.name = 'KradleProposedRouteError';
+    this.action = action;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // The client
 // ---------------------------------------------------------------------------
 
 export interface KradleControllerClient {
   snapshot(): Promise<KradleControllerSnapshot>;
+
+  // --- generic CRD gateway (LIVE, SPEC §3.1) --------------------------------
+  /** `GET /api/orgs/<org>/resources?kind=<Kind>` — list one kind. */
+  listResources(kind: string, options?: ResourceListOptions): Promise<ResourceListResult>;
+  /** `POST /api/orgs/<org>/resources` — apply (create/update) a full resource. */
+  applyResource(body: ResourceApplyBody): Promise<ResourceApplyResult>;
+  /** `GET /api/orgs/<org>/resources/<kind>/<name>` — read one. */
+  getResource(kind: string, name: string): Promise<ResourceApplyResult>;
+  /** `DELETE /api/orgs/<org>/resources/<kind>/<name>` — delete one. */
+  deleteResource(kind: string, name: string): Promise<unknown>;
+
+  // --- /api/agents/* persona definitions (LIVE, SPEC §3.2) ------------------
   listDefinitions(): Promise<DefinitionListResult>;
   createDefinition(body: DefinitionWriteBody): Promise<DefinitionResourceResult>;
   getDefinition(name: string): Promise<DefinitionResourceResult>;
   patchDefinition(name: string, body: DefinitionPatchBody): Promise<DefinitionResourceResult>;
   deleteDefinition(name: string): Promise<unknown>;
+
+  // --- /api/agents/* run actions (LIVE, SPEC §3.2) --------------------------
   dispatch(input: DispatchInput): Promise<DispatchResult>;
   cancelRun(name: string): Promise<CancelRunResult>;
+  /** Retry = re-dispatch with the run's stack (`run-actions.jsx:187`). LIVE. */
+  retryRun(input: DispatchInput): Promise<DispatchResult>;
   queryMemory(spec: AgentMemoryQuerySpec): Promise<GraphQueryResult>;
   decideApproval(name: string, decision: ApprovalDecision, decidedBy?: string): Promise<DecideResult>;
+
+  // --- PROPOSED run-lifecycle actions (NOT live, SPEC §3.2; gated) ----------
+  /** PROPOSED — throws `KradleProposedRouteError` until the route ships. */
+  resumeRun(name: string, input?: RunActionInput): Promise<DispatchResult>;
+  /** PROPOSED — throws `KradleProposedRouteError` until the route ships. */
+  forkRun(name: string, input?: RunActionInput): Promise<DispatchResult>;
+  /** PROPOSED — throws `KradleProposedRouteError` until the route ships. */
+  continueRun(name: string, input?: RunActionInput): Promise<DispatchResult>;
+
+  // --- watch / SSE (LIVE, SPEC §3.3) ----------------------------------------
+  /** The aggregated agent event stream (`…/agents/events/stream`). */
   openEventStream(onFrame: StreamCallback): Unsubscribe;
+  /** The generic CRD watch (`/api/watch/orgs/<org>/<plural>`). */
+  openResourceWatch(plural: KradleWatchPlural, onFrame: StreamCallback): Unsubscribe;
+
   /** The resolved org slug (read-only; the Orders layer resolves approval names against it). */
   readonly org: string;
 }
@@ -371,6 +522,32 @@ export function createKradleControllerClient(
       );
     },
 
+    // --- generic CRD gateway (LIVE, SPEC §3.1) -------------------------------
+    listResources(kind: string, options?: ResourceListOptions): Promise<ResourceListResult> {
+      const params = new URLSearchParams({ kind });
+      if (options?.limit !== undefined) params.set('limit', String(options.limit));
+      if (options?.offset !== undefined) params.set('offset', String(options.offset));
+      return request<ResourceListResult>(`${resourcesPath()}?${params.toString()}`, 'GET');
+    },
+
+    applyResource(body: ResourceApplyBody): Promise<ResourceApplyResult> {
+      return request<ResourceApplyResult>(resourcesPath(), 'POST', body);
+    },
+
+    getResource(kind: string, name: string): Promise<ResourceApplyResult> {
+      return request<ResourceApplyResult>(
+        `${resourcesPath()}/${encodeURIComponent(kind)}/${encodeURIComponent(name)}`,
+        'GET',
+      );
+    },
+
+    deleteResource(kind: string, name: string): Promise<unknown> {
+      return request<unknown>(
+        `${resourcesPath()}/${encodeURIComponent(kind)}/${encodeURIComponent(name)}`,
+        'DELETE',
+      );
+    },
+
     listDefinitions(): Promise<DefinitionListResult> {
       return request<DefinitionListResult>(orgPath('/definitions'), 'GET');
     },
@@ -403,8 +580,27 @@ export function createKradleControllerClient(
     },
 
     cancelRun(name: string): Promise<CancelRunResult> {
-      // No body — the route reads none (§1.5).
+      // No body — the route reads none (SPEC §3.2).
       return request<CancelRunResult>(orgPath(`/runs/${encodeURIComponent(name)}/cancel`), 'POST');
+    },
+
+    retryRun(input: DispatchInput): Promise<DispatchResult> {
+      // Retry = re-dispatch with the run's stack (`run-actions.jsx:187`); the
+      // typed `…/runs/<run>/retry` route is proposed-only (SPEC §3.2).
+      return request<DispatchResult>(orgPath('/dispatch'), 'POST', input);
+    },
+
+    // PROPOSED (not live, SPEC §3.2): gated so the UI can wire the action and
+    // surface the kradle gap, without inventing a live route. Async-throwing so
+    // the call site's `.catch` (fire-and-forget Orders) handles it uniformly.
+    resumeRun(_name: string, _input?: RunActionInput): Promise<DispatchResult> {
+      return Promise.reject(new KradleProposedRouteError('runs/<run>/resume'));
+    },
+    forkRun(_name: string, _input?: RunActionInput): Promise<DispatchResult> {
+      return Promise.reject(new KradleProposedRouteError('runs/<run>/fork'));
+    },
+    continueRun(_name: string, _input?: RunActionInput): Promise<DispatchResult> {
+      return Promise.reject(new KradleProposedRouteError('runs/<run>/continue'));
     },
 
     queryMemory(spec: AgentMemoryQuerySpec): Promise<GraphQueryResult> {
@@ -425,37 +621,70 @@ export function createKradleControllerClient(
     },
 
     openEventStream(onFrame: StreamCallback): Unsubscribe {
-      // EventSource cannot set an Authorization header (§1.6) — it relies on the
-      // same-site session cookie (withCredentials). When no factory is available
-      // (no cookie/ambient EventSource), degrade to a no-op: the boot layer keeps
-      // the board live via interval polling (§6.3 / AC6).
-      if (!eventSourceFactory) {
-        return () => {
-          /* polling-only fallback; nothing to tear down */
-        };
-      }
-      const streamUrl = `${baseUrl}${orgPath('/events/stream')}?korg=${encodeURIComponent(org)}`;
-      const source = eventSourceFactory(streamUrl, { withCredentials: true });
-      source.onmessage = (event: { data: string }) => {
-        let frame: KradleStreamFrame;
-        try {
-          const parsed: unknown = JSON.parse(event.data);
-          if (typeof parsed !== 'object' || parsed === null) return;
-          const type = (parsed as { type?: unknown }).type;
-          if (typeof type !== 'string') return;
-          frame = parsed as KradleStreamFrame;
-        } catch {
-          // Malformed (non-JSON) frame — drop it (§1.6 forward-compat / AC6).
-          return;
-        }
-        if (frame.type === 'heartbeat') return; // ignored (§1.6).
-        onFrame(frame);
-      };
-      return () => source.close();
+      // The aggregated agent event stream (SPEC §3.3). Frames are typed objects;
+      // a `type` field is required and `heartbeat` is ignored.
+      return openSse(
+        `${baseUrl}${orgPath('/events/stream')}?korg=${encodeURIComponent(org)}`,
+        onFrame,
+        true,
+      );
+    },
+
+    openResourceWatch(plural: KradleWatchPlural, onFrame: StreamCallback): Unsubscribe {
+      // The generic CRD watch (SPEC §3.3): `/api/watch/orgs/<org>/<plural>`.
+      // Frames are a `SYNC` object then per-resource line frames (raw JSON that
+      // may lack a `type`); forward any object frame, `heartbeat` still ignored.
+      return openSse(
+        `${baseUrl}/api/watch/orgs/${encodeURIComponent(org)}/${encodeURIComponent(plural)}`,
+        onFrame,
+        false,
+      );
     },
   };
 
+  /**
+   * Open one SSE stream against `url`. `requireType` controls the frame policy:
+   * the aggregated stream requires a string `type` (dropping untyped frames),
+   * the generic CRD watch forwards any parsed object frame. `heartbeat` frames
+   * are always dropped. EventSource cannot set an Authorization header — it
+   * relies on the same-site session cookie (withCredentials). When no factory is
+   * available, degrade to a no-op (the boot layer keeps the board live via
+   * interval polling, SPEC §3.3 / AC4).
+   */
+  function openSse(url: string, onFrame: StreamCallback, requireType: boolean): Unsubscribe {
+    if (!eventSourceFactory) {
+      return () => {
+        /* polling-only fallback; nothing to tear down */
+      };
+    }
+    const source = eventSourceFactory(url, { withCredentials: true });
+    source.onmessage = (event: { data: string }) => {
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(event.data);
+      } catch {
+        // Malformed (non-JSON) frame — drop it (forward-compat / AC4).
+        return;
+      }
+      if (typeof parsed !== 'object' || parsed === null) return;
+      const type = (parsed as { type?: unknown }).type;
+      if (requireType && typeof type !== 'string') return;
+      if (type === 'heartbeat') return; // ignored.
+      // The frame is at least an object; surface it (typed where present).
+      const frame: KradleStreamFrame =
+        typeof type === 'string'
+          ? (parsed as KradleStreamFrame)
+          : { type: 'resource', ...(parsed as Record<string, unknown>) };
+      onFrame(frame);
+    };
+    return () => source.close();
+  }
+
   function orgPath(suffix: string): string {
     return `/api/orgs/${encodeURIComponent(org)}/agents${suffix}`;
+  }
+
+  function resourcesPath(): string {
+    return `/api/orgs/${encodeURIComponent(org)}/resources`;
   }
 }

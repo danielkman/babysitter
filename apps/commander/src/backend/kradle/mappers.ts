@@ -1,13 +1,19 @@
 /**
- * Pure kradle-resource → Commander-view mappers (SPEC-KRADLE-CONTROLPLANE §2/§6.2,
- * AC10–AC13, AC12).
+ * Pure kradle-resource → Commander-view mappers (SPEC-KRADLE-MODEL §4, AC2/AC4).
  *
  * Every function here is PURE and deterministic: it consumes a controller
- * snapshot (`KradleControllerSnapshot`, §1.2) plus an optional on-demand memory
- * result, and produces the `Sim*View` surface (`simulation.ts`) + the
- * `TickCommitInput` board payload (§6.2). No `Date.now()`, no rng — the caller
- * injects `nowMs`; UI-only fields with no kradle source use the documented stable
- * defaults (never random).
+ * snapshot (`KradleControllerSnapshot`) plus an optional on-demand memory
+ * result, and produces the `Sim*View` surface (`simulation.ts`) + the board
+ * payload. No `Date.now()`, no rng — the caller injects `nowMs`; UI-only fields
+ * with no kradle source use the documented stable defaults (never random).
+ *
+ * The headline of this cut is the true **`AgentDispatchRun → AgentDispatchAttempt
+ * → AgentSession`** hierarchy (SPEC §4.1): a card surfaces its attempts and the
+ * sessions of its ACTIVE attempt; `SimCardView.attempt` is the count of real
+ * `AgentDispatchAttempt` records (not a `status.attempt` integer). The phase→
+ * column map (SPEC §4.2) accepts BOTH the lowercase lifecycle union and the
+ * capitalized terminals the live BFF emits. The invented roster is REMOVED
+ * (no `mapRosterAgents`).
  *
  * The snapshot's CRD items are typed as the wide `KradleResourceItem` structural
  * shape (`controllerClient.ts`); these mappers narrow each `spec`/`status`/`labels`
@@ -25,6 +31,7 @@ import type {
   ColumnId,
   SessionStatus,
   SimAgentView,
+  SimAttemptView,
   SimCardView,
   SimHookView,
   SimMemoryIOView,
@@ -32,7 +39,6 @@ import type {
   SimMemorySiloView,
   SimMemoryWriteEntry,
   SimProcessTemplateView,
-  SimRosterAgentView,
   SimRunObservationView,
   SimRunView,
   SimSessionDetailView,
@@ -314,72 +320,19 @@ export function mapStacks(snapshot: KradleControllerSnapshot): SimStackView[] {
 }
 
 // ---------------------------------------------------------------------------
-// §2.1 — roster agents (AgentDefinition labeled `commander.a5c.ai/roster-name`)
+// §4.2 — AgentDispatchRun phase (+ refinement) → board column (AC4)
 // ---------------------------------------------------------------------------
 
 /**
- * §2.1 roster agents. Source: AgentDefinitions carrying `LABEL_ROSTER_NAME`.
- * `status`/`assignedTaskId`/`assignedRole` are derived from the cards (a roster
- * agent is `assigned` iff any card references it via the worker/reviewer label).
- */
-export function mapRosterAgents(snapshot: KradleControllerSnapshot): SimRosterAgentView[] {
-  const stacks = mapStacks(snapshot);
-  const stackByRef = new Map(stacks.map((s) => [s.stackRef, s]));
-  const cards = mapCards(snapshot);
-
-  const defs = resourceItemsByKind(snapshot, 'AgentDefinition');
-  const out: SimRosterAgentView[] = [];
-  for (const def of defs) {
-    const lab = labels(def);
-    const rosterName = lab[LABEL_ROSTER_NAME];
-    if (rosterName === undefined) continue;
-
-    const agentId = def.metadata.name;
-    const stackRef = lab[LABEL_STACK_REF] ?? def.metadata.name;
-    const stack = stackByRef.get(stackRef);
-    const adapter = narrowAdapter(stack?.stack.spec.adapter);
-    const model = stack?.stack.spec.model ?? MODELS_BY_ADAPTER[adapter][0] ?? '';
-    const role = lab[LABEL_ROLE] === 'reviewer' ? 'reviewer' : 'worker';
-
-    // Derived assignment: the first card referencing this agent.
-    let assignedTaskId: string | null = null;
-    let assignedRole: 'worker' | 'reviewer' | null = null;
-    for (const card of cards) {
-      if (card.workerAgentId === agentId) {
-        assignedTaskId = card.taskId;
-        assignedRole = 'worker';
-        break;
-      }
-      if (card.reviewerAgentId === agentId) {
-        assignedTaskId = card.taskId;
-        assignedRole = 'reviewer';
-        break;
-      }
-    }
-
-    out.push({
-      agentId,
-      name: rosterName,
-      stackRef,
-      stackName: stack?.name ?? stackRef,
-      adapter,
-      model,
-      role,
-      status: assignedTaskId !== null ? 'assigned' : 'available',
-      assignedTaskId,
-      assignedRole,
-    });
-  }
-  return out.sort((a, b) => a.name.localeCompare(b.name));
-}
-
-// ---------------------------------------------------------------------------
-// §2.3.1 — AgentDispatchRun phase (+ refinement) → board column (AC12)
-// ---------------------------------------------------------------------------
-
-/**
- * §2.3.1 total, deterministic phase→column map. `phase` is the run's
+ * §4.2 total, deterministic phase→column map. `phase` is the run's
  * `status.phase`; `refine` carries the refinement signals the table keys on.
+ *
+ * Accepts BOTH casings (SPEC §4.2): the lowercase lifecycle union
+ * (`pending|queued|running|waiting-for-approval|succeeded|failed|cancelled`,
+ * `agent-stack-management-spec.md:277`) AND the capitalized terminals the live
+ * BFF emits (`Queued|Running|AwaitingApproval|Succeeded|Completed|Cancelled|Failed`,
+ * `run-actions.jsx:129`; cancel patches `status.phase='Cancelled'`). The map
+ * stays total + deterministic: an unknown phase lands in the backlog.
  */
 export function runPhaseToColumn(
   phase: string | undefined,
@@ -393,16 +346,26 @@ export function runPhaseToColumn(
   },
 ): ColumnId {
   switch (phase) {
+    // created, not executing.
+    case 'pending':
     case 'Pending':
+    case 'queued':
     case 'Queued':
       return 'backlog';
+    // actively working (automated review stage when a review gate is pending).
+    case 'running':
     case 'Running': {
       if (refine.hasPendingReviewApproval || refine.taskKind === 'review') return 'ai-review';
       return 'do';
     }
+    // blocked on a human gate.
+    case 'waiting-for-approval':
     case 'AwaitingApproval':
       return 'human-review';
-    case 'Succeeded': {
+    // passed review; merged/in-production are Commander label refinements.
+    case 'succeeded':
+    case 'Succeeded':
+    case 'Completed': {
       if (refine.released) return 'in-production';
       if (refine.merged) return 'merged';
       if (refine.hasApprovedWriteBack) return 'approved';
@@ -410,13 +373,90 @@ export function runPhaseToColumn(
       // awaiting integration). The merge/release labels move it onward.
       return 'approved';
     }
+    // returned for rework.
+    case 'failed':
     case 'Failed':
+    case 'cancelled':
     case 'Cancelled':
       return 'backlog';
     default:
       // Forward-compatible: an unknown phase lands in the backlog (total map).
       return 'backlog';
   }
+}
+
+// ---------------------------------------------------------------------------
+// §4.1 — Run → Attempt → Session hierarchy (the headline fix)
+// ---------------------------------------------------------------------------
+
+/** Terminal attempt/run phases (both casings) — a non-terminal attempt is "live". */
+const TERMINAL_PHASES = new Set<string>([
+  'succeeded',
+  'Succeeded',
+  'Completed',
+  'failed',
+  'Failed',
+  'cancelled',
+  'Cancelled',
+]);
+
+function isTerminalPhase(phase: string | undefined): boolean {
+  return phase !== undefined && TERMINAL_PHASES.has(phase);
+}
+
+function attemptRun(item: KradleResourceItem): string | undefined {
+  // The attempt's parent run (`spec.agentDispatchRun`); tolerate `dispatchRun`.
+  return asString(spec(item).agentDispatchRun) ?? asString(spec(item).dispatchRun);
+}
+
+/** All `AgentDispatchAttempt` items (collection-first, `resources[]` fallback). */
+function attemptItems(snapshot: KradleControllerSnapshot): KradleResourceItem[] {
+  const fromResources = resourceItemsByKind(snapshot, 'AgentDispatchAttempt');
+  if (fromResources.length > 0) return fromResources;
+  return [];
+}
+
+interface AttemptIndex {
+  /** Attempts grouped by run, ordered oldest→newest (creationTimestamp, then seq). */
+  byRun: Map<string, KradleResourceItem[]>;
+  /** The active (newest non-terminal, else newest) attempt name per run. */
+  activeByRun: Map<string, string>;
+}
+
+function buildAttemptIndex(snapshot: KradleControllerSnapshot): AttemptIndex {
+  const grouped = new Map<string, Array<{ item: KradleResourceItem; seq: number }>>();
+  let seq = 0;
+  for (const attempt of attemptItems(snapshot)) {
+    const run = attemptRun(attempt);
+    if (run === undefined) {
+      seq += 1;
+      continue;
+    }
+    (grouped.get(run) ?? grouped.set(run, []).get(run)!).push({ item: attempt, seq });
+    seq += 1;
+  }
+
+  const byRun = new Map<string, KradleResourceItem[]>();
+  const activeByRun = new Map<string, string>();
+  for (const [run, entries] of grouped) {
+    entries.sort(
+      (a, b) =>
+        (creationMs(a.item) ?? a.seq) - (creationMs(b.item) ?? b.seq) || a.seq - b.seq,
+    );
+    const ordered = entries.map((e) => e.item);
+    byRun.set(run, ordered);
+    // Active = the newest non-terminal attempt; else the newest overall.
+    let active: KradleResourceItem | undefined;
+    for (let i = ordered.length - 1; i >= 0; i -= 1) {
+      if (!isTerminalPhase(statusPhase(ordered[i]))) {
+        active = ordered[i];
+        break;
+      }
+    }
+    active ??= ordered[ordered.length - 1];
+    if (active !== undefined) activeByRun.set(run, active.metadata.name);
+  }
+  return { byRun, activeByRun };
 }
 
 // ---------------------------------------------------------------------------
@@ -467,17 +507,23 @@ const REVIEW_ACTION_TYPES = new Set(['review', 'ai-review']);
 const WRITE_BACK_ACTION_TYPES = new Set(['write-back', 'release', 'tool-use']);
 
 // ---------------------------------------------------------------------------
-// Session indexing (§2.2) — sessions keyed by their dispatch run.
+// Session indexing (§4.1) — sessions roll up from attempts.
 // ---------------------------------------------------------------------------
 
 function sessionDispatchRun(item: KradleResourceItem): string | undefined {
   return asString(spec(item).dispatchRun);
 }
 
+/** §4.1 preferred grouping key: the owning attempt, falling back to the run. */
+function sessionDispatchAttempt(item: KradleResourceItem): string | undefined {
+  return asString(spec(item).dispatchAttempt);
+}
+
 function isActiveSession(item: KradleResourceItem): boolean {
   return statusPhase(item) === 'Active';
 }
 
+/** Active sessions grouped by their dispatch run (used by run-level surfaces). */
 function activeSessionsByRun(snapshot: KradleControllerSnapshot): Map<string, KradleResourceItem[]> {
   const out = new Map<string, KradleResourceItem[]>();
   for (const session of collectionItems(snapshot, 'sessions')) {
@@ -487,6 +533,42 @@ function activeSessionsByRun(snapshot: KradleControllerSnapshot): Map<string, Kr
     (out.get(run) ?? out.set(run, []).get(run)!).push(session);
   }
   return out;
+}
+
+/** All sessions (any phase) grouped by their owning attempt (§4.1). */
+function sessionsByAttempt(snapshot: KradleControllerSnapshot): Map<string, KradleResourceItem[]> {
+  const out = new Map<string, KradleResourceItem[]>();
+  for (const session of collectionItems(snapshot, 'sessions')) {
+    const attempt = sessionDispatchAttempt(session);
+    if (attempt === undefined) continue;
+    (out.get(attempt) ?? out.set(attempt, []).get(attempt)!).push(session);
+  }
+  return out;
+}
+
+/**
+ * §4.1 `SimCardView.agentIds` source: the ACTIVE sessions of the run's ACTIVE
+ * attempt. Sessions are grouped by `spec.dispatchAttempt` (preferred); when no
+ * attempt records exist (or sessions carry no attempt ref), this falls back to
+ * the run's active sessions so the kradle-only path still surfaces creatures.
+ */
+function activeSessionsOfActiveAttempt(
+  runName: string,
+  attempts: AttemptIndex,
+  activeByRun: Map<string, KradleResourceItem[]>,
+  byAttempt: Map<string, KradleResourceItem[]>,
+): KradleResourceItem[] {
+  const activeAttempt = attempts.activeByRun.get(runName);
+  if (activeAttempt !== undefined) {
+    const scoped = (byAttempt.get(activeAttempt) ?? []).filter(isActiveSession);
+    if (scoped.length > 0) return scoped;
+    // The active attempt has no active sessions yet — surface none (do NOT leak
+    // sessions of a prior attempt). Fall through to the run-level set only when
+    // there are NO attempt records at all (handled below).
+    if (attempts.byRun.has(runName)) return [];
+  }
+  // No attempt records for this run → fall back to the run's active sessions.
+  return activeByRun.get(runName) ?? [];
 }
 
 // ---------------------------------------------------------------------------
@@ -536,10 +618,11 @@ function workspacesByName(snapshot: KradleControllerSnapshot): Map<string, Kradl
 // ---------------------------------------------------------------------------
 
 function runProgress(phase: string | undefined): number {
-  switch (phase) {
-    case 'Running':
+  // Casing-tolerant (§4.2): normalize before the step function.
+  switch (normalizeAttemptPhase(phase)) {
+    case 'running':
       return 0.5;
-    case 'Succeeded':
+    case 'succeeded':
       return 1;
     default:
       return 0;
@@ -547,14 +630,18 @@ function runProgress(phase: string | undefined): number {
 }
 
 /**
- * §2.3.2 `mapCards`. Maps every `model.agents.runs.items` to a `SimCardView`,
- * column per §2.3.1, with stable per-column ordering by creationTimestamp.
+ * §4.1/§4.3 `mapCards`. Maps every `model.agents.runs.items` to a `SimCardView`,
+ * column per §4.2, with stable per-column ordering by creationTimestamp.
+ * `attempt` is the count of `AgentDispatchAttempt` records for the run, and
+ * `agentIds` are the ACTIVE sessions of the run's ACTIVE attempt (§4.1).
  */
 export function mapCards(snapshot: KradleControllerSnapshot): SimCardView[] {
   const runs = collectionItems(snapshot, 'runs');
   const approvals = buildApprovalIndex(snapshot);
   const wsByName = workspacesByName(snapshot);
   const activeByRun = activeSessionsByRun(snapshot);
+  const attempts = buildAttemptIndex(snapshot);
+  const byAttempt = sessionsByAttempt(snapshot);
 
   // Parent → children (by LABEL_PARENT).
   const childrenByParent = new Map<string, string[]>();
@@ -624,12 +711,16 @@ export function mapCards(snapshot: KradleControllerSnapshot): SimCardView[] {
     );
     const feedback = feedbackApproval ? asString(status(feedbackApproval).feedback) ?? null : null;
 
-    const agentIds = (activeByRun.get(taskId) ?? []).map((s) => s.metadata.name);
+    const agentIds = activeSessionsOfActiveAttempt(
+      taskId,
+      attempts,
+      activeByRun,
+      byAttempt,
+    ).map((s) => s.metadata.name);
 
-    const attempt =
-      asNumber(status(run).attempt) ??
-      countAttempts(snapshot, taskId) ??
-      1;
+    // §4.3: the attempt count is the number of real AgentDispatchAttempt records
+    // for the run (the centerpiece of the cut), not a status.attempt integer.
+    const attempt = (attempts.byRun.get(taskId) ?? []).length || 1;
 
     const view: SimCardView = {
       taskId,
@@ -675,16 +766,96 @@ export function mapCards(snapshot: KradleControllerSnapshot): SimCardView[] {
   return built.map((b) => b.view);
 }
 
-/** Count of `AgentDispatchAttempt` items referencing a run (best-effort). */
-function countAttempts(snapshot: KradleControllerSnapshot, runName: string): number | undefined {
-  const attempts = resourceItemsByKind(snapshot, 'AgentDispatchAttempt');
-  if (attempts.length === 0) return undefined;
-  const count = attempts.filter((a) => asString(spec(a).dispatchRun) === runName).length;
-  return count > 0 ? count : undefined;
+// ---------------------------------------------------------------------------
+// §4.1 — AgentDispatchAttempt → SimAttemptView (the new attempt surface)
+// ---------------------------------------------------------------------------
+
+const ATTEMPT_PHASE_NORMALIZE: Record<string, string> = {
+  Pending: 'pending',
+  Queued: 'queued',
+  Running: 'running',
+  AwaitingApproval: 'waiting-for-approval',
+  Succeeded: 'succeeded',
+  Completed: 'succeeded',
+  Failed: 'failed',
+  Cancelled: 'cancelled',
+};
+
+/** Normalize an attempt phase to the lowercase lifecycle union (both casings in). */
+function normalizeAttemptPhase(phase: string | undefined): string {
+  if (phase === undefined) return 'pending';
+  return ATTEMPT_PHASE_NORMALIZE[phase] ?? phase;
+}
+
+/**
+ * Canonicalize a run phase (either casing) to the CAPITALIZED key the run-state
+ * maps below (`OBSERVED_STATE_MAP`/`TASK_STATE_MAP`) are written against, so the
+ * lowercase lifecycle union the generic CRD list surfaces (`succeeded`, …) and
+ * the capitalized terminals the live BFF emits (`Succeeded`, …) both resolve
+ * (§4.2 both-casings).
+ */
+const RUN_PHASE_TO_CAPITALIZED: Record<string, string> = {
+  pending: 'Pending',
+  queued: 'Queued',
+  running: 'Running',
+  'waiting-for-approval': 'AwaitingApproval',
+  succeeded: 'Succeeded',
+  Completed: 'Succeeded',
+  completed: 'Succeeded',
+  failed: 'Failed',
+  cancelled: 'Cancelled',
+};
+
+function canonicalRunPhase(phase: string | undefined): string | undefined {
+  if (phase === undefined) return undefined;
+  return RUN_PHASE_TO_CAPITALIZED[phase] ?? phase;
+}
+
+function mapAttemptView(
+  attempt: KradleResourceItem,
+  runName: string,
+  active: boolean,
+  byAttempt: Map<string, KradleResourceItem[]>,
+): SimAttemptView {
+  const sp = spec(attempt);
+  const st = status(attempt);
+  const sessions = byAttempt.get(attempt.metadata.name) ?? [];
+  return {
+    attemptId: attempt.metadata.name,
+    taskId: runName,
+    attemptReason: asString(sp.attemptReason) ?? 'initial',
+    phase: normalizeAttemptPhase(statusPhase(attempt)),
+    active,
+    exitReason: asString(st.exitReason) ?? null,
+    sessionIds: sessions.map((s) => s.metadata.name),
+    startedAt: isoToMs(st.startedAt) ?? null,
+    endedAt: isoToMs(st.completedAt) ?? null,
+  };
+}
+
+/**
+ * §4.1 `listAttempts(taskId?)`. Maps `AgentDispatchAttempt` records to
+ * `SimAttemptView`, oldest→newest per run; the run's ACTIVE attempt is flagged.
+ * Filtered by run when `taskId` is given.
+ */
+export function mapAttempts(snapshot: KradleControllerSnapshot, taskId?: string): SimAttemptView[] {
+  const attempts = buildAttemptIndex(snapshot);
+  const byAttempt = sessionsByAttempt(snapshot);
+  const out: SimAttemptView[] = [];
+  for (const [runName, items] of attempts.byRun) {
+    if (taskId !== undefined && runName !== taskId) continue;
+    const activeName = attempts.activeByRun.get(runName);
+    for (const item of items) {
+      out.push(
+        mapAttemptView(item, runName, item.metadata.name === activeName, byAttempt),
+      );
+    }
+  }
+  return out;
 }
 
 // ---------------------------------------------------------------------------
-// §2.3.3 — AgentDispatchRun → SimRunView + getRunObservation (AC12)
+// §4.3 — AgentDispatchRun → SimRunView + getRunObservation (AC4)
 // ---------------------------------------------------------------------------
 
 /**
@@ -706,7 +877,8 @@ const OBSERVED_STATE_MAP: Record<string, ObservedRunState> = {
 };
 
 function mapObservedState(phase: string | undefined): ObservedRunState {
-  if (phase !== undefined && phase in OBSERVED_STATE_MAP) return OBSERVED_STATE_MAP[phase]!;
+  const canon = canonicalRunPhase(phase);
+  if (canon !== undefined && canon in OBSERVED_STATE_MAP) return OBSERVED_STATE_MAP[canon]!;
   return 'created';
 }
 
@@ -1191,7 +1363,8 @@ const TASK_STATE_MAP: Record<string, SimTaskState> = {
 };
 
 function mapTaskState(phase: string | undefined): SimTaskState {
-  if (phase !== undefined && phase in TASK_STATE_MAP) return TASK_STATE_MAP[phase]!;
+  const canon = canonicalRunPhase(phase);
+  if (canon !== undefined && canon in TASK_STATE_MAP) return TASK_STATE_MAP[canon]!;
   return 'queued';
 }
 
@@ -1323,7 +1496,12 @@ interface TickInquiry {
   deadlineTs: number;
 }
 
-/** The board-half payload the boot layer feeds into `commitTick` (§6.2). */
+/**
+ * The board-half payload the boot layer feeds into `commitTick` (§4). The
+ * invented roster is REMOVED (SPEC §2.4/§5.2): the boot layer passes
+ * `rosterAgents: []` literally into `commitTick` until the store slice is
+ * removed in the UI phase.
+ */
 export interface KradleTickInput {
   cards: SimCardView[];
   agents: SimAgentView[];
@@ -1332,13 +1510,14 @@ export interface KradleTickInput {
   hooks: SimHookView[];
   inquiries: TickInquiry[];
   runStages: Record<string, string | null>;
-  rosterAgents: SimRosterAgentView[];
 }
 
 /**
- * §6.2 `mapToTickInput(snapshot, nowMs)`. Builds the kradle-owned board halves
- * for one `commitTick`. `frames` stays empty (the gateway owns it) — the boot
- * layer assembles the full `TickCommitInput` (§6.1 additive merge).
+ * §4 `mapToTickInput(snapshot, nowMs)`. Builds the kradle-owned board halves
+ * for one `commitTick`. `frames` stays empty (the gateway owns it) and the boot
+ * layer supplies `rosterAgents: []` (roster removed) — the boot layer assembles
+ * the full `TickCommitInput` (additive merge; neither producer writes the
+ * other's slice).
  */
 export function mapToTickInput(snapshot: KradleControllerSnapshot, nowMs: number): KradleTickInput {
   const cards = mapCards(snapshot);
@@ -1369,7 +1548,6 @@ export function mapToTickInput(snapshot: KradleControllerSnapshot, nowMs: number
     hooks,
     inquiries,
     runStages,
-    rosterAgents: mapRosterAgents(snapshot),
   };
 }
 
