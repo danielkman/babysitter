@@ -18,6 +18,7 @@
 import type { CostRecord } from '../../contracts/adapter-events';
 import type { ObservedRunState, PendingEffectsByKind } from '../../contracts/babysitter-run';
 import type { GraphQueryResult, GraphRecord, MemoryNodeKind } from '../../contracts/kradle-memory';
+import type { KradleResourcePhase } from '../../contracts/kradle-resources';
 import type { KradleAgentStack } from '../../contracts/kradle-stack';
 import type { AgentWorkspacePhase, WorkspaceGitStatus } from '../../contracts/kradle-workspace';
 import type {
@@ -1097,8 +1098,14 @@ export function mapSilos(snapshot: KradleControllerSnapshot): SimMemorySiloView[
     return {
       name: repo.metadata.name,
       phase: ((): SimMemorySiloView['phase'] => {
+        // The real CRD resource phase is [Pending,Ready,Blocked,Error].
         const phase = statusPhase(repo);
-        return phase === 'Ready' || phase === 'Pending' || phase === 'Failed' ? phase : 'Ready';
+        return phase === 'Ready' ||
+          phase === 'Pending' ||
+          phase === 'Blocked' ||
+          phase === 'Error'
+          ? phase
+          : 'Ready';
       })(),
       currentCommit: asString(st.currentCommit) ?? '',
       recordCount: 0,
@@ -1192,8 +1199,17 @@ function mapTaskView(run: KradleResourceItem): SimTaskView {
   const sp = spec(run);
   const phase = statusPhase(run);
   const taskKind = narrowTaskKind(asString(sp.taskKind));
-  const kradlePhase =
-    phase === 'Succeeded' ? 'Ready' : phase === 'Failed' || phase === 'Cancelled' ? 'Failed' : 'Pending';
+  // Project the run lifecycle phase to the 4-value resource phase the
+  // SimTaskView row carries ([Pending,Ready,Blocked,Error]).
+  const kradlePhase: KradleResourcePhase =
+    phase === 'Succeeded' || phase === 'succeeded'
+      ? 'Ready'
+      : phase === 'Failed' ||
+          phase === 'failed' ||
+          phase === 'Cancelled' ||
+          phase === 'cancelled'
+        ? 'Error'
+        : 'Pending';
   return {
     taskId: run.metadata.name,
     taskKind,

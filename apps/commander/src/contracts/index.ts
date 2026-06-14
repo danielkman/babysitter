@@ -5,6 +5,7 @@
 export * from './adapter-events';
 export * from './babysitter-run';
 export * from './gateway-protocol';
+export * from './kradle-config';
 export * from './kradle-memory';
 export * from './kradle-resources';
 export * from './kradle-stack';

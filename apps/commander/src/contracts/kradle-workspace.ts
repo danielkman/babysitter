@@ -1,26 +1,34 @@
 /**
- * Mirrored kradle workspace / write-back review contracts (SPEC-V2 §V2-7,
- * re-surfaced by SPEC-V3 §V3-4 as the human-review side panel).
+ * Mirrored kradle workspace / artifact / approval / link contracts
+ * (SPEC-KRADLE-MODEL §1.B, §2.3). Faithful to the REAL CRD kind names in
+ * `packages/kradle/charts/crds/aggregated-resources.yaml`:
+ *   - `KradleWorkspace` (short `kws`) — the git worktree/runtime surface (NOT
+ *     the doc-only `AgentWorkspace`), with sibling `KradleWorkspaceRuntime`.
+ *   - `KradleArtifact` (short `kart`) — durable agent output (NOT `AgentArtifact`).
+ *   - `Review` — PR review decision; there is NO `AgentReviewArtifact` CRD.
+ *   - `AgentApproval`, `AgentContextBundle`, `AgentTriggerExecution`,
+ *     `AgentCapabilityRequirement`, `WorkItemSessionLink`, `WorkItemWorkspaceLink`.
  *
- * Faithful mirror of:
- *   - `packages/kradle/core/docs/agents/workspace-lifecycle-spec.md`
- *     (`AgentWorkspaceStatus.gitStatus`, workspace phase union)
- *   - `packages/kradle/core/docs/agents/artifacts-writeback-spec.md`
- *     (patch artifact shape, apply strategies, test evidence)
- *   - `packages/kradle/core/docs/agents/crd-schema-spec.md`
- *     (`AgentApproval` spec/status, `AgentStack.writeBackPolicy`)
- *
- * UI-only metadata (diff plate styling, dirty badges) stays OUT of these
- * mirrored types.
+ * These aggregated specs are preserve-unknown in the YAML; the field contracts
+ * come from the relationship map / glossary / live BFF and the shapes Commander
+ * already surfaces. UI-only metadata stays OUT.
  */
 
-import type { KradleResource } from './kradle-resources';
+import type {
+  KradleResource,
+  KradleResourceStatus,
+  KradlePreserveUnknown,
+} from './kradle-resources';
 
 // ---------------------------------------------------------------------------
-// Workspace status
+// KradleWorkspace — the git worktree/runtime surface (status-only contract)
 // ---------------------------------------------------------------------------
 
+/** Documented `KradleWorkspace.status.phase` union (`workspace-lifecycle-spec.md`). */
 export type AgentWorkspacePhase = 'created' | 'ready' | 'missing' | 'conflicted' | 'archived';
+
+/** Alias under the real kind name. */
+export type KradleWorkspacePhase = AgentWorkspacePhase;
 
 export interface WorkspaceGitStatus {
   branch: string;
@@ -31,13 +39,44 @@ export interface WorkspaceGitStatus {
   uncommittedCount?: number;
 }
 
-export interface AgentWorkspaceStatus {
+/**
+ * The documented `KradleWorkspace.status` shape Commander reads. (Historically
+ * named `AgentWorkspaceStatus`; the kind is `KradleWorkspace`.)
+ */
+export interface KradleWorkspaceStatus {
   phase: AgentWorkspacePhase;
   gitStatus: WorkspaceGitStatus;
 }
 
+/** @deprecated Name retained for callers; this is `KradleWorkspace.status`. */
+export type AgentWorkspaceStatus = KradleWorkspaceStatus;
+
+/** `KradleWorkspace.spec` — preserve-unknown; the run/work-item it backs. */
+export interface KradleWorkspaceSpec extends KradlePreserveUnknown {
+  repository?: string;
+  dispatchRun?: string;
+  workItemRef?: string;
+}
+
+export type KradleWorkspace = Omit<
+  KradleResource<'KradleWorkspace', KradleWorkspaceSpec>,
+  'status'
+> & { status: KradleResourceStatus & Partial<KradleWorkspaceStatus> };
+
+/**
+ * `KradleWorkspaceRuntime` (`aggregated-resources.yaml:1155`) — terminal /
+ * dev-server surface tied to a workspace. Schema-light.
+ */
+export interface KradleWorkspaceRuntimeSpec extends KradlePreserveUnknown {
+  workspaceRef?: string;
+}
+export type KradleWorkspaceRuntime = KradleResource<
+  'KradleWorkspaceRuntime',
+  KradleWorkspaceRuntimeSpec
+>;
+
 // ---------------------------------------------------------------------------
-// Patch artifact (write-back payload)
+// KradleArtifact — durable agent output (patch/diagnosis/review/report)
 // ---------------------------------------------------------------------------
 
 export type PatchApplyStrategy =
@@ -53,6 +92,7 @@ export interface PatchTestEvidence {
   summary?: string;
 }
 
+/** The `kind: 'patch'` payload of a `KradleArtifact` (`kradle-workspace.ts` legacy shape). */
 export interface PatchArtifact {
   kind: 'patch';
   /** Commit the patch was generated against. */
@@ -68,26 +108,61 @@ export interface PatchArtifact {
   applyStrategy: PatchApplyStrategy;
 }
 
+/** Documented `KradleArtifact` output kinds. */
+export type KradleArtifactKind = 'patch' | 'diagnosis' | 'review' | 'report';
+
+/**
+ * `KradleArtifact.spec` — preserve-unknown; the `patch`-kind payload above is
+ * the most structured. Other kinds carry free-form bodies.
+ */
+export interface KradleArtifactSpec extends KradlePreserveUnknown {
+  kind?: KradleArtifactKind;
+  dispatchRun?: string;
+  dispatchAttempt?: string;
+  /** Present when `kind === 'patch'`. */
+  patch?: Omit<PatchArtifact, 'kind'>;
+}
+
+export type KradleArtifact = KradleResource<'KradleArtifact', KradleArtifactSpec>;
+
 // ---------------------------------------------------------------------------
-// AgentApproval (AGGREGATED_KINDS; required spec: dispatchRun, action, requestedBy)
+// Review — PR review decision (`aggregated-resources.yaml:303-341`)
+// Required: organizationRef, pullRequest
+// ---------------------------------------------------------------------------
+
+export interface ReviewSpec extends KradlePreserveUnknown {
+  organizationRef: string;
+  pullRequest: string;
+  decision?: string;
+  body?: string;
+}
+
+export type Review = KradleResource<'Review', ReviewSpec>;
+
+// ---------------------------------------------------------------------------
+// AgentApproval — human/policy gate (`aggregated-resources.yaml:896-931`)
 // ---------------------------------------------------------------------------
 
 export type AgentApprovalPhase = 'pending' | 'approved' | 'denied' | 'completed';
 
-export interface AgentApprovalSpec {
-  /** Required: the dispatch run requesting the action. */
+export interface AgentApprovalRequestedBy {
+  kind: string;
+  name: string;
+}
+
+export interface AgentApprovalAction {
+  type: string;
+  target: string;
+  summary: string;
+}
+
+export interface AgentApprovalSpec extends KradlePreserveUnknown {
+  /** The dispatch run requesting the action. */
   dispatchRun: string;
-  /** Required: who raised the approval. */
-  requestedBy: {
-    kind: string;
-    name: string;
-  };
-  /** Required: the gated action. */
-  action: {
-    type: string;
-    target: string;
-    summary: string;
-  };
+  /** Who raised the approval. */
+  requestedBy: AgentApprovalRequestedBy;
+  /** The gated action. */
+  action: AgentApprovalAction;
   policyReasons?: string[];
 }
 
@@ -98,12 +173,87 @@ export interface AgentApprovalStatusFields {
 }
 
 export type AgentApproval = Omit<KradleResource<'AgentApproval', AgentApprovalSpec>, 'status'> & {
-  status: Omit<KradleResource<'AgentApproval', AgentApprovalSpec>['status'], 'phase'> &
-    AgentApprovalStatusFields;
+  status: Omit<KradleResourceStatus, 'phase'> & AgentApprovalStatusFields;
 };
 
 // ---------------------------------------------------------------------------
-// Write-back policy (AgentStack.spec.writeBackPolicy)
+// AgentContextBundle — digest-addressed redacted context snapshot
+// (`aggregated-resources.yaml:822-857`)
+// ---------------------------------------------------------------------------
+
+export interface AgentContextBundleSpec extends KradlePreserveUnknown {
+  dispatchRun?: string;
+  digest?: string;
+  sources?: KradlePreserveUnknown[];
+}
+
+export type AgentContextBundle = KradleResource<'AgentContextBundle', AgentContextBundleSpec>;
+
+// ---------------------------------------------------------------------------
+// AgentTriggerExecution — durable record of a rule evaluation + decision
+// (`aggregated-resources.yaml:933-968`)
+// ---------------------------------------------------------------------------
+
+export interface AgentTriggerExecutionSpec extends KradlePreserveUnknown {
+  triggerRule?: string;
+  sourceEvent?: KradlePreserveUnknown;
+  /** Doc decision: `created | coalesced | rejected`. */
+  decision?: string;
+}
+
+export type AgentTriggerExecution = KradleResource<
+  'AgentTriggerExecution',
+  AgentTriggerExecutionSpec
+>;
+
+// ---------------------------------------------------------------------------
+// AgentCapabilityRequirement — computed dependency (stack/tool/mcp/skill/subagent
+// → roles/secrets/configs) (`aggregated-resources.yaml:970-1005`)
+// ---------------------------------------------------------------------------
+
+export interface AgentCapabilityRequirementSpec extends KradlePreserveUnknown {
+  ownerRef?: string;
+  requiredRoles?: string[];
+  requiredSecretRefs?: string[];
+  requiredConfigRefs?: string[];
+}
+
+export interface AgentCapabilityRequirementStatusFields {
+  missingGrants?: string[];
+}
+
+export type AgentCapabilityRequirement = Omit<
+  KradleResource<'AgentCapabilityRequirement', AgentCapabilityRequirementSpec>,
+  'status'
+> & { status: KradleResourceStatus & AgentCapabilityRequirementStatusFields };
+
+// ---------------------------------------------------------------------------
+// Work-item links (`aggregated-resources.yaml:1007-1079`)
+// ---------------------------------------------------------------------------
+
+export interface WorkItemSessionLinkSpec extends KradlePreserveUnknown {
+  workItemRef?: string;
+  agentSession?: string;
+  runRefs?: string[];
+  linkSource?: string;
+  branchName?: string;
+  createdBy?: string;
+}
+
+export type WorkItemSessionLink = KradleResource<'WorkItemSessionLink', WorkItemSessionLinkSpec>;
+
+export interface WorkItemWorkspaceLinkSpec extends KradlePreserveUnknown {
+  workItemRef?: string;
+  workspace?: string;
+}
+
+export type WorkItemWorkspaceLink = KradleResource<
+  'WorkItemWorkspaceLink',
+  WorkItemWorkspaceLinkSpec
+>;
+
+// ---------------------------------------------------------------------------
+// Write-back policy (also surfaced as `AgentStack.spec.writeBackPolicy`)
 // ---------------------------------------------------------------------------
 
 export interface WriteBackPolicy {

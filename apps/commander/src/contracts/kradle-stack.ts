@@ -1,18 +1,22 @@
 /**
- * Mirrored kradle AgentStack contract for the v4 Stacks foundry (SPEC-V4 §V4-5).
+ * Sim-facing kradle `AgentStack` subset (SPEC-KRADLE-MODEL §2.2).
  *
- * Fidelity source: `packages/kradle/core/docs/agents/crd-schema-spec.md`
- * (`AgentStack.spec`): baseAgent, adapter, provider?, model, prompt
- * {system, developer}, approvalMode, toolProfileRef?, skillRefs?,
- * subagentRefs?, runnerPool? — plus the shared metadata/status.phase shell.
+ * This is the EDITABLE subset the Foundry stack-builder writes
+ * (`stack-builder.jsx`): base agent + adapter + model + the three prompts +
+ * approval posture + the ref lists. The full composite mirror (with
+ * `organizationRef`, `runtimeIdentity`, `permissionRefs`, `secretPolicy`,
+ * `writeBackPolicy`, …) lives in `kradle-resources.ts` (`AgentStackSpec`).
  *
- * This is the SIM-FACING stack shape (the foundry edits these): the full CRD
- * mirror with runtimeIdentity/permissionRefs/secretPolicy lives in
- * `kradle-resources.ts` (`AgentStackSpec`); the v4 sim mirrors only the
- * fields the Commander surfaces (personality prompts front and center).
+ * To keep the two from DRIFTING, every field name here is asserted (at compile
+ * time, below) to be a key of the canonical `AgentStackSpec`. The value-type
+ * widening — `approvalMode: string` (the sim accepts free-form, e.g. 'manual')
+ * and required `model`/`prompt` — is the sim's deliberate, documented stance,
+ * not drift.
  */
 
-/** Personality prompts (§V4-5: prompt.system carries the written personality). */
+import type { AgentStackSpec } from './kradle-resources';
+
+/** Personality prompts (prompt.system carries the written personality). */
 export interface KradleStackPrompt {
   system: string;
   developer?: string;
@@ -34,6 +38,17 @@ export interface KradleStackSpec {
   runnerPool?: string;
 }
 
+/**
+ * Compile-time no-drift guard: every editable field name MUST be a field of the
+ * canonical composite spec. If a field is renamed in `AgentStackSpec` (or here)
+ * without the other, this type resolves to `never` and breaks the build.
+ */
+type _StackSpecKeysSubsetOfComposite = keyof KradleStackSpec extends keyof AgentStackSpec
+  ? true
+  : never;
+const _stackSpecKeysAreComposite: _StackSpecKeysSubsetOfComposite = true;
+void _stackSpecKeysAreComposite;
+
 export interface KradleStackMetadata {
   name: string;
   namespace?: string;
@@ -41,7 +56,11 @@ export interface KradleStackMetadata {
 }
 
 export interface KradleStackStatus {
-  /** Summary state for UI tables (sim seeds use 'ready'). */
+  /**
+   * Summary state for UI tables. The real CRD enum is
+   * `Pending|Ready|Blocked|Error`; the sim seeds the lowercase `'ready'`, so we
+   * keep this tolerant (`string`) rather than break byte-identical mock output.
+   */
   phase: string;
 }
 

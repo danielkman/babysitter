@@ -69,7 +69,12 @@ import type {
   TestEvidenceStatus,
   WorkspaceGitStatus,
 } from '../../contracts/kradle-workspace';
-import type { CommanderTask, KradlePhase } from '../../contracts/kradle-resources';
+import type {
+  AgentRunPhase,
+  CommanderTask,
+  KradlePhase,
+  KradleResourcePhase,
+} from '../../contracts/kradle-resources';
 import type { KradleAgentStack, KradleAgentStackInput } from '../../contracts/kradle-stack';
 import { hashString, Prng } from './prng';
 import type { AdapterName, Scenario, TaskKind } from './scenario';
@@ -88,6 +93,37 @@ import {
 // ---------------------------------------------------------------------------
 // Sim-local domain types (NOT contracts — UI/game-layer vocabulary)
 // ---------------------------------------------------------------------------
+
+/**
+ * Project an `AgentDispatchRun.status.phase` (the run lifecycle superset) down
+ * to the 4-value resource phase the `SimTaskView`/`SimMemorySiloView` rows
+ * carry. The mock only ever stores `'Ready'`/`'Pending'` in
+ * `card.resource.status.phase`, so this is behavior-preserving; it stays total
+ * for the wider `AgentRunPhase` type the contract now uses.
+ */
+function toResourcePhase(phase: AgentRunPhase): KradleResourcePhase {
+  switch (phase) {
+    case 'Ready':
+    case 'Pending':
+    case 'Blocked':
+    case 'Error':
+      return phase;
+    case 'succeeded':
+    case 'Succeeded':
+    case 'Completed':
+      return 'Ready';
+    case 'failed':
+    case 'cancelled':
+    case 'Cancelled':
+      return 'Error';
+    case 'waiting-for-approval':
+    case 'AwaitingApproval':
+      return 'Blocked';
+    default:
+      // pending/queued/running and their capitalized variants → Pending.
+      return 'Pending';
+  }
+}
 
 /** Sim-time advanced per tick. `tick(n)` semantics are UNCHANGED by §V4-4. */
 export const TICK_MS = 250;
@@ -2652,7 +2688,7 @@ export class Simulation {
       workspaceId: card.resource.spec.workspaceRef ?? '',
       title: card.resource.metadata.labels?.['a5c.ai/title'] ?? card.taskId,
       state: this.compatTaskState(card),
-      phase: card.resource.status.phase,
+      phase: toResourcePhase(card.resource.status.phase),
       progress: roundTo(this.progressOf(card), 4),
       assigneeIds: [...this.agents.values()].filter((a) => a.taskId === card.taskId).map((a) => a.unitId),
       priority: -card.order,
