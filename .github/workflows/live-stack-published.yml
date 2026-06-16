@@ -210,6 +210,12 @@ jobs:
           # Install the babysitter SDK CLI
           npm install -g @a5c-ai/babysitter-sdk@${NPM_TAG}
 
+          # Install the genty runtime CLI — required for genty (runtime-cli) scenarios;
+          # the adapters launcher spawns `genty`, which must be on PATH (source-build
+          # workflow builds it; the published workflow must install it). Without this
+          # genty cells fail with `ENOENT: spawn genty`.
+          npm install -g @a5c-ai/genty@${NPM_TAG}
+
           # Install hooks-adapter CLI
           npm install -g @a5c-ai/hooks-adapter-cli@${NPM_TAG}
 
