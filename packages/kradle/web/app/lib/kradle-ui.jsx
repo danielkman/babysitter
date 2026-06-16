@@ -9,6 +9,7 @@ export const orgNavigationGroups = [
     title: 'Ship',
     items: [
       ['/', 'Home', 'Start or continue work'],
+      ['/overview', 'Overview', 'Org dashboard and activity'],
       ['/getting-started', 'Get Started', 'Setup guide'],
       ['/repositories', 'Code', 'Repositories and files'],
       ['/inbox', 'Reviews & issues', 'Pull requests and triage'],
@@ -312,7 +313,7 @@ export function StatusPill({ children, tone = 'good' }) {
 }
 
 export function EmptyState({ title, text, cta, ctaLabel, children, info = false }) {
-  const ctaBtn = cta ? <a href={cta} style={{ padding: '0.4rem 1rem', background: 'var(--color-accent, #3b82f6)', color: '#fff', borderRadius: '6px', textDecoration: 'none', fontSize: '0.875rem', fontWeight: 600 }}>{ctaLabel || 'Get started'}</a> : null;
+  const ctaBtn = cta ? <a href={cta} style={{ padding: '0.4rem 1rem', background: 'var(--accent)', color: '#fff', borderRadius: '6px', textDecoration: 'none', fontSize: '0.875rem', fontWeight: 600 }}>{ctaLabel || 'Get started'}</a> : null;
   const hasAction = children || ctaBtn;
   return <div className="card emptyState">{info && <span style={{ display: 'inline-block', marginBottom: '0.25rem', fontSize: '1.25rem' }} aria-hidden="true">&#10003;</span>}<h3>{title}</h3><p>{text}</p>{hasAction ? <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>{ctaBtn}{children}</div> : null}</div>;
 }

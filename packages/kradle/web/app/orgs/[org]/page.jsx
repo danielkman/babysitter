@@ -1,12 +1,12 @@
 export const dynamic = 'force-dynamic';
 
-import { DashboardPage } from '../../ui-shell.jsx';
+import { WarRoomMount } from './_commander/war-room-mount.jsx';
 
-export const metadata = { title: 'Dashboard | Kradle' };
+export const metadata = { title: 'Command | Kradle' };
 
-export default async function Page({ params }) {
-  const routeParams = await params;
-  const org = routeParams.org;
-  const repo = routeParams.repo;
-  return <DashboardPage org={org} />;
+export default async function Page({ params, searchParams }) {
+  const { org } = await params;
+  const sp = await (searchParams ?? Promise.resolve({}));
+  const mock = sp?.mock === '1';
+  return <WarRoomMount org={org} mock={mock} />;
 }
