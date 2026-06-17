@@ -17,6 +17,7 @@ const packageFamilies = {
   ],
   "dispatch-core": [
     "@a5c-ai/adapters",
+    "@a5c-ai/channels-adapter",
     "@a5c-ai/comm-adapter",
     "@a5c-ai/adapters-codecs",
     "@a5c-ai/adapters-cli",

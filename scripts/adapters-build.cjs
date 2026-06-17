@@ -15,6 +15,8 @@ const packages = [
   'packages/adapters/transport',
   'packages/adapters/cli',
   'packages/adapters/sdk',
+  'packages/adapters/triggers',
+  'packages/adapters/channels',
   'packages/genty/tui',
 ];
 

@@ -591,6 +591,18 @@
       "note": "README is the canonical package-level contract for reusable trigger/action glue used with adapters pipelines."
     },
     {
+      "surface": "packages/adapters/channels",
+      "packageName": "@a5c-ai/channels-adapter",
+      "description": "MCP-server mini-framework turning GitHub/Jira backends into Claude Code channels via declarative YAML: polling, dedup, declarative filters, opaque HMAC reply relay, and per-event session spawning via @a5c-ai/adapters.",
+      "hasReadme": true,
+      "status": "Public family package",
+      "canonicalHome": "../packages/adapters/channels/README.md",
+      "supporting": [
+        "./adapters/README.md"
+      ],
+      "note": "README is the canonical package-level contract for the MCP channels mini-framework."
+    },
+    {
       "surface": "plugins/babysitter",
       "packageName": "Babysitter Claude Code plugin",
       "description": "Claude Code harness plugin surface shipped from the repo plugin directory.",

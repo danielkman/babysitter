@@ -29,6 +29,7 @@
     { "path": "packages/adapters/webui" },
     { "path": "packages/adapters/harness-mock" },
     { "path": "packages/adapters/triggers" },
+    { "path": "packages/adapters/channels" },
     { "path": "packages/adapters/tasks" },
     { "path": "packages/adapters/tui" },
     { "path": "packages/adapters/tools" },
