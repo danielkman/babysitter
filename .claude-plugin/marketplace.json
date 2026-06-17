@@ -10,7 +10,7 @@
       "source": {
         "source": "url",
         "url": "https://github.com/a5c-ai/babysitter-claude.git",
-        "branch": "main"
+        "branch": "staging"
       },
       "description": "Babysitter orchestration plugin",
       "author": {
