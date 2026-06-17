@@ -46,10 +46,14 @@ const DOCUMENTED_INSTALL_SPECS: Readonly<Record<DocumentedInstallHarness, Docume
     marketplaceManifestPath: '.claude-plugin/marketplace.json',
   },
   codex: {
-    // Codex adds the MAIN repo's `.agents/plugins` subdir at the channel ref.
+    // Codex adds the MAIN repo's `.agents/plugins` subdir at the channel ref;
+    // the resolved plugin content lives in babysitter-codex, whose version
+    // manifest is `.codex-plugin/plugin.json` (NOT `.claude-plugin/marketplace.json`,
+    // which does not exist in that repo and 404s). parseManifestPluginVersion
+    // falls back to the top-level `version` for this plugin.json shape.
     marketplaceRepo: 'a5c-ai/babysitter-codex',
     expectedVersionRef: (channel) => channel,
-    marketplaceManifestPath: '.claude-plugin/marketplace.json',
+    marketplaceManifestPath: '.codex-plugin/plugin.json',
   },
 };
 

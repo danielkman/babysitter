@@ -106,7 +106,7 @@ describe('documented published install — channel resolution', () => {
       'https://raw.githubusercontent.com/a5c-ai/babysitter-claude/staging/.claude-plugin/marketplace.json',
     );
     expect(expectedVersionManifestUrl('codex', 'develop')).toBe(
-      'https://raw.githubusercontent.com/a5c-ai/babysitter-codex/develop/.claude-plugin/marketplace.json',
+      'https://raw.githubusercontent.com/a5c-ai/babysitter-codex/develop/.codex-plugin/plugin.json',
     );
   });
 });
