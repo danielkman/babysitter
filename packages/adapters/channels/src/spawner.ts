@@ -220,24 +220,30 @@ export function buildSpawnRunOptions(
 }
 
 /**
- * The default lazy loader for the optional `@a5c-ai/adapters` client. Dynamic-
- * imports the package, creates a client, then registers the built-in adapters
- * ONTO that client (so `agent:'claude'` resolves), and returns it. NEVER imported
- * at module load — only invoked when no client is injected (so tests that inject a
- * fake stay fully offline).
+ * The default lazy loader for the `@a5c-ai/adapters` client. Dynamic-imports the
+ * package, creates a client via the real `createClient()` factory, registers the
+ * built-in adapters ONTO that client via the real `registerBuiltInAdapters(client)`
+ * (so `agent:'claude'` resolves — the core `AdapterRegistry` starts empty), and
+ * returns it. NEVER imported at module load — only invoked when no client is
+ * injected (so tests that inject a fake stay fully offline).
+ *
+ * Bound HONESTLY to the in-repo `@a5c-ai/adapters` API: `createClient` and
+ * `registerBuiltInAdapters` are real exported symbols (re-exported from
+ * `@a5c-ai/comm-adapter` + `@a5c-ai/adapters-cli`), and the returned
+ * `AgentMuxClient.run(options)` is the real launch entry. The dynamic `import(...)`
+ * type is the package's own module type, so the factory/registration call sites are
+ * genuinely type-checked against the real signatures rather than cast through
+ * `unknown`. The structural `AdaptersClientLike` seam is preserved ONLY at the
+ * injection boundary (so the offline suite can supply a fake), and the real
+ * `AgentMuxClient` structurally satisfies it (it exposes `run(options): RunHandle`).
  */
 /* c8 ignore start -- the real `@a5c-ai/adapters` launch path is environment-gated
-   (needs the optional dep + the claude CLI + auth), out of scope for the offline
-   suite (DESIGN §7.7); tests always inject a fake client or loadClient. */
+   (needs the claude CLI + auth) and out of scope for the offline suite (DESIGN §7.7);
+   tests always inject a fake client or loadClient. */
 async function defaultLoadClient(): Promise<AdaptersClientLike> {
-  const mod = (await import('@a5c-ai/adapters')) as unknown as {
-    createClient: () => AdaptersClientLike;
-    registerBuiltInAdapters?: (client: AdaptersClientLike) => void;
-  };
+  const mod = await import('@a5c-ai/adapters');
   const client = mod.createClient();
-  if (typeof mod.registerBuiltInAdapters === 'function') {
-    mod.registerBuiltInAdapters(client);
-  }
+  mod.registerBuiltInAdapters(client);
   return client;
 }
 /* c8 ignore stop */

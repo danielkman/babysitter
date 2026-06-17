@@ -13,12 +13,14 @@ import { resolve, isAbsolute } from 'node:path';
 import { defineBackend } from './backend.js';
 import githubBackend from './backends/github.js';
 import jiraBackend from './backends/jira.js';
+import webhookBackend from './backends/webhook.js';
 import type { Backend } from './types.js';
 
 /** Built-in backend type -> backend module. */
 const BUILTINS: Record<string, Backend> = {
   github: githubBackend,
-  jira: jiraBackend
+  jira: jiraBackend,
+  webhook: webhookBackend
 };
 
 class Registry {
