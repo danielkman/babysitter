@@ -6,7 +6,9 @@ describe('resolveLaunchPlan', () => {
   afterEach(() => { process.env = { ...originalEnv }; });
 
   it('keeps the prompt artifact monitor timeout long enough for slow Windows bridge-interactive cells', () => {
-    expect(PROMPT_ARTIFACT_MONITOR_TIMEOUT_MS).toBe(900_000);
+    // The timeout is platform-dependent: Windows bridge-interactive cells are
+    // slower, so the constant is 45min on win32 and 15min elsewhere.
+    expect(PROMPT_ARTIFACT_MONITOR_TIMEOUT_MS).toBe(process.platform === 'win32' ? 2_700_000 : 900_000);
   });
 
   it('claude + anthropic: no proxy needed', () => {
