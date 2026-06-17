@@ -323,6 +323,7 @@ test('web UI and controller API expose live Kubernetes deployment and publishing
 test('web UI is wired to the Kubernetes controller API instead of a static local snapshot', () => {
   const page = read('../web/app/page.jsx');
   const orgPage = read('../web/app/orgs/[org]/page.jsx');
+  const overviewPage = read('../web/app/orgs/[org]/overview/page.jsx');
   const shellModules = ['../web/app/lib/kradle-ui.jsx', '../web/app/lib/page-frame.jsx', '../web/app/pages/agent-pages.jsx', '../web/app/pages/agent-helpers.jsx', '../web/app/pages/repo-pages.jsx', '../web/app/pages/manage-pages.jsx', '../web/app/pages/settings-pages.jsx', '../web/app/pages/external-pages.jsx'];
   const shell = shellModules.map((m) => { try { return readFileSync(m, 'utf8'); } catch { return ''; } }).join('\n');
   const actions = read('../web/app/components/resource-actions.jsx');
@@ -333,7 +334,10 @@ test('web UI is wired to the Kubernetes controller API instead of a static local
   const server = read('src/http-server.js');
   const webControllerRoute = read('../web/app/api/controller/route.js');
   assert.ok(page.includes("redirect('/orgs/'"));
-  assert.ok(orgPage.includes('DashboardPage'));
+  // The org home now renders the live commander WarRoom (same-origin, wired to
+  // the controller API); the dashboard moved to /orgs/[org]/overview.
+  assert.ok(orgPage.includes('WarRoomMount'), 'org home renders the live commander WarRoom');
+  assert.ok(overviewPage.includes('DashboardPage'), 'live-controller dashboard is at /orgs/[org]/overview');
   assert.ok(read('../web/app/orgs/page.jsx').includes('Choose an organization'));
   assert.ok(client.includes('KRADLE_CONTROLLER_URL'));
   assert.ok(client.includes('KRADLE_CONTROLLER_REQUEST_TIMEOUT_MS'));
