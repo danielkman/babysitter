@@ -731,19 +731,56 @@ spec:
     - name: Phase
       type: string
       jsonPath: .status.phase
+    - name: Board
+      type: string
+      jsonPath: .status.boardColumn
     - name: Age
       type: date
       jsonPath: .metadata.creationTimestamp
     schema:
       openAPIV3Schema:
         type: object
+        # spec/status stay preserve-unknown (free-form) for backward compatibility;
+        # the core board fields below are documented + validated where set, but a
+        # run that omits them is still accepted.
         properties:
           spec:
             type: object
             x-kubernetes-preserve-unknown-fields: true
+            properties:
+              # Human-facing card title (Commander WarRoom). Optional.
+              title:
+                type: string
+              # Longer human-facing description. Optional.
+              description:
+                type: string
+              # Relative scheduling priority (higher = sooner). Optional.
+              priority:
+                type: integer
           status:
             type: object
             x-kubernetes-preserve-unknown-fields: true
+            properties:
+              # Run lifecycle phase. Free-form for forward-compat, but the
+              # controller reconciles it to one of the documented values.
+              phase:
+                type: string
+                description: >-
+                  Run lifecycle phase: Pending | Queued | Running |
+                  AwaitingApproval | Completed | Failed | Cancelled.
+              # Derived board lane for the WarRoom (set by the run-status
+              # reconciler from status.phase). Optional override allowed.
+              boardColumn:
+                type: string
+                description: >-
+                  Board lane derived from phase: backlog | do | human-review |
+                  approved.
+              # Derived completion progress in [0,1] (queued 0, running 0.5,
+              # completed 1). Set by the run-status reconciler.
+              progress:
+                type: number
+                minimum: 0
+                maximum: 1
 ---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition

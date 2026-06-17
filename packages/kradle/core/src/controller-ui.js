@@ -1,6 +1,7 @@
 import { giteaIssueSyncPlan, githubProjectIssueSyncPlan } from './gitea-backend.js';
 import { resourceToYaml } from './resource-model.js';
-import { KRADLE_ORG_LABEL, KRADLE_ORG_NAMESPACE_LABEL, KRADLE_RESOURCES, apiResourceName, createKradleKubernetesReconciler, orgNamespaceName } from './kubernetes-controller.js';
+import { KRADLE_ORG_LABEL, KRADLE_ORG_NAMESPACE_LABEL, KRADLE_RESOURCES, apiResourceName, createKradleKubernetesReconciler, normalizeOrgSlug, orgNamespaceName } from './kubernetes-controller.js';
+import { reconcileRunStatus } from './agent-run-status-reconciler.js';
 
 const controllerEndpoints = [
   { method: 'GET', path: '/healthz', purpose: 'container and load-balancer health' },
@@ -55,8 +56,11 @@ const runtimeComponents = [
 
 export function createControllerUiModel(source, options = {}) {
   const snapshot = normalizeSnapshot(source);
-  const organizations = ensureOrganizations(snapshot.resources.Organization || [], snapshot.namespace);
   const requestedOrg = options.organization || options.org || process.env.KRADLE_ORG || '';
+  const organizations = ensureOrganizations(snapshot.resources.Organization || [], snapshot.namespace, {
+    requestedOrg,
+    resources: snapshot.resources
+  });
   const activeOrg = organizations.find((org) => org.slug === requestedOrg || org.name === requestedOrg) || organizations[0];
   const resources = KRADLE_RESOURCES.map((definition) => {
     const rawItems = snapshot.resources[definition.kind] || [];
@@ -103,7 +107,8 @@ export function createControllerUiModel(source, options = {}) {
   const policyExceptionRequests = filterByOrg(snapshot.resources.PolicyExceptionRequest || [], activeOrg?.slug);
   const policyEngine = createPolicyEngineView({ kyverno: snapshot.kyverno, policyProfiles, policyTemplates, policyBindings, policyExceptionRequests, org: activeOrg?.slug, namespace: activeOrg?.namespace || snapshot.namespace });
   const agentStacks = filterByOrg(snapshot.resources.AgentStack || [], activeOrg?.slug);
-  const agentDispatchRuns = filterByOrg(snapshot.resources.AgentDispatchRun || [], activeOrg?.slug);
+  const agentDispatchRuns = filterByOrg(snapshot.resources.AgentDispatchRun || [], activeOrg?.slug)
+    .map((run) => reconcileRunStatus(run));
   const agentTriggerRules = filterByOrg(snapshot.resources.AgentTriggerRule || [], activeOrg?.slug);
   const agentSessions = filterByOrg(snapshot.resources.AgentSession || [], activeOrg?.slug);
   const agentWorkspaces = filterByOrg(snapshot.resources.KradleWorkspace || [], activeOrg?.slug);
@@ -247,14 +252,103 @@ export function createControllerUiModel(source, options = {}) {
 }
 
 
-function ensureOrganizations(organizations = [], platformNamespace = 'kradle-system') {
-  if (organizations.length) return organizations.map((org) => {
+/**
+ * Resolve the organization list the board filters against.
+ *
+ * Organizations are discovered from REALITY rather than requiring an
+ * `Organization` CR to exist:
+ *  1. Any real `Organization` CRs in the snapshot (authoritative — preserves the
+ *     existing behavior and `default`-org tests).
+ *  2. The explicitly requested org (`options.requestedOrg`), so a board request
+ *     for `?org=<org>` resolves that org as active even when no `Organization` CR
+ *     was ever written for it (the namespaced resources still carry the org via
+ *     `spec.organizationRef` / the `kradle.a5c.ai/org` label / their namespace).
+ *  3. Orgs OBSERVED on the snapshot's resources (their `spec.organizationRef`,
+ *     `kradle.a5c.ai/org` label, or `kradle-org-*` namespace), so an org with
+ *     live resources but no CR is still listed.
+ *
+ * The synthesized orgs are merged after the CR-derived ones, deduplicated by
+ * slug (CR wins). When nothing at all is discoverable, fall back to `default`.
+ *
+ * @param {object[]} organizations - Organization CRs from the snapshot
+ * @param {string} platformNamespace
+ * @param {{ requestedOrg?: string, resources?: Record<string, object[]> }} [options]
+ */
+function ensureOrganizations(organizations = [], platformNamespace = 'kradle-system', options = {}) {
+  const requestedOrg = options.requestedOrg || '';
+  const resources = options.resources || {};
+
+  const bySlug = new Map();
+  const addOrg = (org) => {
+    if (!org?.slug || bySlug.has(org.slug)) return;
+    bySlug.set(org.slug, org);
+  };
+
+  // 1. Authoritative: real Organization CRs (CR wins on slug conflict).
+  for (const org of organizations) {
     const slug = org.spec?.slug || org.metadata?.name;
+    if (!slug) continue;
     const namespace = org.spec?.namespaceName || org.metadata?.labels?.[KRADLE_ORG_NAMESPACE_LABEL] || orgNamespaceName(slug);
-    return { name: org.metadata?.name, slug, displayName: org.spec?.displayName || slug, namespace, platformNamespace: org.metadata?.namespace || platformNamespace };
-  });
+    addOrg({
+      name: org.metadata?.name,
+      slug,
+      displayName: org.spec?.displayName || slug,
+      namespace,
+      platformNamespace: org.metadata?.namespace || platformNamespace,
+      synthesized: false
+    });
+  }
+
+  // 2. The explicitly requested org — resolve it even with no CR.
+  const requestedSlug = normalizeOrgSlug(requestedOrg);
+  if (requestedSlug) addSynthesizedOrg(addOrg, requestedSlug, platformNamespace);
+
+  // 3. Orgs observed on the resources themselves (CR-less but live).
+  for (const slug of observedOrgSlugs(resources)) {
+    addSynthesizedOrg(addOrg, slug, platformNamespace);
+  }
+
+  if (bySlug.size) return [...bySlug.values()];
+
   const slug = 'default';
-  return [{ name: slug, slug, displayName: 'Default org', namespace: orgNamespaceName(slug), platformNamespace }];
+  return [{ name: slug, slug, displayName: 'Default org', namespace: orgNamespaceName(slug), platformNamespace, synthesized: true }];
+}
+
+function addSynthesizedOrg(addOrg, slug, platformNamespace) {
+  addOrg({
+    name: slug,
+    slug,
+    displayName: slug,
+    namespace: orgNamespaceName(slug),
+    platformNamespace,
+    synthesized: true
+  });
+}
+
+/**
+ * Collect distinct org slugs observed across all snapshot resources: from each
+ * item's `spec.organizationRef`, its `kradle.a5c.ai/org` label, or a
+ * `kradle-org-<slug>` namespace. Pure read; never throws.
+ */
+function observedOrgSlugs(resources = {}) {
+  const slugs = new Set();
+  for (const items of Object.values(resources)) {
+    if (!Array.isArray(items)) continue;
+    for (const item of items) {
+      const ref = item?.spec?.organizationRef || item?.metadata?.labels?.[KRADLE_ORG_LABEL];
+      if (ref) {
+        const slug = normalizeOrgSlug(ref);
+        if (slug) slugs.add(slug);
+        continue;
+      }
+      const namespace = item?.metadata?.namespace;
+      if (typeof namespace === 'string' && namespace.startsWith('kradle-org-')) {
+        const slug = normalizeOrgSlug(namespace.slice('kradle-org-'.length));
+        if (slug) slugs.add(slug);
+      }
+    }
+  }
+  return [...slugs];
 }
 
 

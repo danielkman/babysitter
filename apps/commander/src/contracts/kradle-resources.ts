@@ -315,6 +315,16 @@ export interface AgentDispatchRunSpec extends KradlePreserveUnknown {
   workspaceRef?: string;
   runnerPool?: string;
   approvalPolicy?: AgentDispatchApprovalPolicy;
+  /**
+   * Human-facing card title (the WarRoom card heading). When present this is the
+   * first-class title source; the mapper falls back to source/repository
+   * derivation only when it is absent (`aggregated-resources.yaml` spec field).
+   */
+  title?: string;
+  /** Longer human-facing description shown on the card. Optional. */
+  description?: string;
+  /** Relative scheduling priority (higher = sooner). Optional. */
+  priority?: number;
 }
 
 /**
@@ -366,6 +376,19 @@ export interface AgentRunCost extends KradlePreserveUnknown {
 export interface AgentDispatchRunStatus extends Omit<KradleResourceStatus, 'phase'> {
   /** The run lifecycle phase (NOT the resource phase). */
   phase: AgentRunPhase;
+  /**
+   * Board lane derived from `phase` by the kradle run-status reconciler
+   * (`backlog | do | human-review | approved`). When present this is the
+   * first-class lane source; the mapper falls back to the phase→column
+   * derivation only when it is absent (`aggregated-resources.yaml` status field).
+   */
+  boardColumn?: string;
+  /**
+   * Derived completion progress in [0,1] (queued 0, running 0.5, completed 1),
+   * set by the run-status reconciler. Preferred over the phase→progress
+   * derivation when present.
+   */
+  progress?: number;
   agentMuxRunId?: string;
   agentMuxSessionId?: string;
   /** Names of `AgentDispatchAttempt` records under this run. */

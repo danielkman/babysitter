@@ -52,7 +52,7 @@ import type {
   SimWorkspaceSummaryView,
   SimWorkspaceView,
 } from '../mock/simulation';
-import { PHASES_BY_KIND } from '../mock/simulation';
+import { COLUMNS, PHASES_BY_KIND } from '../mock/simulation';
 import type { AdapterName, TaskKind } from '../mock/scenario';
 import { ADAPTERS, MODELS_BY_ADAPTER, TASK_KINDS } from '../mock/scenario';
 import type {
@@ -322,6 +322,27 @@ export function mapStacks(snapshot: KradleControllerSnapshot): SimStackView[] {
 // ---------------------------------------------------------------------------
 // §4.2 — AgentDispatchRun phase (+ refinement) → board column (AC4)
 // ---------------------------------------------------------------------------
+
+/** Valid board columns (the kradle reconciler emits a subset of these). */
+const COLUMN_SET = new Set<string>(COLUMNS);
+
+/**
+ * The first-class lane source: the run's `status.boardColumn`, set by the kradle
+ * run-status reconciler (`aggregated-resources.yaml`). Returns the column only
+ * when it is a recognized `ColumnId`; otherwise `undefined` so the caller falls
+ * back to the phase→column derivation (thin, honest fallback — never invents).
+ */
+function runBoardColumn(item: KradleResourceItem): ColumnId | undefined {
+  const raw = asString(status(item).boardColumn);
+  return raw !== undefined && COLUMN_SET.has(raw) ? (raw as ColumnId) : undefined;
+}
+
+/** The first-class progress source: the run's `status.progress` in [0,1]. */
+function runStatusProgress(item: KradleResourceItem): number | undefined {
+  const raw = asNumber(status(item).progress);
+  if (raw === undefined) return undefined;
+  return Math.min(1, Math.max(0, raw));
+}
 
 /**
  * §4.2 total, deterministic phase→column map. `phase` is the run's
@@ -685,14 +706,20 @@ export function mapCards(snapshot: KradleControllerSnapshot): SimCardView[] {
     const released =
       lab[LABEL_RELEASE_ID] !== undefined || asString(status(run).releasedAt) !== undefined;
 
-    const column = runPhaseToColumn(phase, {
-      taskKind,
-      hasPendingReviewApproval,
-      hasPendingWriteBackApproval,
-      hasApprovedWriteBack,
-      merged,
-      released,
-    });
+    // Prefer the real reconciled lane (`status.boardColumn`); fall back to the
+    // phase→column derivation only when the run carries no board column (thin,
+    // honest fallback — §4.2). The Commander-label refinements (merged/released/
+    // review gates) still apply when deriving.
+    const column =
+      runBoardColumn(run) ??
+      runPhaseToColumn(phase, {
+        taskKind,
+        hasPendingReviewApproval,
+        hasPendingWriteBackApproval,
+        hasApprovedWriteBack,
+        merged,
+        released,
+      });
 
     const workspaceId = asString(sp.workspaceRef) ?? '';
     const ws = workspaceId !== '' ? wsByName.get(workspaceId) : undefined;
@@ -701,10 +728,14 @@ export function mapCards(snapshot: KradleControllerSnapshot): SimCardView[] {
     const sourceRefs = asRecord(sp.sourceRefs);
     const pullRequest = asString(sourceRefs?.pullRequest);
     const repository = asString(sp.repository) ?? '';
-    const title = pullRequest ?? (repository !== '' ? `${repository}:${taskKind}` : taskId);
+    // Prefer the real `spec.title`; fall back to PR/repository derivation only
+    // when it is absent (thin, honest fallback).
+    const title =
+      asString(sp.title) ?? pullRequest ?? (repository !== '' ? `${repository}:${taskKind}` : taskId);
 
     const sourceEvent = asRecord(sp.sourceEvent);
-    const description = asString(sourceEvent?.name) ?? '';
+    // Prefer the real `spec.description`; fall back to the source-event name.
+    const description = asString(sp.description) ?? asString(sourceEvent?.name) ?? '';
 
     const feedbackApproval = (approvals.byRun.get(taskId) ?? []).find(
       (a) => asString(status(a).feedback) !== undefined,
@@ -732,7 +763,8 @@ export function mapCards(snapshot: KradleControllerSnapshot): SimCardView[] {
       order: 0, // assigned in the per-column ordering pass below.
       yolo: lab[LABEL_YOLO] === 'true',
       merged: column === 'merged' || column === 'in-production',
-      progress: runProgress(phase),
+      // Prefer the real reconciled `status.progress`; fall back to phase→progress.
+      progress: runStatusProgress(run) ?? runProgress(phase),
       parentId: lab[LABEL_PARENT] ?? null,
       childIds: childrenByParent.get(taskId) ?? [],
       agentIds,
@@ -1388,12 +1420,12 @@ function mapTaskView(run: KradleResourceItem): SimTaskView {
     taskKind,
     repository: asString(sp.repository) ?? '',
     workspaceId: asString(sp.workspaceRef) ?? '',
-    title: asString(asRecord(sp.sourceRefs)?.pullRequest) ?? run.metadata.name,
+    title: asString(sp.title) ?? asString(asRecord(sp.sourceRefs)?.pullRequest) ?? run.metadata.name,
     state: mapTaskState(phase),
     phase: kradlePhase,
-    progress: runProgress(phase),
+    progress: runStatusProgress(run) ?? runProgress(phase),
     assigneeIds: [],
-    priority: 0,
+    priority: asNumber(sp.priority) ?? 0,
   };
 }
 

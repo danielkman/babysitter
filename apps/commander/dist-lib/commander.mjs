@@ -12239,7 +12239,16 @@ function $o(e) {
 	for (let n of $(e, "stacks")) t.set(n.metadata.name, Qo(n));
 	return [...t.values()].sort((e, t) => e.name.localeCompare(t.name));
 }
-function es(e, t) {
+var es = new Set(wt);
+function ts(e) {
+	let t = q(Z(e).boardColumn);
+	return t !== void 0 && es.has(t) ? t : void 0;
+}
+function ns(e) {
+	let t = J(Z(e).progress);
+	if (t !== void 0) return Math.min(1, Math.max(0, t));
+}
+function rs(e, t) {
 	switch (e) {
 		case "pending":
 		case "Pending":
@@ -12259,7 +12268,7 @@ function es(e, t) {
 		default: return "backlog";
 	}
 }
-var ts = new Set([
+var is = new Set([
 	"succeeded",
 	"Succeeded",
 	"Completed",
@@ -12268,20 +12277,20 @@ var ts = new Set([
 	"cancelled",
 	"Cancelled"
 ]);
-function ns(e) {
-	return e !== void 0 && ts.has(e);
+function as(e) {
+	return e !== void 0 && is.has(e);
 }
-function rs(e) {
+function os(e) {
 	return q(X(e).agentDispatchRun) ?? q(X(e).dispatchRun);
 }
-function is(e) {
+function ss(e) {
 	let t = Xo(e, "AgentDispatchAttempt");
 	return t.length > 0 ? t : [];
 }
-function as(e) {
+function cs(e) {
 	let t = /* @__PURE__ */ new Map(), n = 0;
-	for (let r of is(e)) {
-		let e = rs(r);
+	for (let r of ss(e)) {
+		let e = os(r);
 		if (e === void 0) {
 			n += 1;
 			continue;
@@ -12297,7 +12306,7 @@ function as(e) {
 		let t = n.map((e) => e.item);
 		r.set(e, t);
 		let a;
-		for (let e = t.length - 1; e >= 0; --e) if (!ns(Q(t[e]))) {
+		for (let e = t.length - 1; e >= 0; --e) if (!as(Q(t[e]))) {
 			a = t[e];
 			break;
 		}
@@ -12308,25 +12317,25 @@ function as(e) {
 		activeByRun: i
 	};
 }
-function os(e) {
+function ls(e) {
 	return q(X(e).dispatchRun);
 }
-function ss(e) {
+function us(e) {
 	return q(Y(X(e).action)?.type);
 }
-function cs(e) {
+function ds(e) {
 	let t = Q(e);
 	return t === void 0 || t === "Pending";
 }
-function ls(e) {
+function fs(e) {
 	let t = /* @__PURE__ */ new Map(), n = /* @__PURE__ */ new Map(), r = $(e, "approvals"), i = Yo(e, "approvals");
 	for (let e of r) {
-		let n = os(e);
+		let n = ls(e);
 		n !== void 0 && (t.get(n) ?? t.set(n, []).get(n)).push(e);
 	}
-	let a = i.length > 0 ? i : r.filter(cs);
+	let a = i.length > 0 ? i : r.filter(ds);
 	for (let e of a) {
-		let t = os(e);
+		let t = ls(e);
 		t !== void 0 && (n.get(t) ?? n.set(t, []).get(t)).push(e);
 	}
 	return {
@@ -12334,47 +12343,47 @@ function ls(e) {
 		pendingByRun: n
 	};
 }
-var us = new Set(["review", "ai-review"]), ds = new Set([
+var ps = new Set(["review", "ai-review"]), ms = new Set([
 	"write-back",
 	"release",
 	"tool-use"
 ]);
-function fs(e) {
+function hs(e) {
 	return q(X(e).dispatchRun);
 }
-function ps(e) {
+function gs(e) {
 	return q(X(e).dispatchAttempt);
 }
-function ms(e) {
+function _s(e) {
 	return Q(e) === "Active";
 }
-function hs(e) {
+function vs(e) {
 	let t = /* @__PURE__ */ new Map();
 	for (let n of $(e, "sessions")) {
-		if (!ms(n)) continue;
-		let e = fs(n);
+		if (!_s(n)) continue;
+		let e = hs(n);
 		e !== void 0 && (t.get(e) ?? t.set(e, []).get(e)).push(n);
 	}
 	return t;
 }
-function gs(e) {
+function ys(e) {
 	let t = /* @__PURE__ */ new Map();
 	for (let n of $(e, "sessions")) {
-		let e = ps(n);
+		let e = gs(n);
 		e !== void 0 && (t.get(e) ?? t.set(e, []).get(e)).push(n);
 	}
 	return t;
 }
-function _s(e, t, n, r) {
+function bs(e, t, n, r) {
 	let i = t.activeByRun.get(e);
 	if (i !== void 0) {
-		let n = (r.get(i) ?? []).filter(ms);
+		let n = (r.get(i) ?? []).filter(_s);
 		if (n.length > 0) return n;
 		if (t.byRun.has(e)) return [];
 	}
 	return n.get(e) ?? [];
 }
-var vs = {
+var xs = {
 	Pending: "created",
 	Provisioning: "created",
 	Ready: "ready",
@@ -12383,10 +12392,10 @@ var vs = {
 	Archived: "archived",
 	Terminating: "missing"
 };
-function ys(e) {
-	return e !== void 0 && e in vs ? vs[e] : "missing";
+function Ss(e) {
+	return e !== void 0 && e in xs ? xs[e] : "missing";
 }
-function bs(e) {
+function Cs(e) {
 	let t = Y(Z(e).gitStatus), n = {
 		branch: q(t?.branch) ?? "main",
 		headSha: q(t?.headSha) ?? "",
@@ -12394,53 +12403,53 @@ function bs(e) {
 	}, r = J(t?.ahead), i = J(t?.behind), a = J(t?.uncommittedCount);
 	return r !== void 0 && (n.ahead = r), i !== void 0 && (n.behind = i), a !== void 0 && (n.uncommittedCount = a), n;
 }
-function xs(e) {
+function ws(e) {
 	let t = /* @__PURE__ */ new Map();
 	for (let n of $(e, "workspaces")) t.set(n.metadata.name, n);
 	return t;
 }
-function Ss(e) {
-	switch (Ts(e)) {
+function Ts(e) {
+	switch (Os(e)) {
 		case "running": return .5;
 		case "succeeded": return 1;
 		default: return 0;
 	}
 }
-function Cs(e) {
-	let t = $(e, "runs"), n = ls(e), r = xs(e), i = hs(e), a = as(e), o = gs(e), s = /* @__PURE__ */ new Map();
+function Es(e) {
+	let t = $(e, "runs"), n = fs(e), r = ws(e), i = vs(e), a = cs(e), o = ys(e), s = /* @__PURE__ */ new Map();
 	for (let e of t) {
 		let t = Ho(e)[Po];
 		t !== void 0 && (s.get(t) ?? s.set(t, []).get(t)).push(e.metadata.name);
 	}
 	let c = [], l = 0;
 	for (let e of t) {
-		let t = X(e), u = Ho(e), d = e.metadata.name, f = Jo(q(t.taskKind)), p = Q(e), m = n.pendingByRun.get(d) ?? [], h = es(p, {
+		let t = X(e), u = Ho(e), d = e.metadata.name, f = Jo(q(t.taskKind)), p = Q(e), m = n.pendingByRun.get(d) ?? [], h = m.some((e) => ps.has(us(e) ?? "")), g = m.some((e) => ms.has(us(e) ?? "")), _ = (n.byRun.get(d) ?? []).some((e) => ms.has(us(e) ?? "") && (Q(e) === "Approved" || q(Z(e).decision) === "approved")), v = u["commander.a5c.ai/merged"] === "true" || q(Z(e).mergedAt) !== void 0, y = u["commander.a5c.ai/release-id"] !== void 0 || q(Z(e).releasedAt) !== void 0, b = ts(e) ?? rs(p, {
 			taskKind: f,
-			hasPendingReviewApproval: m.some((e) => us.has(ss(e) ?? "")),
-			hasPendingWriteBackApproval: m.some((e) => ds.has(ss(e) ?? "")),
-			hasApprovedWriteBack: (n.byRun.get(d) ?? []).some((e) => ds.has(ss(e) ?? "") && (Q(e) === "Approved" || q(Z(e).decision) === "approved")),
-			merged: u["commander.a5c.ai/merged"] === "true" || q(Z(e).mergedAt) !== void 0,
-			released: u["commander.a5c.ai/release-id"] !== void 0 || q(Z(e).releasedAt) !== void 0
-		}), g = q(t.workspaceRef) ?? "", _ = g === "" ? void 0 : r.get(g), v = _ === void 0 ? 0 : bs(_).uncommittedCount ?? 0, y = q(Y(t.sourceRefs)?.pullRequest), b = q(t.repository) ?? "", x = y ?? (b === "" ? d : `${b}:${f}`), S = q(Y(t.sourceEvent)?.name) ?? "", C = (n.byRun.get(d) ?? []).find((e) => q(Z(e).feedback) !== void 0), w = C ? q(Z(C).feedback) ?? null : null, T = _s(d, a, i, o).map((e) => e.metadata.name), E = (a.byRun.get(d) ?? []).length || 1, D = {
+			hasPendingReviewApproval: h,
+			hasPendingWriteBackApproval: g,
+			hasApprovedWriteBack: _,
+			merged: v,
+			released: y
+		}), x = q(t.workspaceRef) ?? "", S = x === "" ? void 0 : r.get(x), C = S === void 0 ? 0 : Cs(S).uncommittedCount ?? 0, w = q(Y(t.sourceRefs)?.pullRequest), T = q(t.repository) ?? "", E = q(t.title) ?? w ?? (T === "" ? d : `${T}:${f}`), D = Y(t.sourceEvent), O = q(t.description) ?? q(D?.name) ?? "", k = (n.byRun.get(d) ?? []).find((e) => q(Z(e).feedback) !== void 0), A = k ? q(Z(k).feedback) ?? null : null, j = bs(d, a, i, o).map((e) => e.metadata.name), M = (a.byRun.get(d) ?? []).length || 1, N = {
 			taskId: d,
 			taskKind: f,
-			title: x,
-			repository: b,
-			workspaceId: g,
-			column: h,
+			title: E,
+			repository: T,
+			workspaceId: x,
+			column: b,
 			order: 0,
 			yolo: u[No] === "true",
-			merged: h === "merged" || h === "in-production",
-			progress: Ss(p),
+			merged: b === "merged" || b === "in-production",
+			progress: ns(e) ?? Ts(p),
 			parentId: u["commander.a5c.ai/parent"] ?? null,
 			childIds: s.get(d) ?? [],
-			agentIds: T,
-			attempt: E,
-			feedback: w,
-			dirtyFileCount: v,
+			agentIds: j,
+			attempt: M,
+			feedback: A,
+			dirtyFileCount: C,
 			hasPendingInquiry: m.length > 0,
 			stackRef: q(t.agentStack) ?? "",
-			description: S,
+			description: O,
 			releaseId: u["commander.a5c.ai/release-id"] ?? null,
 			compacted: !1,
 			workerAgentId: u["commander.a5c.ai/worker"] ?? null,
@@ -12448,7 +12457,7 @@ function Cs(e) {
 			humanAssigneeId: u["commander.a5c.ai/human"] ?? null
 		};
 		c.push({
-			view: D,
+			view: N,
 			sortKey: Wo(e) ?? l,
 			seq: l
 		}), l += 1;
@@ -12460,7 +12469,7 @@ function Cs(e) {
 	});
 	return c.map((e) => e.view);
 }
-var ws = {
+var Ds = {
 	Pending: "pending",
 	Queued: "queued",
 	Running: "running",
@@ -12470,10 +12479,10 @@ var ws = {
 	Failed: "failed",
 	Cancelled: "cancelled"
 };
-function Ts(e) {
-	return e === void 0 ? "pending" : ws[e] ?? e;
+function Os(e) {
+	return e === void 0 ? "pending" : Ds[e] ?? e;
 }
-var Es = {
+var ks = {
 	pending: "Pending",
 	queued: "Queued",
 	running: "Running",
@@ -12484,10 +12493,10 @@ var Es = {
 	failed: "Failed",
 	cancelled: "Cancelled"
 };
-function Ds(e) {
-	if (e !== void 0) return Es[e] ?? e;
+function As(e) {
+	if (e !== void 0) return ks[e] ?? e;
 }
-var Os = {
+var js = {
 	Running: "waiting",
 	Succeeded: "completed",
 	Failed: "failed",
@@ -12496,12 +12505,12 @@ var Os = {
 	Queued: "created",
 	AwaitingApproval: "waiting"
 };
-function ks(e) {
-	let t = Ds(e);
-	return t !== void 0 && t in Os ? Os[t] : "created";
+function Ms(e) {
+	let t = As(e);
+	return t !== void 0 && t in js ? js[t] : "created";
 }
-function As(e, t) {
-	let n = Tt[e], r = Ss(t);
+function Ns(e, t) {
+	let n = Tt[e], r = Ts(t);
 	if (r >= 1) return n.map((e) => ({
 		label: e,
 		status: "done"
@@ -12512,25 +12521,25 @@ function As(e, t) {
 		status: t < i ? "done" : t === i ? "current" : "pending"
 	}));
 }
-function js(e, t) {
-	let n = ls(e).pendingByRun.get(t) ?? [];
+function Ps(e, t) {
+	let n = fs(e).pendingByRun.get(t) ?? [];
 	return n.length === 0 ? {} : { breakpoint: n.length };
 }
-function Ms(e) {
+function Fs(e) {
 	return `commander/${e}@v1`;
 }
-function Ns(e) {
+function Is(e) {
 	return $(e, "runs").map((t) => {
 		let n = X(t), r = Z(t), i = Jo(q(n.taskKind)), a = Q(t), o = Uo(r.queuedAt) ?? Wo(t) ?? 0, s = Uo(r.completedAt) ?? Uo(r.failedAt);
 		return {
 			runId: t.metadata.name,
 			taskId: t.metadata.name,
 			taskKind: i,
-			processId: Ms(i),
+			processId: Fs(i),
 			processRevision: 1,
-			observedState: ks(a),
-			phases: As(i, a),
-			pendingEffectsByKind: js(e, t.metadata.name),
+			observedState: Ms(a),
+			phases: Ns(i, a),
+			pendingEffectsByKind: Ps(e, t.metadata.name),
 			tokens: { ...zo },
 			costUsd: J(r.cost) ?? 0,
 			startedAt: o,
@@ -12538,29 +12547,29 @@ function Ns(e) {
 		};
 	}).sort((e, t) => t.startedAt - e.startedAt);
 }
-function Ps(e, t) {
+function Ls(e, t) {
 	let n = $(e, "runs").find((e) => e.metadata.name === t);
 	if (n === void 0) return null;
 	let r = Jo(q(X(n).taskKind)), i = Q(n);
 	return {
 		runId: n.metadata.name,
 		taskId: n.metadata.name,
-		observedState: ks(i),
-		pendingEffectsByKind: js(e, t),
-		phases: As(r, i),
+		observedState: Ms(i),
+		pendingEffectsByKind: Ps(e, t),
+		phases: Ns(r, i),
 		journal: []
 	};
 }
-var Fs = {
+var Rs = {
 	Active: "active",
 	Completed: "completed",
 	Failed: "aborted",
 	Cancelled: "aborted"
 };
-function Is(e) {
-	return e !== void 0 && e in Fs ? Fs[e] : "active";
+function zs(e) {
+	return e !== void 0 && e in Rs ? Rs[e] : "active";
 }
-function Ls(e) {
+function Bs(e) {
 	let t = /* @__PURE__ */ new Map();
 	for (let n of $(e, "transcripts")) {
 		let e = q(X(n).sessionRef);
@@ -12568,7 +12577,7 @@ function Ls(e) {
 	}
 	return { bySession: t };
 }
-function Rs(e) {
+function Vs(e) {
 	if (e === void 0) return {
 		tokenUsage: { ...zo },
 		cost: { ...Ro },
@@ -12593,13 +12602,13 @@ function Rs(e) {
 		transcriptLength: r.length
 	};
 }
-function zs(e, t) {
+function Hs(e, t) {
 	if (t === void 0) return "";
 	let n = $(e, "runs").find((e) => e.metadata.name === t);
 	return n === void 0 ? "" : q(X(n).agentStack) ?? "";
 }
-function Bs(e, t, n, r) {
-	let i = X(t), a = Ho(t), o = t.metadata.name, s = q(i.dispatchRun), c = a["commander.a5c.ai/creature"] ?? o, l = qo(q(i.adapter)), u = q(i.model) ?? V[l][0] ?? "", d = a["kradle.a5c.ai/agent-role"] === "reviewer" ? "reviewer" : a["kradle.a5c.ai/agent-role"] === "integration" ? "integration" : "worker", f = Is(Q(t)), p = zs(e, s), m = Rs(n.bySession.get(o)), h = q(i.title) ?? `${c} — ${d}`, g = f === "active" ? null : 0;
+function Us(e, t, n, r) {
+	let i = X(t), a = Ho(t), o = t.metadata.name, s = q(i.dispatchRun), c = a["commander.a5c.ai/creature"] ?? o, l = qo(q(i.adapter)), u = q(i.model) ?? V[l][0] ?? "", d = a["kradle.a5c.ai/agent-role"] === "reviewer" ? "reviewer" : a["kradle.a5c.ai/agent-role"] === "integration" ? "integration" : "worker", f = zs(Q(t)), p = Hs(e, s), m = Vs(n.bySession.get(o)), h = q(i.title) ?? `${c} — ${d}`, g = f === "active" ? null : 0;
 	return {
 		sessionId: o,
 		title: h,
@@ -12625,35 +12634,35 @@ function Bs(e, t, n, r) {
 		transcriptLength: m.transcriptLength
 	};
 }
-function Vs(e, t) {
-	let n = Ls(e), r = new Map($o(e).map((e) => [e.stackRef, e.name])), i = $(e, "sessions"), a = [], o = 0;
+function Ws(e, t) {
+	let n = Bs(e), r = new Map($o(e).map((e) => [e.stackRef, e.name])), i = $(e, "sessions"), a = [], o = 0;
 	for (let s of i) {
-		if (t !== void 0 && fs(s) !== t) {
+		if (t !== void 0 && hs(s) !== t) {
 			o += 1;
 			continue;
 		}
 		a.push({
-			view: Bs(e, s, n, r),
+			view: Us(e, s, n, r),
 			sortKey: Wo(s) ?? o,
 			seq: o
 		}), o += 1;
 	}
 	return a.sort((e, t) => t.sortKey - e.sortKey || t.seq - e.seq), a.map((e) => e.view);
 }
-var Hs = {
+var Gs = {
 	user: "user",
 	assistant: "message",
 	system: "event",
 	tool: "tool_call"
 };
-function Us(e, t) {
+function Ks(e, t) {
 	let n = $(e, "sessions").find((e) => e.metadata.name === t);
 	if (n === void 0) return null;
-	let r = Ls(e), i = Bs(e, n, r, new Map($o(e).map((e) => [e.stackRef, e.name]))), a = r.bySession.get(t);
+	let r = Bs(e), i = Us(e, n, r, new Map($o(e).map((e) => [e.stackRef, e.name]))), a = r.bySession.get(t);
 	return {
 		record: i,
 		transcript: (a === void 0 ? [] : Vo(X(a).messages) ?? []).map((e, t) => {
-			let n = Y(e) ?? {}, r = Hs[q(n.role) ?? "assistant"] ?? "message", i = {
+			let n = Y(e) ?? {}, r = Gs[q(n.role) ?? "assistant"] ?? "message", i = {
 				seq: t,
 				tick: 0,
 				timestamp: Uo(n.timestamp) ?? 0,
@@ -12664,27 +12673,27 @@ function Us(e, t) {
 		})
 	};
 }
-function Ws(e, t) {
+function qs(e, t) {
 	let n = $(e, "runs").find((e) => e.metadata.name === t);
 	if (n === void 0) return null;
-	let r = q(X(n).workspaceRef), i = r === void 0 ? void 0 : xs(e).get(r), a = (ls(e).byRun.get(t) ?? []).map((e) => q(Z(e).feedback)).filter((e) => e !== void 0);
+	let r = q(X(n).workspaceRef), i = r === void 0 ? void 0 : ws(e).get(r), a = (fs(e).byRun.get(t) ?? []).map((e) => q(Z(e).feedback)).filter((e) => e !== void 0);
 	return {
 		taskId: t,
-		phase: i === void 0 ? "missing" : ys(Q(i)),
+		phase: i === void 0 ? "missing" : Ss(Q(i)),
 		gitStatus: i === void 0 ? {
 			branch: "main",
 			headSha: "",
 			dirty: !1
-		} : bs(i),
+		} : Cs(i),
 		files: [],
 		testEvidence: { status: "unknown" },
 		reviewerNotes: a
 	};
 }
-function Gs(e) {
-	let t = Cs(e), n = $(e, "workspaces"), r = hs(e);
+function Js(e) {
+	let t = Es(e), n = $(e, "workspaces"), r = vs(e);
 	return n.map((e) => {
-		let n = e.metadata.name, i = bs(e), a = ys(Q(e)), o = t.filter((e) => e.workspaceId === n), s = o.map((e) => e.taskId), c = o.map((e) => ({
+		let n = e.metadata.name, i = Cs(e), a = Ss(Q(e)), o = t.filter((e) => e.workspaceId === n), s = o.map((e) => e.taskId), c = o.map((e) => ({
 			taskId: e.taskId,
 			title: e.title,
 			branch: i.branch,
@@ -12705,15 +12714,15 @@ function Gs(e) {
 		};
 	});
 }
-function Ks(e) {
+function Ys(e) {
 	let t = e.indexOf(":");
 	return t > 0 ? e.slice(0, t) : e;
 }
-function qs(e, t, n) {
+function Xs(e, t, n) {
 	let r = (n?.matches ?? []).map((e) => ({
 		recordId: e.record.id,
 		kind: e.record.nodeKind,
-		silo: Ks(e.record.id),
+		silo: Ys(e.record.id),
 		tick: 0,
 		unitId: t
 	})), i = [], a = [...$(e, "memoryImports"), ...Xo(e, "AgentMemoryUpdate")];
@@ -12742,16 +12751,16 @@ function qs(e, t, n) {
 		written: i
 	};
 }
-function Js() {
+function Zs() {
 	return H.map((e) => ({
 		kind: e,
-		processId: Ms(e),
+		processId: Fs(e),
 		revision: 1,
 		phases: [...Tt[e]]
 	}));
 }
-function Ys(e, t, n, r, i) {
-	let a = X(t), o = Ho(t), s = q(a.dispatchRun), c = qo(q(a.adapter)), l = q(a.model) ?? V[c][0] ?? "", u = zs(e, s), d = o["kradle.a5c.ai/agent-role"] === "reviewer" ? "reviewer" : o["kradle.a5c.ai/agent-role"] === "integration" ? "integration" : "worker", f = Rs(r.bySession.get(t.metadata.name));
+function Qs(e, t, n, r, i) {
+	let a = X(t), o = Ho(t), s = q(a.dispatchRun), c = qo(q(a.adapter)), l = q(a.model) ?? V[c][0] ?? "", u = Hs(e, s), d = o["kradle.a5c.ai/agent-role"] === "reviewer" ? "reviewer" : o["kradle.a5c.ai/agent-role"] === "integration" ? "integration" : "worker", f = Vs(r.bySession.get(t.metadata.name));
 	return {
 		unitId: t.metadata.name,
 		agent: c,
@@ -12774,7 +12783,7 @@ function Ys(e, t, n, r, i) {
 		updatedAt: i
 	};
 }
-var Xs = {
+var $s = {
 	Running: "in_progress",
 	Succeeded: "done",
 	Failed: "failed",
@@ -12783,27 +12792,27 @@ var Xs = {
 	Queued: "queued",
 	AwaitingApproval: "review"
 };
-function Zs(e) {
-	let t = Ds(e);
-	return t !== void 0 && t in Xs ? Xs[t] : "queued";
+function ec(e) {
+	let t = As(e);
+	return t !== void 0 && t in $s ? $s[t] : "queued";
 }
-function Qs(e) {
+function tc(e) {
 	let t = X(e), n = Q(e), r = Jo(q(t.taskKind)), i = n === "Succeeded" || n === "succeeded" ? "Ready" : n === "Failed" || n === "failed" || n === "Cancelled" || n === "cancelled" ? "Error" : "Pending";
 	return {
 		taskId: e.metadata.name,
 		taskKind: r,
 		repository: q(t.repository) ?? "",
 		workspaceId: q(t.workspaceRef) ?? "",
-		title: q(Y(t.sourceRefs)?.pullRequest) ?? e.metadata.name,
-		state: Zs(n),
+		title: q(t.title) ?? q(Y(t.sourceRefs)?.pullRequest) ?? e.metadata.name,
+		state: ec(n),
 		phase: i,
-		progress: Ss(n),
+		progress: ns(e) ?? Ts(n),
 		assigneeIds: [],
-		priority: 0
+		priority: J(t.priority) ?? 0
 	};
 }
-function $s(e, t, n) {
-	let r = X(e), i = q(r.dispatchRun), a = qo(q(r.adapter)), o = q(r.model) ?? V[a][0] ?? "", s = Rs(t.bySession.get(e.metadata.name));
+function nc(e, t, n) {
+	let r = X(e), i = q(r.dispatchRun), a = qo(q(r.adapter)), o = q(r.model) ?? V[a][0] ?? "", s = Vs(t.bySession.get(e.metadata.name));
 	return {
 		unitId: e.metadata.name,
 		agent: a,
@@ -12824,8 +12833,8 @@ function $s(e, t, n) {
 		updatedAt: n
 	};
 }
-function ec(e, t) {
-	let n = ls(e), r = hs(e), i = [];
+function rc(e, t) {
+	let n = fs(e), r = vs(e), i = [];
 	for (let [e, a] of n.pendingByRun) {
 		let n = r.get(e)?.[0]?.metadata.name ?? "";
 		for (let r of a) {
@@ -12852,8 +12861,8 @@ function ec(e, t) {
 	}
 	return i;
 }
-function tc(e, t) {
-	let n = ls(e), r = hs(e), i = [];
+function ic(e, t) {
+	let n = fs(e), r = vs(e), i = [];
 	for (let [e, a] of n.pendingByRun) {
 		let n = r.get(e)?.[0]?.metadata.name ?? "";
 		for (let r of a) {
@@ -12880,11 +12889,11 @@ function tc(e, t) {
 	}
 	return i;
 }
-function nc(e, t) {
-	let n = Cs(e), r = Ls(e), i = new Map($o(e).map((e) => [e.stackRef, e.name])), a = $(e, "sessions").filter(ms), o = a.map((n) => Ys(e, n, i, r, t)), s = a.map((e) => $s(e, r, t)), c = $(e, "runs").map((e) => Qs(e)), l = ec(e, t), u = tc(e, t), d = {};
+function ac(e, t) {
+	let n = Es(e), r = Bs(e), i = new Map($o(e).map((e) => [e.stackRef, e.name])), a = $(e, "sessions").filter(_s), o = a.map((n) => Qs(e, n, i, r, t)), s = a.map((e) => nc(e, r, t)), c = $(e, "runs").map((e) => tc(e)), l = rc(e, t), u = ic(e, t), d = {};
 	for (let t of n) {
 		if (t.agentIds.length === 0) continue;
-		let n = Ps(e, t.taskId);
+		let n = Ls(e, t.taskId);
 		d[t.taskId] = n?.phases.find((e) => e.status === "current")?.label ?? null;
 	}
 	return {
@@ -12899,56 +12908,56 @@ function nc(e, t) {
 }
 //#endregion
 //#region src/backend/kradle/kradleOrders.ts
-function rc(e) {
+function oc(e) {
 	return typeof e == "object" && !!e && !Array.isArray(e);
 }
-function ic(e) {
+function sc(e) {
 	return typeof e == "string" ? e : void 0;
 }
-function ac(e) {
-	return rc(e.spec) ? e.spec : {};
+function cc(e) {
+	return oc(e.spec) ? e.spec : {};
 }
-function oc(e) {
+function lc(e) {
 	let t = e.metadata.labels;
-	if (!rc(t)) return {};
+	if (!oc(t)) return {};
 	let n = {};
 	for (let [e, r] of Object.entries(t)) typeof r == "string" && (n[e] = r);
 	return n;
 }
-function sc(e) {
+function uc(e) {
 	return e?.agents?.runs?.items ?? [];
 }
-function cc(e) {
+function dc(e) {
 	let t = e?.agents?.approvals?.pending;
 	return Array.isArray(t) ? t : (e?.agents?.approvals?.items ?? []).filter((e) => {
-		let t = rc(e.status) ? ic(e.status.phase) : void 0;
+		let t = oc(e.status) ? sc(e.status.phase) : void 0;
 		return t === void 0 || t === "Pending";
 	});
 }
-function lc(e) {
+function fc(e) {
 	return e?.agents?.stacks?.items ?? [];
 }
-var uc = {
+var pc = {
 	"claude-code": "claude-code",
 	codex: "codex",
 	"gemini-cli": "gemini-cli",
 	pi: "pi"
 };
-function dc(e) {
+function mc(e) {
 	if (e !== void 0) {
-		for (let t of Object.keys(uc)) if (e === t || e.includes(t)) return t;
+		for (let t of Object.keys(pc)) if (e === t || e.includes(t)) return t;
 		return e;
 	}
 }
-function fc(e, t) {
-	let n = lc(e);
+function hc(e, t) {
+	let n = fc(e);
 	if (n.length === 0) return pt[t] ?? null;
-	let r = n.find((e) => oc(e)[Fo] === t);
+	let r = n.find((e) => lc(e)[Fo] === t);
 	if (r !== void 0) return r.metadata.name;
-	let i = lt[t], a = n.find((e) => dc(ic(ac(e).adapter)) === i);
+	let i = lt[t], a = n.find((e) => mc(sc(cc(e).adapter)) === i);
 	return a === void 0 ? n[0].metadata.name : a.metadata.name;
 }
-function pc(e) {
+function gc(e) {
 	let t = e.spec, n = e.metadata.name, r = { ...e.metadata.labels ?? {} }, i = {
 		baseAgent: t.baseAgent,
 		adapter: t.adapter,
@@ -12966,13 +12975,13 @@ function pc(e) {
 		spec: i
 	};
 }
-function mc(e, t) {
-	return cc(e).some((e) => e.metadata.name === t);
+function _c(e, t) {
+	return dc(e).some((e) => e.metadata.name === t);
 }
-function hc(e, t) {
-	return sc(e).some((e) => e.metadata.name === t);
+function vc(e, t) {
+	return uc(e).some((e) => e.metadata.name === t);
 }
-function gc(e, t) {
+function yc(e, t) {
 	let { getSnapshot: n, scheduleRefresh: r, gatewayOrders: i } = t, a = t.repo || "default", o = /* @__PURE__ */ new Set();
 	function s(e) {
 		o.has(e) || (o.add(e), console.warn(`kradleOrders: '${e}' has no kradle write path (documented no-op)`));
@@ -12987,13 +12996,13 @@ function gc(e, t) {
 	return {
 		abort(t) {
 			let r = n();
-			for (let n of t) hc(r, n) ? c("abort/cancelRun", () => e.cancelRun(n)) : i ? i.abort([n]) : s("abort");
+			for (let n of t) vc(r, n) ? c("abort/cancelRun", () => e.cancelRun(n)) : i ? i.abort([n]) : s("abort");
 		},
 		steer(e, t) {
 			i ? i.steer(e, t) : s("steer");
 		},
 		decide(t, r) {
-			if (mc(n(), t)) {
+			if (_c(n(), t)) {
 				let n = r === "allow" ? "approve" : "deny";
 				c("decide/decideApproval", () => e.decideApproval(t, n));
 				return;
@@ -13006,11 +13015,11 @@ function gc(e, t) {
 		},
 		answerInquiry(t, r) {
 			let a = n();
-			if (i && !mc(a, t)) {
+			if (i && !_c(a, t)) {
 				i.answerInquiry(t, r);
 				return;
 			}
-			if (mc(a, t)) {
+			if (_c(a, t)) {
 				let n = r === null || /^(approve|proceed|allow|yes|continue|ship|go)$/i.test(r) ? "approve" : "deny";
 				c("answerInquiry/decideApproval", () => e.decideApproval(t, n));
 				return;
@@ -13022,7 +13031,7 @@ function gc(e, t) {
 			s("answerInquiry");
 		},
 		createTask(t) {
-			let r = fc(n(), t.taskKind);
+			let r = hc(n(), t.taskKind);
 			if (r === null) return s("createTask"), null;
 			let i = {
 				agentStack: r,
@@ -13035,7 +13044,7 @@ function gc(e, t) {
 			return c("createTask/dispatch", () => e.dispatch(i)), null;
 		},
 		upsertStack(t) {
-			let n = pc(t);
+			let n = gc(t);
 			return t.stackRef !== void 0 && t.stackRef !== "" ? (n.metadata.name = t.stackRef, c("upsertStack/applyResource", () => e.applyResource(n)), t.stackRef) : (c("upsertStack/applyResource", () => e.applyResource(n)), t.metadata.name);
 		},
 		createRosterAgent() {
@@ -13094,7 +13103,7 @@ function gc(e, t) {
 }
 //#endregion
 //#region src/backend/real/realBoot.ts
-var _c = {
+var bc = {
 	getWorkspaceView() {
 		return null;
 	},
@@ -13141,7 +13150,7 @@ var _c = {
 		return [];
 	}
 };
-function vc(e, t) {
+function xc(e, t) {
 	return {
 		abort(n) {
 			for (let t of n) e.send({
@@ -13212,7 +13221,7 @@ function vc(e, t) {
 		focusInquiryCard() {}
 	};
 }
-var yc = 5e3, bc = 500, xc = class {
+var Sc = 5e3, Cc = 500, wc = class {
 	snapshot = null;
 	deps;
 	pollHandle = null;
@@ -13230,39 +13239,39 @@ var yc = 5e3, bc = 500, xc = class {
 	}
 	views() {
 		return {
-			getWorkspaceView: (e) => this.snapshot ? Ws(this.snapshot, e) : null,
-			getRunObservation: (e) => this.snapshot ? Ps(this.snapshot, e) : null,
+			getWorkspaceView: (e) => this.snapshot ? qs(this.snapshot, e) : null,
+			getRunObservation: (e) => this.snapshot ? Ls(this.snapshot, e) : null,
 			listStacks: () => this.snapshot ? $o(this.snapshot) : [],
 			listRosterAgents: () => [],
-			listRuns: () => this.snapshot ? Ns(this.snapshot) : [],
-			listProcessTemplates: () => Js(),
+			listRuns: () => this.snapshot ? Is(this.snapshot) : [],
+			listProcessTemplates: () => Zs(),
 			getMemoryIO: (e) => {
 				if (!this.snapshot) return {
 					read: [],
 					written: []
 				};
 				let t = this.memoryIo.get(e);
-				return t === void 0 && this.fetchMemory(e), qs(this.snapshot, e, t);
+				return t === void 0 && this.fetchMemory(e), Xs(this.snapshot, e, t);
 			},
 			getWorkspaceTree: () => null,
 			getFileContent: () => null,
 			getGitLog: () => [],
-			listSessions: (e) => this.snapshot ? Vs(this.snapshot, e) : [],
-			getSession: (e) => this.snapshot ? Us(this.snapshot, e) : null,
-			listCardViews: () => this.snapshot ? nc(this.snapshot, this.deps.now()).cards : [],
-			listWorkspaces: () => this.snapshot ? Gs(this.snapshot) : []
+			listSessions: (e) => this.snapshot ? Ws(this.snapshot, e) : [],
+			getSession: (e) => this.snapshot ? Ks(this.snapshot, e) : null,
+			listCardViews: () => this.snapshot ? ac(this.snapshot, this.deps.now()).cards : [],
+			listWorkspaces: () => this.snapshot ? Js(this.snapshot) : []
 		};
 	}
 	start() {
-		this.refresh(), this.pollHandle = this.deps.setTimer(() => this.tickPoll(), yc), this.streamUnsub = this.deps.client.openEventStream(() => this.scheduleRefresh());
+		this.refresh(), this.pollHandle = this.deps.setTimer(() => this.tickPoll(), Sc), this.streamUnsub = this.deps.client.openEventStream(() => this.scheduleRefresh());
 	}
 	scheduleRefresh() {
 		this.disposed || this.debounceHandle === null && (this.debounceHandle = this.deps.setTimer(() => {
 			this.debounceHandle = null, this.refresh();
-		}, bc));
+		}, Cc));
 	}
 	tickPoll() {
-		this.disposed || (this.refresh(), this.pollHandle = this.deps.setTimer(() => this.tickPoll(), yc));
+		this.disposed || (this.refresh(), this.pollHandle = this.deps.setTimer(() => this.tickPoll(), Sc));
 	}
 	refresh() {
 		this.disposed || this.inFlight || (this.inFlight = !0, this.deps.client.snapshot().then((e) => {
@@ -13292,7 +13301,7 @@ var yc = 5e3, bc = 500, xc = class {
 		this.disposed = !0, this.pollHandle !== null && this.deps.clearTimer(this.pollHandle), this.debounceHandle !== null && this.deps.clearTimer(this.debounceHandle), this.streamUnsub !== null && this.streamUnsub(), this.pollHandle = null, this.debounceHandle = null, this.streamUnsub = null;
 	}
 };
-function Sc(e, t, n, r = {}) {
+function Tc(e, t, n, r = {}) {
 	let i = [], a = !1, o = !1, s = 0, c = r.now ?? (() => Date.now()), l = r.setTimer ?? ((e, t) => setTimeout(e, t)), u = r.clearTimer ?? ((e) => clearTimeout(e)), d = () => {
 		if (o || i.length === 0) return;
 		let t = i;
@@ -13314,11 +13323,11 @@ function Sc(e, t, n, r = {}) {
 		i.push(e), a || (a = !0, queueMicrotask(() => {
 			a = !1, d();
 		}));
-	}), p = vc(t, d);
+	}), p = xc(t, d);
 	if (!(n?.kradleApiUrl !== void 0 && n.kradleApiUrl !== "")) return {
 		flush: d,
 		orders: p,
-		views: _c,
+		views: bc,
 		dispose() {
 			o = !0, f();
 		}
@@ -13328,11 +13337,11 @@ function Sc(e, t, n, r = {}) {
 		...n.kradleToken === void 0 ? {} : { kradleToken: n.kradleToken },
 		...n.kradleOrg === void 0 ? {} : { kradleOrg: n.kradleOrg },
 		...n.kradleRepo === void 0 ? {} : { kradleRepo: n.kradleRepo }
-	}) : r.createClient(n), h = new xc({
+	}) : r.createClient(n), h = new wc({
 		client: m,
 		onSnapshot: (t) => {
 			if (o) return;
-			let n = c(), r = nc(t, n);
+			let n = c(), r = ac(t, n);
 			s += 1, e.getState().commitTick({
 				frames: [],
 				units: r.units,
@@ -13351,7 +13360,7 @@ function Sc(e, t, n, r = {}) {
 		now: c,
 		setTimer: l,
 		clearTimer: u
-	}), g = n.gatewayUrl !== void 0 && n.gatewayUrl !== "", _ = gc(m, {
+	}), g = n.gatewayUrl !== void 0 && n.gatewayUrl !== "", _ = yc(m, {
 		repo: n.kradleRepo ?? "default",
 		getSnapshot: () => h.getSnapshot(),
 		scheduleRefresh: () => h.scheduleRefresh(),
@@ -13368,7 +13377,7 @@ function Sc(e, t, n, r = {}) {
 }
 //#endregion
 //#region src/lib.tsx
-function Cc(e) {
+function Ec(e) {
 	return e.mock === !0 ? {
 		mode: "mock",
 		seed: 42
@@ -13382,14 +13391,14 @@ function Cc(e) {
 		...e.gatewayUrl ? { gatewayUrl: e.gatewayUrl } : {}
 	};
 }
-function wc(e) {
-	let t = Cc(e), n = bo(t), r = $n(), i, a, o = !1;
+function Dc(e) {
+	let t = Ec(e), n = bo(t), r = $n(), i, a, o = !1;
 	if (n instanceof io) i = er(r, n), a = n.sim, e.mock === !0 && (window.__commander = {
 		store: r,
 		version: In
 	}, o = !0);
 	else {
-		let e = Sc(r, n, t);
+		let e = Tc(r, n, t);
 		i = e, a = e.views;
 	}
 	return n.connect().catch((e) => {
@@ -13403,11 +13412,11 @@ function wc(e) {
 		}
 	};
 }
-function Tc(e) {
+function Oc(e) {
 	let [t, r] = o(null);
 	return n(() => {
 		if (typeof window > "u") return;
-		let t = wc(e);
+		let t = Dc(e);
 		return r(t), () => {
 			t.dispose();
 		};
@@ -13428,4 +13437,4 @@ function Tc(e) {
 	});
 }
 //#endregion
-export { Tc as CommanderRoot, Tc as default };
+export { Oc as CommanderRoot, Oc as default };

@@ -4,13 +4,14 @@ import { createControllerUiModel } from './controller-ui.js';
 import { createKradleApiController } from './api-controller.js';
 import { createKubernetesResourceGateway } from './kubernetes-resource-gateway.js';
 import { orgNamespaceName } from './kubernetes-controller.js';
+import { getBoardSnapshot } from './kubernetes-controller-async.js';
 import { globalEventBus } from './event-bus.js';
 import { clearSnapshotCache } from './snapshot-cache.js';
 import { collectKradleHealthProbes, healthStatusValue } from './health-probes.js';
 
 const jsonHeaders = { 'content-type': 'application/json; charset=utf-8' };
 
-export function createKradleHttpHandler({ runtime = createKradleRuntime(), controller = createKradleApiController({ resourceGateway: createKubernetesResourceGateway() }), healthProbeOptions = {} } = {}) {
+export function createKradleHttpHandler({ runtime = createKradleRuntime(), controller = createKradleApiController({ resourceGateway: createKubernetesResourceGateway() }), boardSnapshot = getBoardSnapshot, healthProbeOptions = {} } = {}) {
   return async function handleKradleRequest(request, response) {
     try {
       const url = new URL(request.url || '/', 'http://localhost');
@@ -37,7 +38,21 @@ export function createKradleHttpHandler({ runtime = createKradleRuntime(), contr
         });
       }
       if (request.method === 'POST' && url.pathname === '/api/cache/invalidate') { clearSnapshotCache(); return send(response, 200, { ok: true, cleared: true }); }
-      if (request.method === 'GET' && url.pathname === '/api/controller') return send(response, 200, createControllerUiModel(await controller.snapshot(), { organization: url.searchParams.get('org') || undefined }));
+      if (request.method === 'GET' && url.pathname === '/api/controller') {
+        const org = url.searchParams.get('org') || undefined;
+        // Board load path: when an org is requested, use the PARALLEL async
+        // snapshot scoped to that org's namespace so kubectl calls run off the
+        // synchronous spawnSync path (which blocks the event loop) AND the remote
+        // round-trips stay bounded (a few seconds) instead of the ~96-kind ×
+        // all-namespace sync sweep. The org's resources resolve even with no
+        // Organization CR (the async path is told the org namespace directly).
+        // With no org, fall back to the injected controller's full sync snapshot
+        // so other callers (and in-process/fixture tests) keep their semantics.
+        const snapshot = org
+          ? await boardSnapshot({ namespace: orgNamespaceName(org), orgNamespaces: [orgNamespaceName(org)] })
+          : await controller.snapshot();
+        return send(response, 200, createControllerUiModel(snapshot, { organization: org }));
+      }
       if (url.pathname === '/api/orgs') {
         if (request.method === 'GET') return send(response, 200, { organizations: createControllerUiModel(await controller.snapshot()).orgs });
         if (request.method === 'POST') return send(response, 201, await controller.createOrganization(await readJson(request)));

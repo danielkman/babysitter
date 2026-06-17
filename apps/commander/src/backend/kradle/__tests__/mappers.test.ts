@@ -509,6 +509,45 @@ describe('AC12 — SimCardView / SimRunView field maps (§2.3.2/§2.3.3)', () =>
     expect(mapCards(done)[0].progress).toBe(1);
   });
 
+  // HYBRID native: the card prefers the REAL reconciled kradle fields
+  // (status.boardColumn / spec.title / spec.description / status.progress) and
+  // falls back to the label/phase derivation only when a real field is absent.
+  it('AC12-native: status.boardColumn wins over the phase→column derivation', () => {
+    // Phase is Running (→ derivation would say 'do'); reconciled board says 'approved'.
+    const s = snap({
+      runs: { items: [run('adr-bc', { repository: 'r', taskKind: 'fix' }, 'Running', {}, { boardColumn: 'approved' })] },
+    });
+    expect(mapCards(s)[0].column).toBe('approved');
+  });
+
+  it('AC12-native: an unrecognized status.boardColumn is ignored (falls back to derivation)', () => {
+    const s = snap({
+      runs: { items: [run('adr-bad', { repository: 'r', taskKind: 'fix' }, 'Running', {}, { boardColumn: 'not-a-column' })] },
+    });
+    expect(mapCards(s)[0].column).toBe('do');
+  });
+
+  it('AC12-native: spec.title / spec.description win over derivation', () => {
+    const s = snap({
+      runs: {
+        items: [
+          run('adr-t', { repository: 'r', taskKind: 'fix', title: 'Fix the login bug', description: 'Reported by QA', sourceRefs: { pullRequest: 'PR #9' } }, 'Running'),
+        ],
+      },
+    });
+    const [card] = mapCards(s);
+    expect(card.title).toBe('Fix the login bug');
+    expect(card.description).toBe('Reported by QA');
+  });
+
+  it('AC12-native: status.progress wins over the phase→progress step', () => {
+    // Phase Running → derivation 0.5; reconciled progress 0.8.
+    const s = snap({
+      runs: { items: [run('adr-pg', { repository: 'r', taskKind: 'fix' }, 'Running', {}, { progress: 0.8 })] },
+    });
+    expect(mapCards(s)[0].progress).toBe(0.8);
+  });
+
   it('AC12: parent/child links derive from the commander.a5c.ai/parent label', () => {
     const s = snap({
       runs: {

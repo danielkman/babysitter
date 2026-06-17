@@ -227,7 +227,15 @@ export async function getControllerSnapshotAsync(options = {}) {
       resources[definition.kind] = result.ok ? parseKubernetesList(result.stdout).items : [];
     }
 
-    const orgNamespaces = resolveOrgNamespaces(resources.Organization, resources.OrgNamespaceBinding, namespace);
+    // When the caller scopes the snapshot to a known org namespace (the board
+    // load path: GET /api/controller?org=<org>), fetch org-scoped resources from
+    // exactly that namespace. This keeps the remote round-trips bounded AND makes
+    // the org's resources visible even when NO Organization CR exists for it
+    // (the namespaced resources still carry the org via spec.organizationRef /
+    // the kradle.a5c.ai/org label). Otherwise derive namespaces from reality.
+    const orgNamespaces = Array.isArray(options.orgNamespaces) && options.orgNamespaces.length
+      ? options.orgNamespaces
+      : resolveOrgNamespaces(resources.Organization, resources.OrgNamespaceBinding, namespace);
 
     // Fetch org-scoped resources in parallel
     const orgResults = await Promise.all(
@@ -319,11 +327,15 @@ export async function getPartialSnapshot(kinds = [], options = {}) {
 
   const resources = Object.fromEntries(requestedDefs.map((d) => [d.kind, []]));
 
-  // Determine org namespaces only when necessary
+  // Determine org namespaces only when necessary. When the caller already knows
+  // the org namespace(s) (the board path), use them directly and skip the
+  // Organization/OrgNamespaceBinding lookup entirely.
   const needsOrgNs = requestedDefs.some((d) => !d.platformScoped && d.namespaced !== false && !d.namespace);
-  let orgNamespaces = [namespace];
+  let orgNamespaces = Array.isArray(options.orgNamespaces) && options.orgNamespaces.length
+    ? options.orgNamespaces
+    : [namespace];
 
-  if (needsOrgNs) {
+  if (needsOrgNs && !(Array.isArray(options.orgNamespaces) && options.orgNamespaces.length)) {
     try {
       const orgDef = findResourceDefinition('Organization');
       const bindingDef = findResourceDefinition('OrgNamespaceBinding');
@@ -368,6 +380,82 @@ export async function getPartialSnapshot(kinds = [], options = {}) {
     namespace,
     generatedAt: new Date().toISOString(),
     resources
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Board snapshot (the WarRoom lanes view)
+// ---------------------------------------------------------------------------
+
+/**
+ * The agent CRD kinds the WarRoom board + Commander mappers read. Scoping the
+ * board snapshot to just these (instead of the full ~96-kind sweep + CRD
+ * discovery) keeps the GET /api/controller?org=<org> load to a few seconds.
+ */
+export const BOARD_SNAPSHOT_KINDS = [
+  'AgentStack',
+  'AgentDispatchRun',
+  'AgentDispatchAttempt',
+  'AgentSession',
+  'AgentSessionTranscript',
+  'AgentApproval',
+  'KradleWorkspace',
+  'KradleProject',
+  'AgentMemoryRepository',
+  'AgentMemorySnapshot',
+  'AgentRunMemoryImport'
+];
+
+/**
+ * Fast board snapshot for GET /api/controller?org=<org>: a PARTIAL parallel
+ * fetch of only the board's agent kinds, scoped directly to the org namespace
+ * (no Organization CR required, no CRD discovery, no all-namespace sweep). The
+ * returned object is shaped so `createControllerUiModel` consumes it as a live
+ * Kubernetes snapshot (it carries `kubectl.available` + an `apiService` marker).
+ *
+ * @param {object} [options]
+ * @param {string} [options.namespace] - the org namespace (also the platform ns hint)
+ * @param {string[]} [options.orgNamespaces] - org namespace(s) to read org-scoped kinds from
+ * @param {string[]} [options.kinds] - override the kind set (defaults to BOARD_SNAPSHOT_KINDS)
+ * @returns {Promise<object>} a createControllerUiModel-ready snapshot
+ */
+export async function getBoardSnapshot(options = {}) {
+  const kubectl = options.kubectl || process.env.KRADLE_KUBECTL || 'kubectl';
+  const namespace = options.namespace || process.env.KRADLE_NAMESPACE || 'kradle-system';
+  const env = { ...process.env, ...(options.env || {}) };
+  const kinds = Array.isArray(options.kinds) && options.kinds.length ? options.kinds : BOARD_SNAPSHOT_KINDS;
+  const orgNamespaces = Array.isArray(options.orgNamespaces) && options.orgNamespaces.length
+    ? options.orgNamespaces
+    : [namespace];
+
+  const inClusterContext = currentContextResult(env);
+  const [partial, contextResult] = await Promise.all([
+    getPartialSnapshot(kinds, { ...options, namespace, orgNamespaces }),
+    inClusterContext || runKubectlAsync(['config', 'current-context'], { kubectl, timeoutMs: Number(options.timeoutMs || process.env.KRADLE_KUBECTL_TIMEOUT_MS || 3_000), env, allowFailure: true })
+  ]);
+
+  return {
+    source: 'kubernetes',
+    mode: 'kubernetes-api',
+    namespace,
+    generatedAt: partial.generatedAt,
+    correlationId: randomUUID(),
+    kubectl: {
+      binary: kubectl,
+      context: contextResult?.ok ? contextResult.stdout.trim() : null,
+      available: Boolean(contextResult?.ok),
+      errors: contextResult?.ok ? [] : [contextResult?.error || 'kubectl context unavailable']
+    },
+    // Mark the API surface as discoverable so the model reports 'ready' (the
+    // board kinds were fetched directly; we did not run CRD discovery).
+    apiService: { metadata: { name: KRADLE_API_VERSIONED_GROUP } },
+    crds: [],
+    resources: partial.resources,
+    kyverno: emptyKyverno(),
+    events: [],
+    permissions: [],
+    storage: storageBoundaries(),
+    commands: []
   };
 }
 
