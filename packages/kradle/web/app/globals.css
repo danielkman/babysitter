@@ -197,6 +197,16 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     0 6px 18px rgb(58 42 18 / 0.35);
   backdrop-filter: blur(12px);
 }
+/* corner rivets struck into the top plate (mirrors commander .wr-topbar::after) */
+.appTopbar::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    radial-gradient(circle 3px at 8px 50%, #e3c87f 0%, #b9913f 45%, #4a3812 80%, transparent 100%),
+    radial-gradient(circle 3px at calc(100% - 8px) 50%, #e3c87f 0%, #b9913f 45%, #4a3812 80%, transparent 100%),
+    radial-gradient(circle 2px at 33% calc(100% - 5px), #b9913f 0%, #94702c 55%, transparent 100%),
+    radial-gradient(circle 2px at 67% calc(100% - 5px), #b9913f 0%, #94702c 55%, transparent 100%);
+}
+.appTopbar > * { position: relative; z-index: 1; }
 .appTopbar .globalSearch { flex: 0 1 320px; min-width: 140px; }
 .appTopbar .topbarNav { flex: 0 0 auto; }
 .appTopbar .topbarAccount { margin-left: auto; flex-shrink: 0; }
@@ -214,18 +224,32 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 .brandMark:hover { border-color: var(--border-focus); }
 .brandWordmark { display: grid; gap: 1px; line-height: 1; }
-.brandMark strong { font-family: var(--font-display); font-variant-caps: small-caps; font-size: 19px; font-weight: 700; letter-spacing: 0.14em; color: var(--text); }
+.brandMark strong { font-family: var(--font-display); font-variant-caps: small-caps; font-size: 19px; font-weight: 700; letter-spacing: 0.14em; color: var(--text); text-shadow: 0 1px 0 rgb(18 16 9 / 0.6), 0 0 1px rgb(216 181 97 / 0.4); }
 .brandWordmark em { color: var(--accent); font-family: var(--font-display); font-variant-caps: small-caps; font-size: 10px; font-style: normal; font-weight: 600; letter-spacing: 0.2em; text-transform: none; }
 .brandMark strong span { color: var(--success); }
+/* brass ring cradling an amber lamp — the brand cogitator-eye */
 .brandSigil {
+  position: relative;
   display: inline-grid; place-items: center;
   width: 24px; height: 24px;
   border: 1px solid var(--border);
   border-radius: 50%;
   color: #3b2f17;
   background: radial-gradient(ellipse at 40% 32%, #ffe9b0, #e8b54a 55%, #c98f2b 88%);
-  box-shadow: 0 0 7px rgb(232 181 74 / 0.6), inset 0 1px 0 rgb(255 240 200 / 0.5);
+  /* etched brass ring + warm lamp halo */
+  box-shadow:
+    inset 0 0 0 1px rgb(18 16 9 / 0.55),
+    inset 0 1px 0 rgb(255 240 200 / 0.6),
+    0 0 8px rgb(232 181 74 / 0.65),
+    0 0 0 1px rgb(216 181 97 / 0.3);
   font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+}
+/* the lamp breathes warm */
+.brandSigil::after {
+  content: ''; position: absolute; inset: 5px; border-radius: 50%;
+  background: radial-gradient(circle at 42% 38%, rgb(255 240 200 / 0.85), rgb(232 181 74 / 0.35) 60%, transparent 80%);
+  animation: kradle-soft-pulse 3.4s ease-in-out infinite;
+  pointer-events: none;
 }
 
 /* Global search */
@@ -399,12 +423,14 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     var(--shadow-lg);
 }
 .heroChrome::before, .panel::before, .card::before, .routeHero::before { display: none; }
-/* corner-rivet dot, struck into the brass frame */
+/* four corner rivets struck into the brass frame (mirrors commander .wr-panel::after) */
 .card::after, .panel::after, .heroChrome::after {
-  content: ''; position: absolute; top: 7px; right: 7px;
-  width: 5px; height: 5px; border-radius: 50%;
-  background: radial-gradient(circle at 40% 35%, #e3c87f 0%, #b9913f 45%, #4a3812 85%, transparent 100%);
-  pointer-events: none;
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  background-image:
+    radial-gradient(circle 3px at 8px 8px, #e3c87f 0%, #b9913f 45%, #4a3812 80%, transparent 100%),
+    radial-gradient(circle 3px at calc(100% - 8px) 8px, #e3c87f 0%, #b9913f 45%, #4a3812 80%, transparent 100%),
+    radial-gradient(circle 3px at 8px calc(100% - 8px), #e3c87f 0%, #b9913f 45%, #4a3812 80%, transparent 100%),
+    radial-gradient(circle 3px at calc(100% - 8px) calc(100% - 8px), #e3c87f 0%, #b9913f 45%, #4a3812 80%, transparent 100%);
 }
 .heroChrome { padding: clamp(20px, 3vw, 32px); }
 
@@ -453,15 +479,30 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
 /* Route page structure */
 .routeMain { padding-top: 20px; }
+/* brass-framed parchment plate banner: etched double-rule + corner rivet */
 .routeHero {
+  position: relative;
   display: grid; grid-template-columns: minmax(0, 1fr) auto;
   gap: 16px; align-items: center;
   margin: 0 -28px 20px; padding: 20px 28px 16px;
   border-width: 0 0 1px; border-radius: 0;
-  background: var(--bg-subtle);
-  box-shadow: inset 0 -2px 0 rgb(216 181 97 / 0.26);
+  background:
+    linear-gradient(to bottom, rgb(255 240 200 / 0.05), transparent 42%),
+    var(--bg-subtle);
+  /* etched double border: brass thread + umber groove above the brass rule */
+  box-shadow:
+    inset 0 1px 0 rgb(216 181 97 / 0.2),
+    inset 0 -2px 0 rgb(216 181 97 / 0.26),
+    inset 0 -4px 0 rgb(18 16 9 / 0.4);
 }
-.routeHero::after { display: none; }
+/* corner rivets struck into the banner's lower brass rule */
+.routeHero::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    radial-gradient(circle 2.5px at 28px calc(100% - 6px), #e3c87f 0%, #b9913f 45%, #4a3812 80%, transparent 100%),
+    radial-gradient(circle 2.5px at calc(100% - 28px) calc(100% - 6px), #e3c87f 0%, #b9913f 45%, #4a3812 80%, transparent 100%);
+}
+.routeHero > * { position: relative; z-index: 1; }
 .routeHero h1 { max-width: none; margin: 4px 0 6px; font-family: var(--font-display); font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 700; letter-spacing: 0.01em; }
 .routeHero .eyebrow { color: var(--accent); font-size: 0.82rem; }
 .routeHero .lede { max-width: 700px; margin: 0; font-size: 0.875rem; }
@@ -518,10 +559,12 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     var(--shadow-md);
 }
 .metric::after, .runtimeCard::after, .flowCard::after {
-  content: ''; position: absolute; top: 7px; right: 7px;
-  width: 4px; height: 4px; border-radius: 50%;
-  background: radial-gradient(circle at 40% 35%, #e3c87f 0%, #b9913f 45%, #4a3812 85%, transparent 100%);
-  pointer-events: none;
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  background-image:
+    radial-gradient(circle 2.5px at 7px 7px, #e3c87f 0%, #b9913f 45%, #4a3812 85%, transparent 100%),
+    radial-gradient(circle 2.5px at calc(100% - 7px) 7px, #e3c87f 0%, #b9913f 45%, #4a3812 85%, transparent 100%),
+    radial-gradient(circle 2.5px at 7px calc(100% - 7px), #e3c87f 0%, #b9913f 45%, #4a3812 85%, transparent 100%),
+    radial-gradient(circle 2.5px at calc(100% - 7px) calc(100% - 7px), #e3c87f 0%, #b9913f 45%, #4a3812 85%, transparent 100%);
 }
 .metric { min-height: 100px; display: grid; align-content: end; gap: 4px; padding: 16px; }
 .metric strong, .runtimeCard strong, .workQueue span { font-family: var(--font-display); color: var(--accent); font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 700; letter-spacing: 0.01em; }
@@ -565,26 +608,37 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   text-transform: uppercase; letter-spacing: 0.06em;
   border-radius: var(--radius-sm);
 }
-/* jewel stained-glass tints over brass */
-.pill.good { color: var(--success); border-color: rgb(132 178 116 / 0.45); background: rgb(132 178 116 / 0.12); }
-.pill.warn { color: var(--warning); border-color: rgb(219 163 68 / 0.45); background: rgb(219 163 68 / 0.12); }
-.pill.danger { color: var(--danger); border-color: rgb(212 96 74 / 0.45); background: rgb(212 96 74 / 0.12); }
-.pill.neutral { color: var(--accent); border-color: rgb(185 145 63 / 0.5); background: rgb(185 145 63 / 0.12); }
+/* wax-seal jewels: stained-glass tint over brass, lit by an inset rim + bevel */
+.pill.good, .pill.warn, .pill.danger, .pill.neutral {
+  box-shadow:
+    inset 0 0 0 1px rgb(18 16 9 / 0.35),
+    inset 0 1px 0 rgb(255 240 200 / 0.12);
+}
+.pill.good { color: var(--success); border-color: rgb(132 178 116 / 0.55); background: linear-gradient(to bottom, rgb(132 178 116 / 0.2), rgb(132 178 116 / 0.1)); }
+.pill.warn { color: var(--warning); border-color: rgb(219 163 68 / 0.55); background: linear-gradient(to bottom, rgb(219 163 68 / 0.2), rgb(219 163 68 / 0.1)); }
+.pill.danger { color: var(--danger); border-color: rgb(212 96 74 / 0.55); background: linear-gradient(to bottom, rgb(212 96 74 / 0.2), rgb(212 96 74 / 0.1)); }
+.pill.neutral { color: var(--accent); border-color: rgb(185 145 63 / 0.55); background: linear-gradient(to bottom, rgb(185 145 63 / 0.2), rgb(185 145 63 / 0.1)); }
 
-/* live indicator — amber lamp with soft-pulse */
-.pill.good::before {
+/* live-dot lamps — jewel-tinted, breathing with the amber soft-pulse */
+.pill.good::before, .pill.warn::before, .pill.danger::before {
   content: ''; width: 6px; height: 6px; border-radius: 50%;
-  background: radial-gradient(circle at 40% 35%, #ffe9b0, #e8b54a 60%, #c98f2b);
-  box-shadow: 0 0 7px rgb(232 181 74 / 0.7);
   animation: kradle-soft-pulse 3.4s ease-in-out infinite;
 }
+.pill.good::before { background: radial-gradient(circle at 40% 35%, #c8efb6, #84b274 60%, #4f8f43); box-shadow: 0 0 7px rgb(132 178 116 / 0.75); }
+.pill.warn::before { background: radial-gradient(circle at 40% 35%, #ffe9b0, #e8b54a 60%, #c98f2b); box-shadow: 0 0 7px rgb(232 181 74 / 0.75); }
+.pill.danger::before { background: radial-gradient(circle at 40% 35%, #f3b8ab, #d4604a 60%, #a8341f); box-shadow: 0 0 7px rgb(212 96 74 / 0.75); }
 
 /* ─── 8. Tables and Lists ──────────────────────────────────────────────────── */
+/* parchment-lane plate: faint ghosted gear watermark behind brass-ruled rows */
 .resourceTable {
+  position: relative;
   display: grid; overflow: hidden;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  background: var(--surface);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='21' fill='none' stroke='%23b9913f' stroke-opacity='.06' stroke-width='8' stroke-dasharray='7 5.6'/%3E%3Ccircle cx='32' cy='32' r='13' fill='none' stroke='%23b9913f' stroke-opacity='.06' stroke-width='3.5'/%3E%3Ccircle cx='32' cy='32' r='4.5' fill='%23b9913f' fill-opacity='.06'/%3E%3C/svg%3E")
+      right 18px top 50% / 130px 130px no-repeat,
+    var(--surface);
   box-shadow:
     inset 0 0 0 1px rgb(18 16 9 / 0.5),
     inset 0 0 0 2px rgb(216 181 97 / 0.2),
@@ -597,9 +651,20 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   padding: 12px 16px;
   transition: background 0.12s;
 }
-.resourceRow:hover { background: rgb(224 168 60 / 0.08); }
-.resourceRow + .resourceRow { border-top: 1px solid var(--border-subtle); }
-.resourceRow strong { font-family: var(--font-display); font-size: 0.98rem; font-weight: 600; color: var(--text); letter-spacing: 0.01em; }
+.resourceRow { position: relative; }
+/* amber hover wash + a struck brass left-marker, lane-style */
+.resourceRow:hover { background: rgb(224 168 60 / 0.1); }
+.resourceRow::before {
+  content: ''; position: absolute; left: 0; top: 20%; bottom: 20%;
+  width: 2px; border-radius: 2px; background: transparent; transition: background 0.12s;
+}
+.resourceRow:hover::before { background: linear-gradient(to bottom, transparent, var(--accent), transparent); }
+/* paired brass thread + parchment highlight between rows */
+.resourceRow + .resourceRow {
+  border-top: 1px solid var(--border-subtle);
+  box-shadow: inset 0 1px 0 rgb(255 240 200 / 0.05);
+}
+.resourceRow strong { font-family: var(--font-display); font-size: 0.98rem; font-weight: 600; color: var(--text); letter-spacing: 0.01em; text-shadow: 0 1px 0 rgb(18 16 9 / 0.4); }
 .resourceRow span { color: var(--accent); font-family: var(--mono); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
 .resourceRow code { overflow: hidden; color: var(--text-muted); text-overflow: ellipsis; white-space: nowrap; font-size: 0.8rem; }
 
