@@ -1,0 +1,32 @@
+nodeKind: PackageSurface
+id: package:a5c-ai-channels-adapter
+attributes:
+  packageId: "@a5c-ai/channels-adapter"
+  packageName: "@a5c-ai/channels-adapter"
+  displayName: "Channels Adapter"
+  description: "MCP-server mini-framework turning external systems (GitHub, Jira, inbound webhooks) into Claude Code channels via declarative YAML: per-source polling, change-detection cursors, dedup, declarative filters, an opaque HMAC reply-relay tool, and an optional per-event session spawner backed by @a5c-ai/adapters. Reuses @a5c-ai/triggers-adapter normalizeEvent for the additive webhook backend."
+  role: "channel-bridge"
+  whenToUse: "Use this when you want external-system events (issue comments, new issues, captured webhooks) to arrive in a Claude Code session as channel events and have Claude reply back to the origin, or to spawn a fresh agent session per matching event."
+  workspacePath: packages/adapters/channels
+  moduleType: typescript
+  surfaceKinds:
+    - cli
+    - sdk
+    - mcp-server
+    - channel-bridge
+  sourceOfTruthRole: external
+  publishedTo: npm
+  versionPolicy: semver
+  supportedBackends:
+    - github
+    - jira
+    - webhook
+  layer: cross-cutting
+  mux: channels-adapter
+edges:
+  references_path:
+    - target: path:agent-catalog-graph
+  # The additive `webhook` backend reuses @a5c-ai/triggers-adapter's
+  # normalizeEvent, consuming the same NormalizedTriggerEvent shape.
+  has_payload_schema:
+    - target: shared-context-spec:normalized-trigger-event

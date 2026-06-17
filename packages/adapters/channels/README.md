@@ -1,11 +1,12 @@
-# mcp-channels
+# @a5c-ai/channels-adapter
 
-> An MCP-server mini-framework that turns external systems (GitHub, Jira, …) into
-> a Claude Code **channel** via a declarative YAML config — with pluggable
-> JavaScript backends, per-source polling + change detection + dedup, declarative
-> filtering, and a `reply` tool that relays Claude's replies back to the origin.
+> An MCP-server mini-framework that turns external systems (GitHub, Jira, inbound
+> webhooks, …) into a Claude Code **channel** via a declarative YAML config — with
+> pluggable backends, per-source polling + change detection + dedup, declarative
+> filtering, a `reply` tool that relays Claude's replies back to the origin, and an
+> optional per-event session spawner backed by `@a5c-ai/adapters`.
 
-`mcp-channels` is a Node.js (ESM, **no build step**) stdio MCP server. It:
+`@a5c-ai/channels-adapter` is a TypeScript (ESM) stdio MCP server. It:
 
 - declares the experimental `claude/channel` capability,
 - **polls** pluggable backends on a per-source schedule,
@@ -14,13 +15,18 @@
 - **filters** events declaratively (assignee, label, project, substring/regex,
   boolean `all`/`any`/`not`),
 - pushes each surviving event into the session as a `notifications/claude/channel`
-  event (Claude sees `<channel source="…" …>content</channel>`), and
+  event (Claude sees `<channel source="…" …>content</channel>`),
 - **relays Claude's replies back to origin** (a comment on the GitHub issue/PR or
-  Jira issue that triggered the event) through a single `reply` MCP tool.
+  Jira issue that triggered the event) through a single `reply` MCP tool, and
+- optionally **spawns a fresh agent session per event** via
+  [`@a5c-ai/adapters`](https://www.npmjs.com/package/@a5c-ai/adapters), handing the
+  spawned session the same `reply_to` token so it can answer the same origin.
 
-Backends are **JavaScript hook points** — a tiny documented interface
-(`poll`, `reply`, optional `validateConfig`/`init`) anyone can implement to add a
-new system without touching the core.
+Backends are **hook points** — a tiny documented interface (`poll`, `reply`,
+optional `validateConfig`/`init`) anyone can implement to add a new system without
+touching the core. Three built-ins ship: `github`, `jira`, and `webhook`.
+
+> Design & spec: see [docs/DESIGN.md](docs/DESIGN.md), [docs/SPEC.md](docs/SPEC.md).
 
 ---
 
@@ -36,6 +42,7 @@ new system without touching the core.
 - [The opaque `reply_to` token](#the-opaque-reply_to-token)
 - [Event-triggered session spawning](#event-triggered-session-spawning)
 - [Wiring to a real Claude Code session](#wiring-to-a-real-claude-code-session)
+- [Programmatic API](#programmatic-api)
 - [Testing](#testing)
 - [License](#license)
 
@@ -43,14 +50,19 @@ new system without touching the core.
 
 ## Install
 
-Requires **Node.js ≥ 20** (developed/tested on Node 22).
+Requires **Node.js ≥ 20.9** (developed/tested on Node 22).
 
 ```bash
-npm install
+npm i @a5c-ai/channels-adapter
 ```
 
-This is an ESM package (`"type": "module"`) with no build step — the files under
-`src/` run directly.
+The package is published with a build step (TypeScript → `dist/`); installing from
+npm gives you the compiled `dist/`. It exposes two equivalent bin names:
+
+- **`adapters-channels`** — the canonical bin (matches the in-repo adapters family).
+- **`mcp-channels`** — a back-compat alias for the original framework name.
+
+Both run the same stdio MCP server.
 
 ---
 
@@ -70,8 +82,9 @@ This is an ESM package (`"type": "module"`) with no build step — the files und
 3. Run the stdio server:
 
    ```bash
-   npx mcp-channels examples/channels.yml
-   # or: node src/cli.js examples/channels.yml
+   npx -p @a5c-ai/channels-adapter adapters-channels examples/channels.yml
+   # or, with the alias:  npx -p @a5c-ai/channels-adapter mcp-channels examples/channels.yml
+   # or, against a checkout:  node dist/cli.js examples/channels.yml
    ```
 
 The process speaks MCP over stdio. To actually attach it to Claude Code, see
@@ -86,6 +99,7 @@ server:
   name: mcp-channels            # MCP server name → <channel source="mcp-channels">
   instructions: "...optional override..."   # else a sane default is used
   permissionRelay: false        # opt-in claude/channel/permission relay
+  replySecret: "${MCP_CHANNELS_REPLY_SECRET}"  # optional; stable HMAC secret (see spawning)
 
 state:
   dir: ./.mcp-channels-state    # optional; default ~/.claude/channels/<name>/state
@@ -96,7 +110,7 @@ defaults:
 
 sources:
   - id: gh-comments-by-alice    # unique id; also the state-file key
-    backend: github             # a built-in type OR ./relative/custom.js
+    backend: github             # a built-in type (github|jira|webhook) OR ./relative/custom.js
     pollIntervalSeconds: 30
     auth: { token: "${GITHUB_TOKEN}" }
     config: { repo: "octo/app", events: [issue_comment] }
@@ -129,10 +143,11 @@ required variable is a **validation error** — never a crash at poll time.
 backend type, a malformed filter, or a backend's own `validateConfig()` failure
 are all collected into an `errors: string[]` array. `createRuntime()` throws once,
 up front, with all the aggregated messages if the config is invalid — including
-errors from the **built-in** github/jira backends (e.g. a github `config.repo`
-that is not `"owner/name"`, or a jira source missing `auth.token`). Custom-path
-backends are imported and validated **at startup**, so a broken custom backend
-(missing `poll`/`reply`) fails `createRuntime`, not the first tick.
+errors from the **built-in** github/jira/webhook backends (e.g. a github
+`config.repo` that is not `"owner/name"`, a jira source missing `auth.token`, or a
+webhook source with an unrecognized `config.backend`). Custom-path backends are
+imported and validated **at startup**, so a broken custom backend (missing
+`poll`/`reply`) fails `createRuntime`, not the first tick.
 
 ### The filter engine
 
@@ -200,26 +215,70 @@ everything.
 - **meta:** `{ project, issue_key, kind, reply_to }`.
 - **reply:** `POST /rest/api/3/issue/{key}/comment` with an ADF body.
 
+### `webhook` (optional, additive)
+
+An **additive** built-in backend (it does not replace or alter `github`/`jira`)
+that turns **inbound webhook payloads** (GitHub / GitLab / Bitbucket / generic)
+into channel events by delegating the parsing to
+[`@a5c-ai/triggers-adapter`](https://www.npmjs.com/package/@a5c-ai/triggers-adapter)'s
+`normalizeEvent(backend, eventName, payload)` — the same normalizer the
+triggers-adapter uses for CI/action triggers — so the channels framework reuses
+that battle-tested webhook-shape knowledge instead of re-deriving it.
+
+Channels is **poll-based**, so this backend reads a **queue of already-captured
+webhook payloads** and normalizes each on every poll (live HTTP receipt — a bound
+listener / tunnel — is intentionally out of scope, mirroring how live agent launch
+is out of offline-test scope):
+
+- **Auth:** none (webhooks are inbound; nothing is posted back).
+- **Config:**
+  - `backend: github | gitlab | bitbucket | generic-webhook` — which webhook shape
+    `normalizeEvent` should parse (unrecognized values are a validation error).
+  - `payloads: [...]` — an inline array of captured webhook entries (the injection
+    seam: each entry is `{ eventName, payload, id? }`, or a bare payload object
+    whose `eventName` falls back to `config.eventName`).
+  - `dir: "./captured"` — a directory of captured `*.json` payload files (read
+    through an injectable `config.fs`, defaulting to `node:fs/promises`; files are
+    sorted by name for stable emit order; an unparseable file is skipped with a log
+    line, not a poll failure).
+  - `eventName: "..."` — optional fallback event name for bare-payload entries.
+  - At least one of `payloads` / `dir` is **required**.
+- **Dedup id:** the entry's explicit `id` (e.g. a GitHub `X-GitHub-Delivery`) when
+  present, else a deterministic id derived from the normalized shape
+  (`webhook:<backend>:<event>:<action>:<sha|url|repo#ref>`).
+- **meta:** `{ backend, event, action?, repo?, author?, ref?, sha?, source_branch?,
+  target_branch?, url? }` (empties dropped; values stringified).
+- **payload:** the raw upstream payload (so declarative dot-path filters match).
+- **reply:** **unsupported** — a webhook is a one-way inbound notification with no
+  generic callback channel, so `reply()` throws a clear, actionable error rather
+  than silently no-op'ing. To reply, route through the concrete `github`/`jira`
+  backend the payload originated from.
+
 ---
 
 ## The Backend hook interface
 
-A backend is a plain JS module that default-exports an object implementing:
+A backend is a module that default-exports an object implementing the `Backend`
+interface (TypeScript types ship in `dist/index.d.ts`):
 
-```js
-/** @typedef {{ id:string, content:string, meta:Object<string,string>,
- *             payload:object, routing:object }} ChannelEvent */
-/** @typedef {{ source:object, state:object, http:Function, log:Function,
- *             now:Date }} PollContext */
-/** @typedef {{ events:ChannelEvent[], state:object }} PollResult */
-/** @typedef {{
- *   type: string,
- *   validateConfig?: (source:object) => string[],
- *   init?: (source:object) => void|Promise<void>,
- *   poll: (ctx:PollContext) => Promise<PollResult>,
- *   reply: (a:{routing:object, text:string, source:object, http:Function})
- *            => Promise<{ ok:boolean, ref?:string }>
- * }} Backend */
+```ts
+interface ChannelEvent {
+  id: string;
+  content: string;
+  meta: Record<string, string>;
+  payload: object;
+  routing: object;
+}
+interface PollContext { source: object; state: object; http: Function; log: Function; now: Date }
+interface PollResult  { events: ChannelEvent[]; state: object }
+interface Backend {
+  type: string;
+  validateConfig?(source: object): string[];
+  init?(source: object): void | Promise<void>;
+  poll(ctx: PollContext): Promise<PollResult>;
+  reply(a: { routing: object; text: string; source: object; http: Function }):
+    Promise<{ ok: boolean; ref?: string }>;
+}
 ```
 
 - **`type`** — stable identifier (used in logs and as the registry key).
@@ -262,10 +321,10 @@ sources:
         - { field: "kind", op: eq, value: "mention" }
 ```
 
-A minimal backend:
+A minimal backend (importing the authoring helper from the package):
 
 ```js
-import { defineBackend } from 'mcp-channels'; // or relative to src/
+import { defineBackend } from '@a5c-ai/channels-adapter';
 
 export default defineBackend({
   type: 'example-custom',
@@ -340,7 +399,8 @@ On each tick for a source (`Poller.tick(id)`):
    inclusive `since`, a minute-granular JQL `>=`, …).
 5. **mint `reply_to`** and attach it to each survivor's `meta`.
 6. **persist state**: the cursor advances; `seen` grows (boundary-safe FIFO).
-7. **emit** one `notifications/claude/channel` per survivor.
+7. **dispatch** each survivor per the source's `onEvent` mode (`emit` / `spawn` /
+   `both`, default `emit`) — `emit` sends one `notifications/claude/channel`.
 
 Two correctness details worth knowing:
 
@@ -365,15 +425,16 @@ verbatim to the `reply` tool.
 
 - The token is `<base64url(JSON)>.<base64url(HMAC-SHA256)>`, URL-safe and a valid
   channel attribute value.
-- It is signed with a **per-process random secret** generated at startup, so a
-  forged or tampered token (even a single flipped character, or a hand-rolled
-  `base64url(JSON)` without the signature) fails verification.
-- It carries **no secrets** — auth lives only in the loaded config, keyed by
-  source id. The HMAC exists so the runtime never POSTs under real credentials to
-  a routing target it didn't itself mint.
+- By default it is signed with a **per-process random secret** generated at
+  startup, so a forged or tampered token (even a single flipped character, or a
+  hand-rolled `base64url(JSON)` without the signature) fails verification.
+- It carries **no upstream credentials** — auth lives only in the loaded config,
+  keyed by source id. The HMAC exists so the runtime never POSTs under real
+  credentials to a routing target it didn't itself mint.
 
 Decoding a bad/garbled/forged token returns `null` (never throws), and the `reply`
-tool surfaces that as `{ isError: true }`.
+tool surfaces that as `{ isError: true }`. For cross-process replies (spawned
+sessions), configure a stable `server.replySecret` — see below.
 
 ---
 
@@ -381,11 +442,12 @@ tool surfaces that as `{ isError: true }`.
 
 By default a surviving event is **emitted** into the current session. A source can
 instead (or additionally) **spawn a brand-new agent session** to handle the event,
-via [`@a5c-ai/adapters`](https://www.npmjs.com/package/@a5c-ai/adapters). The
-spawned session is **self-associated**: it is re-launched with *this* MCP server
-over stdio (the same config path) and handed the event context plus the same
-`reply_to` token, so the new session can post back to the **same origin** by calling
-the `reply` tool — exactly like the in-session path.
+via [`@a5c-ai/adapters`](https://www.npmjs.com/package/@a5c-ai/adapters) — which is
+a regular **dependency** of this package. The spawned session is
+**self-associated**: it is re-launched with *this* MCP server over stdio (the same
+config path) and handed the event context plus the same `reply_to` token, so the
+new session can post back to the **same origin** by calling the `reply` tool —
+exactly like the in-session path.
 
 ### `onEvent`: choosing emit / spawn / both
 
@@ -478,7 +540,7 @@ server:
 
 The runtime also reads `MCP_CHANNELS_REPLY_SECRET` from the environment as a
 fallback when `server.replySecret` is unset. **When no secret is configured**, the
-token is signed with a per-process random key (today's default) — single-process
+token is signed with a per-process random key (the default) — single-process
 replies still work, but a token minted by one process won't verify in another, so
 configure a shared secret whenever you use `onEvent: spawn`/`both`.
 
@@ -487,15 +549,14 @@ configure a shared secret whenever you use `onEvent: spawn`/`both`.
 Spawning a **live** session is out of scope for the offline test suite (the suite
 always injects a fake client). A real launch additionally requires:
 
-- the optional dependency **`@a5c-ai/adapters`** installed (it is declared under
-  `optionalDependencies`),
 - the **agent CLI** for your chosen `agent` on `PATH` — for the default `claude`
   agent that is the **`claude` CLI** (Claude Code),
 - valid **agent auth** for that CLI (e.g. an Anthropic login/allowlist).
 
-When a source is configured to spawn but no adapters client can be obtained (the
-dependency is missing and none is injected), this surfaces as a **clear startup
-error** from `createRuntime()` — never a silent no-op at event time.
+`@a5c-ai/adapters` is a regular dependency, so the launch path is always available;
+when a source is configured to spawn but no adapters client can be obtained and
+none is injected, this surfaces as a **clear startup error** from `createRuntime()`
+— never a silent no-op at event time.
 
 ---
 
@@ -507,14 +568,14 @@ error** from `createRuntime()` — never a silent no-op at event time.
 > transport and mocked HTTP — this section is the manual wiring guide.
 
 1. **Register the server** with Claude Code via an `.mcp.json` at your project
-   root (an example ships in this repo):
+   root:
 
    ```json
    {
      "mcpServers": {
        "mcp-channels": {
-         "command": "node",
-         "args": ["src/cli.js", "examples/channels.yml"]
+         "command": "adapters-channels",
+         "args": ["examples/channels.yml"]
        }
      }
    }
@@ -534,8 +595,8 @@ error** from `createRuntime()` — never a silent no-op at event time.
    claude --dangerously-load-development-channels
    ```
 
-   Claude Code reads `.mcp.json`, spawns the `mcp-channels` stdio server, and sees
-   its `claude/channel` capability. From then on, every event that survives your
+   Claude Code reads `.mcp.json`, spawns the channels stdio server, and sees its
+   `claude/channel` capability. From then on, every event that survives your
    filters arrives in the session as:
 
    ```
@@ -552,27 +613,46 @@ error** from `createRuntime()` — never a silent no-op at event time.
 
 ### Optional: permission relay
 
-Set `server.permissionRelay: true` to opt into the
-`claude/channel/permission` capability. The runtime answers each inbound
-`permission_request` with exactly one `permission` decision. The default policy is
-**deny** (untrusted inbound text is a prompt-injection surface); supply a
-`permissionHandler(req) => 'allow' | 'deny'` via `createRuntime`'s `deps` to
-implement sender-gating.
+Set `server.permissionRelay: true` to opt into the `claude/channel/permission`
+capability. The runtime answers each inbound `permission_request` with exactly one
+`permission` decision. The default policy is **deny** (untrusted inbound text is a
+prompt-injection surface); supply a `permissionHandler(req) => 'allow' | 'deny'`
+via `createRuntime`'s `deps` to implement sender-gating.
+
+---
+
+## Programmatic API
+
+The package's main entry (`@a5c-ai/channels-adapter`) re-exports the framework
+surface for embedding apps:
+
+- `createRuntime(configPath, deps?)` — bootstrap a runtime (`{ server, poller,
+  start, stop }`); `deps` can inject a fake transport / clock / http / adapters
+  client for tests.
+- `ChannelServer`, `DEFAULT_INSTRUCTIONS`, `Poller`.
+- `defineBackend`, `registry`, `Registry`.
+- `webhookBackend` (the built-in webhook backend module), plus the re-exported
+  `NormalizedTriggerEvent` / `TriggerBackend` types from `@a5c-ai/triggers-adapter`.
+- `loadConfig`, `compileFilter`, `filterMatch`.
+- `StateStore`, `MemoryStateStore`, `deriveNew`, `boundSeen`.
+- `encodeReplyTo`, `decodeReplyTo`, `dispatchReply`, `createRelay`.
+- `SessionSpawner`, `buildSpawnRunOptions`.
 
 ---
 
 ## Testing
 
-The whole suite is offline (vitest): mocked GitHub/Jira HTTP and an in-memory MCP
-transport.
+The whole suite is offline (vitest): mocked GitHub/Jira HTTP, an in-memory MCP
+transport, an injected fake adapters client for the spawner, and inline/injected-fs
+queues for the webhook backend.
 
 ```bash
 npm test                 # vitest run
 npm run test:coverage    # vitest run --coverage  (≥90% lines on src/ enforced)
 ```
 
-Coverage is measured on `src/**` only (`src/cli.js` and `src/types.d.ts` are
-excluded as trivial / no-runtime).
+Coverage is measured on `src/**` only (`src/cli.ts` and the environment-gated
+`@a5c-ai/adapters` real-launch branch are excluded as trivial / not offline-testable).
 
 ---
 

@@ -8,7 +8,6 @@ const rootDir = path.resolve(__dirname, '../..');
 export default defineConfig({
   resolve: {
     alias: {
-      '@a5c-ai/agent-catalog': path.resolve(rootDir, 'packages/atlas/src/catalog/index.ts'),
       '@a5c-ai/atlas/catalog': path.resolve(rootDir, 'packages/atlas/src/catalog/index.ts'),
       'next/server': path.resolve(rootDir, 'test-shims/next-server.ts'),
       'react-native': path.resolve(rootDir, 'test-shims/react-native.ts'),
