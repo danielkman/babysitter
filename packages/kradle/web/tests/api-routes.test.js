@@ -42,8 +42,11 @@ test('all mutating routes (POST/DELETE/PATCH) use withAuth', () => {
         const content = fs.readFileSync(full, 'utf8');
         const hasMutation = /export\s+(const\s+)?(POST|DELETE|PATCH)\b/.test(content);
         const hasAuth = content.includes('withAuth');
-        const isWebhook = full.includes('webhooks/ingest');
-        const isCallback = full.includes('callback');
+        // Normalize to forward slashes so the path-substring exemptions match on
+        // Windows (path.join yields backslashes; the patterns use '/').
+        const normFull = full.split(path.sep).join('/');
+        const isWebhook = normFull.includes('webhooks/ingest');
+        const isCallback = normFull.includes('callback');
         if (hasMutation && !hasAuth && !isWebhook && !isCallback) {
           violations.push(path.relative(webRoot, full));
         }
@@ -63,7 +66,7 @@ test('all GET routes returning org data use withAuth or requireAuth', () => {
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) walk(full);
       else if (entry.name === 'route.js') {
-        const rel = path.relative(webRoot, full);
+        const rel = path.relative(webRoot, full).split(path.sep).join('/');
         if (exemptPatterns.some(p => rel.includes(p))) continue;
         const content = fs.readFileSync(full, 'utf8');
         const hasGet = /export\s+(const\s+)?GET\b/.test(content) || /export\s+async\s+function\s+GET/.test(content);
