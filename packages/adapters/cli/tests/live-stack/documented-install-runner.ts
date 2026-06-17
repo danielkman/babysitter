@@ -107,10 +107,13 @@ export function buildDocumentedInstallCommands(
     ];
   }
 
-  // codex
+  // codex — current codex CLI (>=0.140.0) uses `plugin add <PLUGIN> --marketplace <NAME>`
+  // (the older `plugin install … --source …` subcommand/flag does not exist:
+  // `codex plugin --help` lists add/list/marketplace/remove, and `plugin add`
+  // takes `PLUGIN@MARKETPLACE` or `PLUGIN --marketplace MARKETPLACE`).
   return [
     { command: 'codex', args: ['plugin', 'marketplace', 'add', 'a5c-ai/babysitter', '--ref', channel, '--sparse', '.agents/plugins'], ...base },
-    { command: 'codex', args: ['plugin', 'install', 'babysitter', '--source', 'babysitter'], ...base },
+    { command: 'codex', args: ['plugin', 'add', 'babysitter', '--marketplace', 'babysitter'], ...base },
     { command: 'codex', args: ['plugin', 'list', '--json'], ...base },
   ];
 }

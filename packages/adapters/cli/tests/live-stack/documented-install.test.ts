@@ -71,7 +71,7 @@ describe('documented published install — command building (no execution)', () 
     });
     expect(commands[1]).toMatchObject({
       command: 'codex',
-      args: ['plugin', 'install', 'babysitter', '--source', 'babysitter'],
+      args: ['plugin', 'add', 'babysitter', '--marketplace', 'babysitter'],
     });
     expect(commands[2]).toMatchObject({
       command: 'codex',
