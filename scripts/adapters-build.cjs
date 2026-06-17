@@ -153,6 +153,16 @@ function run(argv = process.argv.slice(2), options = {}) {
     const scriptName = mode === 'test' ? 'test' : (manifest.scripts?.['build:local'] ? 'build:local' : 'build');
 
     if (mode === 'test') {
+      // Non-adapter entries (e.g. packages/atlas, packages/genty/*) are present
+      // in this list only to fix BUILD ordering; they are tested by their own
+      // pipelines and their tests do not match the adapters vitest include glob.
+      // Running them here would fail with "No test files found" (atlas has no
+      // test script at all), so skip them in test mode.
+      if (!pkg.startsWith('packages/adapters/')) {
+        log(`\n=== ${pkg} (${mode}) skipped: not an adapters package (build-order only) ===`);
+        continue;
+      }
+
       // `test <pkg> -- <file> [vitest args...]` opts into an explicit focused target.
       const { testFiles, forwardedArgs } = resolveTestSelection(pkg, extraArgs, root, fsImpl);
       const vitestCommand = buildVitestCommand(testFiles, forwardedArgs, dir);
