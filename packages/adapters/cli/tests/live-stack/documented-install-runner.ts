@@ -14,7 +14,7 @@
  *   claude: `claude plugin marketplace add a5c-ai/babysitter-claude`
  *           `claude plugin install --scope user babysitter@a5c.ai`
  *   codex:  `codex plugin marketplace add a5c-ai/babysitter --ref <channel> --sparse .agents/plugins`
- *           `codex plugin install babysitter --source babysitter`
+ *           `codex plugin add babysitter --marketplace babysitter`
  */
 
 import type { CommandExecution, CommandResult } from './primary-live-runner';

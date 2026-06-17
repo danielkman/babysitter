@@ -73,8 +73,16 @@ export function syncBabysitterMarketplaceManifestVersions(version, options = {})
 /**
  * Point each external-repo-backed plugin entry's `source` at the channel branch.
  * Handles both source shapes used by the committed manifests:
- *   - codex: `{ source: 'git-subdir', url, path, ref }`     -> updates `ref`
+ *   - codex: `{ source: 'url', url, ref }`                   -> updates `ref`
  *   - claude/cursor: `{ source: 'url', url, branch }`        -> updates `branch`
+ *
+ * NOTE (issue #960): the codex manifest MUST use the `url` source variant, not
+ * `git-subdir`. codex 0.140.0's `git-subdir` variant resolves a subdir of the
+ * marketplace repo itself and does not accept a foreign `url`; an entry shaped
+ * `{ source: 'git-subdir', url, path, ref }` is silently dropped during manifest
+ * parse, so `codex plugin list` shows nothing and `codex plugin add` fails. The
+ * `url` variant (`{ source: 'url', url, ref }`) clones the external plugin repo
+ * at `ref` and reads its root `.codex-plugin/plugin.json`.
  *
  * Local/relative sources (`'./'`, `{ source: 'local', path: './' }`) — used by
  * the generated external repos themselves — are left untouched; they have no

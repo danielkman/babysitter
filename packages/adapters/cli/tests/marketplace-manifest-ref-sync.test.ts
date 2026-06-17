@@ -46,10 +46,13 @@ describe('resolvePublishChannelBranch', () => {
 });
 
 describe('syncMarketplacePluginEntryRef', () => {
-  it('updates a codex-style git-subdir source ref', () => {
+  it('updates a codex-style url source ref', () => {
+    // codex 0.140.0 resolves a separate plugin repo only via the `url` source
+    // variant (`{ source: 'url', url, ref }`); the `git-subdir` variant does NOT
+    // accept a foreign `url` and the entry is silently dropped (issue #960).
     const manifest = {
       plugins: [
-        { name: 'babysitter', source: { source: 'git-subdir', url: 'x', path: '.', ref: 'main' } },
+        { name: 'babysitter', source: { source: 'url', url: 'x', ref: 'main' } },
       ],
     };
     expect(syncMarketplacePluginEntryRef(manifest, 'babysitter', 'staging')).toBe(true);
@@ -112,7 +115,7 @@ describe('syncBabysitterMarketplaceManifestVersions — version + channel ref', 
         {
           name: 'babysitter',
           version: '5.0.1-staging.old',
-          source: { source: 'git-subdir', url: 'https://github.com/a5c-ai/babysitter-codex.git', path: '.', ref: 'main' },
+          source: { source: 'url', url: 'https://github.com/a5c-ai/babysitter-codex.git', ref: 'main' },
         },
       ],
     });
@@ -150,7 +153,7 @@ describe('syncBabysitterMarketplaceManifestVersions — version + channel ref', 
         {
           name: 'babysitter',
           version: '5.1.0',
-          source: { source: 'git-subdir', url: 'x', path: '.', ref: 'staging' },
+          source: { source: 'url', url: 'x', ref: 'staging' },
         },
       ],
     });
@@ -167,7 +170,7 @@ describe('syncBabysitterMarketplaceManifestVersions — version + channel ref', 
         {
           name: 'babysitter',
           version: '5.1.1-staging.new',
-          source: { source: 'git-subdir', url: 'x', path: '.', ref: 'main' },
+          source: { source: 'url', url: 'x', ref: 'main' },
         },
       ],
     });
