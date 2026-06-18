@@ -54,6 +54,13 @@ export interface KradleControllerClientConfig {
   kradleOrg?: string;
   /** Default dispatch repository; default `'default'`. (Used by the Orders layer, later phase.) */
   kradleRepo?: string;
+  /**
+   * Abort timeout (ms) for READ requests — the board snapshot/list. The org-scoped
+   * controller snapshot can legitimately take many seconds on a cold or remote
+   * controller, so reads must not share the short mutation timeout (otherwise the
+   * board silently renders empty on every poll). Default {@link KRADLE_READ_TIMEOUT_MS}.
+   */
+  requestTimeoutMs?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -119,6 +126,14 @@ export interface KradleControllerClientDeps {
 /** Per-request abort timeout — matches `KRADLE_CONTROLLER_REQUEST_TIMEOUT_MS`
  *  (`packages/kradle/web/app/.../controller-client.js:7`). §1.9 / AC9. */
 export const KRADLE_REQUEST_TIMEOUT_MS = 5000;
+
+/**
+ * Abort timeout for READ requests (snapshot/list). Longer than the mutation
+ * timeout because the org-scoped controller snapshot can take many seconds on a
+ * cold/remote controller; aborting it at the mutation timeout silently empties
+ * the board on every poll. Overridable via `config.requestTimeoutMs`.
+ */
+export const KRADLE_READ_TIMEOUT_MS = 30000;
 
 /** CSRF double-submit token sent on every mutating request (§1.1 / AC1). */
 const CSRF_HEADER = 'X-Kradle-Request';
@@ -453,6 +468,10 @@ export function createKradleControllerClient(
   }
   const org = (config.kradleOrg ?? '').trim() || DEFAULT_ORG;
   const token = config.kradleToken?.trim() || undefined;
+  const readTimeoutMs =
+    typeof config.requestTimeoutMs === 'number' && config.requestTimeoutMs > 0
+      ? config.requestTimeoutMs
+      : KRADLE_READ_TIMEOUT_MS;
   const fetchImpl = deps.fetch ?? resolveAmbientFetch();
   const eventSourceFactory = deps.eventSourceFactory ?? resolveAmbientEventSourceFactory();
 
@@ -491,7 +510,10 @@ export function createKradleControllerClient(
 
     const controller = new AbortController();
     init.signal = controller.signal as unknown as AbortSignalLike;
-    const timer = setTimeout(() => controller.abort(), KRADLE_REQUEST_TIMEOUT_MS);
+    // Reads (board snapshot/list) get the tolerant read timeout; mutations
+    // fail fast on the short mutation timeout.
+    const timeoutMs = isMutating ? KRADLE_REQUEST_TIMEOUT_MS : readTimeoutMs;
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
 
     let response: KradleFetchResponseLike;
     try {
