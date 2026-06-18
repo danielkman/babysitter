@@ -3,7 +3,11 @@ import { withAuth } from '../../lib/api-auth.js';
 
 export const dynamic = 'force-dynamic';
 
-const CONTROLLER_TIMEOUT_MS = Number(process.env.KRADLE_CONTROLLER_REQUEST_TIMEOUT_MS || 5_000);
+// The org-scoped board snapshot does a status reconcile + kubectl reads that can
+// exceed a few seconds on a cold or large org. Too short a timeout makes
+// fetchControllerUiModel silently fall back to an empty model (board renders
+// empty lanes with only a console warning), so default tolerant (15s, overridable).
+const CONTROLLER_TIMEOUT_MS = Number(process.env.KRADLE_CONTROLLER_REQUEST_TIMEOUT_MS || 15_000);
 
 export const GET = withAuth(async (request) => {
   const organization = new URL(request.url).searchParams.get('org');
