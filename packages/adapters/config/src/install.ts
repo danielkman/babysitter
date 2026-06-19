@@ -44,6 +44,14 @@ export const INSTALL_FLAGS: Record<string, FlagDef> = {
 
 export type SpawnRunner = HelperSpawnRunner;
 
+/** Returns the last `max` chars of a string, trimmed; undefined if empty. */
+function tailText(text: string | undefined, max = 2000): string | undefined {
+  if (!text) return undefined;
+  const trimmed = text.trim();
+  if (!trimmed) return undefined;
+  return trimmed.length > max ? trimmed.slice(-max) : trimmed;
+}
+
 // ---------------------------------------------------------------------------
 // Command entry
 // ---------------------------------------------------------------------------
@@ -167,6 +175,13 @@ async function installOne(
       dryRun: opts.dryRun || undefined,
       version: result.installedVersion,
       message: result.message,
+      // Surface failure diagnostics so a non-zero install (e.g. a failing
+      // `npm install -g` postinstall) is debuggable from --json output instead
+      // of silently reporting `installed: false` with no reason.
+      ...(result.ok ? {} : {
+        stderr: tailText(result.stderr),
+        stdout: tailText(result.stdout),
+      }),
     });
   } else {
     if (result.method === 'already-installed') {

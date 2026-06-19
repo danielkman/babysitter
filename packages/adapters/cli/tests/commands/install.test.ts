@@ -155,6 +155,28 @@ describe('installCommand dispatch (real adapters)', () => {
     } finally { io.restore(); }
   });
 
+  it('surfaces npm stderr in --json output when install fails', async () => {
+    const io = captureOutput();
+    const { runner } = makeSpawnRunner(async (cmd, args) => {
+      if (cmd === 'which' || cmd === 'where') return { code: 1, stdout: '', stderr: '' };
+      if (cmd === 'npm' && args[0] === 'install') {
+        return { code: 1, stdout: 'some stdout', stderr: 'npm error code E404\nnpm error 404 Not Found' };
+      }
+      return { code: 0, stdout: '', stderr: '' };
+    });
+    try {
+      const args = parseArgs(['install', 'claude', '--json'], INSTALL_FLAGS);
+      const client = makeClient([claude]);
+      const code = await installCommand(client, args, { spawnRunner: runner });
+      expect(code).toBe(ExitCode.GENERAL_ERROR);
+      const out = JSON.parse(io.stdout.join(''));
+      expect(out.data.installed).toBe(false);
+      // The failure reason must be visible — not silently dropped.
+      expect(out.data.stderr).toContain('npm error code E404');
+      expect(out.data.stdout).toContain('some stdout');
+    } finally { io.restore(); }
+  });
+
   it('--force reinstalls even when detected', async () => {
     const io = captureOutput();
     const { runner, calls } = makeSpawnRunner(async (cmd, args) => {
