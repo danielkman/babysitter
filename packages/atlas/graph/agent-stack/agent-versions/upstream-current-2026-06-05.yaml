@@ -440,6 +440,7 @@ attributes:
   upstreamReleaseTag: "v0.78.1"
   releaseNotesUrl: "https://github.com/earendil-works/pi/releases/tag/v0.78.1"
   cliCommand: "pi"
+  sourcePackage: "@earendil-works/pi-coding-agent"
   summary: "Pi release adding Ant Ling, NVIDIA NIM, MiniMax-M3, richer extension context, safer extension install paths, git package source hardening, HTML export XSS fixes, and broader provider timeout fixes."
   assimilationNotes:
     - "Latest upstream moved from 0.78.0 to 0.78.1."
@@ -457,7 +458,7 @@ attributes:
     - "Stored XSS fix in HTML session exports."
     - "Provider-wide HTTP timeout handling."
   installMethods:
-    - install:github-release
+    - install:npm
 edges:
   version_of:
     - agent:pi
