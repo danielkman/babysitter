@@ -208,6 +208,14 @@ jobs:
         run: |
           cd packages/adapters/cli
           npm install --legacy-peer-deps 2>/dev/null || true
+          # vitest-4/rolldown native binding is an optional dep npm intermittently
+          # skips (npm/cli#4828) — breaks vitest startup on macOS arm64. Install
+          # the binding for this runner when the base module can't load.
+          node -e "require('@rolldown/binding')" 2>/dev/null || {
+            RB="@rolldown/binding-$(node -p "({win32:'win32-'+process.arch+'-msvc',darwin:'darwin-'+process.arch,linux:'linux-'+process.arch+'-gnu'})[process.platform]")"
+            echo "rolldown binding missing — installing $RB"
+            npm install --no-save --legacy-peer-deps "$RB" 2>/dev/null || true
+          }
 
       - name: Verify documented published install
         timeout-minutes: 15
