@@ -20,6 +20,14 @@ export interface CommandExecution {
   readonly cwd: string;
   readonly timeoutMs: number;
   readonly shell?: boolean;
+  /**
+   * When true, a non-zero exit of this setup command does not abort the
+   * scenario — execution continues and the behavior verifications judge the
+   * real outcome. Used for `adapters install <agent>`, whose exit code is an
+   * unreliable signal (non-fatal postinstall exits, `claude.exe` bin detection
+   * on Linux) even when the harness CLI installed and runs.
+   */
+  readonly nonFatal?: boolean;
 }
 
 export interface CommandResult {
@@ -214,7 +222,7 @@ fs.writeFileSync(p.join(dest,"inputs.json"),JSON.stringify({traceId,outputDir:p.
     const skipInstallAgents = new Set(['genty', 'antigravity']);
     const installCommands = skipInstallAgents.has(installTarget)
       ? []
-      : [commandExecution(commandEnv, 'LIVE_STACK_AGENT_MUX_BIN', 'adapters', ['install', installTarget, '--json'], options.cwd, SETUP_TIMEOUT_MS)];
+      : [{ ...commandExecution(commandEnv, 'LIVE_STACK_AGENT_MUX_BIN', 'adapters', ['install', installTarget, '--json'], options.cwd, SETUP_TIMEOUT_MS), nonFatal: true }];
     return [
       ...installCommands,
       ensureLiveArtifactDirCommand(commandEnv, options.cwd),
@@ -225,7 +233,7 @@ fs.writeFileSync(p.join(dest,"inputs.json"),JSON.stringify({traceId,outputDir:p.
   const processMode = options.env['LIVE_STACK_PROCESS_MODE'] ?? 'predefined';
   const setupCommands = [
     commandExecution(commandEnv, 'LIVE_STACK_NPM_BIN', 'npm', ['run', 'generate:plugins'], options.cwd, SETUP_TIMEOUT_MS),
-    commandExecution(commandEnv, 'LIVE_STACK_AGENT_MUX_BIN', 'adapters', ['install', installTarget, '--json'], options.cwd, SETUP_TIMEOUT_MS),
+    { ...commandExecution(commandEnv, 'LIVE_STACK_AGENT_MUX_BIN', 'adapters', ['install', installTarget, '--json'], options.cwd, SETUP_TIMEOUT_MS), nonFatal: true },
     commandExecution(commandEnv, 'LIVE_STACK_NPM_BIN', 'npm', ['install', '--global', './packages/babysitter-sdk'], options.cwd, SETUP_TIMEOUT_MS),
     commandExecution(commandEnv, 'LIVE_STACK_NPM_BIN', 'npm', ['install', '--global', './packages/adapters/hooks/cli'], options.cwd, SETUP_TIMEOUT_MS),
     generatedPluginInstallCommand(commandEnv, scenario, options.cwd, SETUP_TIMEOUT_MS),
@@ -344,6 +352,13 @@ export async function runPrimaryLiveStackScenario(options: PrimaryLiveRunOptions
     commandResults.push(result);
     await writeCommandTranscript(options.artifactsDir, scenario, commandResults);
     if (result.status !== 0) {
+      // Non-fatal setup commands (e.g. `adapters install <agent>`) have an
+      // unreliable exit code; don't abort the scenario — continue and let the
+      // behavior verifications judge whether the agent actually works.
+      if (command.nonFatal) {
+        console.warn(`[live-stack] non-fatal command exited ${result.status} — continuing: ${command.command} ${command.args.join(' ')}`);
+        continue;
+      }
       // For the launch command (last in sequence): if the expected artifact
       // was created with real content despite non-zero exit, continue to
       // verification. Many harnesses exit non-zero after producing valid output
