@@ -14,6 +14,24 @@ function makeApproval(name, dispatchRun, action, phase = 'Pending', extra = {}) 
   return approval;
 }
 
+test('review and ai-review are valid approval actions (first-class review gates)', () => {
+  const controller = createAgentApprovalController();
+  for (const action of ['review', 'ai-review']) {
+    const result = controller.createApprovalRequest({
+      dispatchRun: `run-${action}`,
+      action,
+      requestedBy: 'agent-stack-1',
+      context: 'Run entered a review stage',
+      namespace: 'kradle-org-default',
+      organizationRef: 'default',
+      resources: {}
+    });
+    assert.equal(result.error, false, `${action} should be accepted`);
+    assert.equal(result.approval.spec.action, action);
+    assert.equal(result.approval.status.phase, 'Pending');
+  }
+});
+
 test('Create approval request returns resource with phase=Pending', () => {
   const controller = createAgentApprovalController();
   const result = controller.createApprovalRequest({

@@ -529,6 +529,30 @@ describe('AC12 — SimCardView / SimRunView field maps (§2.3.2/§2.3.3)', () =>
     expect(mapCards(s)[0].column).toBe('do');
   });
 
+  it('AC12-native: a real pending review approval overlays the reconciled boardColumn (→ ai-review)', () => {
+    // Reconciler set boardColumn='do' from phase alone (no approval context); a
+    // real AgentApproval(action=review) must surface the AI-review lane.
+    const s = snap({
+      runs: { items: [run('adr-rev', { repository: 'r', taskKind: 'fix' }, 'Running', {}, { boardColumn: 'do' })] },
+      approvals: {
+        items: [approval('appr-rev', 'adr-rev', 'review', 'Pending')],
+        pending: [approval('appr-rev', 'adr-rev', 'review', 'Pending')],
+      },
+    });
+    expect(mapCards(s)[0].column).toBe('ai-review');
+  });
+
+  it('AC12-native: a pending approval never overrides a terminal/release lane', () => {
+    const s = snap({
+      runs: { items: [run('adr-done', { repository: 'r', taskKind: 'fix' }, 'Completed', {}, { boardColumn: 'approved' })] },
+      approvals: {
+        items: [approval('appr-x', 'adr-done', 'review', 'Pending')],
+        pending: [approval('appr-x', 'adr-done', 'review', 'Pending')],
+      },
+    });
+    expect(mapCards(s)[0].column).toBe('approved');
+  });
+
   it('AC12-native: spec.title / spec.description win over derivation', () => {
     const s = snap({
       runs: {

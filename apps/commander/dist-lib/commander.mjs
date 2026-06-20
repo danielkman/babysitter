@@ -12912,26 +12912,26 @@ function Us(e) {
 			hasApprovedWriteBack: _,
 			merged: v,
 			released: y
-		}), x = q(t.workspaceRef) ?? "", S = x === "" ? void 0 : r.get(x), C = S === void 0 ? 0 : Bs(S).uncommittedCount ?? 0, w = q(Y(t.sourceRefs)?.pullRequest), T = q(t.repository) ?? "", E = q(t.title) ?? w ?? (T === "" ? d : `${T}:${f}`), D = Y(t.sourceEvent), O = q(t.description) ?? q(D?.name) ?? "", k = (n.byRun.get(d) ?? []).find((e) => q(Z(e).feedback) !== void 0), A = k ? q(Z(k).feedback) ?? null : null, j = Ls(d, a, i, o).map((e) => e.metadata.name), M = (a.byRun.get(d) ?? []).length || 1, N = {
+		}), x = b === "merged" || b === "in-production" || b === "approved" ? b : h ? "ai-review" : g ? "human-review" : b, S = q(t.workspaceRef) ?? "", C = S === "" ? void 0 : r.get(S), w = C === void 0 ? 0 : Bs(C).uncommittedCount ?? 0, T = q(Y(t.sourceRefs)?.pullRequest), E = q(t.repository) ?? "", D = q(t.title) ?? T ?? (E === "" ? d : `${E}:${f}`), O = Y(t.sourceEvent), k = q(t.description) ?? q(O?.name) ?? "", A = (n.byRun.get(d) ?? []).find((e) => q(Z(e).feedback) !== void 0), j = A ? q(Z(A).feedback) ?? null : null, M = Ls(d, a, i, o).map((e) => e.metadata.name), N = (a.byRun.get(d) ?? []).length || 1, P = {
 			taskId: d,
 			taskKind: f,
-			title: E,
-			repository: T,
-			workspaceId: x,
-			column: b,
+			title: D,
+			repository: E,
+			workspaceId: S,
+			column: x,
 			order: 0,
 			yolo: u[Ro] === "true",
-			merged: b === "merged" || b === "in-production",
+			merged: x === "merged" || x === "in-production",
 			progress: ys(e) ?? Hs(p),
 			parentId: u["commander.a5c.ai/parent"] ?? null,
 			childIds: s.get(d) ?? [],
-			agentIds: j,
-			attempt: M,
-			feedback: A,
-			dirtyFileCount: C,
+			agentIds: M,
+			attempt: N,
+			feedback: j,
+			dirtyFileCount: w,
 			hasPendingInquiry: m.length > 0,
 			stackRef: q(t.agentStack) ?? "",
-			description: O,
+			description: k,
 			releaseId: u["commander.a5c.ai/release-id"] ?? null,
 			compacted: !1,
 			workerAgentId: u["commander.a5c.ai/worker"] ?? null,
@@ -12939,7 +12939,7 @@ function Us(e) {
 			humanAssigneeId: u["commander.a5c.ai/human"] ?? null
 		};
 		c.push({
-			view: N,
+			view: P,
 			sortKey: Yo(e) ?? l,
 			seq: l
 		}), l += 1;

@@ -2,13 +2,17 @@ import { createResource, clone } from './resource-model.js';
 
 export const AGENT_APPROVAL_CONTROLLER_BOUNDARY = {
   role: 'agent-approval-controller',
-  scope: 'Human gate lifecycle for agent tool-use, secret-access, write-back, release, and escalation actions',
+  scope: 'Human/AI gate lifecycle for agent review, tool-use, secret-access, write-back, release, and escalation actions',
   owns: ['approval creation', 'decision recording', 'approval lookup', 'duplicate detection'],
   delegatesTo: ['resource-model'],
   mustNotOwn: ['secret values', 'agent execution', 'UI rendering']
 };
 
-const VALID_ACTIONS = new Set(['tool-use', 'secret-access', 'write-back', 'release', 'escalation']);
+// `review` (human review gate) and `ai-review` (automated review gate) are
+// first-class approval actions: a run entering a review stage raises an
+// AgentApproval with one of these actions, rather than the gate being inferred
+// from the task kind. Kept alongside the operational gates.
+const VALID_ACTIONS = new Set(['review', 'ai-review', 'tool-use', 'secret-access', 'write-back', 'release', 'escalation']);
 
 export function createAgentApprovalController() {
   return {

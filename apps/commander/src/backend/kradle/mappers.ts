@@ -1011,11 +1011,12 @@ export function mapCards(snapshot: KradleControllerSnapshot): SimCardView[] {
     const released =
       lab[LABEL_RELEASE_ID] !== undefined || asString(status(run).releasedAt) !== undefined;
 
-    // Prefer the real reconciled lane (`status.boardColumn`); fall back to the
-    // phase→column derivation only when the run carries no board column (thin,
-    // honest fallback — §4.2). The Commander-label refinements (merged/released/
-    // review gates) still apply when deriving.
-    const column =
+    // Base lane: prefer the real reconciled lane (`status.boardColumn`); fall
+    // back to the phase→column derivation otherwise (thin, honest fallback —
+    // §4.2). The kradle run-status reconciler derives boardColumn from the phase
+    // ALONE (it has no approval context), so a pending approval gate is overlaid
+    // below.
+    const baseColumn =
       runBoardColumn(run) ??
       runPhaseToColumn(phase, {
         taskKind,
@@ -1025,6 +1026,18 @@ export function mapCards(snapshot: KradleControllerSnapshot): SimCardView[] {
         merged,
         released,
       });
+    // A PENDING AgentApproval is the salient lane state and must surface even
+    // over a phase-derived boardColumn: a real review/ai-review approval → the
+    // AI-review lane; a write-back/release/escalation/tool-use/secret-access
+    // approval → the human-review lane. Terminal/release lanes are never overridden.
+    const column: ColumnId =
+      baseColumn === 'merged' || baseColumn === 'in-production' || baseColumn === 'approved'
+        ? baseColumn
+        : hasPendingReviewApproval
+          ? 'ai-review'
+          : hasPendingWriteBackApproval
+            ? 'human-review'
+            : baseColumn;
 
     const workspaceId = asString(sp.workspaceRef) ?? '';
     const ws = workspaceId !== '' ? wsByName.get(workspaceId) : undefined;
