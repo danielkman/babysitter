@@ -3709,6 +3709,68 @@
     text-align: center;
   }
 
+  /* --- agent identity model (AgentDefinition / AgentPersona) ----------------- */
+  .wr-persona-glyph {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    font-size: 13px;
+    line-height: 1;
+    flex: 0 0 auto;
+  }
+  .wr-persona-glyph--lg {
+    width: 26px;
+    height: 26px;
+    font-size: 19px;
+  }
+  .wr-definition-role {
+    font-size: 10px;
+    color: var(--color-hud-dim);
+    font-style: italic;
+  }
+  .wr-persona-gallery-wrap {
+    margin-top: 4px;
+  }
+  .wr-persona-gallery {
+    list-style: none;
+    margin: 4px 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .wr-persona-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 6px 8px;
+    border: 1px solid rgb(216 181 97 / 0.18);
+    border-radius: 8px;
+    min-width: 160px;
+  }
+  .wr-persona-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .wr-persona-name {
+    font-size: 12px;
+    color: var(--color-hud);
+  }
+  .wr-persona-role {
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-amber-glow);
+  }
+  .wr-persona-tagline {
+    font-size: 10px;
+    font-style: italic;
+    color: var(--color-hud-dim);
+  }
+
   /* --- assignment chips on backlog cards ------------------------------------ */
   .wr-assign-chips {
     display: flex;

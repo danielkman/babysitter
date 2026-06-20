@@ -18,7 +18,11 @@ import { useStore } from 'zustand';
 import clsx from 'clsx';
 
 import { TASK_KINDS, TASK_TITLES, ADAPTERS, type TaskKind } from '../../backend/mock/scenario';
-import type { SimRosterAgentView, SimStackView } from '../../backend/mock/simulation';
+import type {
+  SimAgentDefinitionView,
+  SimAgentPersonaView,
+  SimStackView,
+} from '../../backend/mock/simulation';
 import type { CommanderStore, Orders } from '../../game/store';
 import type { SimViews } from '../../game/views';
 import {
@@ -447,93 +451,155 @@ function StacksTab({ orders, views }: { orders: Orders; views: SimViews }): Reac
 }
 
 // ---------------------------------------------------------------------------
-// Agents tab (named roster agents — assignable workers/reviewers)
+// Agents tab — the REAL kradle agent-identity model (SPEC-KRADLE-MODEL):
+//   AgentDefinition  = the deployment binding (persona ↔ stack + roleContext)
+//   AgentPersona     = the reusable identity (displayName + emoji + role/tagline)
+// Replaces the invented "roster agents" entirely. The list is read-only; the
+// editor below applies a new AgentDefinition (persona + stack + roleContext)
+// via orders.upsertDefinition.
 // ---------------------------------------------------------------------------
 
-function RosterAgentRow({
-  agent,
-  onRelease,
-}: {
-  agent: SimRosterAgentView;
-  onRelease: () => void;
-}): React.JSX.Element {
+/** A persona's emoji/avatar glyph (emoji wins; falls back to the initial). */
+function personaGlyph(persona: SimAgentPersonaView | null, fallback: string): string {
+  if (persona?.emoji != null && persona.emoji !== '') return persona.emoji;
+  return (fallback.trim()[0] ?? '?').toUpperCase();
+}
+
+function DefinitionRow({ def }: { def: SimAgentDefinitionView }): React.JSX.Element {
+  // The role shown is the deployment-specific roleContext (preferred), falling
+  // back to the persona's own role title — never invented.
+  const role = def.roleContext ?? def.persona?.roleTitle ?? null;
+  const displayName = def.persona?.displayName ?? def.personaRef ?? def.name;
   return (
-    <li className="wr-stack-row wr-roster-row">
+    <li className="wr-stack-row wr-definition-row">
       <div className="wr-stack-row-main">
-        <span className="wr-stack-name">{agent.name}</span>
-        <span className={`wr-stack-adapter wr-faction-text--${agent.adapter}`}>{agent.adapter}</span>
-        <span className="wr-stack-model">{agent.model}</span>
-        <span className={clsx('wr-roster-role', `wr-roster-role--${agent.role}`)}>{agent.role}</span>
-        {agent.status === 'assigned' && (
-          <span className="wr-roster-assigned" title={agent.assignedTaskId ?? ''}>
-            assigned
+        <span className="wr-persona-glyph" aria-hidden>
+          {personaGlyph(def.persona, displayName)}
+        </span>
+        <span className="wr-stack-name">{displayName}</span>
+        {role != null && role !== '' && <span className="wr-definition-role">{role}</span>}
+        {def.stackRef !== '' && (
+          <span className="wr-stack-adapter" title="bound stack">
+            {def.stackRef}
           </span>
         )}
-        <span className="wr-stack-id">{agent.stackRef}</span>
+        <span className="wr-stack-id">{def.name}</span>
       </div>
-      <div className="wr-stack-row-actions">
-        <button
-          type="button"
-          className="wr-alert-btn wr-stack-btn"
-          disabled={agent.status === 'assigned'}
-          title={agent.status === 'assigned' ? 'Unassign before releasing' : 'Release this agent'}
-          onClick={onRelease}
-        >
-          Release
-        </button>
+      {def.persona === null && def.personaRef !== '' && (
+        <div className="wr-stack-row-excerpt">persona “{def.personaRef}” not found</div>
+      )}
+    </li>
+  );
+}
+
+function PersonaCard({ persona }: { persona: SimAgentPersonaView }): React.JSX.Element {
+  return (
+    <li className="wr-persona-card">
+      <span className="wr-persona-glyph wr-persona-glyph--lg" aria-hidden>
+        {personaGlyph(persona, persona.displayName)}
+      </span>
+      <div className="wr-persona-card-body">
+        <span className="wr-persona-name">{persona.displayName}</span>
+        {persona.roleTitle != null && persona.roleTitle !== '' && (
+          <span className="wr-persona-role">{persona.roleTitle}</span>
+        )}
+        {persona.tagline != null && persona.tagline !== '' && (
+          <span className="wr-persona-tagline">{persona.tagline}</span>
+        )}
       </div>
     </li>
   );
 }
 
 function AgentsTab({ orders, views }: { orders: Orders; views: SimViews }): React.JSX.Element {
+  const definitions = views.listDefinitions();
+  const personas = views.listPersonas();
   const stacks = views.listStacks();
-  const [, setRecruitSeq] = useState(0);
-  const agents = views.listRosterAgents();
-  const [stackRef, setStackRef] = useState(stacks[0]?.stackRef ?? '');
-  const [role, setRole] = useState<'worker' | 'reviewer'>('worker');
+  const [, setApplySeq] = useState(0);
   const [name, setName] = useState('');
+  const [personaRef, setPersonaRef] = useState(personas[0]?.name ?? '');
+  const [stackRef, setStackRef] = useState(stacks[0]?.stackRef ?? '');
+  const [roleContext, setRoleContext] = useState('');
 
-  const recruit = (): void => {
-    if (!stackRef) return;
-    const agentId = orders.createRosterAgent({
+  const canApply = name.trim() !== '' && personaRef !== '' && stackRef !== '';
+
+  const apply = (): void => {
+    if (!canApply) return;
+    const applied = orders.upsertDefinition({
+      name: name.trim(),
+      personaRef,
       stackRef,
-      role,
-      ...(name.trim() !== '' ? { name: name.trim() } : {}),
+      ...(roleContext.trim() !== '' ? { roleContext: roleContext.trim() } : {}),
     });
-    if (agentId !== null) {
+    if (applied !== null) {
       setName('');
-      setRecruitSeq((n) => n + 1);
+      setRoleContext('');
+      setApplySeq((n) => n + 1);
     }
   };
 
   return (
     <div className="wr-foundry-stacks-body">
-      <ul className="wr-stack-roster" aria-label="Roster agents">
-        {agents.length === 0 && (
-          <li className="wr-roster-empty">No agents recruited — forge one below</li>
+      <ul className="wr-stack-roster" aria-label="Agent definitions">
+        {definitions.length === 0 && (
+          <li className="wr-roster-empty">No agent definitions</li>
         )}
-        {agents.map((a) => (
-          <RosterAgentRow
-            key={a.agentId}
-            agent={a}
-            onRelease={() => {
-              orders.deleteRosterAgent(a.agentId);
-              setRecruitSeq((n) => n + 1);
-            }}
-          />
+        {definitions.map((d) => (
+          <DefinitionRow key={d.name} def={d} />
         ))}
       </ul>
-      <div className="wr-stack-editor" aria-label="Recruit agent">
-        <div className="wr-stack-editor-title">RECRUIT AN AGENT</div>
+
+      <div className="wr-persona-gallery-wrap" aria-label="Agent personas">
+        <div className="wr-stack-editor-title">PERSONAS</div>
+        <ul className="wr-persona-gallery">
+          {personas.length === 0 && <li className="wr-roster-empty">No personas</li>}
+          {personas.map((p) => (
+            <PersonaCard key={p.name} persona={p} />
+          ))}
+        </ul>
+      </div>
+
+      <div className="wr-stack-editor" aria-label="New definition">
+        <div className="wr-stack-editor-title">NEW DEFINITION</div>
         <div className="wr-stack-editor-grid">
+          <label className="wr-foundry-field">
+            <span className="wr-foundry-label">name</span>
+            <input
+              className="wr-foundry-input"
+              type="text"
+              value={name}
+              placeholder="reviewer-on-main"
+              onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') apply();
+              }}
+            />
+          </label>
+          <label className="wr-foundry-field">
+            <span className="wr-foundry-label">persona</span>
+            <select
+              className="wr-foundry-input"
+              value={personaRef}
+              onChange={(e) => setPersonaRef(e.target.value)}
+              disabled={personas.length === 0}
+            >
+              {personas.length === 0 && <option value="">— no personas —</option>}
+              {personas.map((p) => (
+                <option key={p.name} value={p.name}>
+                  {p.displayName}
+                </option>
+              ))}
+            </select>
+          </label>
           <label className="wr-foundry-field">
             <span className="wr-foundry-label">stack</span>
             <select
               className="wr-foundry-input"
               value={stackRef}
               onChange={(e) => setStackRef(e.target.value)}
+              disabled={stacks.length === 0}
             >
+              {stacks.length === 0 && <option value="">— no stacks —</option>}
               {stacks.map((s) => (
                 <option key={s.stackRef} value={s.stackRef}>
                   {s.name}
@@ -541,40 +607,27 @@ function AgentsTab({ orders, views }: { orders: Orders; views: SimViews }): Reac
               ))}
             </select>
           </label>
-          <label className="wr-foundry-field">
-            <span className="wr-foundry-label">role</span>
-            <select
-              className="wr-foundry-input"
-              value={role}
-              onChange={(e) => setRole(e.target.value as 'worker' | 'reviewer')}
-            >
-              <option value="worker">worker</option>
-              <option value="reviewer">reviewer</option>
-            </select>
-          </label>
-          <label className="wr-foundry-field">
-            <span className="wr-foundry-label">name (optional)</span>
-            <input
-              className="wr-foundry-input"
-              type="text"
-              value={name}
-              placeholder="auto-generate"
-              onChange={(e) => setName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') recruit();
-              }}
-            />
-          </label>
         </div>
-        <div className="wr-modal-hint">binds to the selected stack · assignable via task backlog</div>
+        <label className="wr-foundry-field">
+          <span className="wr-foundry-label">role context (optional)</span>
+          <textarea
+            className="wr-foundry-input wr-stack-prompt"
+            rows={2}
+            value={roleContext}
+            placeholder="deployment-specific role framing (spec.roleContext)"
+            onChange={(e) => setRoleContext(e.target.value)}
+          />
+        </label>
+        <div className="wr-modal-hint">binds a persona to a stack · reconciles on the next refresh</div>
         <div className="wr-modal-actions">
           <button
             type="button"
+            data-testid="foundry-new-definition"
             className="wr-alert-btn wr-alert-btn--approve"
-            disabled={!stackRef}
-            onClick={recruit}
+            disabled={!canApply}
+            onClick={apply}
           >
-            Recruit
+            Apply Definition
           </button>
         </div>
       </div>

@@ -28,6 +28,8 @@ import type { GraphQueryResult } from '../../contracts/kradle-memory';
 import type { BackendConfig } from '../config';
 import type { CommanderBackend } from '../types';
 import type {
+  SimAgentDefinitionView,
+  SimAgentPersonaView,
   SimFileTreeNode,
   SimGitCommitView,
   SimMemoryIOView,
@@ -52,6 +54,8 @@ import {
 import {
   mapMemoryIO,
   mapProcessTemplates,
+  mapAgentDefinitions,
+  mapAgentPersonas,
   mapRunObservation,
   mapRuns,
   mapSessionDetail,
@@ -79,6 +83,12 @@ export const realViewsStub: SimViews = {
     return [];
   },
   listRosterAgents(): SimRosterAgentView[] {
+    return [];
+  },
+  listPersonas(): SimAgentPersonaView[] {
+    return [];
+  },
+  listDefinitions(): SimAgentDefinitionView[] {
     return [];
   },
   listRuns(): SimRunView[] {
@@ -185,6 +195,9 @@ function makeRealOrders(backend: CommanderBackend, flush: () => void): Orders {
     upsertStack() {
       return null;
     },
+    upsertDefinition() {
+      return null;
+    },
     updateProcessTemplate() {
       return null;
     },
@@ -266,6 +279,10 @@ class KradleControllerCache {
       // Roster removed from the model (SPEC §2.4/§5.2); the SimViews method is
       // kept returning empty until the UI phase drops it from the interface.
       listRosterAgents: () => [],
+      // The REAL agent-identity model (SPEC-KRADLE-MODEL): AgentPersona →
+      // identity, AgentDefinition → persona↔stack binding (replaces the roster).
+      listPersonas: () => (this.snapshot ? mapAgentPersonas(this.snapshot) : []),
+      listDefinitions: () => (this.snapshot ? mapAgentDefinitions(this.snapshot) : []),
       listRuns: () => (this.snapshot ? mapRuns(this.snapshot) : []),
       listProcessTemplates: () => mapProcessTemplates(),
       getMemoryIO: (ref) => {
@@ -418,6 +435,8 @@ export function bootReal(
       inquiries: [],
       runStages: {},
       rosterAgents: [],
+      personas: [],
+      definitions: [],
       nowMs: now(),
       tickIndex,
       paused: false,
@@ -479,6 +498,9 @@ export function bootReal(
       runStages: tickInput.runStages,
       // Roster removed (SPEC §2.4/§5.2); kradle never writes a roster slice.
       rosterAgents: [],
+      // The REAL agent-identity model (SPEC-KRADLE-MODEL).
+      personas: tickInput.personas,
+      definitions: tickInput.definitions,
       nowMs,
       tickIndex,
       paused: false,

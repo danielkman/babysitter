@@ -141,6 +141,7 @@ function makeFakeGateway(): { orders: Orders; calls: RecordedCall[] } {
     setSpeed: () => false,
     updateTask: () => false,
     upsertStack: () => null,
+    upsertDefinition: () => null,
     updateProcessTemplate: () => null,
     writeFile: () => false,
     createRosterAgent: () => null,

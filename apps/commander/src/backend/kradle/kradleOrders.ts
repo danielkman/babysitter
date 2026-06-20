@@ -448,6 +448,25 @@ export function makeKradleOrders(
       run('upsertStack/applyResource', () => client.applyResource(body));
       return stack.metadata.name;
     },
+    upsertDefinition(input) {
+      // SPEC-KRADLE-MODEL — apply the REAL `AgentDefinition` (persona↔stack
+      // deployment binding) via the generic CRD gateway. `organizationRef` is
+      // stamped from the active org by `applyDefinition`. The definition
+      // reconciles onto the board on the next snapshot refresh.
+      run('upsertDefinition/applyDefinition', () =>
+        applyDefinition(client, {
+          name: input.name,
+          spec: {
+            personaRef: input.personaRef,
+            stackRef: input.stackRef,
+            ...(input.roleContext !== undefined && input.roleContext !== ''
+              ? { roleContext: input.roleContext }
+              : {}),
+          },
+        }),
+      );
+      return input.name;
+    },
     // --- roster verbs: REMOVED from the model (SPEC §2.4/§5.2) ----------------
     // kradle has no roster CRD; these survive only as documented no-ops until
     // the store slice is removed in the UI phase. They no longer write

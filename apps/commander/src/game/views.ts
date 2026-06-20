@@ -9,6 +9,8 @@
  */
 
 import type {
+  SimAgentDefinitionView,
+  SimAgentPersonaView,
   SimCardView,
   SimFileTreeNode,
   SimGitCommitView,
@@ -31,6 +33,17 @@ export interface SimViews {
   listStacks(): SimStackView[];
   /** Operator roster agents (named workers/reviewers assignable to tasks). */
   listRosterAgents(): SimRosterAgentView[];
+  /**
+   * SPEC-KRADLE-MODEL — the real reusable agent identities (`AgentPersona`),
+   * each resolved with appearance/voice. Empty in mock mode (no fixture).
+   */
+  listPersonas(): SimAgentPersonaView[];
+  /**
+   * SPEC-KRADLE-MODEL — the real agent definitions (`AgentDefinition`): each a
+   * persona↔stack deployment binding, with its persona identity resolved.
+   * Empty in mock mode (no fixture).
+   */
+  listDefinitions(): SimAgentDefinitionView[];
   /** §V4-6 runs registry: every card attempt, newest first. */
   listRuns(): SimRunView[];
   /** §V4-6 per-taskKind phase pipeline templates (`commander/<kind>@vN`). */

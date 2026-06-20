@@ -2178,6 +2178,20 @@ export class Simulation {
     }));
   }
 
+  /**
+   * SPEC-KRADLE-MODEL — the real agent-identity model has no mock fixture: the
+   * sim never seeds `AgentPersona`/`AgentDefinition` resources, so both lists are
+   * honestly empty (the live kradle path populates them). Kept here so the mock
+   * `Simulation` satisfies the `SimViews` surface.
+   */
+  listPersonas(): SimAgentPersonaView[] {
+    return [];
+  }
+
+  listDefinitions(): SimAgentDefinitionView[] {
+    return [];
+  }
+
   // -------------------------------------------------------------------------
   // Roster agents (named, stackbound workers/reviewers assignable to tasks)
   // -------------------------------------------------------------------------

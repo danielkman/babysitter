@@ -959,8 +959,48 @@ describe('AC12 — mapToTickInput board halves (§6.2)', () => {
     expect(tick.inquiries[0].hookRequestId).toBe('appr-1');
     // Roster is REMOVED from the tick input (AC3): no `rosterAgents` key.
     expect('rosterAgents' in tick).toBe(false);
+    // The REAL agent-identity model rides the tick input (SPEC-KRADLE-MODEL):
+    // both keys are present (empty here — no persona/definition resources).
+    expect(tick.personas).toEqual([]);
+    expect(tick.definitions).toEqual([]);
     // runStages: the active card surfaces its current phase label.
     expect(Object.keys(tick.runStages)).toContain('adr-1');
+  });
+
+  it('AC12: mapToTickInput surfaces real personas + definitions (resolved persona identity)', () => {
+    const s = snap({
+      personas: {
+        items: [
+          persona('atlas-reviewer', {
+            organizationRef: 'acme',
+            displayName: 'Atlas Reviewer',
+            role: { title: 'Senior Reviewer' },
+            appearance: { emoji: '🛡️' },
+          }),
+        ],
+      },
+      definitions: {
+        items: [
+          definition('reviewer-on-main', {
+            organizationRef: 'acme',
+            personaRef: 'atlas-reviewer',
+            stackRef: 'commander-verify-stack',
+            roleContext: 'reviews PRs to main',
+          }),
+        ],
+      },
+    });
+    const tick = mapToTickInput(s, 5000);
+    expect(tick.personas).toHaveLength(1);
+    expect(tick.personas[0].displayName).toBe('Atlas Reviewer');
+    expect(tick.personas[0].emoji).toBe('🛡️');
+    expect(tick.definitions).toHaveLength(1);
+    expect(tick.definitions[0].name).toBe('reviewer-on-main');
+    expect(tick.definitions[0].stackRef).toBe('commander-verify-stack');
+    expect(tick.definitions[0].roleContext).toBe('reviews PRs to main');
+    // The definition's persona identity is resolved (displayName + emoji).
+    expect(tick.definitions[0].persona?.displayName).toBe('Atlas Reviewer');
+    expect(tick.definitions[0].persona?.emoji).toBe('🛡️');
   });
 
   it('AC12: a hook deadlineTs is derived from the injected nowMs (not Date.now)', () => {

@@ -1836,6 +1836,10 @@ export interface KradleTickInput {
   hooks: SimHookView[];
   inquiries: TickInquiry[];
   runStages: Record<string, string | null>;
+  /** SPEC-KRADLE-MODEL — the real agent identities (`AgentPersona`). */
+  personas: SimAgentPersonaView[];
+  /** SPEC-KRADLE-MODEL — the real agent definitions (`AgentDefinition`). */
+  definitions: SimAgentDefinitionView[];
 }
 
 /**
@@ -1876,6 +1880,8 @@ export function mapToTickInput(snapshot: KradleControllerSnapshot, nowMs: number
     hooks,
     inquiries,
     runStages,
+    personas: mapAgentPersonas(snapshot),
+    definitions: mapAgentDefinitions(snapshot),
   };
 }
 

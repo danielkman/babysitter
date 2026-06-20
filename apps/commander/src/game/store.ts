@@ -32,6 +32,8 @@ import type { GraphRecord } from '../contracts/kradle-memory';
 import type { MockBackend } from '../backend/mock/mockBackend';
 import type {
   ColumnId,
+  SimAgentDefinitionView,
+  SimAgentPersonaView,
   SimAgentView,
   SimCardView,
   SimHookView,
@@ -181,6 +183,17 @@ export interface BoardSlice {
   heldByCard: Record<string, string[]>;
   /** Named assignable workers/reviewers (roster agents). */
   rosterAgents: SimRosterAgentView[];
+  /**
+   * SPEC-KRADLE-MODEL — the REAL reusable agent identities (`AgentPersona`),
+   * resolved with appearance/voice. Empty in mock mode (the live kradle path
+   * populates them). Replaces the invented roster as the "who" model.
+   */
+  personas: SimAgentPersonaView[];
+  /**
+   * SPEC-KRADLE-MODEL — the REAL agent definitions (`AgentDefinition`): each a
+   * persona↔stack deployment binding with its persona identity resolved.
+   */
+  definitions: SimAgentDefinitionView[];
 }
 
 export interface SelectionSlice {
@@ -295,6 +308,10 @@ export interface TickCommitInput {
   /** taskId → current babysitter phase label (active cards only, §V2-5). */
   runStages: Record<string, string | null>;
   rosterAgents: SimRosterAgentView[];
+  /** SPEC-KRADLE-MODEL — real agent identities (`AgentPersona`). */
+  personas: SimAgentPersonaView[];
+  /** SPEC-KRADLE-MODEL — real agent definitions (`AgentDefinition`). */
+  definitions: SimAgentDefinitionView[];
   nowMs: number;
   tickIndex: number;
   paused: boolean;
@@ -955,6 +972,8 @@ export function createCommanderStore(): CommanderStore {
       memory: { silos: [], records: [] },
       heldByCard: {},
       rosterAgents: [],
+      personas: [],
+      definitions: [],
     },
     selection: { ids: [] },
     events: [],
@@ -1223,6 +1242,18 @@ export function createCommanderStore(): CommanderStore {
           (rosterAgents.length !== prevBoard.rosterAgents.length ||
             rosterAgents.some((a, i) => a !== prevBoard.rosterAgents[i]));
 
+        // SPEC-KRADLE-MODEL — the real agent-identity slices (personas +
+        // definitions). Reuse the prior array reference when the incoming batch
+        // is element-wise identical so memoized list selectors stay stable.
+        const personasChanged =
+          input.personas.length !== prevBoard.personas.length ||
+          input.personas.some((p, i) => p !== prevBoard.personas[i]);
+        const personas = personasChanged ? input.personas : prevBoard.personas;
+        const definitionsChanged =
+          input.definitions.length !== prevBoard.definitions.length ||
+          input.definitions.some((d, i) => d !== prevBoard.definitions[i]);
+        const definitions = definitionsChanged ? input.definitions : prevBoard.definitions;
+
         const board: BoardSlice =
           cardsChanged ||
           agentsChanged ||
@@ -1230,7 +1261,9 @@ export function createCommanderStore(): CommanderStore {
           !agentIdsStable ||
           inquiries !== prevBoard.inquiries ||
           heldByCard !== prevBoard.heldByCard ||
-          rosterChanged
+          rosterChanged ||
+          personasChanged ||
+          definitionsChanged
             ? {
                 cards,
                 cardIds: cardIdsStable ? prevBoard.cardIds : cardIds,
@@ -1241,6 +1274,8 @@ export function createCommanderStore(): CommanderStore {
                 memory: prevBoard.memory,
                 heldByCard,
                 rosterAgents,
+                personas,
+                definitions,
               }
             : prevBoard;
 
@@ -1608,6 +1643,17 @@ export interface Orders {
   /** SPEC-V4 §V4-5: stacks foundry save — forge or update an agent stack. */
   upsertStack(stack: KradleAgentStackInput): string | null;
   /**
+   * SPEC-KRADLE-MODEL — create/update an `AgentDefinition` (the persona↔stack
+   * deployment binding). Returns the applied definition name, or null when no
+   * write path exists (mock mode). The card reconciles on the next snapshot.
+   */
+  upsertDefinition(input: {
+    name: string;
+    personaRef: string;
+    stackRef: string;
+    roleContext?: string;
+  }): string | null;
+  /**
    * SPEC-V4 §V4-6: process-editor save — amend a kind's phase pipeline
    * TEMPLATE (revision bump, `process_updated` event, future runs only).
    */
@@ -1678,6 +1724,8 @@ export function bindBackendToStore(store: CommanderStore, backend: MockBackend):
       inquiries: sim.listInquiries(),
       runStages,
       rosterAgents: sim.listRosterAgents(),
+      personas: sim.listPersonas(),
+      definitions: sim.listDefinitions(),
       nowMs: sim.now(),
       tickIndex: sim.tickIndex,
       paused: sim.paused,
@@ -1817,6 +1865,11 @@ export function bindBackendToStore(store: CommanderStore, backend: MockBackend):
       const stackRef = sim.upsertStack(stack);
       flush();
       return stackRef;
+    },
+    upsertDefinition() {
+      // SPEC-KRADLE-MODEL — the mock sim has no AgentDefinition store (the real
+      // identity model is live-kradle only); no write path, documented null.
+      return null;
     },
     updateProcessTemplate(kind, phases) {
       // §V4-6: the sim emits `process_updated` — the frame router owns the

@@ -45,6 +45,7 @@ function mockOrders(): Orders {
     setSpeed: vi.fn(() => true),
     updateTask: vi.fn(() => true),
     upsertStack: vi.fn(() => null),
+    upsertDefinition: vi.fn(() => null),
     updateProcessTemplate: vi.fn(() => null),
     writeFile: vi.fn(() => true),
     createRosterAgent: vi.fn().mockReturnValue(null),
