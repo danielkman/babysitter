@@ -863,10 +863,18 @@ async function validateAgentBehavior(
   if (!isBabysitterPlugin && !isBabysitterAgent) {
     // The install result is captured in the command output — look for install JSON
     const installMatch = output.match(/"installed"\s*:\s*(true|false)/);
+    // Direct evidence the agent is installed AND runnable: it reached the model
+    // through the transport proxy. `adapters install` can report installed:false
+    // on a non-fatal postinstall exit or unreliable binary detection (e.g.
+    // claude-code's `claude.exe` bin symlink not resolving via `which` on Linux)
+    // even when the CLI is installed and runs — so prefer this stronger signal.
+    const agentReachedModel = (output.match(/\[transport-adapter\] (?:POST|GET|OpenAI engine(?:\s+stream)?:\s+POST) /g) || []).length > 0;
     if (installMatch?.[1] === 'true') {
       entries.push({ name: 'install-check', status: 'passed', detail: 'agent installed successfully' });
+    } else if (installMatch?.[1] === 'false' && agentReachedModel) {
+      entries.push({ name: 'install-check', status: 'passed', detail: 'install command reported installed:false, but the agent ran and reached the model — treating as installed' });
     } else if (installMatch?.[1] === 'false') {
-      entries.push({ name: 'install-check', status: 'failed', detail: 'agent install reported installed: false' });
+      entries.push({ name: 'install-check', status: 'failed', detail: 'agent install reported installed: false (and agent never reached the model)' });
     } else {
       entries.push({ name: 'install-check', status: 'passed', detail: 'install status not detected (may be pre-installed)' });
     }
