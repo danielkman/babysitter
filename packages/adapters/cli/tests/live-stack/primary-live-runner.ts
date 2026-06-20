@@ -567,9 +567,10 @@ function commandExecution(env: Record<string, string>, overrideKey: string, defa
   if (overrideBin) {
     return { command: process.execPath, args: [overrideBin, ...args], env, cwd, timeoutMs };
   }
-  // On Windows, .cmd scripts (npm, npx) require shell: true to execute.
-  // adapters is resolved via resolveSpawnCommand and uses shell: false.
-  if (process.platform === 'win32' && ['npm', 'npx', 'babysitter'].includes(defaultCommand)) {
+  // On Windows the published CLIs (`npm`, `npx`, `babysitter`, `adapters`) are
+  // `.cmd` shims that the child-process spawner can't resolve without a shell
+  // (`spawn <cmd> ENOENT`). Run them via shell on Windows.
+  if (process.platform === 'win32' && ['npm', 'npx', 'babysitter', 'adapters'].includes(defaultCommand)) {
     return { command: defaultCommand, args, env, cwd, timeoutMs, shell: true };
   }
   return { command: defaultCommand, args, env, cwd, timeoutMs };

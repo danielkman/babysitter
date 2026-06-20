@@ -97,7 +97,10 @@ export function buildDocumentedInstallCommands(
   const env = options.env ?? {};
   const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   const spec = DOCUMENTED_INSTALL_SPECS[harness];
-  const base = { env, cwd: options.cwd, timeoutMs };
+  // On Windows the `claude`/`codex` CLIs are `.cmd` shims that the child-process
+  // spawner can't resolve without a shell (spawn ENOENT). These commands have no
+  // spaces/special chars in their args, so shell:true is safe here.
+  const base = { env, cwd: options.cwd, timeoutMs, shell: process.platform === 'win32' };
 
   if (harness === 'claude-code') {
     // The channel ref is the `@<ref>` suffix on the GitHub source (claude has no
