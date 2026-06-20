@@ -923,13 +923,60 @@ describe('AC13 — workspaces, memory I/O, silos, process templates', () => {
     expect(silo.recordCount).toBe(0);
   });
 
-  it('AC13: listProcessTemplates synthesizes one template per TaskKind from PHASES_BY_KIND', () => {
-    const templates = mapProcessTemplates();
+  it('AC13: mapProcessTemplates falls back to PHASES_BY_KIND for taskKinds with no AgentProcessTemplate', () => {
+    const templates = mapProcessTemplates(snap());
     expect(templates).toHaveLength(TASK_KINDS.length);
     const fix = templates.find((t) => t.kind === 'fix')!;
+    // Honest fallback: synthetic process id + revision 1 + hardcoded phases.
     expect(fix.processId).toBe('commander/fix@v1');
     expect(fix.revision).toBe(1);
     expect(fix.phases).toEqual([...PHASES_BY_KIND.fix]);
+  });
+
+  it('AC13: mapProcessTemplates reads the REAL AgentProcessTemplate phases/processId/revision when present', () => {
+    const template: KradleResourceItem = {
+      apiVersion: 'kradle.a5c.ai/v1alpha1',
+      kind: 'AgentProcessTemplate',
+      metadata: { name: 'process-root-cause-analysis', generation: 7 },
+      spec: {
+        organizationRef: 'acme',
+        taskKind: 'root-cause-analysis',
+        phases: ['triage', 'investigate', 'fix', 'verify'],
+        displayName: 'Diagnostic Flow',
+      },
+      status: {},
+    };
+    const s = snap({ processTemplates: { items: [template] } });
+    const templates = mapProcessTemplates(s);
+    const rca = templates.find((t) => t.kind === 'root-cause-analysis')!;
+    // Real persisted values, NOT the hardcoded fallback.
+    expect(rca.processId).toBe('process-root-cause-analysis');
+    expect(rca.revision).toBe(7);
+    expect(rca.phases).toEqual(['triage', 'investigate', 'fix', 'verify']);
+
+    // A task kind with no template still falls back honestly in the same call.
+    const fix = templates.find((t) => t.kind === 'fix')!;
+    expect(fix.processId).toBe('commander/fix@v1');
+    expect(fix.phases).toEqual([...PHASES_BY_KIND.fix]);
+  });
+
+  it('AC13: a run of a kind with a real template gets the real phases + processId in mapRuns', () => {
+    const template: KradleResourceItem = {
+      apiVersion: 'kradle.a5c.ai/v1alpha1',
+      kind: 'AgentProcessTemplate',
+      metadata: { name: 'process-root-cause-analysis', generation: 3 },
+      spec: { organizationRef: 'acme', taskKind: 'root-cause-analysis', phases: ['triage', 'investigate', 'fix', 'verify'] },
+      status: {},
+    };
+    const s = snap({
+      runs: { items: [run('adr-d', { repository: 'r', taskKind: 'root-cause-analysis' }, 'Running')] },
+      processTemplates: { items: [template] },
+    });
+    const rows = mapRuns(s);
+    const row = rows.find((r) => r.runId === 'adr-d')!;
+    expect(row.processId).toBe('process-root-cause-analysis');
+    expect(row.processRevision).toBe(3);
+    expect(row.phases.map((p) => p.label)).toEqual(['triage', 'investigate', 'fix', 'verify']);
   });
 });
 

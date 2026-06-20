@@ -410,7 +410,11 @@ export const BOARD_SNAPSHOT_KINDS = [
   'AgentPersona',
   'AgentDefinition',
   'AgentAppearance',
-  'AgentVoiceProfile'
+  'AgentVoiceProfile',
+  // AgentProcessTemplate: the real per-taskKind process phase pipeline. Commander
+  // reads these to drive the Inspector Process tab + RunsOverlay process editor
+  // (falling back to its hardcoded constant only for taskKinds with no template).
+  'AgentProcessTemplate'
 ];
 
 /**

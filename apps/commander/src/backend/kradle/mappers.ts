@@ -212,7 +212,9 @@ export type AgentsCollectionKey =
   | 'personas'
   | 'definitions'
   | 'appearances'
-  | 'voiceProfiles';
+  | 'voiceProfiles'
+  // The real per-taskKind process phase pipeline (AgentProcessTemplate).
+  | 'processTemplates';
 
 function collectionItems(
   snapshot: KradleControllerSnapshot,
@@ -400,6 +402,67 @@ function definitionItems(snapshot: KradleControllerSnapshot): KradleResourceItem
   const fromAgents = collectionItems(snapshot, 'definitions');
   if (fromAgents.length > 0) return fromAgents;
   return resourceItemsByKind(snapshot, 'AgentDefinition');
+}
+
+function processTemplateItems(snapshot: KradleControllerSnapshot): KradleResourceItem[] {
+  const fromAgents = collectionItems(snapshot, 'processTemplates');
+  if (fromAgents.length > 0) return fromAgents;
+  return resourceItemsByKind(snapshot, 'AgentProcessTemplate');
+}
+
+/**
+ * Index the REAL `AgentProcessTemplate` resources by their `spec.taskKind`. Each
+ * entry carries the persisted phase pipeline plus the real identity used by the
+ * process view: `processId` from `metadata.name`, `revision` from
+ * `metadata.generation` (falling back to `resourceVersion`). When two templates
+ * target the same task kind, the last one (stably sorted by name) wins — but
+ * task kinds are expected to be unique.
+ */
+interface RealProcessTemplate {
+  taskKind: TaskKind;
+  phases: string[];
+  processId: string;
+  revision: number;
+  displayName: string | null;
+}
+
+function buildProcessTemplateIndex(
+  snapshot: KradleControllerSnapshot,
+): Map<TaskKind, RealProcessTemplate> {
+  const index = new Map<TaskKind, RealProcessTemplate>();
+  const items = [...processTemplateItems(snapshot)].sort((a, b) =>
+    a.metadata.name.localeCompare(b.metadata.name),
+  );
+  for (const item of items) {
+    const sp = spec(item);
+    const taskKindRaw = asString(sp.taskKind);
+    if (taskKindRaw === undefined || !TASK_KIND_SET.has(taskKindRaw)) continue;
+    const phasesRaw = Array.isArray(sp.phases) ? sp.phases : [];
+    const phases = phasesRaw
+      .map((p) => (typeof p === 'string' ? p.trim() : ''))
+      .filter((p) => p.length > 0);
+    if (phases.length === 0) continue;
+    index.set(taskKindRaw as TaskKind, {
+      taskKind: taskKindRaw as TaskKind,
+      phases,
+      processId: item.metadata.name,
+      revision: processTemplateRevision(item),
+      displayName: asString(sp.displayName) ?? null,
+    });
+  }
+  return index;
+}
+
+/** Real template revision: prefer `metadata.generation`, then `resourceVersion`. */
+function processTemplateRevision(item: KradleResourceItem): number {
+  const { generation, resourceVersion } = item.metadata;
+  if (typeof generation === 'number' && Number.isFinite(generation)) return generation;
+  if (typeof resourceVersion === 'string') {
+    const parsed = Number.parseInt(resourceVersion, 10);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  if (typeof resourceVersion === 'number' && Number.isFinite(resourceVersion)) return resourceVersion;
+  return 1;
 }
 
 function appearanceItems(snapshot: KradleControllerSnapshot): KradleResourceItem[] {
@@ -1159,8 +1222,12 @@ function mapObservedState(phase: string | undefined): ObservedRunState {
 function phasePipeline(
   taskKind: TaskKind,
   phase: string | undefined,
+  templateIndex?: Map<TaskKind, RealProcessTemplate>,
 ): Array<{ label: string; status: 'done' | 'current' | 'pending' }> {
-  const phases = PHASES_BY_KIND[taskKind];
+  // Prefer the REAL AgentProcessTemplate's phases when one exists for this task
+  // kind; otherwise fall back HONESTLY to the hardcoded PHASES_BY_KIND constant.
+  const real = templateIndex?.get(taskKind);
+  const phases = real !== undefined ? real.phases : PHASES_BY_KIND[taskKind];
   const progress = runProgress(phase);
   // Map progress to a current-phase index: 0 → first, 0.5 → middle, 1 → all done.
   if (progress >= 1) {
@@ -1183,13 +1250,21 @@ function pendingEffectsByKindForRun(
   return { breakpoint: pending.length };
 }
 
-function processIdFor(taskKind: TaskKind): string {
+function processIdFor(
+  taskKind: TaskKind,
+  templateIndex?: Map<TaskKind, RealProcessTemplate>,
+): string {
+  // The REAL template's metadata.name is the persisted process id; the synthetic
+  // `commander/<kind>@v1` id is only the honest fallback when none exists.
+  const real = templateIndex?.get(taskKind);
+  if (real !== undefined) return real.processId;
   return `commander/${taskKind}@v1`;
 }
 
 /** §2.3.3 `mapRuns`. `model.agents.runs.items` → run-ledger rows, newest-first. */
 export function mapRuns(snapshot: KradleControllerSnapshot): SimRunView[] {
   const runs = collectionItems(snapshot, 'runs');
+  const templateIndex = buildProcessTemplateIndex(snapshot);
   const out: SimRunView[] = runs.map((run) => {
     const sp = spec(run);
     const st = status(run);
@@ -1201,10 +1276,10 @@ export function mapRuns(snapshot: KradleControllerSnapshot): SimRunView[] {
       runId: run.metadata.name,
       taskId: run.metadata.name,
       taskKind,
-      processId: processIdFor(taskKind),
-      processRevision: 1,
+      processId: processIdFor(taskKind, templateIndex),
+      processRevision: templateIndex.get(taskKind)?.revision ?? 1,
       observedState: mapObservedState(phase),
-      phases: phasePipeline(taskKind, phase),
+      phases: phasePipeline(taskKind, phase, templateIndex),
       pendingEffectsByKind: pendingEffectsByKindForRun(snapshot, run.metadata.name),
       tokens: { ...EMPTY_TOKENS },
       costUsd: asNumber(st.cost) ?? 0,
@@ -1224,12 +1299,13 @@ export function mapRunObservation(
   if (run === undefined) return null;
   const taskKind = narrowTaskKind(asString(spec(run).taskKind));
   const phase = statusPhase(run);
+  const templateIndex = buildProcessTemplateIndex(snapshot);
   return {
     runId: run.metadata.name,
     taskId: run.metadata.name,
     observedState: mapObservedState(phase),
     pendingEffectsByKind: pendingEffectsByKindForRun(snapshot, taskId),
-    phases: phasePipeline(taskKind, phase),
+    phases: phasePipeline(taskKind, phase, templateIndex),
     journal: [],
   };
 }
@@ -1614,17 +1690,39 @@ export function mapMemoryRecords(memoryResult: GraphQueryResult | undefined): Gr
 }
 
 // ---------------------------------------------------------------------------
-// §2.7 — synthesized process templates (AC13)
+// §2.7 — process templates: REAL AgentProcessTemplate + honest fallback
 // ---------------------------------------------------------------------------
 
-/** §2.7 `listProcessTemplates()`. Synthesized per `TaskKind` from `PHASES_BY_KIND`. */
-export function mapProcessTemplates(): SimProcessTemplateView[] {
-  return TASK_KINDS.map((kind) => ({
-    kind,
-    processId: processIdFor(kind),
-    revision: 1,
-    phases: [...PHASES_BY_KIND[kind]],
-  }));
+/**
+ * `listProcessTemplates()` — one template per `TaskKind`. For task kinds that
+ * have a REAL `AgentProcessTemplate` CRD, the returned phases/processId/revision
+ * come from the persisted resource (so the RunsOverlay editor edits something
+ * that can actually persist). For task kinds with NO `AgentProcessTemplate`, we
+ * fall back HONESTLY to the hardcoded `PHASES_BY_KIND` constant with the
+ * synthetic `commander/<kind>@v1` process id and revision 1 — never claiming the
+ * fallback is a persisted template.
+ */
+export function mapProcessTemplates(
+  snapshot: KradleControllerSnapshot,
+): SimProcessTemplateView[] {
+  const templateIndex = buildProcessTemplateIndex(snapshot);
+  return TASK_KINDS.map((kind) => {
+    const real = templateIndex.get(kind);
+    if (real !== undefined) {
+      return {
+        kind,
+        processId: real.processId,
+        revision: real.revision,
+        phases: [...real.phases],
+      };
+    }
+    return {
+      kind,
+      processId: processIdFor(kind),
+      revision: 1,
+      phases: [...PHASES_BY_KIND[kind]],
+    };
+  });
 }
 
 // ---------------------------------------------------------------------------

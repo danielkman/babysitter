@@ -171,7 +171,16 @@ export class KradleControlPlaneError extends Error {
 export interface KradleResourceItem {
   apiVersion?: string;
   kind?: string;
-  metadata: { name: string; namespace?: string; labels?: Record<string, string>; creationTimestamp?: string };
+  metadata: {
+    name: string;
+    namespace?: string;
+    labels?: Record<string, string>;
+    creationTimestamp?: string;
+    /** K8s object generation — the real revision source for process templates. */
+    generation?: number;
+    /** K8s resourceVersion — the revision fallback when generation is absent. */
+    resourceVersion?: string | number;
+  };
   spec?: Record<string, unknown>;
   status?: Record<string, unknown>;
 }
@@ -221,6 +230,14 @@ export interface KradleControllerSnapshot {
     definitions?: KradleResourceCollection;
     appearances?: KradleResourceCollection;
     voiceProfiles?: KradleResourceCollection;
+    /**
+     * Agent process templates (the real per-taskKind phase pipeline). Populated
+     * by the kradle controller UI model's `agents.processTemplates` (the board
+     * snapshot must surface `AgentProcessTemplate` — see BOARD_SNAPSHOT_KINDS).
+     * Commander's `mapProcessTemplates` reads these and falls back to its
+     * hardcoded `PHASES_BY_KIND` constant for task kinds with no template.
+     */
+    processTemplates?: KradleResourceCollection;
   };
   resources?: Array<{
     kind?: string;

@@ -130,6 +130,10 @@ export function createControllerUiModel(source, options = {}) {
   const agentDefinitions = filterByOrg(snapshot.resources.AgentDefinition || [], activeOrg?.slug);
   const agentAppearances = filterByOrg(snapshot.resources.AgentAppearance || [], activeOrg?.slug);
   const agentVoiceProfiles = filterByOrg(snapshot.resources.AgentVoiceProfile || [], activeOrg?.slug);
+  // AgentProcessTemplate: per-taskKind process phase pipeline. Commander reads
+  // these to drive the run/process view (Inspector Process tab + RunsOverlay
+  // process editor), with an honest fallback to its hardcoded constant.
+  const agentProcessTemplates = filterByOrg(snapshot.resources.AgentProcessTemplate || [], activeOrg?.slug);
 
   const agentView = {
     org: activeOrg?.slug,
@@ -150,6 +154,7 @@ export function createControllerUiModel(source, options = {}) {
     memoryImports: { count: memoryImports.length, items: memoryImports, pending: memoryImports.filter(i => !i.status?.phase || i.status.phase === 'Pending' || i.status.phase === 'AwaitingReview') },
     personas: { count: agentPersonas.length, items: agentPersonas },
     definitions: { count: agentDefinitions.length, items: agentDefinitions },
+    processTemplates: { count: agentProcessTemplates.length, items: agentProcessTemplates },
     appearances: { count: agentAppearances.length, items: agentAppearances },
     voiceProfiles: { count: agentVoiceProfiles.length, items: agentVoiceProfiles },
   };

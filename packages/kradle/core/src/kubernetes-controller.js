@@ -77,6 +77,7 @@ export const KRADLE_RESOURCES = [
   { kind: 'AgentToolProfile', plural: 'agenttoolprofiles', namespaced: true, storage: 'etcd' },
   { kind: 'AgentMcpServer', plural: 'agentmcpservers', namespaced: true, storage: 'etcd' },
   { kind: 'AgentSkill', plural: 'agentskills', namespaced: true, storage: 'etcd' },
+  { kind: 'AgentProcessTemplate', plural: 'agentprocesstemplates', namespaced: true, storage: 'etcd' },
   { kind: 'AgentTriggerRule', plural: 'agenttriggerrules', namespaced: true, storage: 'etcd' },
   { kind: 'AgentContextLabel', plural: 'agentcontextlabels', namespaced: true, storage: 'etcd' },
   { kind: 'KradleWorkspacePolicy', plural: 'kradleworkspacepolicies', namespaced: true, storage: 'etcd' },

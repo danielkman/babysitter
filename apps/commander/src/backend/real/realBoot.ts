@@ -284,7 +284,7 @@ class KradleControllerCache {
       listPersonas: () => (this.snapshot ? mapAgentPersonas(this.snapshot) : []),
       listDefinitions: () => (this.snapshot ? mapAgentDefinitions(this.snapshot) : []),
       listRuns: () => (this.snapshot ? mapRuns(this.snapshot) : []),
-      listProcessTemplates: () => mapProcessTemplates(),
+      listProcessTemplates: () => (this.snapshot ? mapProcessTemplates(this.snapshot) : []),
       getMemoryIO: (ref) => {
         if (!this.snapshot) return { read: [], written: [] };
         const cached = this.memoryIo.get(ref);

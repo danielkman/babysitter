@@ -34,7 +34,9 @@ import type {
 import { KradleProposedRouteError } from '../controllerClient';
 import {
   applyDefinition,
+  applyProcessTemplate,
   makeKradleOrders,
+  processTemplateResourceName,
   resolveDispatchDefinition,
   resolveDispatchStack,
 } from '../kradleOrders';
@@ -329,6 +331,52 @@ describe('dispatch by AgentDefinition (persona-identity path)', () => {
     expect(apply.spec.personaRef).toBe('atlas-reviewer');
     expect(apply.spec.stackRef).toBe('stk-cc');
     expect(apply.spec.roleContext).toBe('Reviews PRs');
+  });
+});
+
+// ===========================================================================
+// AgentProcessTemplate — the REAL per-taskKind process phase pipeline persist
+// ===========================================================================
+
+describe('updateProcessTemplate → applyResource(AgentProcessTemplate)', () => {
+  it('applyProcessTemplate POSTs an org-stamped AgentProcessTemplate body via the CRD gateway', async () => {
+    const { client, calls } = makeFakeClient();
+    const name = await applyProcessTemplate(client, {
+      taskKind: 'diagnostic',
+      phases: ['triage', 'investigate', 'fix', 'verify'],
+      displayName: 'Diagnostic Flow',
+    });
+    expect(name).toBe('process-diagnostic');
+    expect(name).toBe(processTemplateResourceName('diagnostic'));
+    const apply = calls.find((c) => c.method === 'applyResource')!.arg as ResourceApplyBody;
+    expect(apply.kind).toBe('AgentProcessTemplate');
+    expect(apply.metadata.name).toBe('process-diagnostic');
+    expect(apply.spec.organizationRef).toBe('acme');
+    expect(apply.spec.taskKind).toBe('diagnostic');
+    expect(apply.spec.phases).toEqual(['triage', 'investigate', 'fix', 'verify']);
+    expect(apply.spec.displayName).toBe('Diagnostic Flow');
+  });
+
+  it('updateProcessTemplate verb applies the right body (org, taskKind, trimmed phases) and returns non-null', async () => {
+    const { client, calls } = makeFakeClient();
+    const orders = makeKradleOrders(client, noopOptions(null));
+    const revision = orders.updateProcessTemplate('fix', ['reproduce', '  mend  ', 'verify']);
+    expect(revision).not.toBeNull();
+    await Promise.resolve();
+    const apply = calls.find((c) => c.method === 'applyResource')!.arg as ResourceApplyBody;
+    expect(apply.kind).toBe('AgentProcessTemplate');
+    expect(apply.metadata.name).toBe('process-fix');
+    expect(apply.spec.organizationRef).toBe('acme');
+    expect(apply.spec.taskKind).toBe('fix');
+    // Phases are trimmed and empties dropped before persisting.
+    expect(apply.spec.phases).toEqual(['reproduce', 'mend', 'verify']);
+  });
+
+  it('updateProcessTemplate returns null and writes nothing when all phases are empty', () => {
+    const { client, calls } = makeFakeClient();
+    const orders = makeKradleOrders(client, noopOptions(null));
+    expect(orders.updateProcessTemplate('fix', ['   ', ''])).toBeNull();
+    expect(calls).toHaveLength(0);
   });
 });
 

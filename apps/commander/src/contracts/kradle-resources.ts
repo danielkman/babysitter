@@ -560,6 +560,39 @@ export type AgentSessionAttachment = KradleResource<
 >;
 
 // ===========================================================================
+// AgentProcessTemplate — the per-taskKind process phase pipeline
+// (`agent-resources.yaml`, CONFIG kind, etcd-backed)
+// Required: organizationRef, taskKind, phases
+// ===========================================================================
+
+/**
+ * `AgentProcessTemplate.spec` — the REAL per-`taskKind` process phase pipeline.
+ * kradle's first-class concept for "what phases does a run of this task kind go
+ * through". Commander reads these to drive the Inspector Process tab and the
+ * RunsOverlay process editor; when a task kind has NO `AgentProcessTemplate`,
+ * commander falls back HONESTLY to its hardcoded `PHASES_BY_KIND` constant (it
+ * never claims that fallback is a persisted template).
+ *
+ * Required: `organizationRef, taskKind, phases`. `phases` is an ordered list of
+ * phase labels. `displayName` is an optional human label.
+ */
+export interface AgentProcessTemplateSpec extends KradlePreserveUnknown {
+  /** Required: org slug. */
+  organizationRef: string;
+  /** Required: the task kind this pipeline applies to (e.g. `diagnostic`). */
+  taskKind: string;
+  /** Required: ordered list of phase labels (the pipeline). */
+  phases: string[];
+  /** Optional human-facing label for the template. */
+  displayName?: string;
+}
+
+export type AgentProcessTemplate = KradleResource<
+  'AgentProcessTemplate',
+  AgentProcessTemplateSpec
+>;
+
+// ===========================================================================
 // CommanderTask — the card-backing alias (SPEC §2.3)
 // ===========================================================================
 

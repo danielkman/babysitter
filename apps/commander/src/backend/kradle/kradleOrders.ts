@@ -21,6 +21,7 @@
 
 import type { KradleAgentStackInput } from '../../contracts/kradle-stack';
 import type { AgentDefinitionSpec } from '../../contracts/kradle-identity';
+import type { AgentProcessTemplateSpec } from '../../contracts/kradle-resources';
 import type { ColumnId, RosterRole, UpdateTaskPatch } from '../mock/simulation';
 import type { TaskKind } from '../mock/scenario';
 import { DEFAULT_STACK_BY_KIND, WORKER_ADAPTER_BY_KIND } from '../mock/scenario';
@@ -287,6 +288,61 @@ export async function listPersonas(
 }
 
 // ---------------------------------------------------------------------------
+// AgentProcessTemplate apply (the REAL per-taskKind process phase pipeline).
+// Mirrors applyDefinition: stamps organizationRef from the active org, derives a
+// deterministic resource name per task kind so the RunsOverlay editor edits the
+// SAME persisted resource each time (so the mapper's metadata.name → processId
+// round-trips), and applies through the generic CRD gateway.
+// ---------------------------------------------------------------------------
+
+export interface ApplyProcessTemplateInput {
+  taskKind: string;
+  phases: string[];
+  displayName?: string;
+  /** Optional explicit resource name; defaults to `process-<taskKind>`. */
+  name?: string;
+}
+
+/** Deterministic, K8s-safe resource name for a task kind's process template. */
+export function processTemplateResourceName(taskKind: string): string {
+  return `process-${taskKind}`;
+}
+
+function processTemplateInputToResourceBody(
+  input: ApplyProcessTemplateInput,
+  org: string,
+): ResourceApplyBody {
+  const spec: AgentProcessTemplateSpec = {
+    organizationRef: org,
+    taskKind: input.taskKind,
+    phases: input.phases,
+  };
+  if (input.displayName !== undefined && input.displayName !== '') {
+    spec.displayName = input.displayName;
+  }
+  return {
+    apiVersion: 'kradle.a5c.ai/v1alpha1',
+    kind: 'AgentProcessTemplate',
+    metadata: { name: input.name ?? processTemplateResourceName(input.taskKind) },
+    spec: spec as Record<string, unknown>,
+  };
+}
+
+/**
+ * Apply an `AgentProcessTemplate` (create/update) via the generic CRD gateway.
+ * Returns the applied resource name. Faithful to the CRD: `organizationRef`,
+ * `taskKind`, `phases` are all populated.
+ */
+export async function applyProcessTemplate(
+  client: KradleControllerClient,
+  input: ApplyProcessTemplateInput,
+): Promise<string> {
+  const body = processTemplateInputToResourceBody(input, client.org);
+  await client.applyResource(body);
+  return body.metadata.name;
+}
+
+// ---------------------------------------------------------------------------
 // Decision routing (§3.3): AgentApproval (plane 1) vs gateway hook (plane 2).
 // ---------------------------------------------------------------------------
 
@@ -516,9 +572,19 @@ export function makeKradleOrders(
       noop('updateTask');
       return false;
     },
-    updateProcessTemplate(_kind: TaskKind, _phases: string[]): number | null {
-      noop('updateProcessTemplate');
-      return null;
+    updateProcessTemplate(kind: TaskKind, phases: string[]): number | null {
+      // Persist the REAL `AgentProcessTemplate` (per-taskKind phase pipeline) via
+      // the generic CRD gateway. The editor pre-validates a non-empty trimmed
+      // phase list; we stamp organizationRef from the active org and target the
+      // deterministic per-kind resource name so edits update the same persisted
+      // template. The new revision (metadata.generation) lands on the next
+      // snapshot refresh; we return a non-null sentinel so the editor closes.
+      const trimmed = phases.map((p) => p.trim()).filter((p) => p.length > 0);
+      if (trimmed.length === 0) return null;
+      run('updateProcessTemplate/applyProcessTemplate', () =>
+        applyProcessTemplate(client, { taskKind: kind, phases: trimmed }),
+      );
+      return 1;
     },
     writeFile(): boolean {
       noop('writeFile');

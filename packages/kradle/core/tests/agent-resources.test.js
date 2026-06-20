@@ -24,6 +24,7 @@ const AGENT_CONFIG_KINDS = [
   'AgentToolProfile',
   'AgentMcpServer',
   'AgentSkill',
+  'AgentProcessTemplate',
   'AgentTriggerRule',
   'AgentContextLabel',
   'KradleWorkspacePolicy',
@@ -78,6 +79,7 @@ function minimalSpecForKind(kind) {
     AgentToolProfile: { organizationRef: 'default', filesystemPolicy: 'read-write', approvalPolicyByTool: { shell: 'auto' } },
     AgentMcpServer: { organizationRef: 'default', transport: 'stdio', scope: 'workspace' },
     AgentSkill: { organizationRef: 'default', format: 'markdown', sourceRef: 'skills/debug.md' },
+    AgentProcessTemplate: { organizationRef: 'default', taskKind: 'diagnostic', phases: ['triage', 'investigate', 'fix', 'verify'], displayName: 'Diagnostic Flow' },
     AgentTriggerRule: { organizationRef: 'default', sources: ['ci-failure'], agentStack: 'default-stack', taskKind: 'fix' },
     AgentContextLabel: { organizationRef: 'default', promptFragment: 'Always run tests before committing', allowedSources: ['admin'] },
     KradleWorkspacePolicy: { organizationRef: 'default', mode: 'worktree', retentionPolicy: '7d' },
@@ -221,20 +223,20 @@ describe('storageClassForKind for agent kinds', () => {
 });
 
 describe('kind set counts', () => {
-  it('CONFIG_KINDS has 68 members', () => {
-    assert.equal(CONFIG_KINDS.size, 68);
+  it('CONFIG_KINDS has 69 members', () => {
+    assert.equal(CONFIG_KINDS.size, 69);
   });
 
   it('AGGREGATED_KINDS has 39 members', () => {
     assert.equal(AGGREGATED_KINDS.size, 39);
   });
 
-  it('ALL_KINDS has 107 members', () => {
-    assert.equal(ALL_KINDS.size, 107);
+  it('ALL_KINDS has 108 members', () => {
+    assert.equal(ALL_KINDS.size, 108);
   });
 
-  it('listResourceDefinitions returns 107 definitions', () => {
-    assert.equal(listResourceDefinitions().length, 107);
+  it('listResourceDefinitions returns 108 definitions', () => {
+    assert.equal(listResourceDefinitions().length, 108);
   });
 });
 
@@ -265,6 +267,46 @@ describe('agent identity CRDs', () => {
     assert.ok(chart.includes('anyOf:'), 'AgentTriggerRule CRD should express target alternatives');
     assert.ok(chart.includes('- agentStack'), 'AgentTriggerRule CRD should allow agentStack target');
     assert.ok(chart.includes('- agentDefinition'), 'AgentTriggerRule CRD should allow agentDefinition target');
+  });
+});
+
+describe('AgentProcessTemplate CONFIG kind', () => {
+  const chart = readFileSync(new URL('../../charts/crds/agent-resources.yaml', import.meta.url), 'utf8');
+
+  it('CRD is present with required process-template fields', () => {
+    assert.ok(chart.includes('kind: AgentProcessTemplate'), 'AgentProcessTemplate kind should be present');
+    assert.ok(chart.includes('agentprocesstemplates'), 'plural should be present');
+    for (const field of ['organizationRef', 'taskKind', 'phases']) {
+      assert.ok(chart.includes(field), `CRD should include ${field}`);
+    }
+  });
+
+  it('is an etcd-backed CONFIG kind with the documented requiredSpec', () => {
+    assert.ok(CONFIG_KINDS.has('AgentProcessTemplate'));
+    assert.ok(ALL_KINDS.has('AgentProcessTemplate'));
+    assert.equal(storageClassForKind('AgentProcessTemplate'), 'etcd');
+    assert.deepEqual(RESOURCE_DEFINITIONS.AgentProcessTemplate.requiredSpec, ['organizationRef', 'taskKind', 'phases']);
+  });
+
+  it('validates + round-trips a real template', () => {
+    const tmpl = createResource(
+      'AgentProcessTemplate',
+      { name: 'process-diagnostic', namespace: 'kradle-org-acme' },
+      { organizationRef: 'acme', taskKind: 'diagnostic', phases: ['triage', 'investigate', 'fix', 'verify'], displayName: 'Diagnostic Flow' }
+    );
+    assert.equal(validateResource(tmpl), tmpl);
+    assert.equal(tmpl.spec.taskKind, 'diagnostic');
+    assert.deepEqual(tmpl.spec.phases, ['triage', 'investigate', 'fix', 'verify']);
+    assert.equal(tmpl.spec.displayName, 'Diagnostic Flow');
+  });
+
+  it('rejects a non-array phases', () => {
+    const bad = createResource(
+      'AgentProcessTemplate',
+      { name: 'bad-process' },
+      { organizationRef: 'acme', taskKind: 'diagnostic', phases: 'triage' }
+    );
+    assert.throws(() => validateResource(bad), /spec\.phases must be an array/);
   });
 });
 

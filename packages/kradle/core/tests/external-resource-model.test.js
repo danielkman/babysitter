@@ -205,19 +205,19 @@ describe('resourceSchemaForKind for external kinds', () => {
 });
 
 describe('kind set counts after external kinds added', () => {
-  it('CONFIG_KINDS has 68 members (42 previous + 5 agent identity + 8 external config + 1 webhook config + 2 Jitsi config + 3 artifact config + 2 inference + 1 model route + 1 virtual model + 3 quality)', () => {
-    assert.equal(CONFIG_KINDS.size, 68);
+  it('CONFIG_KINDS has 69 members (42 previous + 5 agent identity + 8 external config + 1 webhook config + 2 Jitsi config + 3 artifact config + 2 inference + 1 model route + 1 virtual model + 3 quality + 1 process template)', () => {
+    assert.equal(CONFIG_KINDS.size, 69);
   });
 
   it('AGGREGATED_KINDS has 39 members (23 previous + 6 external aggregated + 2 Jitsi aggregated + 2 artifact aggregated + 6 quality)', () => {
     assert.equal(AGGREGATED_KINDS.size, 39);
   });
 
-  it('ALL_KINDS has 107 members (65 previous + 5 agent identity + 14 external + 1 webhook config + 4 Jitsi + 5 artifact + 2 inference + 1 model route + 1 virtual model + 9 quality)', () => {
-    assert.equal(ALL_KINDS.size, 107);
+  it('ALL_KINDS has 108 members (65 previous + 5 agent identity + 14 external + 1 webhook config + 4 Jitsi + 5 artifact + 2 inference + 1 model route + 1 virtual model + 9 quality + 1 process template)', () => {
+    assert.equal(ALL_KINDS.size, 108);
   });
 
-  it('listResourceDefinitions returns 107 definitions', () => {
-    assert.equal(listResourceDefinitions().length, 107);
+  it('listResourceDefinitions returns 108 definitions', () => {
+    assert.equal(listResourceDefinitions().length, 108);
   });
 });
