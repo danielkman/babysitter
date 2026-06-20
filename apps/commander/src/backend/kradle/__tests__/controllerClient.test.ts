@@ -25,6 +25,7 @@ import {
   KradleControlPlaneError,
   KradleProposedRouteError,
   KRADLE_REQUEST_TIMEOUT_MS,
+  KRADLE_READ_TIMEOUT_MS,
 } from '../controllerClient';
 import type {
   KradleControllerClientConfig,
@@ -524,11 +525,9 @@ describe('AC9 — typed failures + abort timeout', () => {
     expect(calls[0].hasSignal).toBe(true);
   });
 
-  it('AC9: the request aborts after KRADLE_REQUEST_TIMEOUT_MS when fetch never settles', async () => {
-    vi.useFakeTimers();
-    const calls: RecordedCall[] = [];
-    // fetch that rejects when its signal aborts (mirrors a real fetch abort).
-    const fetch: KradleFetchLike = (url: string, init?: KradleFetchInit) => {
+  // fetch that never settles until its signal aborts (mirrors a real fetch abort).
+  const neverSettlingFetch = (calls: RecordedCall[]): KradleFetchLike =>
+    (url: string, init?: KradleFetchInit) => {
       calls.push({
         url,
         method: (init?.method ?? 'GET').toUpperCase(),
@@ -544,10 +543,34 @@ describe('AC9 — typed failures + abort timeout', () => {
         });
       });
     };
-    const client = createKradleControllerClient(baseConfig(), { fetch, eventSourceFactory: factory });
-    const pending = client.snapshot();
+
+  it('AC9: a MUTATION aborts after KRADLE_REQUEST_TIMEOUT_MS when fetch never settles', async () => {
+    vi.useFakeTimers();
+    const calls: RecordedCall[] = [];
+    const client = createKradleControllerClient(baseConfig(), { fetch: neverSettlingFetch(calls), eventSourceFactory: factory });
+    const pending = client.dispatch({ taskKind: 'diagnostic' });
     const assertion = expect(pending).rejects.toThrow();
+    // Not yet — mutations use the short timeout but it hasn't elapsed.
+    await vi.advanceTimersByTimeAsync(KRADLE_REQUEST_TIMEOUT_MS - 10);
+    await vi.advanceTimersByTimeAsync(20);
+    await assertion;
+    expect(calls[0].hasSignal).toBe(true);
+  });
+
+  it('AC9: a READ (snapshot) aborts only after the longer KRADLE_READ_TIMEOUT_MS', async () => {
+    vi.useFakeTimers();
+    const calls: RecordedCall[] = [];
+    const client = createKradleControllerClient(baseConfig(), { fetch: neverSettlingFetch(calls), eventSourceFactory: factory });
+    const pending = client.snapshot();
+    // Capture the rejection up front so the eventual abort has a handler (no unhandled rejection).
+    const assertion = expect(pending).rejects.toThrow();
+    // The mutation timeout elapsing must NOT abort a read.
+    let settledEarly = false;
+    void pending.then(() => { settledEarly = true; }, () => { settledEarly = true; });
     await vi.advanceTimersByTimeAsync(KRADLE_REQUEST_TIMEOUT_MS + 10);
+    expect(settledEarly).toBe(false);
+    // It aborts once the read timeout elapses.
+    await vi.advanceTimersByTimeAsync(KRADLE_READ_TIMEOUT_MS - KRADLE_REQUEST_TIMEOUT_MS + 10);
     await assertion;
     expect(calls[0].hasSignal).toBe(true);
   });

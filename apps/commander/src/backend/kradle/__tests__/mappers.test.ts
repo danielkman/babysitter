@@ -23,6 +23,8 @@ import {
   LABEL_RELEASE_ID,
   LABEL_WORKER,
   LABEL_YOLO,
+  mapAgentDefinitions,
+  mapAgentPersonas,
   mapAttempts,
   mapCards,
   mapMemoryIO,
@@ -981,5 +983,154 @@ describe('AC12 — mapToTickInput board halves (§6.2)', () => {
 describe('label conventions', () => {
   it('exports the documented Commander label key used by dispatch resolution', () => {
     expect(LABEL_DEFAULT_FOR).toBe('commander.a5c.ai/default-for');
+  });
+});
+
+// ===========================================================================
+// Agent-identity model (the real "who / how-where"): AgentPersona +
+// AgentAppearance + AgentDefinition resolve a session's identity. The invented
+// game-creature/roster is gone; identity is the persona displayName + emoji,
+// with an HONEST fallback (the session name) when no persona is available.
+// ===========================================================================
+
+function persona(name: string, spec: Record<string, unknown>): KradleResourceItem {
+  return { kind: 'AgentPersona', metadata: { name }, spec, status: {} };
+}
+function appearance(name: string, spec: Record<string, unknown>): KradleResourceItem {
+  return { kind: 'AgentAppearance', metadata: { name }, spec, status: {} };
+}
+function definition(name: string, spec: Record<string, unknown>): KradleResourceItem {
+  return { kind: 'AgentDefinition', metadata: { name }, spec, status: {} };
+}
+
+describe('agent-identity: AgentPersona / AgentDefinition mappers', () => {
+  it('mapAgentPersonas resolves displayName + role.title + tagline and INLINE appearance emoji', () => {
+    const s = snap({
+      personas: {
+        items: [
+          persona('atlas-reviewer', {
+            organizationRef: 'acme',
+            displayName: 'Atlas Reviewer',
+            tagline: 'Guards the merge gate',
+            role: { title: 'Senior Reviewer', domain: 'quality' },
+            appearance: { emoji: '🛡️' },
+            voiceProfile: { ttsProvider: 'elevenlabs' },
+          }),
+        ],
+      },
+    });
+    const [view] = mapAgentPersonas(s);
+    expect(view.name).toBe('atlas-reviewer');
+    expect(view.displayName).toBe('Atlas Reviewer');
+    expect(view.roleTitle).toBe('Senior Reviewer');
+    expect(view.tagline).toBe('Guards the merge gate');
+    expect(view.emoji).toBe('🛡️');
+    expect(view.ttsProvider).toBe('elevenlabs');
+  });
+
+  it('mapAgentPersonas joins a STANDALONE AgentAppearance by personaRef', () => {
+    const s = snap({
+      personas: {
+        items: [persona('atlas-reviewer', { organizationRef: 'acme', displayName: 'Atlas Reviewer' })],
+      },
+      appearances: {
+        items: [appearance('atlas-look', { organizationRef: 'acme', personaRef: 'atlas-reviewer', emoji: '🦉' })],
+      },
+    });
+    const [view] = mapAgentPersonas(s);
+    expect(view.emoji).toBe('🦉');
+  });
+
+  it('mapAgentDefinitions resolves the persona (displayName + emoji) referenced by the definition', () => {
+    const s = snap({
+      personas: {
+        items: [
+          persona('atlas-reviewer', {
+            organizationRef: 'acme',
+            displayName: 'Atlas Reviewer',
+            appearance: { emoji: '🛡️' },
+          }),
+        ],
+      },
+      definitions: {
+        items: [
+          definition('reviewer-on-main', {
+            organizationRef: 'acme',
+            personaRef: 'atlas-reviewer',
+            stackRef: 'commander-verify-stack',
+            roleContext: 'Reviews PRs on main',
+          }),
+        ],
+      },
+    });
+    const [view] = mapAgentDefinitions(s);
+    expect(view.name).toBe('reviewer-on-main');
+    expect(view.personaRef).toBe('atlas-reviewer');
+    expect(view.stackRef).toBe('commander-verify-stack');
+    expect(view.roleContext).toBe('Reviews PRs on main');
+    expect(view.persona?.displayName).toBe('Atlas Reviewer');
+    expect(view.persona?.emoji).toBe('🛡️');
+  });
+
+  it('mapAgentDefinitions yields persona=null (HONEST gap) when the referenced persona is absent', () => {
+    const s = snap({
+      definitions: {
+        items: [
+          definition('orphan-def', {
+            organizationRef: 'acme',
+            personaRef: 'missing-persona',
+            stackRef: 'stk',
+          }),
+        ],
+      },
+    });
+    const [view] = mapAgentDefinitions(s);
+    expect(view.persona).toBeNull();
+  });
+});
+
+describe('agent-identity: session/board identity derives from persona/definition', () => {
+  it("a session whose RUN references an agentDefinition gets the persona's displayName as identity", () => {
+    const s = snap({
+      personas: {
+        items: [
+          persona('atlas-reviewer', {
+            organizationRef: 'acme',
+            displayName: 'Atlas Reviewer',
+            appearance: { emoji: '🛡️' },
+          }),
+        ],
+      },
+      definitions: {
+        items: [
+          definition('reviewer-on-main', {
+            organizationRef: 'acme',
+            personaRef: 'atlas-reviewer',
+            stackRef: 'stk',
+          }),
+        ],
+      },
+      runs: {
+        items: [
+          run('adr-1', { repository: 'r', taskKind: 'review', agentDefinition: 'reviewer-on-main' }, 'Running'),
+        ],
+      },
+      sessions: { items: [session('sess-1', { dispatchRun: 'adr-1' }, 'Active')] },
+    });
+    const [view] = mapSessions(s);
+    // IDENTITY is the real persona displayName — not the session id, not a creature.
+    expect(view.creatureName).toBe('Atlas Reviewer');
+    // mapToTickInput surfaces the same identity on the active agent.
+    const tick = mapToTickInput(s, 1000);
+    expect(tick.agents[0].creatureName).toBe('Atlas Reviewer');
+  });
+
+  it('HONEST fallback: with no persona/definition, identity is the session name (never a creature)', () => {
+    const s = snap({
+      runs: { items: [run('adr-1', { repository: 'r', taskKind: 'fix' }, 'Running')] },
+      sessions: { items: [session('sess-1', { dispatchRun: 'adr-1' }, 'Active')] },
+    });
+    const [view] = mapSessions(s);
+    expect(view.creatureName).toBe('sess-1');
   });
 });

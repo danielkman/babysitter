@@ -403,7 +403,14 @@ export const BOARD_SNAPSHOT_KINDS = [
   'KradleProject',
   'AgentMemoryRepository',
   'AgentMemorySnapshot',
-  'AgentRunMemoryImport'
+  'AgentRunMemoryImport',
+  // Agent-identity kinds: the board/Commander mappers resolve a run/session's
+  // identity (displayName + appearance.emoji) from the persona referenced by its
+  // AgentDefinition. Surface them so they reach the controller UI model + client.
+  'AgentPersona',
+  'AgentDefinition',
+  'AgentAppearance',
+  'AgentVoiceProfile'
 ];
 
 /**

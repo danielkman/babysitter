@@ -525,6 +525,48 @@ export interface SimStackView {
   stack: KradleAgentStack;
 }
 
+/**
+ * SPEC-KRADLE-MODEL — an `AgentPersona`-derived identity row. The real, reusable
+ * "who" of an agent (replaces the invented game-creature/roster). Visual/voice
+ * facets are resolved from inline `appearance`/`voiceProfile` OR a standalone
+ * `AgentAppearance`/`AgentVoiceProfile` joined by `personaRef`.
+ */
+export interface SimAgentPersonaView {
+  /** The `AgentPersona` resource name (the stable identity key). */
+  name: string;
+  /** Human-facing persona name (`spec.displayName`). */
+  displayName: string;
+  /** Persona role title (`spec.role.title`), when present. */
+  roleTitle: string | null;
+  /** Short one-line characterization (`spec.tagline`). */
+  tagline: string | null;
+  /** Resolved emoji glyph (`appearance.emoji`), when present. */
+  emoji: string | null;
+  /** Resolved avatar descriptor (`appearance.avatar`), when present. */
+  avatar: Record<string, unknown> | null;
+  /** Resolved TTS provider (`voiceProfile.ttsProvider`), when present. */
+  ttsProvider: string | null;
+}
+
+/**
+ * SPEC-KRADLE-MODEL — an `AgentDefinition`-derived row: the deployment binding
+ * that pairs a persona ("who") to a stack ("how/where"). This is kradle's real
+ * "agent definition". `persona` is the resolved identity (null when the
+ * referenced `AgentPersona` is absent — an honest gap, never fabricated).
+ */
+export interface SimAgentDefinitionView {
+  /** The `AgentDefinition` resource name. */
+  name: string;
+  /** → the `AgentPersona` ("who"). */
+  personaRef: string;
+  /** → the `AgentStack` ("how/where"). */
+  stackRef: string;
+  /** Deployment-specific role framing (`spec.roleContext`), when present. */
+  roleContext: string | null;
+  /** The resolved persona identity, or null when the persona is missing. */
+  persona: SimAgentPersonaView | null;
+}
+
 /** §V4-5 `updateTask(taskId, patch)` patch shape (card editor form). */
 export interface UpdateTaskPatch {
   title?: string;

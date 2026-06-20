@@ -32,7 +32,12 @@ import type {
   RunActionInput,
 } from '../controllerClient';
 import { KradleProposedRouteError } from '../controllerClient';
-import { makeKradleOrders, resolveDispatchStack } from '../kradleOrders';
+import {
+  applyDefinition,
+  makeKradleOrders,
+  resolveDispatchDefinition,
+  resolveDispatchStack,
+} from '../kradleOrders';
 import { LABEL_DEFAULT_FOR } from '../mappers';
 
 // ---------------------------------------------------------------------------
@@ -241,6 +246,88 @@ describe('AC4 §3.4 — createTask → dispatch body (by stack)', () => {
 
     const firstOnly = snapshotWith({ stacks: { items: [stackItem('stk-only', 'gemini-cli')] } });
     expect(resolveDispatchStack(firstOnly, 'implement')).toBe('stk-only');
+  });
+});
+
+// ===========================================================================
+// Dispatch BY DEFINITION (the persona-identity path) + applyDefinition
+// ===========================================================================
+
+function definitionItem(
+  name: string,
+  spec: Record<string, unknown>,
+  labels: Record<string, string> = {},
+): KradleResourceItem {
+  return { kind: 'AgentDefinition', metadata: { name, labels }, spec, status: {} };
+}
+
+describe('dispatch by AgentDefinition (persona-identity path)', () => {
+  it('createTask sends {agentDefinition} when a default-for definition exists (no agentStack)', async () => {
+    const snapshot = snapshotWith({
+      stacks: { items: [stackItem('stk-cc', 'claude-code')] },
+      definitions: {
+        items: [
+          definitionItem(
+            'reviewer-on-main',
+            { organizationRef: 'acme', personaRef: 'atlas-reviewer', stackRef: 'stk-cc' },
+            { [LABEL_DEFAULT_FOR]: 'review' },
+          ),
+        ],
+      },
+    });
+    const { client, calls } = makeFakeClient();
+    const orders = makeKradleOrders(client, noopOptions(snapshot));
+    orders.createTask({ taskKind: 'review' });
+    await Promise.resolve();
+    const dispatch = calls.find((c) => c.method === 'dispatch');
+    expect(dispatch).toBeDefined();
+    const body = dispatch!.arg as DispatchInput;
+    expect(body.agentDefinition).toBe('reviewer-on-main');
+    expect(body.agentStack).toBeUndefined();
+    expect(body.taskKind).toBe('review');
+  });
+
+  it('falls back to dispatch BY STACK when no matching definition exists', async () => {
+    const snapshot = snapshotWith({
+      stacks: { items: [stackItem('stk-cc', 'claude-code')] },
+      definitions: { items: [] },
+    });
+    const { client, calls } = makeFakeClient();
+    const orders = makeKradleOrders(client, noopOptions(snapshot));
+    orders.createTask({ taskKind: 'implement' });
+    await Promise.resolve();
+    const body = calls.find((c) => c.method === 'dispatch')!.arg as DispatchInput;
+    expect(body.agentStack).toBe('stk-cc');
+    expect(body.agentDefinition).toBeUndefined();
+  });
+
+  it('resolveDispatchDefinition prefers an explicit ref, then a default-for label, else null', () => {
+    const snap = snapshotWith({
+      definitions: {
+        items: [
+          definitionItem('def-a', { personaRef: 'p', stackRef: 's' }),
+          definitionItem('def-default', { personaRef: 'p', stackRef: 's' }, { [LABEL_DEFAULT_FOR]: 'fix' }),
+        ],
+      },
+    });
+    expect(resolveDispatchDefinition(snap, 'fix', 'def-a')).toBe('def-a');
+    expect(resolveDispatchDefinition(snap, 'fix')).toBe('def-default');
+    expect(resolveDispatchDefinition(snap, 'implement')).toBeNull();
+  });
+
+  it('applyDefinition POSTs an AgentDefinition body (org-stamped) via the CRD gateway', async () => {
+    const { client, calls } = makeFakeClient();
+    const name = await applyDefinition(client, {
+      name: 'reviewer-on-main',
+      spec: { personaRef: 'atlas-reviewer', stackRef: 'stk-cc', roleContext: 'Reviews PRs' },
+    });
+    expect(name).toBe('reviewer-on-main');
+    const apply = calls.find((c) => c.method === 'applyResource')!.arg as ResourceApplyBody;
+    expect(apply.kind).toBe('AgentDefinition');
+    expect(apply.spec.organizationRef).toBe('acme');
+    expect(apply.spec.personaRef).toBe('atlas-reviewer');
+    expect(apply.spec.stackRef).toBe('stk-cc');
+    expect(apply.spec.roleContext).toBe('Reviews PRs');
   });
 });
 

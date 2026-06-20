@@ -20,6 +20,7 @@
  */
 
 import type { KradleAgentStackInput } from '../../contracts/kradle-stack';
+import type { AgentDefinitionSpec } from '../../contracts/kradle-identity';
 import type { ColumnId, RosterRole, UpdateTaskPatch } from '../mock/simulation';
 import type { TaskKind } from '../mock/scenario';
 import { DEFAULT_STACK_BY_KIND, WORKER_ADAPTER_BY_KIND } from '../mock/scenario';
@@ -89,6 +90,10 @@ function stackItems(snapshot: KradleControllerSnapshot | null): KradleResourceIt
   return snapshot?.agents?.stacks?.items ?? [];
 }
 
+function definitionItems(snapshot: KradleControllerSnapshot | null): KradleResourceItem[] {
+  return snapshot?.agents?.definitions?.items ?? [];
+}
+
 // ---------------------------------------------------------------------------
 // Stack resolution for dispatch (§3.1).
 // ---------------------------------------------------------------------------
@@ -131,6 +136,30 @@ export function resolveDispatchStack(
   if (byFamily !== undefined) return byFamily.metadata.name;
 
   return stacks[0]!.metadata.name;
+}
+
+/**
+ * Dispatch-by-definition resolution: prefer an `AgentDefinition` chosen
+ * explicitly (`definitionRef`), else one labeled `default-for=<taskKind>`.
+ * Returns the definition name, or `null` when none applies (the caller then
+ * falls back to dispatch-by-stack). The dispatch route accepts either via its
+ * anyOf(agentStack|agentDefinition) (`dispatch/route.js:15`). We do NOT invent a
+ * default definition — absent an explicit/labeled one, the stack path wins.
+ */
+export function resolveDispatchDefinition(
+  snapshot: KradleControllerSnapshot | null,
+  taskKind: TaskKind,
+  definitionRef?: string | null,
+): string | null {
+  const definitions = definitionItems(snapshot);
+  if (definitionRef !== undefined && definitionRef !== null && definitionRef !== '') {
+    const chosen = definitions.find((d) => d.metadata.name === definitionRef);
+    // Honor the explicit ref even when the snapshot has not surfaced it yet
+    // (the dispatch route resolves it server-side / org-scoped).
+    return chosen?.metadata.name ?? definitionRef;
+  }
+  const labelled = definitions.find((d) => labelsOf(d)[LABEL_DEFAULT_FOR] === taskKind);
+  return labelled?.metadata.name ?? null;
 }
 
 // ---------------------------------------------------------------------------
@@ -186,6 +215,75 @@ function stackInputToResourceBody(stack: KradleAgentStackInput, org: string): Re
     metadata: { name, labels },
     spec,
   };
+}
+
+// ---------------------------------------------------------------------------
+// AgentDefinition apply + identity accessors (the real "who / how-where").
+// `AgentDefinition` is applied via the generic CRD gateway
+// (POST /api/orgs/<org>/resources, kind=AgentDefinition); `personaRef`/`stackRef`
+// are required by the CRD (`agent-resources.yaml:398-401`). The server scopes the
+// resource (namespace / org label), but a kubectl-applied body must carry
+// `organizationRef`, so we stamp it from the active org.
+// ---------------------------------------------------------------------------
+
+export interface ApplyDefinitionInput {
+  name: string;
+  spec: Omit<AgentDefinitionSpec, 'organizationRef'> & { organizationRef?: string };
+  labels?: Record<string, string>;
+}
+
+function definitionInputToResourceBody(
+  input: ApplyDefinitionInput,
+  org: string,
+): ResourceApplyBody {
+  const { personaRef, stackRef, roleContext, scope, triggerRefs, meetingConfig, limits } =
+    input.spec;
+  const spec: Record<string, unknown> = {
+    organizationRef: input.spec.organizationRef ?? org,
+    personaRef,
+    stackRef,
+  };
+  if (roleContext !== undefined) spec.roleContext = roleContext;
+  if (scope !== undefined) spec.scope = scope;
+  if (triggerRefs !== undefined) spec.triggerRefs = triggerRefs;
+  if (meetingConfig !== undefined) spec.meetingConfig = meetingConfig;
+  if (limits !== undefined) spec.limits = limits;
+  return {
+    apiVersion: 'kradle.a5c.ai/v1alpha1',
+    kind: 'AgentDefinition',
+    metadata: { name: input.name, ...(input.labels ? { labels: input.labels } : {}) },
+    spec,
+  };
+}
+
+/**
+ * Apply an `AgentDefinition` (create/update) via the generic CRD gateway. Returns
+ * the applied resource name. Faithful to the CRD: `personaRef`/`stackRef` are
+ * required by the caller's spec.
+ */
+export async function applyDefinition(
+  client: KradleControllerClient,
+  input: ApplyDefinitionInput,
+): Promise<string> {
+  const body = definitionInputToResourceBody(input, client.org);
+  await client.applyResource(body);
+  return input.name;
+}
+
+/** List `AgentDefinition` resources via the generic CRD gateway. */
+export async function listDefinitions(
+  client: KradleControllerClient,
+): Promise<KradleResourceItem[]> {
+  const result = await client.listResources('AgentDefinition');
+  return result.items ?? [];
+}
+
+/** List `AgentPersona` resources via the generic CRD gateway. */
+export async function listPersonas(
+  client: KradleControllerClient,
+): Promise<KradleResourceItem[]> {
+  const result = await client.listResources('AgentPersona');
+  return result.items ?? [];
 }
 
 // ---------------------------------------------------------------------------
@@ -295,14 +393,31 @@ export function makeKradleOrders(
 
     // --- resource-lifecycle verbs: kradle plane ------------------------------
     createTask(input) {
-      const stackRef = resolveDispatchStack(getSnapshot(), input.taskKind);
+      const snapshot = getSnapshot();
+      // Dispatch BY DEFINITION when a matching `AgentDefinition` exists (the
+      // persona-identity path): an explicitly chosen definition, else one labeled
+      // `default-for=<taskKind>`. The definition pairs a persona ("who") to a
+      // stack ("how/where"); the route resolves the stack from the definition.
+      const definitionRef = resolveDispatchDefinition(snapshot, input.taskKind);
+      if (definitionRef !== null) {
+        const body: DispatchInput = {
+          agentDefinition: definitionRef,
+          repository: repo,
+          ref: 'main',
+          taskKind: input.taskKind,
+          actor: 'owner',
+        };
+        run('createTask/dispatch(definition)', () => client.dispatch(body));
+        return null;
+      }
+      // Else fall back to dispatch BY STACK (SPEC §3.4): the resolved stack name
+      // is sent as `agentStack`/`stackRef`. The live route accepts either
+      // (`dispatch/route.js:15`).
+      const stackRef = resolveDispatchStack(snapshot, input.taskKind);
       if (stackRef === null) {
         noop('createTask');
         return null;
       }
-      // Dispatch BY STACK (SPEC §3.4): Commander has no persona system, so the
-      // resolved stack name is sent as `agentStack`/`stackRef`, not as an
-      // `agentDefinition`. The live route accepts either (`dispatch/route.js:15`).
       const body: DispatchInput = {
         agentStack: stackRef,
         stackRef,

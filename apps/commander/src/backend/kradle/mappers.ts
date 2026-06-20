@@ -30,6 +30,8 @@ import type { AgentWorkspacePhase, WorkspaceGitStatus } from '../../contracts/kr
 import type {
   ColumnId,
   SessionStatus,
+  SimAgentDefinitionView,
+  SimAgentPersonaView,
   SimAgentView,
   SimAttemptView,
   SimCardView,
@@ -205,7 +207,12 @@ export type AgentsCollectionKey =
   | 'transcripts'
   | 'memoryRepositories'
   | 'memorySnapshots'
-  | 'memoryImports';
+  | 'memoryImports'
+  // Agent-identity collections (the real "who / how-where" model).
+  | 'personas'
+  | 'definitions'
+  | 'appearances'
+  | 'voiceProfiles';
 
 function collectionItems(
   snapshot: KradleControllerSnapshot,
@@ -370,6 +377,188 @@ export function mapStacks(snapshot: KradleControllerSnapshot): SimStackView[] {
     byName.set(stack.metadata.name, mapStackView(stack));
   }
   return [...byName.values()].sort((a, b) => a.name.localeCompare(b.name));
+}
+
+// ---------------------------------------------------------------------------
+// Agent-identity model (the real "who / how-where"): AgentPersona +
+// AgentAppearance + AgentVoiceProfile → SimAgentPersonaView; AgentDefinition →
+// SimAgentDefinitionView. Replaces the invented game-creature/roster concept.
+//
+// Resolution mirrors kradle's `resolveAgentPersona`/`resolveAgentDefinition`
+// (`packages/kradle/core/src/agent-persona-controller.js`): appearance/voice are
+// either INLINE on the persona spec OR carried by a standalone resource that
+// references the persona via `personaRef`. The inline form wins.
+// ---------------------------------------------------------------------------
+
+function personaItems(snapshot: KradleControllerSnapshot): KradleResourceItem[] {
+  const fromAgents = collectionItems(snapshot, 'personas');
+  if (fromAgents.length > 0) return fromAgents;
+  return resourceItemsByKind(snapshot, 'AgentPersona');
+}
+
+function definitionItems(snapshot: KradleControllerSnapshot): KradleResourceItem[] {
+  const fromAgents = collectionItems(snapshot, 'definitions');
+  if (fromAgents.length > 0) return fromAgents;
+  return resourceItemsByKind(snapshot, 'AgentDefinition');
+}
+
+function appearanceItems(snapshot: KradleControllerSnapshot): KradleResourceItem[] {
+  const fromAgents = collectionItems(snapshot, 'appearances');
+  if (fromAgents.length > 0) return fromAgents;
+  return resourceItemsByKind(snapshot, 'AgentAppearance');
+}
+
+function voiceProfileItems(snapshot: KradleControllerSnapshot): KradleResourceItem[] {
+  const fromAgents = collectionItems(snapshot, 'voiceProfiles');
+  if (fromAgents.length > 0) return fromAgents;
+  return resourceItemsByKind(snapshot, 'AgentVoiceProfile');
+}
+
+interface IdentityIndex {
+  /** Personas by `metadata.name`. */
+  personaByName: Map<string, KradleResourceItem>;
+  /** Standalone AgentAppearance by `spec.personaRef`. */
+  appearanceByPersona: Map<string, KradleResourceItem>;
+  /** Standalone AgentVoiceProfile by `spec.personaRef`. */
+  voiceByPersona: Map<string, KradleResourceItem>;
+  /** Resolved persona views by persona name (memoized). */
+  personaViewByName: Map<string, SimAgentPersonaView>;
+}
+
+function buildIdentityIndex(snapshot: KradleControllerSnapshot): IdentityIndex {
+  const personaByName = new Map<string, KradleResourceItem>();
+  for (const p of personaItems(snapshot)) personaByName.set(p.metadata.name, p);
+
+  const appearanceByPersona = new Map<string, KradleResourceItem>();
+  for (const a of appearanceItems(snapshot)) {
+    const ref = asString(spec(a).personaRef);
+    if (ref !== undefined) appearanceByPersona.set(ref, a);
+  }
+  const voiceByPersona = new Map<string, KradleResourceItem>();
+  for (const v of voiceProfileItems(snapshot)) {
+    const ref = asString(spec(v).personaRef);
+    if (ref !== undefined) voiceByPersona.set(ref, v);
+  }
+  return {
+    personaByName,
+    appearanceByPersona,
+    voiceByPersona,
+    personaViewByName: new Map(),
+  };
+}
+
+/**
+ * Resolve one `AgentPersona` item to a {@link SimAgentPersonaView}, joining the
+ * inline `appearance`/`voiceProfile` (preferred) or the standalone
+ * `AgentAppearance`/`AgentVoiceProfile` by `personaRef`. Memoized per index.
+ */
+function resolvePersonaView(
+  persona: KradleResourceItem,
+  index: IdentityIndex,
+): SimAgentPersonaView {
+  const cached = index.personaViewByName.get(persona.metadata.name);
+  if (cached !== undefined) return cached;
+
+  const sp = spec(persona);
+  const displayName = asString(sp.displayName) ?? persona.metadata.name;
+  const tagline = asString(sp.tagline) ?? null;
+  const roleTitle = asString(asRecord(sp.role)?.title) ?? null;
+
+  // Appearance: inline on the persona spec, else the standalone resource.
+  const inlineAppearance = asRecord(sp.appearance);
+  const standaloneAppearance = index.appearanceByPersona.get(persona.metadata.name);
+  const appearanceSpec =
+    inlineAppearance ??
+    (standaloneAppearance !== undefined ? spec(standaloneAppearance) : undefined);
+  const emoji = asString(appearanceSpec?.emoji) ?? null;
+  const avatar = asRecord(appearanceSpec?.avatar) ?? null;
+
+  // Voice: inline on the persona spec, else the standalone resource.
+  const inlineVoice = asRecord(sp.voiceProfile);
+  const standaloneVoice = index.voiceByPersona.get(persona.metadata.name);
+  const voiceSpec =
+    inlineVoice ?? (standaloneVoice !== undefined ? spec(standaloneVoice) : undefined);
+  const ttsProvider = asString(voiceSpec?.ttsProvider) ?? null;
+
+  const view: SimAgentPersonaView = {
+    name: persona.metadata.name,
+    displayName,
+    roleTitle,
+    tagline,
+    emoji,
+    avatar,
+    ttsProvider,
+  };
+  index.personaViewByName.set(persona.metadata.name, view);
+  return view;
+}
+
+/**
+ * `mapAgentPersonas(snapshot)` — every `AgentPersona` resolved to its identity
+ * view (displayName + role.title + appearance.emoji|avatar + voiceProfile.
+ * ttsProvider + tagline), sorted by displayName (stable).
+ */
+export function mapAgentPersonas(snapshot: KradleControllerSnapshot): SimAgentPersonaView[] {
+  const index = buildIdentityIndex(snapshot);
+  return [...index.personaByName.values()]
+    .map((p) => resolvePersonaView(p, index))
+    .sort((a, b) => a.displayName.localeCompare(b.displayName));
+}
+
+/**
+ * `mapAgentDefinitions(snapshot)` — every `AgentDefinition` (the deployment
+ * binding pairing a persona to a stack) with its resolved persona identity.
+ * `persona` is null when the referenced `AgentPersona` is absent (honest gap —
+ * never fabricated). Sorted by name (stable).
+ */
+export function mapAgentDefinitions(
+  snapshot: KradleControllerSnapshot,
+): SimAgentDefinitionView[] {
+  const index = buildIdentityIndex(snapshot);
+  const out: SimAgentDefinitionView[] = [];
+  for (const def of definitionItems(snapshot)) {
+    const sp = spec(def);
+    const personaRef = asString(sp.personaRef) ?? '';
+    const personaItem = personaRef !== '' ? index.personaByName.get(personaRef) : undefined;
+    out.push({
+      name: def.metadata.name,
+      personaRef,
+      stackRef: asString(sp.stackRef) ?? '',
+      roleContext: asString(sp.roleContext) ?? null,
+      persona: personaItem !== undefined ? resolvePersonaView(personaItem, index) : null,
+    });
+  }
+  return out.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/**
+ * The honest board/session IDENTITY resolved from the real model. Given a
+ * run/session `spec.agentDefinition` (or a direct `spec.personaRef`), follow
+ * `AgentDefinition.spec.personaRef → AgentPersona` and return the resolved
+ * persona view. Returns null when no identity can be resolved — the caller then
+ * uses an HONEST fallback (the run/session name), never a procedural creature.
+ */
+function resolveIdentityForRef(
+  index: IdentityIndex,
+  definitionByName: Map<string, KradleResourceItem>,
+  agentDefinitionRef: string | undefined,
+  personaRef: string | undefined,
+): SimAgentPersonaView | null {
+  // 1) A direct persona ref wins (rare, but honest when present).
+  if (personaRef !== undefined) {
+    const direct = index.personaByName.get(personaRef);
+    if (direct !== undefined) return resolvePersonaView(direct, index);
+  }
+  // 2) The definition path: definition → personaRef → persona.
+  if (agentDefinitionRef !== undefined) {
+    const def = definitionByName.get(agentDefinitionRef);
+    const defPersonaRef = def !== undefined ? asString(spec(def).personaRef) : undefined;
+    if (defPersonaRef !== undefined) {
+      const persona = index.personaByName.get(defPersonaRef);
+      if (persona !== undefined) return resolvePersonaView(persona, index);
+    }
+  }
+  return null;
 }
 
 // ---------------------------------------------------------------------------
@@ -1106,17 +1295,60 @@ function runStackRef(snapshot: KradleControllerSnapshot, runName: string | undef
   return run !== undefined ? asString(spec(run).agentStack) ?? '' : '';
 }
 
+/**
+ * Resolve the HONEST display identity of a session (SPEC-KRADLE-MODEL): when the
+ * session (or its dispatch run) references an `agentDefinition`/`personaRef`,
+ * follow it to the real `AgentPersona` (displayName + appearance.emoji). Returns
+ * null when no persona is available — the caller then falls back to the
+ * run/session name (never a procedural creature name/emoji in live mode).
+ */
+function resolveSessionIdentity(
+  snapshot: KradleControllerSnapshot,
+  session: KradleResourceItem,
+  identity: IdentityIndex,
+  definitionByName: Map<string, KradleResourceItem>,
+): SimAgentPersonaView | null {
+  const sp = spec(session);
+  // The session may carry the identity directly, or inherit it from its run.
+  const runName = asString(sp.dispatchRun);
+  const run =
+    runName !== undefined
+      ? collectionItems(snapshot, 'runs').find((r) => r.metadata.name === runName)
+      : undefined;
+  const runSpec = run !== undefined ? spec(run) : {};
+
+  const agentDefinitionRef = asString(sp.agentDefinition) ?? asString(runSpec.agentDefinition);
+  const personaRef = asString(sp.personaRef) ?? asString(runSpec.personaRef);
+  return resolveIdentityForRef(identity, definitionByName, agentDefinitionRef, personaRef);
+}
+
+function definitionByNameIndex(
+  snapshot: KradleControllerSnapshot,
+): Map<string, KradleResourceItem> {
+  const out = new Map<string, KradleResourceItem>();
+  for (const def of definitionItems(snapshot)) out.set(def.metadata.name, def);
+  return out;
+}
+
 function mapSessionView(
   snapshot: KradleControllerSnapshot,
   session: KradleResourceItem,
   transcripts: TranscriptIndex,
   stackNameByRef: Map<string, string>,
+  identity: IdentityIndex,
+  definitionByName: Map<string, KradleResourceItem>,
 ): SimSessionView {
   const sp = spec(session);
   const lab = labels(session);
   const sessionId = session.metadata.name;
   const dispatchRun = asString(sp.dispatchRun);
-  const creatureName = lab[LABEL_CREATURE] ?? sessionId;
+  // IDENTITY: prefer the REAL persona (resolved via the session/run's
+  // agentDefinition → AgentPersona) — displayName is the honest board identity.
+  // Fall back to the session name when no persona is available (NEVER a
+  // procedural creature name in live mode). The legacy `commander.a5c.ai/creature`
+  // label is honored only as a last resort before the session id.
+  const persona = resolveSessionIdentity(snapshot, session, identity, definitionByName);
+  const creatureName = persona?.displayName ?? lab[LABEL_CREATURE] ?? sessionId;
   const adapter = narrowAdapter(asString(sp.adapter));
   const model = asString(sp.model) ?? MODELS_BY_ADAPTER[adapter][0] ?? '';
   const role = lab[LABEL_AGENT_ROLE] === 'reviewer'
@@ -1161,6 +1393,8 @@ function mapSessionView(
 export function mapSessions(snapshot: KradleControllerSnapshot, taskId?: string): SimSessionView[] {
   const transcripts = buildTranscriptIndex(snapshot);
   const stackNameByRef = new Map(mapStacks(snapshot).map((s) => [s.stackRef, s.name]));
+  const identity = buildIdentityIndex(snapshot);
+  const definitionByName = definitionByNameIndex(snapshot);
   const sessions = collectionItems(snapshot, 'sessions');
 
   interface Built {
@@ -1176,7 +1410,7 @@ export function mapSessions(snapshot: KradleControllerSnapshot, taskId?: string)
       continue;
     }
     built.push({
-      view: mapSessionView(snapshot, session, transcripts, stackNameByRef),
+      view: mapSessionView(snapshot, session, transcripts, stackNameByRef, identity, definitionByName),
       sortKey: creationMs(session) ?? seq,
       seq,
     });
@@ -1203,7 +1437,9 @@ export function mapSessionDetail(
   if (session === undefined) return null;
   const transcripts = buildTranscriptIndex(snapshot);
   const stackNameByRef = new Map(mapStacks(snapshot).map((s) => [s.stackRef, s.name]));
-  const record = mapSessionView(snapshot, session, transcripts, stackNameByRef);
+  const identity = buildIdentityIndex(snapshot);
+  const definitionByName = definitionByNameIndex(snapshot);
+  const record = mapSessionView(snapshot, session, transcripts, stackNameByRef, identity, definitionByName);
 
   const transcriptItem = transcripts.bySession.get(sessionId);
   const messages = transcriptItem !== undefined ? asArray(spec(transcriptItem).messages) ?? [] : [];
@@ -1400,6 +1636,8 @@ function mapActiveAgentView(
   session: KradleResourceItem,
   stackNameByRef: Map<string, string>,
   transcripts: TranscriptIndex,
+  identity: IdentityIndex,
+  definitionByName: Map<string, KradleResourceItem>,
   nowMs: number,
 ): SimAgentView {
   const sp = spec(session);
@@ -1414,11 +1652,14 @@ function mapActiveAgentView(
       ? 'integration'
       : 'worker';
   const cost = transcriptCost(transcripts.bySession.get(session.metadata.name));
+  // IDENTITY (live): the resolved persona displayName, else an honest fallback
+  // to the session name (never a procedural creature).
+  const persona = resolveSessionIdentity(snapshot, session, identity, definitionByName);
   return {
     unitId: session.metadata.name,
     agent: adapter,
     model,
-    creatureName: lab[LABEL_CREATURE] ?? session.metadata.name,
+    creatureName: persona?.displayName ?? lab[LABEL_CREATURE] ?? session.metadata.name,
     stackRef,
     stackName: stackNameByRef.get(stackRef) ?? stackRef,
     role,
@@ -1608,10 +1849,12 @@ export function mapToTickInput(snapshot: KradleControllerSnapshot, nowMs: number
   const cards = mapCards(snapshot);
   const transcripts = buildTranscriptIndex(snapshot);
   const stackNameByRef = new Map(mapStacks(snapshot).map((s) => [s.stackRef, s.name]));
+  const identity = buildIdentityIndex(snapshot);
+  const definitionByName = definitionByNameIndex(snapshot);
 
   const activeSessions = collectionItems(snapshot, 'sessions').filter(isActiveSession);
   const agents = activeSessions.map((s) =>
-    mapActiveAgentView(snapshot, s, stackNameByRef, transcripts, nowMs),
+    mapActiveAgentView(snapshot, s, stackNameByRef, transcripts, identity, definitionByName, nowMs),
   );
   const units = activeSessions.map((s) => mapUnitView(s, transcripts, nowMs));
   const tasks = collectionItems(snapshot, 'runs').map((r) => mapTaskView(r));

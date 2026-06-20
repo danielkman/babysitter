@@ -122,6 +122,14 @@ export function createControllerUiModel(source, options = {}) {
   const memoryRepositories = filterByOrg(snapshot.resources.AgentMemoryRepository || [], activeOrg?.slug);
   const memorySnapshots = filterByOrg(snapshot.resources.AgentMemorySnapshot || [], activeOrg?.slug);
   const memoryImports = filterByOrg(snapshot.resources.AgentRunMemoryImport || [], activeOrg?.slug);
+  // Agent-identity kinds (the real "who / how-where"): AgentDefinition pairs an
+  // AgentPersona to an AgentStack; AgentAppearance/AgentVoiceProfile carry visual
+  // /voice identity (joined to a persona by personaRef). Commander resolves a
+  // run/session's identity from these.
+  const agentPersonas = filterByOrg(snapshot.resources.AgentPersona || [], activeOrg?.slug);
+  const agentDefinitions = filterByOrg(snapshot.resources.AgentDefinition || [], activeOrg?.slug);
+  const agentAppearances = filterByOrg(snapshot.resources.AgentAppearance || [], activeOrg?.slug);
+  const agentVoiceProfiles = filterByOrg(snapshot.resources.AgentVoiceProfile || [], activeOrg?.slug);
 
   const agentView = {
     org: activeOrg?.slug,
@@ -140,6 +148,10 @@ export function createControllerUiModel(source, options = {}) {
     memoryRepositories: { count: memoryRepositories.length, items: memoryRepositories },
     memorySnapshots: { count: memorySnapshots.length, items: memorySnapshots },
     memoryImports: { count: memoryImports.length, items: memoryImports, pending: memoryImports.filter(i => !i.status?.phase || i.status.phase === 'Pending' || i.status.phase === 'AwaitingReview') },
+    personas: { count: agentPersonas.length, items: agentPersonas },
+    definitions: { count: agentDefinitions.length, items: agentDefinitions },
+    appearances: { count: agentAppearances.length, items: agentAppearances },
+    voiceProfiles: { count: agentVoiceProfiles.length, items: agentVoiceProfiles },
   };
   const deploymentApplications = filterByOrg(snapshot.resources.KubeVelaApplication || [], activeOrg?.slug);
   const deploymentReleases = filterByOrg(snapshot.resources.KubeVelaApplicationRevision || [], activeOrg?.slug);

@@ -208,6 +208,19 @@ export interface KradleControllerSnapshot {
     memoryRepositories?: KradleResourceCollection;
     memorySnapshots?: KradleResourceCollection;
     memoryImports?: KradleResourceCollection;
+    /**
+     * Agent-identity collections (the real "who / how-where" model). Mirror the
+     * stacks/runs/sessions collection typing. `definitions` (AgentDefinition) is
+     * the deployment binding that pairs a `persona` (AgentPersona) to a stack;
+     * `appearances`/`voiceProfiles` carry visual/voice identity resolved by
+     * `personaRef` (when not inlined on the persona). Populated by the kradle
+     * controller UI model's `agents.{personas,definitions,appearances,voiceProfiles}`
+     * (the board snapshot must surface these kinds — see BOARD_SNAPSHOT_KINDS).
+     */
+    personas?: KradleResourceCollection;
+    definitions?: KradleResourceCollection;
+    appearances?: KradleResourceCollection;
+    voiceProfiles?: KradleResourceCollection;
   };
   resources?: Array<{
     kind?: string;
