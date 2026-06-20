@@ -573,6 +573,12 @@ function buildCommandEnv(env: Record<string, string | undefined>, cwd: string): 
       ...env,
       PATH: withWorkspaceBinOnPath(env, cwd),
       NODE_PATH: [path.join(cwd, 'node_modules'), ...(() => { try { const { execSync } = require('child_process'); const p = execSync('npm root -g', { encoding: 'utf8' }).trim(); return p ? [p] : []; } catch { return []; } })()].join(path.delimiter),
+      // Pin npm's lifecycle script shell to an absolute path on posix. Some agent
+      // package postinstalls (e.g. @anthropic-ai/claude-code) abort with
+      // `spawn sh ENOENT` when npm spawns a bare `sh` and the lifecycle PATH does
+      // not resolve it — leaving the CLI half-installed so `adapters launch`
+      // later fails. An absolute script-shell removes the PATH dependency.
+      ...(process.platform === 'win32' ? {} : { NPM_CONFIG_SCRIPT_SHELL: '/bin/bash' }),
       LIVE_STACK_TRACE_ID: traceId,
       LIVE_STACK_OUTPUT_DIR: path.join(cwd, '.a5c-live-test'),
       LIVE_STACK_GENERATED_PLUGINS_DIR: env['LIVE_STACK_GENERATED_PLUGINS_DIR'] ?? path.join(cwd, 'artifacts', 'generated-plugins'),
@@ -587,7 +593,17 @@ function buildCommandEnv(env: Record<string, string | undefined>, cwd: string): 
 function withWorkspaceBinOnPath(env: Record<string, string | undefined>, cwd: string): string {
   const delimiter = process.platform === 'win32' ? ';' : ':';
   const workspaceBin = path.join(cwd, 'node_modules', '.bin');
-  return [workspaceBin, env['PATH'] ?? process.env['PATH'] ?? ''].filter(Boolean).join(delimiter);
+  const basePath = env['PATH'] ?? process.env['PATH'] ?? '';
+  // Guarantee the standard system bin dirs are present so npm lifecycle scripts
+  // can resolve `sh`/`bash` and core utilities even if the inherited PATH is
+  // trimmed (the source of intermittent `spawn sh ENOENT` install failures).
+  const systemDirs = process.platform === 'win32' ? [] : ['/usr/local/bin', '/usr/bin', '/bin', '/usr/sbin', '/sbin'];
+  const segments = [workspaceBin, basePath, ...systemDirs].filter(Boolean);
+  const seen = new Set<string>();
+  return segments
+    .flatMap((seg) => seg.split(delimiter))
+    .filter((dir) => dir && !seen.has(dir) && (seen.add(dir), true))
+    .join(delimiter);
 }
 
 export function buildPrompt(scenario: LiveStackScenario, traceId: string, env: Record<string, string | undefined>): string {
