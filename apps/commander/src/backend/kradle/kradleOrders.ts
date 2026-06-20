@@ -552,6 +552,13 @@ export function makeKradleOrders(
       noop('moveCard');
     },
     setYolo() {
+      // The card now READS yolo from the real `spec.approvalPolicy.autoApprove`
+      // (mappers.ts), but persisting a toggle from Commander has no clean write
+      // path: the client exposes only `applyResource` (full-resource upsert) and
+      // `dispatch` — there is no per-run spec-patch route for an aggregated,
+      // postgres-stored AgentDispatchRun, and `DispatchInput` carries neither
+      // `approvalPolicy` nor `parentRunRef`. Left as a documented no-op until a
+      // run-spec patch route exists; mirror for subtask parent assignment.
       noop('setYolo');
     },
     revertCard() {

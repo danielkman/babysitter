@@ -757,6 +757,20 @@ spec:
               # Relative scheduling priority (higher = sooner). Optional.
               priority:
                 type: integer
+              # Parent run for subtask decomposition: the AgentDispatchRun this
+              # run is a child of. Optional; absent for top-level runs.
+              parentRunRef:
+                type: string
+              # Per-run approval policy. requireWriteBackApproval gates write-back;
+              # autoApprove (yolo) auto-approves this run's gates. Both optional.
+              approvalPolicy:
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+                properties:
+                  requireWriteBackApproval:
+                    type: boolean
+                  autoApprove:
+                    type: boolean
           status:
             type: object
             x-kubernetes-preserve-unknown-fields: true

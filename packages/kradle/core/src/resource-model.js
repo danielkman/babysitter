@@ -183,6 +183,7 @@ const FIELD_TYPE_RULES = {
   datasetRef: 'string', version: 'string', versionRef: 'string', data: 'object', schema: 'object',
   ruleType: 'string', guardrailRef: 'string', eventType: 'string', action: 'string',
   taskKind: 'string', phases: 'array',
+  parentRunRef: 'string', approvalPolicy: 'object',
   warmReplicas: 'number', maxReplicas: 'number', maxTurns: 'number', ttlMinutes: 'number',
   runtimeIdentity: 'object', routes: 'array', sources: 'array', events: 'array', models: 'array',
   requiredRoles: 'array', changes: 'array', include: 'array',

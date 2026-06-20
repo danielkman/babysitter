@@ -292,6 +292,13 @@ export interface AgentDispatchSourceRefs {
 
 export interface AgentDispatchApprovalPolicy {
   requireWriteBackApproval?: boolean;
+  /**
+   * Per-run auto-approve (the "yolo" toggle). When true, this run's approval
+   * gates are auto-approved. First-class field on the AgentDispatchRun spec
+   * (`aggregated-resources.yaml`); the mapper falls back to the
+   * `commander.a5c.ai/yolo` label only when it is absent (old data).
+   */
+  autoApprove?: boolean;
 }
 
 /**
@@ -325,6 +332,13 @@ export interface AgentDispatchRunSpec extends KradlePreserveUnknown {
   description?: string;
   /** Relative scheduling priority (higher = sooner). Optional. */
   priority?: number;
+  /**
+   * Parent run for subtask decomposition: the `AgentDispatchRun` this run is a
+   * child of. First-class field (`aggregated-resources.yaml`); the mapper falls
+   * back to the `commander.a5c.ai/parent` label only when it is absent (old
+   * data). Absent for top-level runs.
+   */
+  parentRunRef?: string;
 }
 
 /**

@@ -117,6 +117,10 @@ function asNumber(value: unknown): number | undefined {
   return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
 }
 
+function asBoolean(value: unknown): boolean | undefined {
+  return typeof value === 'boolean' ? value : undefined;
+}
+
 function asRecord(value: unknown): Record<string, unknown> | undefined {
   return isRecord(value) ? value : undefined;
 }
@@ -801,8 +805,15 @@ function approvalDispatchRun(item: KradleResourceItem): string | undefined {
 }
 
 function approvalActionType(item: KradleResourceItem): string | undefined {
-  const action = asRecord(spec(item).action);
-  return asString(action?.type);
+  // `spec.action` has two shapes in the wild: the kradle approval controller +
+  // live cluster store a bare STRING (e.g. 'review', 'write-back'); the richer
+  // spec/contract form is an object `{ type, target, summary }`. Read both, else
+  // the gate type never resolves against real data and review/human-review
+  // refinements silently never fire.
+  const raw = spec(item).action;
+  const asStr = asString(raw);
+  if (asStr !== undefined) return asStr;
+  return asString(asRecord(raw)?.type);
 }
 
 function isPendingApproval(item: KradleResourceItem): boolean {
@@ -969,10 +980,12 @@ export function mapCards(snapshot: KradleControllerSnapshot): SimCardView[] {
   const attempts = buildAttemptIndex(snapshot);
   const byAttempt = sessionsByAttempt(snapshot);
 
-  // Parent → children (by LABEL_PARENT).
+  // Parent → children. Prefer the REAL `spec.parentRunRef` (subtask
+  // decomposition); fall back to the `commander.a5c.ai/parent` label only when
+  // the real field is absent (honest interim for runs that predate it).
   const childrenByParent = new Map<string, string[]>();
   for (const run of runs) {
-    const parent = labels(run)[LABEL_PARENT];
+    const parent = asString(spec(run).parentRunRef) ?? labels(run)[LABEL_PARENT];
     if (parent !== undefined) {
       (childrenByParent.get(parent) ?? childrenByParent.set(parent, []).get(parent)!).push(
         run.metadata.name,
@@ -1007,9 +1020,12 @@ export function mapCards(snapshot: KradleControllerSnapshot): SimCardView[] {
         WRITE_BACK_ACTION_TYPES.has(approvalActionType(a) ?? '') &&
         (statusPhase(a) === 'Approved' || asString(status(a).decision) === 'approved'),
     );
-    const merged = lab[LABEL_MERGED] === 'true' || asString(status(run).mergedAt) !== undefined;
+    // Release rail: the REAL `status.mergedAt`/`status.releasedAt` are PRIMARY
+    // (set by the run-status reconciler); the `commander.a5c.ai/merged` /
+    // `release-id` labels are the honest fallback for runs that predate them.
+    const merged = asString(status(run).mergedAt) !== undefined || lab[LABEL_MERGED] === 'true';
     const released =
-      lab[LABEL_RELEASE_ID] !== undefined || asString(status(run).releasedAt) !== undefined;
+      asString(status(run).releasedAt) !== undefined || lab[LABEL_RELEASE_ID] !== undefined;
 
     // Base lane: prefer the real reconciled lane (`status.boardColumn`); fall
     // back to the phase→column derivation otherwise (thin, honest fallback —
@@ -1079,11 +1095,17 @@ export function mapCards(snapshot: KradleControllerSnapshot): SimCardView[] {
       workspaceId,
       column,
       order: 0, // assigned in the per-column ordering pass below.
-      yolo: lab[LABEL_YOLO] === 'true',
+      // Yolo / per-run auto-approve: prefer the REAL
+      // `spec.approvalPolicy.autoApprove` boolean; fall back to the
+      // `commander.a5c.ai/yolo` label only when the real field is absent.
+      yolo:
+        asBoolean(asRecord(sp.approvalPolicy)?.autoApprove) ?? lab[LABEL_YOLO] === 'true',
       merged: column === 'merged' || column === 'in-production',
       // Prefer the real reconciled `status.progress`; fall back to phase→progress.
       progress: runStatusProgress(run) ?? runProgress(phase),
-      parentId: lab[LABEL_PARENT] ?? null,
+      // Subtask parent: prefer the REAL `spec.parentRunRef`; fall back to the
+      // `commander.a5c.ai/parent` label only when the real field is absent.
+      parentId: asString(sp.parentRunRef) ?? lab[LABEL_PARENT] ?? null,
       childIds: childrenByParent.get(taskId) ?? [],
       agentIds,
       attempt,

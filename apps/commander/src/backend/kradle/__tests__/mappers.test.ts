@@ -553,6 +553,22 @@ describe('AC12 — SimCardView / SimRunView field maps (§2.3.2/§2.3.3)', () =>
     expect(mapCards(s)[0].column).toBe('approved');
   });
 
+  it('AC12-native: a STRING-form approval action (the kradle/live shape) also drives the lane', () => {
+    // The kradle approval controller + live cluster store spec.action as a bare
+    // string (not the {type} object the fixtures use); the lane must still resolve.
+    const stringReview: KradleResourceItem = {
+      kind: 'AgentApproval',
+      metadata: { name: 'appr-str' },
+      spec: { dispatchRun: 'adr-str', action: 'review' },
+      status: { phase: 'Pending' },
+    };
+    const s = snap({
+      runs: { items: [run('adr-str', { repository: 'r', taskKind: 'fix' }, 'Running', {}, { boardColumn: 'do' })] },
+      approvals: { items: [stringReview], pending: [stringReview] },
+    });
+    expect(mapCards(s)[0].column).toBe('ai-review');
+  });
+
   it('AC12-native: spec.title / spec.description win over derivation', () => {
     const s = snap({
       runs: {
@@ -588,6 +604,102 @@ describe('AC12 — SimCardView / SimRunView field maps (§2.3.2/§2.3.3)', () =>
     const child = cards.find((c) => c.taskId === 'child')!;
     expect(child.parentId).toBe('parent');
     expect(parent.childIds).toContain('child');
+  });
+
+  it('AC12-native: parent/child links derive from the REAL spec.parentRunRef (not a label)', () => {
+    const s = snap({
+      runs: {
+        items: [
+          run('parent', { repository: 'r', taskKind: 'implement' }, 'Running'),
+          // No label — the real first-class field carries the parent.
+          run('child', { repository: 'r', taskKind: 'fix', parentRunRef: 'parent' }, 'Pending'),
+        ],
+      },
+    });
+    const cards = mapCards(s);
+    const parent = cards.find((c) => c.taskId === 'parent')!;
+    const child = cards.find((c) => c.taskId === 'child')!;
+    expect(child.parentId).toBe('parent');
+    expect(parent.childIds).toContain('child');
+  });
+
+  it('AC12-native: spec.parentRunRef wins over the commander.a5c.ai/parent label', () => {
+    const s = snap({
+      runs: {
+        items: [
+          run('real-parent', { repository: 'r', taskKind: 'implement' }, 'Running'),
+          run(
+            'child',
+            { repository: 'r', taskKind: 'fix', parentRunRef: 'real-parent' },
+            'Pending',
+            { [LABEL_PARENT]: 'label-parent' },
+          ),
+        ],
+      },
+    });
+    const child = mapCards(s).find((c) => c.taskId === 'child')!;
+    expect(child.parentId).toBe('real-parent');
+  });
+
+  it('AC12-native: yolo derives from the REAL spec.approvalPolicy.autoApprove', () => {
+    const s = snap({
+      runs: {
+        items: [
+          run(
+            'adr-yolo',
+            { repository: 'r', taskKind: 'fix', approvalPolicy: { autoApprove: true } },
+            'Running',
+          ),
+        ],
+      },
+    });
+    expect(mapCards(s)[0].yolo).toBe(true);
+  });
+
+  it('AC12-native: spec.approvalPolicy.autoApprove wins over the yolo label (false beats true label)', () => {
+    const s = snap({
+      runs: {
+        items: [
+          run(
+            'adr-yolo-false',
+            { repository: 'r', taskKind: 'fix', approvalPolicy: { autoApprove: false } },
+            'Running',
+            { [LABEL_YOLO]: 'true' },
+          ),
+        ],
+      },
+    });
+    expect(mapCards(s)[0].yolo).toBe(false);
+  });
+
+  it('AC12-native: yolo falls back to the label when spec.approvalPolicy.autoApprove is absent', () => {
+    const s = snap({
+      runs: {
+        items: [
+          run('adr-yolo-label', { repository: 'r', taskKind: 'fix' }, 'Running', { [LABEL_YOLO]: 'true' }),
+        ],
+      },
+    });
+    expect(mapCards(s)[0].yolo).toBe(true);
+  });
+
+  it('AC12-native: merged/released derive from the REAL status.mergedAt/releasedAt (no labels)', () => {
+    const s = snap({
+      runs: {
+        items: [
+          run(
+            'adr-rel',
+            { repository: 'r', taskKind: 'fix' },
+            'Succeeded',
+            {},
+            { mergedAt: '2026-06-01T00:00:00Z', releasedAt: '2026-06-02T00:00:00Z' },
+          ),
+        ],
+      },
+    });
+    const [card] = mapCards(s);
+    expect(card.column).toBe('in-production'); // releasedAt present → released
+    expect(card.merged).toBe(true);
   });
 
   it('AC12: per-column order is a stable sort by creationTimestamp', () => {

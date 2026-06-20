@@ -342,4 +342,24 @@ describe('agent dispatch and trigger target validation', () => {
 
     assert.throws(() => validateResource(run), /spec\.agentStack or spec\.agentDefinition is required/);
   });
+
+  it('AgentDispatchRun round-trips spec.parentRunRef and spec.approvalPolicy.autoApprove', () => {
+    const run = createResource('AgentDispatchRun', { name: 'child-run', namespace: 'kradle-org-default' }, {
+      organizationRef: 'default',
+      repository: 'repo',
+      sourceRefs: { pullRequest: 'pr-1' },
+      taskKind: 'diagnostic',
+      agentStack: 'stack-1',
+      // Subtask decomposition: this run is a child of an existing run.
+      parentRunRef: 'parent-run',
+      // Per-run auto-approve (yolo) carried alongside the existing write-back gate.
+      approvalPolicy: { requireWriteBackApproval: false, autoApprove: true }
+    });
+
+    // Optional preserve-unknown fields must survive validation untouched.
+    assert.equal(validateResource(run), run);
+    assert.equal(run.spec.parentRunRef, 'parent-run');
+    assert.equal(run.spec.approvalPolicy.autoApprove, true);
+    assert.equal(run.spec.approvalPolicy.requireWriteBackApproval, false);
+  });
 });
