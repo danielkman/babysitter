@@ -480,10 +480,22 @@ export async function executeChildProcessCommand(execution: CommandExecution): P
   // The test runner always uses pipe mode to collect output.
   const { spawn } = await import('node:child_process');
   return await new Promise<CommandResult>((resolve) => {
-    const child = spawn(execution.command, execution.args, {
+    // A `.cmd` shim (npm, adapters, babysitter, claude, …) needs a shell to
+    // resolve on Windows. Plain `shell: true` is wrong here: Node passes the
+    // args UNQUOTED to cmd.exe, so a `--prompt "Write about Homer's Odyssey …"`
+    // is split at the first space and the agent receives only "Write" (→ runs
+    // one turn, never writes the file). Instead invoke the shim via
+    // `cmd.exe /d /s /c <command> <args…>` with shell:false, so Node applies its
+    // Windows arg escaping and the full prompt survives.
+    const needsWinShell = (execution.shell ?? false) && process.platform === 'win32';
+    const spawnCommand = needsWinShell ? (process.env['ComSpec'] || 'cmd.exe') : execution.command;
+    const spawnArgs = needsWinShell
+      ? ['/d', '/s', '/c', execution.command, ...execution.args]
+      : execution.args;
+    const child = spawn(spawnCommand, spawnArgs, {
       cwd: execution.cwd,
       env: { ...process.env, ...execution.env },
-      shell: execution.shell ?? false,
+      shell: needsWinShell ? false : (execution.shell ?? false),
       detached: process.platform !== 'win32',
       stdio: ['pipe', 'pipe', 'pipe'],
     });
