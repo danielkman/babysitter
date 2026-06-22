@@ -12,10 +12,10 @@ metadata:
     kradle.a5c.ai/org: {{ $org | quote }}
 spec:
   organizationRef: {{ $org | quote }}
-  baseAgent: claude-code
-  adapter: default
-  provider: anthropic
-  model: claude-sonnet-4-20250514
+  baseAgent: {{ .Values.agents.assistantBaseAgent | default "claude-code" }}
+  adapter: {{ .Values.agents.assistantAdapter | default "default" }}
+  provider: {{ .Values.agents.assistantProvider | default "openai" }}
+  model: {{ .Values.agents.assistantModel | default "gpt-5.5" | quote }}
   runtimeIdentity:
     serviceAccountRef: {{ include "kradle.fullname" . }}
     roleRef: {{ .Values.agents.assistantRole | default "edit" }}

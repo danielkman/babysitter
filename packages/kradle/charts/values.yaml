@@ -447,6 +447,15 @@ kserve:
 
 agents:
   enabled: true
+  # Builtin "assistant" AgentStack identity. Must match the model the
+  # AGENT_MUX_API_BASE endpoint actually serves (see kradle-assistant-keys:
+  # KRADLE_ASSISTANT_PROVIDER / KRADLE_ASSISTANT_MODEL). This deployment routes
+  # through the Azure foundry mux which serves openai/gpt-5.5; there is no
+  # anthropic key, so the old anthropic/claude-sonnet default could never run.
+  assistantBaseAgent: claude-code
+  assistantAdapter: default
+  assistantProvider: openai
+  assistantModel: gpt-5.5
   agentMux:
     enabled: false
     gateway: ""
