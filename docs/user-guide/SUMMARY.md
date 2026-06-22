@@ -16,12 +16,14 @@ This is the GitBook-style table of contents for the Babysitter User Guide.
 * [Installation](./getting-started/installation.md)
 * [Quickstart](./getting-started/quickstart.md)
 * [First Run](./getting-started/first-run.md)
+* [Migration: Prod to v6](./getting-started/migration.md)
 
 ---
 
 ## Features
 
 * [**Process Library** (current library snapshot)](./features/process-library.md)
+* [**Adapters** (run on any harness)](./features/adapters.md)
 * [**Best Practices Guide**](./features/best-practices.md)
 * [Breakpoints](./features/breakpoints.md)
 * [Hooks](./features/hooks.md)
@@ -30,6 +32,14 @@ This is the GitBook-style table of contents for the Babysitter User Guide.
 * [Journal System](./features/journal-system.md)
 * [Run Resumption](./features/run-resumption.md)
 * [Parallel Execution](./features/parallel-execution.md)
+
+---
+
+## Harnesses
+
+* [Install Matrix](./harnesses/install-matrix.md)
+* [Claude Code](./harnesses/claude-code.md)
+* [Codex](./harnesses/codex.md)
 
 ---
 
@@ -43,20 +53,14 @@ This is the GitBook-style table of contents for the Babysitter User Guide.
 
 ## Reference
 
+* [Slash Commands](./reference/slash-commands.md)
 * [CLI Reference](./reference/cli-reference.md)
+* [Adapters CLI](./reference/adapters-cli.md)
 * [Configuration](./reference/configuration.md)
 * [Error Catalog](./reference/error-catalog.md)
 * [Glossary](./reference/glossary.md)
 * [FAQ](./reference/faq.md)
 * [Troubleshooting](./reference/troubleshooting.md)
-
----
-
-## Planning Documents
-
-* [Discovery Analysis](./01-discovery-analysis.md)
-* [Audience Personas](./02-audience-personas.md)
-* [Information Architecture](./03-information-architecture.md)
 
 ---
 
@@ -74,9 +78,11 @@ docs/user-guide/
 |   +-- installation.md                   # Installation guide
 |   +-- quickstart.md                     # Quick configuration
 |   +-- first-run.md                      # First workflow execution
+|   +-- migration.md                      # Prod (0.0.x) to v6 migration guide
 |
 +-- features/                             # Core Features
 |   +-- process-library.md                # SDK-managed built-in library and current counts
+|   +-- adapters.md                       # Run Babysitter on any harness (v6)
 |   +-- best-practices.md                 # Comprehensive best practices guide
 |   +-- breakpoints.md                    # Human-in-the-loop approval
 |   +-- hooks.md                          # Extensible lifecycle events
@@ -86,22 +92,25 @@ docs/user-guide/
 |   +-- run-resumption.md                 # Continue interrupted work
 |   +-- parallel-execution.md             # Concurrent task execution
 |
++-- harnesses/                            # Supported AI coding harnesses
+|   +-- install-matrix.md                 # All supported harnesses + install + hook models
+|   +-- claude-code.md                    # Claude Code (fully supported)
+|   +-- codex.md                          # Codex (fully supported)
+|
 +-- tutorials/                            # Step-by-Step Tutorials
 |   +-- beginner-rest-api.md              # Build REST API (beginner)
 |   +-- intermediate-custom-process.md    # Custom process (intermediate)
 |   +-- advanced-multi-phase.md           # Multi-phase workflows (advanced)
 |
 +-- reference/                            # Technical Reference
+|   +-- slash-commands.md                 # In-session /babysitter:* command surface
 |   +-- cli-reference.md                  # Command-line interface
+|   +-- adapters-cli.md                   # Host-side `adapters` CLI reference (v6)
 |   +-- configuration.md                  # Config options
 |   +-- error-catalog.md                  # Error codes and solutions
 |   +-- glossary.md                       # Terminology
 |   +-- faq.md                            # Frequently asked questions
 |   +-- troubleshooting.md                # Problem resolution
-|
-+-- 01-discovery-analysis.md              # Planning: Discovery
-+-- 02-audience-personas.md               # Planning: Personas
-+-- 03-information-architecture.md        # Planning: IA
 ```
 
 ---
@@ -110,13 +119,13 @@ docs/user-guide/
 
 | Section | Pages | Status |
 |---------|-------|--------|
-| Getting Started | 4 | Complete |
-| Features | 9 | Complete |
+| Getting Started | 5 | Complete |
+| Features | 10 | Complete |
+| Harnesses | 3 | Complete |
 | Tutorials | 3 | Complete |
-| Reference | 6 | Complete |
-| Planning | 3 | Complete |
+| Reference | 8 | Complete |
 | Navigation | 3 | Complete |
-| **Total** | **28** | **Active** |
+| **Total** | **32** | **Active** |
 
 ---
 

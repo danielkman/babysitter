@@ -17,7 +17,7 @@ This document defines the navigation structure for the Babysitter User Guide doc
 +------------------------------------------------------------------------+
 |  [Logo] Babysitter Docs                                                 |
 +------------------------------------------------------------------------+
-|  Home  |  Getting Started  |  Features  |  Tutorials  |  Reference  |  [Search]  |
+|  Home  |  Getting Started  |  Features  |  Harnesses  |  Tutorials  |  Reference  |  [Search]  |
 +------------------------------------------------------------------------+
 ```
 
@@ -39,6 +39,8 @@ This document defines the navigation structure for the Babysitter User Guide doc
       path: /getting-started/quickstart.md
     - title: First Run
       path: /getting-started/first-run.md
+    - title: Migration (Prod to v6)
+      path: /getting-started/migration.md
 ```
 
 ### Features
@@ -49,6 +51,9 @@ This document defines the navigation structure for the Babysitter User Guide doc
   items:
     - title: Process Library
       path: /features/process-library.md
+      highlight: true
+    - title: Adapters
+      path: /features/adapters.md
       highlight: true
     - title: Two-Loops Architecture
       path: /features/two-loops-architecture.md
@@ -71,6 +76,20 @@ This document defines the navigation structure for the Babysitter User Guide doc
       path: /features/run-resumption.md
     - title: Parallel Execution
       path: /features/parallel-execution.md
+```
+
+### Harnesses
+
+```yaml
+- section: Harnesses
+  path: /harnesses/
+  items:
+    - title: Install Matrix
+      path: /harnesses/install-matrix.md
+    - title: Claude Code
+      path: /harnesses/claude-code.md
+    - title: Codex
+      path: /harnesses/codex.md
 ```
 
 ### Tutorials
@@ -101,6 +120,8 @@ This document defines the navigation structure for the Babysitter User Guide doc
       highlight: true
     - title: CLI Reference
       path: /reference/cli-reference.md
+    - title: Adapters CLI
+      path: /reference/adapters-cli.md
     - title: Configuration
       path: /reference/configuration.md
     - title: Error Catalog
@@ -146,6 +167,7 @@ For documentation platforms that use JSON configuration (e.g., Docusaurus, ViteP
         "position": "left",
         "items": [
           { "label": "Process Library", "to": "/features/process-library" },
+          { "label": "Adapters", "to": "/features/adapters" },
           { "label": "Best Practices Guide", "to": "/features/best-practices" },
           { "label": "Breakpoints", "to": "/features/breakpoints" },
           { "label": "Hooks", "to": "/features/hooks" },
@@ -154,6 +176,16 @@ For documentation platforms that use JSON configuration (e.g., Docusaurus, ViteP
           { "label": "Journal System", "to": "/features/journal-system" },
           { "label": "Run Resumption", "to": "/features/run-resumption" },
           { "label": "Parallel Execution", "to": "/features/parallel-execution" }
+        ]
+      },
+      {
+        "type": "dropdown",
+        "label": "Harnesses",
+        "position": "left",
+        "items": [
+          { "label": "Install Matrix", "to": "/harnesses/install-matrix" },
+          { "label": "Claude Code", "to": "/harnesses/claude-code" },
+          { "label": "Codex", "to": "/harnesses/codex" }
         ]
       },
       {
@@ -173,6 +205,7 @@ For documentation platforms that use JSON configuration (e.g., Docusaurus, ViteP
         "items": [
           { "label": "Slash Commands", "to": "/reference/slash-commands" },
           { "label": "CLI Reference", "to": "/reference/cli-reference" },
+          { "label": "Adapters CLI", "to": "/reference/adapters-cli" },
           { "label": "Configuration", "to": "/reference/configuration" },
           { "label": "Error Catalog", "to": "/reference/error-catalog" },
           { "label": "Glossary", "to": "/reference/glossary" },
@@ -201,7 +234,8 @@ For documentation platforms that use JSON configuration (e.g., Docusaurus, ViteP
           "getting-started/README",
           "getting-started/installation",
           "getting-started/quickstart",
-          "getting-started/first-run"
+          "getting-started/first-run",
+          "getting-started/migration"
         ]
       },
       {
@@ -210,6 +244,7 @@ For documentation platforms that use JSON configuration (e.g., Docusaurus, ViteP
         "collapsed": false,
         "items": [
           "features/process-library",
+          "features/adapters",
           "features/best-practices",
           "features/breakpoints",
           "features/hooks",
@@ -218,6 +253,16 @@ For documentation platforms that use JSON configuration (e.g., Docusaurus, ViteP
           "features/journal-system",
           "features/run-resumption",
           "features/parallel-execution"
+        ]
+      },
+      {
+        "type": "category",
+        "label": "Harnesses",
+        "collapsed": false,
+        "items": [
+          "harnesses/install-matrix",
+          "harnesses/claude-code",
+          "harnesses/codex"
         ]
       },
       {
@@ -237,6 +282,7 @@ For documentation platforms that use JSON configuration (e.g., Docusaurus, ViteP
         "items": [
           "reference/slash-commands",
           "reference/cli-reference",
+          "reference/adapters-cli",
           "reference/configuration",
           "reference/error-catalog",
           "reference/glossary",

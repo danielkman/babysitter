@@ -139,6 +139,7 @@ Deep dives into Babysitter's core capabilities.
 |---------|-------------|
 | [**Process Library**](./features/process-library.md) | **2,239 JavaScript process files in the live generated snapshot**, plus methodology, shared-process, skill, and agent layers discovered under `library/` |
 | [**Two-Loops Architecture**](./features/two-loops-architecture.md) | **Hybrid agentic systems** - symbolic orchestration + agentic harness, guardrails, and evidence-driven completion |
+| [**Adapters**](./features/adapters.md) | **Run Babysitter on any supported harness** (v6) - harness-agnostic runtime plus the host-side `adapters` CLI |
 | [**Quality Convergence**](./features/quality-convergence.md) | **Five quality gate types** (tests, code quality, static analysis, security, performance) with 90-score patterns |
 | [**Best Practices**](./features/best-practices.md) | **Four guardrail layers**, multi-gate validation, workflow design, and team collaboration patterns |
 | [Breakpoints](./features/breakpoints.md) | Human-in-the-loop approval system for critical decisions |
@@ -156,6 +157,20 @@ Deep dives into Babysitter's core capabilities.
 
 ---
 
+### Harnesses
+
+Babysitter v6 runs on a dozen AI coding harnesses. Pick yours and follow its install and invocation guide.
+
+| Harness | Description |
+|---------|-------------|
+| [Install Matrix](./harnesses/install-matrix.md) | Every supported harness - install commands, invocation token, and per-harness hook model |
+| [Claude Code](./harnesses/claude-code.md) | Fully supported - `/babysitter:*` slash-commands and the `babysit` skill |
+| [Codex](./harnesses/codex.md) | Fully supported - `$babysitter:*` via the mention picker |
+
+> Migrating from the `0.0.x` series? See the [Migration Guide](./getting-started/migration.md) for every breaking change.
+
+---
+
 ### Reference
 
 Technical specifications and lookup resources.
@@ -164,6 +179,7 @@ Technical specifications and lookup resources.
 |-----------|-------------|
 | [Slash Commands](./reference/slash-commands.md) | **Core modes** (call, yolo, forever, plan) and utility commands for Claude Code |
 | [CLI Reference](./reference/cli-reference.md) | Complete command-line interface documentation |
+| [Adapters CLI](./reference/adapters-cli.md) | The host-side `adapters` CLI - run, install, and manage any harness (v6) |
 | [Package & Plugin Map](../package-and-plugin-map.md) | Canonical public/internal docs map for active packages, apps, and harness plugins |
 | [Configuration](./reference/configuration.md) | Environment variables and config file options |
 | [Error Catalog](./reference/error-catalog.md) | All error codes with solutions |
