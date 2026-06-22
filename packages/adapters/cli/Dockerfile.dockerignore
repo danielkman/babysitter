@@ -1,0 +1,14 @@
+# Scoped ignore for the adapters-agent image build (BuildKit honors
+# <Dockerfile>.dockerignore). Keep the context to source only: install deps and
+# build fresh inside the image so the result is deterministic and doesn't depend
+# on (or inherit corruption from) the host/CI working tree.
+**/node_modules
+.git
+**/dist
+**/dist-lib
+**/*.tsbuildinfo
+**/.next
+**/.venv
+**/*.log
+artifacts
+**/coverage
