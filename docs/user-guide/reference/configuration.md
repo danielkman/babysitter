@@ -11,12 +11,11 @@ Complete reference for all Babysitter configuration options, environment variabl
 
 ---
 
-## Table of Contents
+## On this page
 
 - [Overview](#overview)
 - [Environment Variables](#environment-variables)
   - [SDK Variables](#sdk-variables)
-  - [Worker Variables](#worker-variables)
   - [Debug Variables](#debug-variables)
   - [Session Variables](#session-variables)
 - [Directory Structure](#directory-structure)
@@ -27,7 +26,7 @@ Complete reference for all Babysitter configuration options, environment variabl
   - [run.json](#runjson)
   - [inputs.json](#inputsjson)
   - [state.json](#statejson)
-  - [hooks.json](#hooksjson)
+  - [hooks.json](#hooksjson-claude-code)
 - [Hook Configuration](#hook-configuration)
   - [Hook Discovery](#hook-discovery)
   - [Hook Types](#hook-types)

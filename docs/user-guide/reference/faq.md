@@ -24,12 +24,11 @@ Still have questions? Browse the full FAQ below, or check the [Troubleshooting g
 
 ---
 
-## Table of Contents
+## On this page
 
 - [Getting Started](#getting-started)
 - [Installation and Setup](#installation-and-setup)
 - [Using Babysitter](#using-babysitter)
-- [Breakpoints and Approval](#breakpoints-and-approval)
 - [Quality Convergence](#quality-convergence)
 - [Sessions and Resumption](#sessions-and-resumption)
 - [Process Definitions](#process-definitions)
@@ -728,7 +727,7 @@ For sensitive code, consider:
    grep -i "password\|secret\|key" .a5c/runs/*/journal/*.json
    ```
 
-See: [Security Best Practices](../../../README.md#security-best-practices)
+See: [Security Guide](./security.md)
 
 ---
 

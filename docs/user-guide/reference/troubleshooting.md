@@ -10,7 +10,7 @@ This guide provides systematic troubleshooting procedures for common Babysitter 
 
 ---
 
-## Table of Contents
+## On this page
 
 - [Installation Issues](#installation-issues)
 - [Plugin Issues](#plugin-issues)

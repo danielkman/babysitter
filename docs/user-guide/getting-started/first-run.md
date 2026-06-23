@@ -10,13 +10,13 @@ In the quickstart, you built a calculator with a single command and watched Baby
 
 ---
 
-## Table of Contents
+## On this page
 
 - [The Anatomy of a Babysitter Run](#the-anatomy-of-a-babysitter-run)
 - [Understanding the Run Directory](#understanding-the-run-directory)
 - [The Event Journal Explained](#the-event-journal-explained)
 - [How Quality Convergence Works](#how-quality-convergence-works)
-- [The TDD Methodology in Action](#the-tdd-methodology-in-action)
+- [TDD Quality Convergence in Action](#tdd-quality-convergence-in-action)
 - [Configuration and Customization](#configuration-and-customization)
 - [Verifying Success](#verifying-success)
 - [Keep Practicing](#keep-practicing)

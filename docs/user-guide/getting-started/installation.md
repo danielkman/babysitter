@@ -19,7 +19,7 @@ Most people want both. Install the core CLI and the Adapters CLI first (this pag
 
 ---
 
-## Table of Contents
+## On this page
 
 - [Prerequisites Check](#prerequisites-check)
 - [Installation Methods](#installation-methods)

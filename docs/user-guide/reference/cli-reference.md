@@ -14,7 +14,7 @@ Complete reference documentation for the core `babysitter` orchestration command
 
 ---
 
-## Table of Contents
+## On this page
 
 - [Overview](#overview)
 - [Installation](#installation)

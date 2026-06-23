@@ -9,12 +9,12 @@ Comprehensive security guidelines for using Babysitter in development and produc
 
 ---
 
-## Table of Contents
+## On this page
 
 - [Overview](#overview)
 - [General Security](#general-security)
-  - [Production Setup](#production-setup)
-  - [Authentication Configuration](#authentication-configuration)
+  - [Best Practices](#best-practices)
+  - [.gitignore Configuration](#gitignore-configuration)
 - [Credential Management](#credential-management)
   - [Environment Variables](#environment-variables)
   - [Breakpoints for Sensitive Operations](#breakpoints-for-sensitive-operations)

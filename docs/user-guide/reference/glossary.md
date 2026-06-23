@@ -32,9 +32,9 @@ This glossary provides definitions for technical terms and concepts used in Baby
 
 ---
 
-## Table of Contents
+## On this page
 
-- [A](#a) | [B](#b) | [C](#c) | [D](#d) | [E](#e) | [F](#f) | [G](#g) | [H](#h) | [I](#i) | [J](#j) | [K](#k) | [L](#l) | [M](#m) | [N](#n) | [O](#o) | [P](#p) | [Q](#q) | [R](#r) | [S](#s) | [T](#t) | [U](#u) | [V](#v) | [W](#w)
+- [A](#a) | [B](#b) | [C](#c) | [D](#d) | [E](#e) | [G](#g) | [H](#h) | [I](#i) | [J](#j) | [K](#k) | [L](#l) | [M](#m) | [N](#n) | [O](#o) | [P](#p) | [Q](#q) | [R](#r) | [S](#s) | [T](#t) | [U](#u) | [V](#v) | [W](#w)
 
 ---
 
@@ -155,7 +155,7 @@ The harness-agnostic orchestration framework (v6) that enables deterministic, ev
 - Runtime CLI (`@a5c-ai/genty-platform`) - Optional runtime/orchestration commands
 - Plugin (`babysitter@a5c.ai`) - Per-harness extension package (skills, hooks, commands)
 
-**Related:** [SDK](#sdk), [Blueprint](#blueprint), [Plugin](#plugin), [Harness](#harness)
+**Related:** [SDK](#sdk-software-development-kit), [Blueprint](#blueprint), [Plugin](#plugin), [Harness](#harness)
 
 ---
 
@@ -238,7 +238,7 @@ The command-line tool for managing Babysitter runs. Provides commands for run li
 npm install -g @a5c-ai/babysitter
 ```
 
-**Related:** [SDK](#sdk)
+**Related:** [SDK](#sdk-software-development-kit)
 
 **See Also:** [CLI Reference](./cli-reference.md)
 
@@ -347,7 +347,7 @@ The JavaScript/TypeScript file and export that defines a process. Specified when
 
 **Example:** `.a5c/processes/build/process.js#buildProcess`
 
-**Related:** [Process](#process), [run:create](#runcreate)
+**Related:** [Process](#process), [run:create](./cli-reference.md)
 
 ---
 
@@ -700,7 +700,7 @@ The iterative cycle that drives run execution. Each loop iteration: runs `run:it
 iterate -> get effects -> perform effects -> post results -> repeat
 ```
 
-**Related:** [Iteration](#iteration), [run:iterate](#runiterate)
+**Related:** [Iteration](#iteration), [run:iterate](./cli-reference.md)
 
 ---
 
@@ -799,7 +799,7 @@ A unique identifier for a process type. Used when creating runs to specify which
 
 **Example:** `dev/build`, `ci/test`, `tdd/feature`
 
-**Related:** [Process](#process), [run:create](#runcreate)
+**Related:** [Process](#process), [run:create](./cli-reference.md)
 
 ---
 
@@ -871,7 +871,7 @@ The output from a completed task. Stored at `tasks/<effectId>/result.json`.
 }
 ```
 
-**Related:** [Task](#task), [task:post](#taskpost)
+**Related:** [Task](#task), [task:post](./cli-reference.md)
 
 ---
 
@@ -1208,7 +1208,7 @@ The main output data from a task result. Passed via `--value` flag when posting 
 $CLI task:post <runId> <effectId> --status ok --value output.json
 ```
 
-**Related:** [Result](#result), [task:post](#taskpost)
+**Related:** [Result](#result), [task:post](./cli-reference.md)
 
 ---
 

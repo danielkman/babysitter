@@ -332,8 +332,9 @@ For documentation platforms that use JSON configuration (e.g., Docusaurus, ViteP
 +---------------------------+
 | Home                      |
 | Getting Started      [>]  |
-| Features             [>]  |
 | Tutorials            [>]  |
+| Features             [>]  |
+| Harnesses            [>]  |
 | Reference            [>]  |
 +---------------------------+
 | Quick Links               |

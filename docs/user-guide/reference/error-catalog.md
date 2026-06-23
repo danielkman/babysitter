@@ -10,7 +10,7 @@ This catalog provides comprehensive documentation of Babysitter error messages, 
 
 ---
 
-## Table of Contents
+## On this page
 
 - [Installation Errors](#installation-errors)
 - [Plugin Errors](#plugin-errors)
