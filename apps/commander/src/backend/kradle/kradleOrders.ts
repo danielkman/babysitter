@@ -464,7 +464,11 @@ export function makeKradleOrders(
           actor: 'owner',
         };
         run('createTask/dispatch(definition)', () => client.dispatch(body));
-        return null;
+        // Return a non-null marker so the composer (Foundry) treats the submit as
+        // accepted and closes/clears. The real run id + card arrive on the next
+        // snapshot refresh (the dispatch route emits an SSE frame + the poller
+        // picks it up); returning null here made the form look broken on success.
+        return `dispatched:${definitionRef}`;
       }
       // Else fall back to dispatch BY STACK (SPEC §3.4): the resolved stack name
       // is sent as `agentStack`/`stackRef`. The live route accepts either
@@ -483,12 +487,10 @@ export function makeKradleOrders(
         actor: 'owner',
       };
       run('createTask/dispatch', () => client.dispatch(body));
-      // The new run's id arrives on the next snapshot refresh (the dispatch
-      // route emits an SSE frame + the poller picks it up). The synchronous
-      // Orders contract returns the eagerly-resolved stack-derived id is not
-      // available; the board reconciles the card on refresh. Return null
-      // synchronously (the card appears post-refresh, §6.3).
-      return null;
+      // Non-null marker so the composer accepts/clears the submit; the real run id
+      // + card reconcile on the next snapshot refresh (§6.3). Returning null here
+      // made a successful dispatch look like a failure (the form stayed open).
+      return `dispatched:${stackRef}`;
     },
     upsertStack(stack: KradleAgentStackInput) {
       // Apply the AgentStack via the generic CRD gateway (SPEC §3.1/§3.2). Apply
