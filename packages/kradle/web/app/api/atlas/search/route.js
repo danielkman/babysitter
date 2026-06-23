@@ -30,8 +30,20 @@ export async function GET(request) {
       const requests = kindList.map(async (kind) => {
         const target = new URL(`/api/v1/kinds/${encodeURIComponent(kind)}`, atlasUrl);
         target.searchParams.set('limit', browseLimit);
-        const res = await fetch(target.toString());
-        if (!res.ok) return [];
+        let res;
+        try {
+          res = await fetch(target.toString());
+        } catch (err) {
+          // Don't silently swallow connectivity/TLS failures — they make every
+          // layer look empty with no clue why (the atlas.a5c.ai default had a
+          // bad TLS cert). Surface them in logs.
+          console.error(`[atlas-search] fetch failed kind=${kind} url=${atlasUrl}: ${err.message}`);
+          return [];
+        }
+        if (!res.ok) {
+          console.error(`[atlas-search] kind=${kind} -> ${res.status} from ${atlasUrl}`);
+          return [];
+        }
         const data = await res.json();
         return (data.instances || []).map((inst) => ({
           id: inst.id,

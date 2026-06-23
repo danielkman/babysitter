@@ -394,6 +394,12 @@ spec:
             # in this web service). Defaults to the in-cluster web service DNS.
             - name: KRADLE_CALLBACK_URL
               value: {{ .Values.callbackBaseUrl | default (printf "http://%s-web.%s.svc.cluster.local" (include "kradle.fullname" .) .Release.Namespace) | quote }}
+            # Atlas catalog API base for the stack-builder graph-object selectors.
+            # The public https://atlas.a5c.ai default has a mismatched TLS cert, so
+            # every kinds/search fetch failed and the stack builder showed empty
+            # results for every layer. Point at the in-cluster atlas-webui service.
+            - name: ATLAS_BASE_URL
+              value: {{ .Values.atlasBaseUrl | default "http://atlas-webui.atlas-staging.svc.cluster.local" | quote }}
             - name: KRADLE_ORG
               value: {{ .Values.admin.org | quote }}
             - name: KRADLE_ADMIN_ORG
