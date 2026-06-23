@@ -59,9 +59,8 @@ Each row below ships now. The **harness key** is the argument to `babysitter har
 - **Install:**
   ```bash
   babysitter harness:install-plugin antigravity-cli [--workspace <path>]
-  npx --yes @a5c-ai/babysitter-antigravity install --global
-  npx --yes @a5c-ai/babysitter-antigravity install --workspace <path>
   ```
+  > Install via the SDK helper (harness key `antigravity-cli`); there is no standalone npm installer package for this harness.
 
 ### Cursor
 
@@ -84,9 +83,8 @@ Each row below ships now. The **harness key** is the argument to `babysitter har
 - **Install:**
   ```bash
   babysitter harness:install-plugin gemini-cli [--workspace <path>]
-  npx --yes @a5c-ai/babysitter-gemini install --global
-  npx --yes @a5c-ai/babysitter-gemini install --workspace <path>
   ```
+  > Install via the SDK helper (harness key `gemini-cli`); there is no standalone npm installer package for this harness.
 
 ### genty
 

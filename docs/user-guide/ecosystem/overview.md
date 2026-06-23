@@ -53,7 +53,7 @@ Everything else in the monorepo is built around that engine:
 | **genty** | `@a5c-ai/genty` + `-core` / `-runtime` / `-platform` | The unified agent product (renamed from "tula") that composes the agent stack into the single `genty` binary: agent loop, daemon/session/cost, harness integration and governance. Surfaces the internal/headless harness. | GA | [Genty overview](./genty.md) |
 | **observer-dashboard** | `@a5c-ai/babysitter-observer-dashboard` | A Next.js real-time observability dashboard that streams run/journal events over SSE and virtualizes large run histories. | GA | [Observer Dashboard overview](./observer-dashboard.md) |
 | **kradle** | `@a5c-ai/kradle` + `@a5c-ai/kradle-cli` | A Kubernetes-native Git forge runtime (Argo CD GitOps + Gitea hosting) with a per-org dispatchable assistant. | MVP | [Kradle overview](./kradle.md) |
-| **kip-sdk** | `@a5c-ai/kip-sdk` | A **spec/design-only** memory substrate (K/I/P): git-substrate, bitemporal, signed-fact property graph. **No code — Markdown spec only.** | Spec only | [kip-sdk overview](./kip-sdk.md) |
+| **kip-sdk** | no published package (spec-only); path `packages/kip-sdk` | A **spec/design-only** memory substrate (K/I/P): git-substrate, bitemporal, signed-fact property graph. **No code — Markdown spec only.** | Spec only | [kip-sdk overview](./kip-sdk.md) |
 
 > The canonical machine-readable map of public/internal packages, apps, and harness plugins lives at [Package & Plugin Map](../../package-and-plugin-map.md).
 

@@ -70,7 +70,7 @@ flowchart TB
 
     KRADLE["@a5c-ai/kradle (adjacent · MVP)<br/>K8s-native Git forge: CRDs + Argo CD + Gitea<br/>per-org dispatchable assistant<br/>kradle serve · kradle mcp"]
 
-    KIP["@a5c-ai/kip-sdk (SPEC-ONLY · not implemented)<br/>intended MEMORY SUBSTRATE<br/>git-substrate, bitemporal, signed-fact graph<br/>every component is a producer/consumer/client"]
+    KIP["kip-sdk — packages/kip-sdk (SPEC-ONLY · no published package · not implemented)<br/>intended MEMORY SUBSTRATE<br/>git-substrate, bitemporal, signed-fact graph<br/>every component is a producer/consumer/client"]
 
     PROC -->|governs| SDK
     SDK -->|reads metadata| ATLAS
@@ -123,7 +123,7 @@ flowchart TB
 
    @a5c-ai/kradle   ── (adjacent · MVP) K8s-native Git forge: CRDs + Argo CD + Gitea,
                         per-org dispatchable assistant, `kradle serve` + `kradle mcp`
-   @a5c-ai/kip-sdk  ── (SPEC-ONLY · not implemented) intended MEMORY SUBSTRATE;
+   kip-sdk          ── packages/kip-sdk (SPEC-ONLY · no published package · not implemented) intended MEMORY SUBSTRATE;
                         every other component is a producer/consumer/client of its seams
 ```
 

@@ -20,7 +20,7 @@ The examples assume you are standing in the repo root (or a project that already
 
 > **Tip:** All CLI paths in this document are rendered with POSIX separators (matching the CLI output convention) even when running on Windows.
 
-> **Related references:** For the full `babysitter` command surface see the [CLI Reference](user-guide/reference/cli-reference.md). For driving a harness directly from your shell (host-side), see the [Adapters CLI Reference](user-guide/reference/adapters-cli.md).
+> **Related references:** For the full `babysitter` command surface see the [CLI Reference](pathname:///docs/user-guide/reference/cli-reference). For driving a harness directly from your shell (host-side), see the [Adapters CLI Reference](pathname:///docs/user-guide/reference/adapters-cli).
 
 ---
 
@@ -190,7 +190,7 @@ Instead of `run:continue` (removed), loop `run:iterate`, execute pending effects
 
 ## 7. Run a harness directly with the host-side `adapters` CLI
 
-The `babysitter` examples above drive an orchestration run. When you just want to invoke a supported harness directly from your shell, use the host-side `adapters` CLI (`@a5c-ai/adapters-cli`). It is documented in full in the [Adapters CLI Reference](user-guide/reference/adapters-cli.md):
+The `babysitter` examples above drive an orchestration run. When you just want to invoke a supported harness directly from your shell, use the host-side `adapters` CLI (`@a5c-ai/adapters-cli`). It is documented in full in the [Adapters CLI Reference](pathname:///docs/user-guide/reference/adapters-cli):
 
 ```bash
 adapters doctor

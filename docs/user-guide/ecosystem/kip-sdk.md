@@ -9,7 +9,7 @@ last_updated: 2026-06-23
 
 # kip-sdk — memory substrate (SPEC / DESIGN ONLY)
 
-**Package:** `@a5c-ai/kip-sdk` · **Maturity:** Spec only — **not implemented**
+**Package:** no published package (spec-only) · **Path:** `packages/kip-sdk` · **Maturity:** Spec only — **not implemented**
 
 > **This is the most important thing to know about kip-sdk:** it is **spec/design only**. The package is **entirely Markdown** — there is **no `package.json`, no `src/`, and no shipping code**. You cannot install or run it. Treat every kip "feature" described below as **design intent, not a capability you have today**.
 
