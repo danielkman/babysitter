@@ -16,6 +16,7 @@ kradle's **control plane is real and fairly complete**; the **media plane is alm
 | # | Gap | State | Seam / evidence | Notes |
 |---|---|---|---|---|
 | **G0** | **Agent→sidecar socket client at runtime** | **LACKS** | MCP meeting tools only *return a descriptor* `{meetingRef,roomId,socketPath,command}` (`kradle/cli/src/mcp-server.js:709-733`); nothing writes it to `/tmp/jitsi-agent.sock`. Only writer is `jitsi-agent-sidecar/bin/graceful-leave.mjs:6` (a `disconnect` on preStop). | **The agent-reasons→command→sidecar loop is broken even for text chat.** Build the socket-writer (new `bin/agent-ipc-client.mjs` or in the adapters wrapper) that connects to `JITSI_AGENT_SOCKET`, writes the descriptor's `command` NDJSON, and streams inbound events back. **Blocks G-chat, G-tts, and every video tool.** |
+| **G0-RT** | **Agent-Job runtime substrate** | **HAS (board) / UNPROVEN (meeting-sidecar)** | Main container runs `node packages/adapters/cli/kradle-agent-entrypoint.mjs` with `KRADLE_AGENT_IMAGE` (`adapters-client.js:491-496`) + emptyDir/PVC workspace (`:467-474`); board→agent E2E verified live (memory `project_dispatch_emptydir_agentimage_task`; supersedes the older "no Job ever ran"). Meeting dispatch attaches the sidecar as a 2nd container + `agent-socket` emptyDir (`:477,507`). | **Reconciled:** the Job runtime now WORKS for board/text dispatch — it is NOT the bottleneck. Residual: (a) the sidecar uses a **separate image** `kradle/jitsi-agent-sidecar:latest` (`:123`) that must be built/published; (b) **no live E2E of the meeting-sidecar dispatch** (2nd container actually starting + joining); (c) the sidecar's main command isn't the agent entrypoint, so G0 is how the agent reaches it. Verify the sidecar container boots in a real dispatch before relying on the media plane. |
 
 ---
 
@@ -87,6 +88,7 @@ kradle's **control plane is real and fairly complete**; the **media plane is alm
 
 ## 7. Recommended build order (dependency-aware)
 
+0. **G0-RT** — confirm the meeting-sidecar dispatch actually boots (the Job runtime already works for board dispatch; build/publish `kradle/jitsi-agent-sidecar:latest` and prove the 2nd container joins a room). Precondition for everything below.
 1. **G0** — the agent↔sidecar socket client (unblocks everything; makes today's text chat actually work).
 2. **G3 + G5 + G-chat** — real audio out (TTS) + audio in (STT) + chat events → a working **voice** agent in a meeting (the [voice stack](./realtime-voice-agent-stack.md) MVP).
 3. **G1 + G2 + G4** — avatar render + video-track publish + lipsync → a working **talking-avatar** agent.

@@ -43,5 +43,8 @@ describe("atlas catalog consumer migration", () => {
       .sort();
 
     expect(staleReferences).toEqual([]);
-  });
+    // This test does a synchronous recursive readdir + readFile over all of
+    // packages/**; on a loaded machine the walk exceeds the 5s default and
+    // flakes. Give the I/O-bound scan headroom (it is not a latency assertion).
+  }, 30_000);
 });
