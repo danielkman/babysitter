@@ -168,6 +168,14 @@ test('login usernames are normalized to a valid RFC 1123 resource name (regressi
   const cookie = createSessionCookie(cfg, { provider: 'github', subject: 'gh-42', username: 'Benihakak' });
   const cookieValue = cookie.match(/kradle_session=([^;]+)/)?.[1];
   assert.equal(parseSessionCookie(cfg, cookieValue).user, mapped.user.metadata.name);
+
+  // Team names share the constraint; a mixed-case name normalizes for metadata.name
+  // while displayName preserves the original. (Current callers use 'maintainers'.)
+  const team = createTeamResource({ name: 'Platform Eng', namespace: 'kradle-test' });
+  assert.match(team.metadata.name, RFC1123);
+  assert.equal(team.metadata.name, 'platform-eng');
+  assert.equal(team.spec.displayName, 'Platform Eng');
+  assert.equal(createTeamResource({ name: 'maintainers' }).metadata.name, 'maintainers'); // existing callers unchanged
 });
 
 test('session cookies parse into the signed-in Kradle user', () => {

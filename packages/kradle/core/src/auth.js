@@ -252,7 +252,9 @@ export function createInviteResource({ email, role = 'member', teams = [], invit
 }
 
 export function createTeamResource({ name, displayName = name, members = [], maintainers = [], repositoryGrants = [], namespace = 'kradle-org-default', organizationRef = 'default' }) {
-  return createResource('Team', { name, namespace }, { organizationRef, displayName, members, maintainers, repositoryGrants }, { phase: 'Active', memberCount: members.length });
+  // metadata.name must be a valid RFC 1123 subdomain (same constraint that broke
+  // User login for uppercase names); preserve the original for displayName.
+  return createResource('Team', { name: normalizeName(name), namespace }, { organizationRef, displayName, members, maintainers, repositoryGrants }, { phase: 'Active', memberCount: members.length });
 }
 
 export function createAuthProviderResources(config = createAuthProviderConfig(), namespace = 'kradle-org-default', organizationRef = 'default') {
