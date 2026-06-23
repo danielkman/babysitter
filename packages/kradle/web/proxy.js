@@ -14,7 +14,10 @@ const PUBLIC_PATH_PATTERNS = [
 ];
 
 function applySecurityHeaders(response) {
-  response.headers.set('X-Frame-Options', 'DENY');
+  // SAMEORIGIN (not DENY) so same-origin previews work — e.g. the assistant
+  // "generate" feature framing generated artifacts/widgets/views served by this
+  // app. DENY made those iframes show "refused to connect".
+  response.headers.set('X-Frame-Options', 'SAMEORIGIN');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
