@@ -68,7 +68,7 @@ export const POST = withAuth(async (request, { params }) => {
       }
     }
 
-    const response = await runtime.chat(chatSession.id, userMessage, { controller });
+    const response = await runtime.chat(chatSession.id, userMessage, { controller, org });
 
     // PostCompletion hook — can modify the response
     if (matchedVm && response?.message) {

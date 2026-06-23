@@ -65,6 +65,7 @@ export const KRADLE_RESOURCES = [
   { kind: 'KubeVelaWorkflow', plural: 'workflows', group: KUBEVELA_API_GROUP, namespaced: true, storage: 'kubevela' },
   { kind: 'KubeVelaResourceTracker', plural: 'resourcetrackers', group: KUBEVELA_API_GROUP, namespaced: false, storage: 'kubevela' },
   { kind: 'View', plural: 'views', namespaced: true, storage: 'etcd' },
+  { kind: 'KradleGeneratedView', plural: 'kradlegeneratedviews', namespaced: true, storage: 'etcd' },
   { kind: 'Selector', plural: 'selectors', namespaced: true, storage: 'etcd' },
   // Agent orchestration CRDs (etcd-stored, kradle.a5c.ai group)
   { kind: 'AgentPersona', plural: 'agentpersonas', namespaced: true, storage: 'etcd' },
