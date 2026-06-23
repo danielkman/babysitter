@@ -213,12 +213,17 @@ export function parseSessionCookie(config, cookieValue, options = {}) {
 }
 
 export function mapLoginProfileToKradleIdentity({ provider = 'sso', subject, email, displayName, username, groups = [], teams = [], admin = false, namespace = 'kradle-org-default', organizationRef = 'default' }) {
-  const userName = username || normalizeName(email || subject || displayName || 'user');
+  // The raw username (e.g. an OAuth login like "Benihakak") is preserved for
+  // human-facing display, but the resource NAME must be a valid RFC 1123 subdomain
+  // (lowercase, alphanumeric/-) or `kubectl apply` rejects the User/IdentityMapping
+  // and login fails. Always normalize the name; never pass a raw username through.
+  const rawName = username || email || subject || displayName || 'user';
+  const userName = normalizeName(rawName);
   const kradleGroups = [...new Set(['kradle:users', admin ? 'kradle:platform-engineers' : 'kradle:developers', ...groups])];
   const identity = mapOidcIdentity({ subject, email, groups: kradleGroups });
   const user = createResource('User', { name: userName, namespace, labels: { role: admin ? 'admin' : 'member' } }, {
     organizationRef,
-    displayName: displayName || userName,
+    displayName: displayName || rawName,
     email,
     username: userName,
     teams,

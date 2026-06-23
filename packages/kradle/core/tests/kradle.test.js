@@ -145,6 +145,24 @@ test('Kradle auth resources map sign-in, teams, invites, and repository identiti
   assert.deepEqual(plan.permissions.map((entry) => entry.action), ['sync-repository-permission']);
 });
 
+test('login usernames are normalized to a valid RFC 1123 resource name (regression: uppercase OAuth login)', () => {
+  // Regression: an OAuth login like "Benihakak" was used verbatim as the User
+  // CRD metadata.name, which K8s rejects ("must be a lowercase RFC 1123 subdomain"),
+  // failing login. The resource name must always be normalized; the original is
+  // preserved for display.
+  const RFC1123 = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/;
+  const mapped = mapLoginProfileToKradleIdentity({ provider: 'github', subject: 'gh-42', email: 'beni@example.com', displayName: 'Beni Hakak', username: 'Benihakak', namespace: 'kradle-test' });
+  assert.equal(mapped.user.metadata.name, 'benihakak');
+  assert.match(mapped.user.metadata.name, RFC1123);
+  assert.match(mapped.mapping.metadata.name, RFC1123); // `${provider}-${userName}` must also be valid
+  assert.equal(mapped.user.spec.displayName, 'Beni Hakak'); // human-facing name preserved
+
+  // A username with spaces/symbols and no displayName still yields a valid name.
+  const messy = mapLoginProfileToKradleIdentity({ provider: 'sso', subject: 's', username: 'Beni Hakak!', namespace: 'kradle-test' });
+  assert.match(messy.user.metadata.name, RFC1123);
+  assert.equal(messy.user.spec.displayName, 'Beni Hakak!');
+});
+
 test('session cookies parse into the signed-in Kradle user', () => {
   const config = createAuthProviderConfig({ KRADLE_AUTH_COOKIE_NAME: 'kradle_session' });
   const cookie = createSessionCookie(config, { provider: 'sso', subject: 'alice-subject', username: 'alice' });
