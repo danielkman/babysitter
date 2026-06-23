@@ -10,6 +10,10 @@ Last refreshed: 2026-06-10
 
 ---
 
+> **Runs on the Adapters runtime:** These multi-phase workflows are harness-agnostic. They execute on Babysitter's [Adapters](../features/adapters.md) runtime, so the same [process definitions](../features/process-definitions.md) run unchanged across every supported harness. The `/babysitter:call` token shown below is Claude Code's; substitute your harness's token as needed.
+
+---
+
 ## Learning Objectives
 
 By the end of this tutorial, you will be able to:
@@ -47,7 +51,7 @@ This tutorial involves team collaboration breakpoints. How they work depends on 
 
 **Interactive Mode (Claude Code)**: Breakpoints are handled directly in the chat. Great for single-developer workflows.
 
-**Non-Interactive Mode (Team Collaboration)**: For team approval workflows, breakpoints are disabled.
+**Non-Interactive Mode (Team Collaboration)**: For team approval workflows, breakpoints are routed to the durable Breakpoints Adapter backend / UI so approvals can happen out of session.
 
 Choose the mode that fits your workflow. For learning, interactive mode (no setup) is easiest.
 
@@ -1312,31 +1316,27 @@ QUALITY TARGET MET! Score: 89/85
 After the process completes, examine the comprehensive audit trail:
 
 ```bash
-# View the journal
-cat .a5c/runs/<runId>/journal/journal.jsonl | jq -s '.'
+# View the journal (each event is its own file)
+cat .a5c/runs/<runId>/journal/*.json | jq -s '.'
 ```
 
-**Key events to look for:**
+**Key events to look for** (breakpoints surface as `EFFECT_REQUESTED` with `kind: "breakpoint"`, resolved via `EFFECT_RESOLVED`; quality scoring is application-level and has no dedicated event type):
 
 ```json
 [
-  {"type": "RUN_STARTED", "inputs": {...}},
-  {"type": "TASK_COMPLETED", "taskId": "codebase-analysis-001"},
-  {"type": "TASK_COMPLETED", "taskId": "requirements-analysis-001"},
-  {"type": "BREAKPOINT_REQUESTED", "title": "Research Review"},
-  {"type": "BREAKPOINT_APPROVED", "approver": "tech-lead"},
-  {"type": "TASK_COMPLETED", "taskId": "technical-spec-001"},
-  {"type": "TASK_COMPLETED", "taskId": "implementation-plan-001"},
-  {"type": "BREAKPOINT_APPROVED", "title": "Plan Approval"},
-  {"type": "ITERATION_STARTED", "iteration": 1},
-  {"type": "QUALITY_SCORE", "iteration": 1, "score": 62},
-  {"type": "ITERATION_STARTED", "iteration": 2},
-  {"type": "QUALITY_SCORE", "iteration": 2, "score": 78},
-  {"type": "ITERATION_STARTED", "iteration": 3},
-  {"type": "QUALITY_SCORE", "iteration": 3, "score": 89},
-  {"type": "BREAKPOINT_APPROVED", "title": "Final Approval"},
-  {"type": "TASK_COMPLETED", "taskId": "deploy-001"},
-  {"type": "RUN_COMPLETED", "status": "success"}
+  {"type": "RUN_CREATED", "data": {"inputs": {}}},
+  {"type": "EFFECT_RESOLVED", "data": {"effectId": "codebase-analysis-001", "status": "success"}},
+  {"type": "EFFECT_RESOLVED", "data": {"effectId": "requirements-analysis-001", "status": "success"}},
+  {"type": "EFFECT_REQUESTED", "data": {"effectId": "bp-research", "kind": "breakpoint", "title": "Research Review"}},
+  {"type": "EFFECT_RESOLVED", "data": {"effectId": "bp-research", "status": "approved", "approver": "tech-lead"}},
+  {"type": "EFFECT_RESOLVED", "data": {"effectId": "technical-spec-001", "status": "success"}},
+  {"type": "EFFECT_RESOLVED", "data": {"effectId": "implementation-plan-001", "status": "success"}},
+  {"type": "EFFECT_REQUESTED", "data": {"effectId": "bp-plan", "kind": "breakpoint", "title": "Plan Approval"}},
+  {"type": "EFFECT_RESOLVED", "data": {"effectId": "bp-plan", "status": "approved"}},
+  {"type": "EFFECT_REQUESTED", "data": {"effectId": "bp-final", "kind": "breakpoint", "title": "Final Approval"}},
+  {"type": "EFFECT_RESOLVED", "data": {"effectId": "bp-final", "status": "approved"}},
+  {"type": "EFFECT_RESOLVED", "data": {"effectId": "deploy-001", "status": "success"}},
+  {"type": "RUN_COMPLETED", "data": {"status": "success"}}
 ]
 ```
 

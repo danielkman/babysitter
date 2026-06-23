@@ -48,6 +48,8 @@ Babysitter implements a **Two-Loops Control Plane** architecture that combines:
 
 This hybrid approach delivers the best of both worlds: the reliability of deterministic systems with the flexibility of AI reasoning.
 
+> **Where the loops run (v6):** The symbolic orchestration loop runs on the harness-agnostic **[Adapters](./adapters.md) runtime**, not on any single harness's lifecycle. The orchestration loop is kept alive turn-to-turn by a continuation mechanism that **varies by harness** — Claude Code uses a `Stop` hook, others use their own equivalents — which the Hooks Adapter normalizes into one contract. See [Hooks](./hooks.md) for the per-harness continuation models. The two-loops concept is unchanged; it simply now sits on top of Adapters.
+
 ### Why Two Loops?
 
 | Single-Loop AI | Two-Loops Hybrid |
@@ -131,7 +133,7 @@ const gateResult = await ctx.task(securityGateTask, {
 
 ### Loop 1: Orchestration Loop (Symbolic)
 
-A process stepper that progresses a run through explicit stages.
+A process stepper that progresses a run through explicit stages. It runs on the harness-agnostic [Adapters](./adapters.md) runtime; the mechanism that advances it each turn depends on the harness (see [Hooks](./hooks.md)).
 
 **Typical Cycle:**
 
@@ -551,6 +553,8 @@ Feedback-driven quality loop:
 - [Process Definitions](./process-definitions.md) - Creating your own processes
 - [Journal System](./journal-system.md) - Event sourcing and replay
 - [Breakpoints](./breakpoints.md) - Human-in-the-loop approval
+- [Adapters](./adapters.md) - The harness-agnostic runtime the orchestration loop runs on
+- [Hooks](./hooks.md) - Per-harness continuation models that advance the loop
 
 ---
 

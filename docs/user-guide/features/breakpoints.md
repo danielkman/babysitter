@@ -15,7 +15,7 @@
 - The AI makes changes → pauses → you check the changes → approve → then it deploys
 - You stay in control of important decisions
 
-**How it works:** When a breakpoint is reached, Claude asks you directly in the chat using the `AskUserQuestion` tool. You respond, and the workflow continues.
+**How it works:** When a breakpoint is reached, the harness asks you directly. In a Claude Code session this uses the `AskUserQuestion` tool in the chat; the in-session prompt mechanism varies by harness. You respond, and the workflow continues. For approvals that need to outlive the session — or happen somewhere other than the chat — the **Breakpoints Adapter** can route the question to a durable backend (see below).
 
 **No setup required!** Breakpoints work out of the box in Claude Code sessions.
 
@@ -40,6 +40,19 @@ When running Babysitter within a Claude Code session, breakpoints are handled **
 - Immediate, real-time interaction
 - Context preserved in conversation
 - Simple API - just call `ctx.breakpoint()`
+
+### The Breakpoints Adapter (v6)
+
+In-chat approval is the simplest path, but v6 introduces the **Breakpoints Adapter** — the durable, harness-agnostic home for human-in-the-loop approvals. It is part of the [Adapters](./adapters.md) runtime and **replaces the legacy `breakpoints-pro` package** (`breakpoints-pro` is **DEPRECATED**; migrate to the Breakpoints Adapter).
+
+Key properties:
+
+- **Serverless-durable**: A pending approval survives session timeouts, restarts, and handoffs. The breakpoint state lives in the journal and the configured backend, not only in the live chat.
+- **Pluggable backends**: Route approvals to a **GitHub Issues** backend (approve by commenting on an issue) or a **server** backend, in addition to in-session prompting. Pick the backend that matches where your reviewers already work.
+- **"Proven" cryptographic signing**: Approvals are cryptographically signed for tamper-evidence, so an audit trail of who approved what can be verified rather than merely trusted. See [Security](../reference/security.md).
+- **MCP server**: The adapter exposes an MCP server so external tools and agents can list, present, and resolve pending breakpoints programmatically.
+
+The `ctx.breakpoint()` API is unchanged regardless of backend — see the [Glossary](../reference/glossary.md) for terminology.
 
 ### Why Use Breakpoints
 
@@ -631,6 +644,9 @@ The breakpoint state is preserved in the journal and will be restored on resume.
 - [Run Resumption](./run-resumption.md) - Resume workflows after breakpoint approval
 - [Journal System](./journal-system.md) - Understand how breakpoint events are recorded
 - [Best Practices](./best-practices.md) - Patterns for strategic breakpoint placement and workflow design
+- [Adapters](./adapters.md) - The runtime the Breakpoints Adapter is part of
+- [Security](../reference/security.md) - Cryptographic signing and tamper-evidence for approvals
+- [Glossary](../reference/glossary.md) - Breakpoints Adapter and related terminology
 
 ---
 

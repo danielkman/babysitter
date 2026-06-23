@@ -9,11 +9,15 @@ category: landing
 
 **Welcome to Babysitter!** This guide will help you go from zero to running your first AI-orchestrated development workflow in just a few minutes.
 
+> **Source-of-truth precedence:** When docs disagree, the reference docs win. The [CLI Reference](../reference/cli-reference.md), [Adapters CLI](../reference/adapters-cli.md), and [Configuration Reference](../reference/configuration.md) are authoritative over tutorials, quickstarts, and archived material. If a tutorial conflicts with a reference page, trust the reference.
+
+> **Works on any harness:** Babysitter is harness-agnostic. It runs across 12 supported AI coding harnesses, not just Claude Code. The examples below use Claude Code's `/babysitter:call` command, but the same workflow runs on every supported harness with its own command token. See the [Install Matrix](../harnesses/install-matrix.md) and the [Adapters guide](../features/adapters.md) for details.
+
 ---
 
 ## 30-Second Overview
 
-**Babysitter = Claude Code + autopilot + quality control**
+**Babysitter = your AI coding harness + autopilot + quality control**
 
 Instead of:
 ```
@@ -44,12 +48,13 @@ Babysitter handles the iteration, testing, and quality checks automatically. Com
 | **Thorough** (want to understand first) | Keep reading this page, then [Installation](./installation.md) |
 | **Already installed** | [First Run Deep Dive](./first-run.md) to understand what happened |
 | **Coming back** | Jump to the [Tutorials](../tutorials/) for deeper projects |
+| **On a different harness** | Check the [Install Matrix](../harnesses/install-matrix.md) for your harness's setup and command token |
 
 ---
 
 ## What is Babysitter?
 
-Babysitter is an **orchestration framework** for Claude Code that transforms how you work with AI-assisted development. Instead of manually iterating with Claude until your code is "good enough," Babysitter automates the entire process with:
+Babysitter is an **orchestration framework** for AI coding harnesses that transforms how you work with AI-assisted development. It runs across 12 supported harnesses (see the [Install Matrix](../harnesses/install-matrix.md)) via its harness-agnostic [Adapters](../features/adapters.md) layer. Instead of manually iterating with your harness until your code is "good enough," Babysitter automates the entire process with:
 
 - **Automatic quality convergence** - Set a quality target (like 85%), and Babysitter iterates until it's achieved
 - **Session persistence** - Close your laptop, come back tomorrow, and pick up exactly where you left off
@@ -168,8 +173,10 @@ If any command fails, install the missing software before continuing.
 
 Getting Babysitter running involves three steps:
 
-1. **Install the Babysitter plugin** (via Claude Code's plugin system)
-2. **Install the CLI packages** (npm global install for orchestration commands)
+1. **Install the harness plugin** for your AI coding harness (each supported harness has its own plugin — Claude Code uses its plugin system; see the [Install Matrix](../harnesses/install-matrix.md) for the others)
+2. **Install the CLI packages** (npm global install for the core `babysitter` CLI and the host-side `adapters` CLI)
+3. **Verify the installation** (run `babysitter --version` and `adapters doctor`)
+
 **Estimated time:** 5-10 minutes
 
 Ready? Head to the [Installation Guide](./installation.md) for step-by-step instructions.
@@ -225,12 +232,12 @@ Everything logged to .a5c/runs/<runId>/journal/
 
 ### The Magic: Event-Sourced Persistence
 
-Every action Babysitter takes is recorded as an event in a journal:
+Every action Babysitter takes is recorded as an event, one file per event under `journal/`:
 
-```jsonl
-{"type":"RUN_STARTED","runId":"01KFFTSF8TK8C9GT3YM9QYQ6WG","timestamp":"2026-01-25T10:30:00Z"}
-{"type":"TASK_STARTED","taskId":"research-001","timestamp":"2026-01-25T10:30:01Z"}
-{"type":"TASK_COMPLETED","taskId":"research-001","result":{...},"timestamp":"2026-01-25T10:30:45Z"}
+```json
+{"type":"RUN_CREATED","recordedAt":"2026-01-25T10:30:00Z","data":{"runId":"01KFFTSF8TK8C9GT3YM9QYQ6WG"}}
+{"type":"EFFECT_REQUESTED","recordedAt":"2026-01-25T10:30:01Z","data":{"effectId":"research-001"}}
+{"type":"EFFECT_RESOLVED","recordedAt":"2026-01-25T10:30:45Z","data":{"effectId":"research-001","status":"success"}}
 ```
 
 This means:

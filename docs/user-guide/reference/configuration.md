@@ -1,9 +1,11 @@
 # Babysitter Configuration Reference
 
-**Version:** 1.0
-**Last Updated:** 2026-01-25
+**Version:** 5.1.0 (v6)
+**Last Updated:** 2026-06-22
 
 Complete reference for all Babysitter configuration options, environment variables, file paths, and settings.
+
+> **In plain English:** the variables and paths below work the same on every supported harness. v6 standardized session identification on the harness-agnostic `AGENT_SESSION_ID`, removed the `--plugin-root` flag, and made session resolution PID-scoped. Deprecated keys are marked below.
 
 ---
 
@@ -125,24 +127,35 @@ babysitter run:iterate run-123
 
 ### Session Variables
 
-These variables are set by Claude Code and used by the plugin.
+These variables are set by the harness and used by the plugin. v6 uses **harness-agnostic** names so the same hooks work across all 12 supported harnesses.
 
 | Variable | Description | Set By |
 |----------|-------------|--------|
-| `AGENT_SESSION_ID` | Cross-harness session identifier (written to `CLAUDE_ENV_FILE` by session-start hook) | Babysitter |
-| `CLAUDE_PLUGIN_ROOT` | Plugin installation directory | Claude Code |
-| `CLAUDE_ENV_FILE` | Path to environment persistence file | Claude Code |
+| `AGENT_SESSION_ID` | Current harness session identifier | The active harness |
+| `BABYSITTER_PLUGIN_ROOT` | Plugin installation directory (injected into hooks by the runtime) | The runtime |
+| `BABYSITTER_ENV_FILE` | Path to environment persistence file | The active harness |
+| `BABYSITTER_TRUST_ENV_SESSION` | Opt back into legacy env-first session resolution (`1` to enable) | You (escape hatch) |
 
 These are automatically available in hooks and skills. Use them for session isolation and state management.
 
 ```bash
 # In a hook script
 echo "Session: $AGENT_SESSION_ID"
-echo "Plugin root: $CLAUDE_PLUGIN_ROOT"
+echo "Plugin root: $BABYSITTER_PLUGIN_ROOT"
 
 # State file path pattern
 STATE_FILE="${BABYSITTER_STATE_DIR:-$HOME/.a5c/state}/${AGENT_SESSION_ID}.md"
 ```
+
+#### Session Resolution (v6)
+
+Session resolution is now **PID-scoped**: the active session is resolved from PID-scoped session markers rather than inheriting blindly from the environment. This prevents one shell's session ID from leaking into another. If you need the legacy env-first behavior (for example, in a wrapper that deliberately exports a session ID), set:
+
+```bash
+export BABYSITTER_TRUST_ENV_SESSION=1
+```
+
+> **Deprecated (do not use as canonical):** `CLAUDE_SESSION_ID` → `AGENT_SESSION_ID`; `BABYSITTER_SESSION_ID` → `AGENT_SESSION_ID`. The `--plugin-root` flag and the `CLAUDE_PLUGIN_ROOT` variable are **gone** — plugin-root resolution is handled automatically by the runtime, which injects `BABYSITTER_PLUGIN_ROOT` into hooks for you. It is not a variable you set. See the [Migration Guide](../getting-started/migration.md).
 
 ---
 
@@ -321,11 +334,11 @@ Derived state cache. Rebuilt from journal if missing.
 
 ---
 
-### hooks.json
+### hooks.json (Claude Code)
 
-Hook registration for Claude Code integration.
+Hook registration for the Claude Code harness. Other harnesses register continuation hooks via their own manifests (`gemini-extension.json`, the openclaw daemon, ACP for Hermes, and so on) — see [Hooks](../features/hooks.md) for the per-harness continuation models.
 
-**Location:** generated from `plugins/babysitter-unified/plugin.json`
+**Location (Claude Code):** generated from `plugins/babysitter-unified/plugin.json`
 
 **Schema:**
 ```json
@@ -336,7 +349,7 @@ Hook registration for Claude Code integration.
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh"
+            "command": "${BABYSITTER_PLUGIN_ROOT}/hooks/session-start.sh"
           }
         ]
       }
@@ -346,7 +359,7 @@ Hook registration for Claude Code integration.
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/stop.sh"
+            "command": "${BABYSITTER_PLUGIN_ROOT}/hooks/stop.sh"
           }
         ]
       }
@@ -355,11 +368,13 @@ Hook registration for Claude Code integration.
 }
 ```
 
-**Hook Events:**
-- `SessionStart` - When Claude Code session starts
-- `Stop` - When Claude tries to exit
+**Hook Events (Claude Code):**
+- `SessionStart` - When the Claude Code session starts
+- `Stop` - When Claude tries to exit (drives the loop on Claude Code only)
 - `PreToolUse` - Before tool invocation
 - `PostToolUse` - After tool invocation
+
+> The `Stop`-driven loop is **specific to Claude Code**. Do not assume it on AfterAgent (Gemini/antigravity), daemon (openclaw), ACP (Hermes), or session-idle (opencode) harnesses.
 
 ---
 
@@ -390,12 +405,14 @@ All executable files (`.sh`) in the hook directory are executed in lexicographic
 | `on-task-complete` | After task execution | Cleanup, metrics |
 | `on-breakpoint` | Breakpoint created | Notifications |
 
-#### Claude Code Hooks
+#### Harness Continuation Hooks (vary by harness)
 
-| Hook | Trigger | Purpose |
+The hooks that drive the loop turn-to-turn differ per harness. The Claude Code set is shown below; see [Hooks](../features/hooks.md) for the full per-harness table (AfterAgent, daemon, ACP, session-idle, thin-skill aliases).
+
+| Hook (Claude Code) | Trigger | Purpose |
 |------|---------|---------|
 | `SessionStart` | Session begins | Session setup |
-| `Stop` | Exit attempt | In-session loop control |
+| `Stop` | Exit attempt | In-session loop control (Claude Code only) |
 | `PreToolUse` | Before tool call | Validation |
 | `PostToolUse` | After tool call | Logging |
 

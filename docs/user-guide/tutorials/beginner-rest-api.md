@@ -9,6 +9,10 @@
 
 ---
 
+> **Works on any harness:** This tutorial uses Claude Code's `/babysitter:call` command token. Babysitter is harness-agnostic, so the exact same flow works on every supported harness using its own in-session token (for example, `$babysitter:call` on Codex, `$call` on Cursor/Copilot). See the [Install Matrix](../harnesses/install-matrix.md) for setup per harness and the [Slash Commands reference](../reference/slash-commands.md) for the right token.
+
+---
+
 ## Learning Objectives
 
 By the end of this tutorial, you will be able to:
@@ -56,7 +60,7 @@ Babysitter has two modes for handling breakpoints (approval prompts):
 
 1. **Interactive Mode (Claude Code)**: When running in Claude Code, breakpoints are handled directly in the chat - Claude asks you questions and you respond. **No setup required!**
 
-2. **Non-Interactive Mode**: For CI/CD or headless automation, breakpoints are disabled.
+2. **Non-Interactive Mode**: For CI/CD or headless automation, breakpoints are routed to the durable Breakpoints Adapter backend / UI rather than the chat (they are not disabled).
 
 **For this tutorial, we'll use interactive mode** - just respond to Claude's questions in the chat. No additional service needed!
 
@@ -396,8 +400,10 @@ task-api-tutorial/
     runs/
       01KFFTSF8TK8C9GT3YM9QYQ6WG/
         journal/
-          journal.jsonl
-        state.json
+          000001.<ulid>.json   # one file per event
+          000002.<ulid>.json
+        state/
+          state.json
         tasks/
   src/
     app.js           # Express application setup
@@ -534,25 +540,19 @@ One of Babysitter's most powerful features is its **event-sourced journal**. Thi
 Let's examine it:
 
 ```bash
-# View the journal (replace with your actual run ID)
-cat .a5c/runs/01KFFTSF8TK8C9GT3YM9QYQ6WG/journal/journal.jsonl | head -20
+# View the journal (replace with your actual run ID); each event is its own file
+cat .a5c/runs/01KFFTSF8TK8C9GT3YM9QYQ6WG/journal/*.json | jq .
 ```
 
-**What you should see:**
+**What you should see** (each file holds one event; breakpoints surface as effects):
 
 ```json
-{"type":"RUN_STARTED","timestamp":"2026-01-25T14:30:12.445Z","runId":"01KFFTSF8TK8C9GT3YM9QYQ6WG","inputs":{...}}
-{"type":"ITERATION_STARTED","timestamp":"2026-01-25T14:30:12.567Z","iteration":1}
-{"type":"TASK_STARTED","timestamp":"2026-01-25T14:30:13.123Z","taskId":"research-001","taskType":"agent"}
-{"type":"TASK_COMPLETED","timestamp":"2026-01-25T14:30:45.789Z","taskId":"research-001","result":{"status":"success"}}
-{"type":"TASK_STARTED","timestamp":"2026-01-25T14:30:46.001Z","taskId":"specs-001","taskType":"agent"}
-...
-{"type":"BREAKPOINT_REQUESTED","timestamp":"2026-01-25T14:31:12.234Z","breakpointId":"bp-001","question":"Review and approve specifications?"}
-{"type":"BREAKPOINT_APPROVED","timestamp":"2026-01-25T14:31:45.123Z","breakpointId":"bp-001"}
-...
-{"type":"QUALITY_SCORE","timestamp":"2026-01-25T14:33:23.456Z","iteration":1,"score":62}
-{"type":"QUALITY_SCORE","timestamp":"2026-01-25T14:34:44.789Z","iteration":2,"score":88}
-{"type":"RUN_COMPLETED","timestamp":"2026-01-25T14:34:44.890Z","status":"success"}
+{"type":"RUN_CREATED","recordedAt":"2026-01-25T14:30:12.445Z","data":{"runId":"01KFFTSF8TK8C9GT3YM9QYQ6WG","inputs":{}}}
+{"type":"EFFECT_REQUESTED","recordedAt":"2026-01-25T14:30:13.123Z","data":{"effectId":"research-001","kind":"agent"}}
+{"type":"EFFECT_RESOLVED","recordedAt":"2026-01-25T14:30:45.789Z","data":{"effectId":"research-001","status":"success"}}
+{"type":"EFFECT_REQUESTED","recordedAt":"2026-01-25T14:31:12.234Z","data":{"effectId":"bp-001","kind":"breakpoint","question":"Review and approve specifications?"}}
+{"type":"EFFECT_RESOLVED","recordedAt":"2026-01-25T14:31:45.123Z","data":{"effectId":"bp-001","status":"approved"}}
+{"type":"RUN_COMPLETED","recordedAt":"2026-01-25T14:34:44.890Z","data":{"status":"success"}}
 ```
 
 > **Why the Journal Matters:**
@@ -723,7 +723,7 @@ claude plugin enable --scope user babysitter@a5c.ai
 3. If the session timed out, resume with `/babysitter:call resume`
 
 **Solution (Non-Interactive Mode):**
-1. Breakpoints are disabled in non-interactive mode
+1. In non-interactive mode, breakpoints are routed to the durable Breakpoints Adapter backend / UI (not disabled)
 
 ### Issue: "Quality target never reached"
 

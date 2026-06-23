@@ -20,6 +20,8 @@ Every time the AI does something - writes code, runs tests, asks for approval - 
 
 **Tip for beginners:** You don't need to understand the journal to use Babysitter. It works automatically. But when something goes wrong, the journal helps you figure out why.
 
+> The journal is harness-agnostic — it's part of the [Adapters](./adapters.md) runtime, so the same events are recorded no matter which harness drives the run. The `babysitter run:events` CLI commands below work everywhere; the in-session command surface (slash commands, skills) **varies by harness** — see the [Slash Commands reference](../reference/slash-commands.md).
+
 ---
 
 ## Overview
@@ -531,6 +533,8 @@ On each iteration:
 - [Run Resumption](./run-resumption.md) - Understand how journal enables resumption
 - [Process Definitions](./process-definitions.md) - How events are generated
 - [Breakpoints](./breakpoints.md) - Breakpoint events in the journal
+- [Adapters](./adapters.md) - The harness-agnostic runtime the journal is part of
+- [Slash Commands](../reference/slash-commands.md) - Per-harness in-session command surface
 
 ---
 

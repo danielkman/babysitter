@@ -9,6 +9,10 @@
 
 ---
 
+> **Works on any harness:** This tutorial uses Claude Code's `/babysitter:call` command token, but Babysitter is harness-agnostic and the same custom-process flow runs on every supported harness with its own in-session token. See the [Install Matrix](../harnesses/install-matrix.md) for per-harness setup.
+
+---
+
 ## Learning Objectives
 
 By the end of this tutorial, you will be able to:
@@ -42,7 +46,7 @@ babysitter --version
 
 **Interactive Mode (Claude Code)**: When running in Claude Code, breakpoints are handled directly in the chat - no service needed!
 
-**Non-Interactive Mode**: For CI/CD or headless automation, breakpoints are disabled:
+**Non-Interactive Mode**: For CI/CD or headless automation, breakpoints are routed to the durable Breakpoints Adapter backend / UI rather than the chat (they are not disabled):
 
 ---
 
@@ -854,16 +858,16 @@ The `ctx.parallel.all()` method runs independent tasks concurrently, significant
 Let's look at how parallel execution appears in the journal:
 
 ```bash
-cat .a5c/runs/01KGHTYK2MP9Q8BN5YM4XRZ3WD/journal/journal.jsonl | grep -E "TASK_STARTED|TASK_COMPLETED"
+cat .a5c/runs/01KGHTYK2MP9Q8BN5YM4XRZ3WD/journal/*.json | jq 'select(.type | test("EFFECT_"))'
 ```
 
-**What you should see:**
+**What you should see** (each event is its own file):
 
 ```json
-{"type":"TASK_STARTED","timestamp":"2026-01-25T16:00:01.123Z","taskId":"lint-001"}
-{"type":"TASK_STARTED","timestamp":"2026-01-25T16:00:01.125Z","taskId":"unit-tests-001"}
-{"type":"TASK_COMPLETED","timestamp":"2026-01-25T16:00:01.923Z","taskId":"lint-001","exitCode":0}
-{"type":"TASK_COMPLETED","timestamp":"2026-01-25T16:00:02.325Z","taskId":"unit-tests-001","exitCode":0}
+{"type":"EFFECT_REQUESTED","recordedAt":"2026-01-25T16:00:01.123Z","data":{"effectId":"lint-001"}}
+{"type":"EFFECT_REQUESTED","recordedAt":"2026-01-25T16:00:01.125Z","data":{"effectId":"unit-tests-001"}}
+{"type":"EFFECT_RESOLVED","recordedAt":"2026-01-25T16:00:01.923Z","data":{"effectId":"lint-001","status":"success"}}
+{"type":"EFFECT_RESOLVED","recordedAt":"2026-01-25T16:00:02.325Z","data":{"effectId":"unit-tests-001","status":"success"}}
 ```
 
 Notice how both tasks started almost simultaneously (2ms apart), demonstrating parallel execution.

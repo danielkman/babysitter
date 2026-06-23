@@ -1,6 +1,8 @@
 # Quickstart: Your First Babysitter Run
 
-**Time:** 10 minutes | **Level:** Beginner | **Prerequisites:** [Installation complete](./installation.md)
+**Time:** ~10 minutes | **Level:** Beginner | **Prerequisites:** [Installation complete](./installation.md)
+
+**End state:** in about 10 minutes you will have run Babysitter once, watched it iterate a calculator module to a quality target on its own, and seen the result land on disk - all from a single command in your harness.
 
 Welcome! In this quickstart, you will build a calculator module using Test-Driven Development (TDD) with Babysitter. By the end, you will have experienced:
 
@@ -9,6 +11,10 @@ Welcome! In this quickstart, you will build a calculator module using Test-Drive
 - Journal-based persistence (everything is recorded)
 
 **Note:** TDD Quality Convergence is the full name; we use "TDD" as shorthand throughout this guide.
+
+### Pick your harness first
+
+This quickstart uses Claude Code's `/babysitter:call` token. **The command is the same on every harness — only the entry token differs** (`$babysitter:call` on Codex, `$call` on Cursor/Copilot, `/call` on the thin-alias harnesses, `/status` on opencode). If you are not on Claude Code, substitute your harness's token — see [Slash Commands and Modes](../reference/slash-commands.md) and the [Install Matrix](../harnesses/install-matrix.md).
 
 Let's get started!
 
@@ -57,13 +63,14 @@ Quick check that everything is working:
 
 ```bash
 # In your terminal
-babysitter --version
+npm list -g @a5c-ai/babysitter
+adapters version
 
 # Or run diagnostics
 /babysitter:doctor
 ```
 
-You should see a version number. If not, revisit the [installation guide](./installation.md).
+You should see version numbers (e.g. `@a5c-ai/babysitter@5.1.0` and `5.1.0`). If not, revisit the [installation guide](./installation.md).
 
 ### Open Your Project
 

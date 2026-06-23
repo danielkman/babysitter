@@ -10,6 +10,8 @@
 
 This guide consolidates best practices from across the Babysitter ecosystem into a single reference. Whether you are designing workflows, developing processes, optimizing performance, or collaborating with your team, these patterns will help you get the most out of Babysitter.
 
+> **Harness-agnostic:** These practices apply unchanged across all 12 supported harnesses. Since v6, Babysitter orchestration runs on the harness-agnostic [Adapters](./adapters.md) runtime, so workflow design, guardrails, quality gates, and resumption work the same whichever harness you use. See the [Install Matrix](../harnesses/install-matrix.md) for the supported harnesses and their setup.
+
 ### Core Philosophy: The Two-Loops Architecture
 
 Babysitter implements a **hybrid agentic system** where:
@@ -1395,6 +1397,8 @@ Generates SDK bindings for external AI agents. Contribute your integration back 
 - [Journal System](./journal-system.md) - Event sourcing
 - [Hooks](./hooks.md) - Extensible lifecycle events
 - [Process Library](./process-library.md) - SDK-managed library layout and current counts
+- [Adapters](./adapters.md) - The harness-agnostic runtime these practices run on
+- [Install Matrix](../harnesses/install-matrix.md) - The 12 supported harnesses and their setup
 
 ---
 

@@ -4,6 +4,8 @@
 
 In the quickstart, you built a calculator with a single command and watched Babysitter iterate to quality. Now let's understand exactly what happened under the hood. This knowledge will help you use Babysitter more effectively and debug issues when they arise.
 
+> **Note on commands:** This page uses Claude Code's `/babysitter:call` command. Babysitter is harness-agnostic, and the in-session command surface varies by harness (for example, `$babysitter:call` on Codex, `$call` on Cursor/Copilot, `/status` on opencode). The run directory, journal, and convergence concepts described here are identical across all harnesses. See the [Slash Commands reference](../reference/slash-commands.md) and the [Install Matrix](../harnesses/install-matrix.md) for your harness's token.
+
 ---
 
 ## Table of Contents

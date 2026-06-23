@@ -16,6 +16,8 @@ Just like a cooking recipe says "chop vegetables, then cook them, then serve" - 
 **You don't need to write processes to use Babysitter.** The [Process Library](./process-library.md) is the SDK-managed library under `library/`, and the current generated snapshot counts 2,239 JavaScript process files in the live repository tree.
 <!-- process-definitions:lead:end -->
 
+> **Renamed in v6:** Process files now live under **`blueprints/`** (formerly `plugins/`) — for example `blueprints/babysitter/skills/babysit/process/...`. They are managed with `blueprints:*` commands; the old `plugin:*` aliases are **deprecated** and kept for one release only.
+
 **When would you write a process?**
 - You have a specific workflow your team follows
 - The pre-built processes don't match your needs

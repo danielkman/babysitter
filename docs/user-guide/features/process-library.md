@@ -112,6 +112,8 @@ The agent will take the base process and adapt it to your specific requirements.
 
 ## Library Structure
 
+> **Renamed in v6:** Installable process bundles are now **blueprints** and are managed with `blueprints:*` commands — for example `/babysitter:blueprints` to browse and install. The old `plugin:*` commands (such as `/babysitter:plugins`) are **retained as deprecated aliases for one release** and will be removed; switch to `blueprints:*`. See [Process Definitions](./process-definitions.md) for how blueprints map onto process files.
+
 The built-in library lives under [`library/`](../../../library/README.md). Harness plugins do **not** ship the whole process tree under `skills/babysit/`; instead, they expose the `babysit` skill and rely on the SDK-managed active process-library binding. Project-local copies under `.a5c/` are an override layer that can be created by plugins or by you.
 
 ### How The Layers Relate
