@@ -10,6 +10,21 @@
 {{- end -}}
 {{- end -}}
 
+{{/*
+Returns "true" when the given org namespace exists and is NOT terminating.
+The deploy uninstalls then reinstalls the release; during a fresh install the
+org namespace (kradle-org-<org>) may still be terminating from the uninstall, and
+Kubernetes forbids creating new content (e.g. a ServiceAccount) in a terminating
+namespace — which fails the whole install. Gate org-namespace resources on this
+so the base platform installs cleanly regardless of org-namespace lifecycle.
+During client-side `helm template` (no cluster) lookup is empty → returns "".
+Call as: include "kradle.orgNamespaceActive" "kradle-org-foo"
+*/}}
+{{- define "kradle.orgNamespaceActive" -}}
+{{- $ns := lookup "v1" "Namespace" "" . -}}
+{{- if and $ns (ne (default "" ($ns.status).phase) "Terminating") -}}true{{- end -}}
+{{- end -}}
+
 {{- define "kradle.controllerImage" -}}
 {{- if and .Values.image.controller .Values.image.controller.repository -}}
 {{- printf "%s:%s" .Values.image.controller.repository (default .Values.image.tag .Values.image.controller.tag) -}}

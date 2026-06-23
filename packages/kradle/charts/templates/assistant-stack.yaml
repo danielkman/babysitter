@@ -1,6 +1,7 @@
 {{- if .Values.agents.enabled }}
 {{- $org := .Values.admin.org | default "default" }}
 {{- $orgNamespace := printf "kradle-org-%s" $org }}
+{{- if include "kradle.orgNamespaceActive" $orgNamespace }}
 apiVersion: kradle.a5c.ai/v1alpha1
 kind: AgentStack
 metadata:
@@ -28,4 +29,5 @@ spec:
   mcpServerRefs:
     - kradle-mcp
     - atlas-mcp
+{{- end }}
 {{- end }}

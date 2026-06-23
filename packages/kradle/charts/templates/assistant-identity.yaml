@@ -1,6 +1,7 @@
 {{- if .Values.agents.enabled }}
 {{- $org := .Values.admin.org | default "default" }}
 {{- $orgNamespace := printf "kradle-org-%s" $org }}
+{{- if include "kradle.orgNamespaceActive" $orgNamespace }}
 {{- $sa := include "kradle.fullname" . }}
 {{- $modelSecret := .Values.assistant.existingSecret }}
 # Real K8s ServiceAccount the agent pod runs as. Agent dispatch Jobs run in the
@@ -60,5 +61,6 @@ spec:
   secretRef:
     name: {{ $modelSecret | quote }}
   purpose: model-provider
+{{- end }}
 {{- end }}
 {{- end }}
