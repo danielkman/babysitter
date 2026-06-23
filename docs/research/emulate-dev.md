@@ -3,8 +3,9 @@
 > **Status:** Assimilation research note (no code change beyond the atlas record).
 > **Date:** 2026-06-23.
 > **Tagline (requester):** "Emulate third-party APIs."
-> **Method:** single-source pass over the vendor homepage <https://emulate.dev>. Claims below are vendor-stated and not independently verified.
-> **Atlas record:** `tool:emulate-dev` — `packages/atlas/graph/domain/tools/emulate-dev.yaml` (evidence `evidence:emulate-dev-homepage-2026-06`).
+> **Method:** vendor homepage <https://emulate.dev> + npm/GitHub corroboration. Behavioral claims are vendor-stated and not independently exercised.
+> **Provenance (verified 2026-06-23):** open source, **Apache-2.0**, by **Vercel Labs** — `github.com/vercel-labs/emulate`, npm `emulate` (v0.7.0) + `@emulators/*` adapters. npm tagline: "Local drop-in replacement services for CI and no-network sandboxes."
+> **Atlas record:** `tool:emulate-dev` — `packages/atlas/graph/domain/tools/emulate-dev.yaml` (evidence `evidence:emulate-dev-homepage-2026-06`, `evidence:emulate-dev-npm-2026-06`).
 
 ---
 
@@ -51,4 +52,5 @@ import { createEmulator } from "emulate"
 
 ## 6. Caveats / open questions
 
-- Single source (vendor homepage); the exact 11 services, fidelity per service, OSS/licensing, and the `localhost:4010` vs. `*.emulate.localhost` addressing modes are vendor claims.
+- License/OSS/repo **verified** (Apache-2.0, Vercel Labs) via npm + GitHub; the Next.js adapter (`@emulators/adapter-next`) explicitly targets the Vercel preview-deploy OAuth-callback problem. Early version (0.7.x).
+- The exact 11 services, per-service fidelity, and the `localhost:4010` vs. `*.emulate.localhost` addressing modes are vendor claims, not independently exercised here.

@@ -3,8 +3,9 @@
 > **Status:** Assimilation research note (no code change beyond the atlas record).
 > **Date:** 2026-06-23.
 > **Tagline (requester):** "Verify changes in a real browser."
-> **Method:** single-source pass over the vendor homepage <https://agent-browser.dev>. Claims below are vendor-stated and not independently verified.
-> **Atlas record:** `tool:agent-browser` — `packages/atlas/graph/domain/tools/agent-browser.yaml` (evidence `evidence:agent-browser-homepage-2026-06`).
+> **Method:** vendor homepage <https://agent-browser.dev> + npm/GitHub corroboration. Behavioral claims (command counts, integrations) are vendor-stated and not independently exercised.
+> **Provenance (verified 2026-06-23):** open source, **Apache-2.0**, by **Vercel Labs** — `github.com/vercel-labs/agent-browser`, npm `agent-browser` (v0.29.1 at time of writing).
+> **Atlas record:** `tool:agent-browser` — `packages/atlas/graph/domain/tools/agent-browser.yaml` (evidence `evidence:agent-browser-homepage-2026-06`, `evidence:agent-browser-npm-2026-06`).
 
 ---
 
@@ -48,5 +49,5 @@ Cross-platform binaries (macOS / Linux / Windows).
 
 ## 6. Caveats / open questions
 
-- Single source (vendor homepage); pricing/licensing, OSS status, and Windows-hooks behavior unverified.
-- "50+ commands" and provider integrations (AgentCore/Browserbase/Browserless) are vendor claims.
+- License/OSS/repo **verified** (Apache-2.0, Vercel Labs) via npm + GitHub. Early version (0.29.x) — API surface may move.
+- "50+ commands", token-efficiency gains, and provider integrations (AgentCore/Browserbase/Browserless) are vendor claims, not independently exercised here.

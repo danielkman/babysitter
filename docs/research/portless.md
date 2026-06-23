@@ -3,8 +3,9 @@
 > **Status:** Assimilation research note (no code change beyond the atlas record).
 > **Date:** 2026-06-23.
 > **Tagline (requester):** "No port conflicts. Worktree-friendly."
-> **Method:** single-source pass over the vendor homepage <https://portless.sh>. Claims below are vendor-stated and not independently verified.
-> **Atlas record:** `tool:portless` — `packages/atlas/graph/domain/tools/portless.yaml` (evidence `evidence:portless-homepage-2026-06`).
+> **Method:** vendor homepage <https://portless.sh> + npm/GitHub corroboration. Behavioral claims are vendor-stated and not independently exercised.
+> **Provenance (verified 2026-06-23):** open source, **Apache-2.0**, by **Vercel Labs** — `github.com/vercel-labs/portless`, npm `portless` (v0.14.0; npm description "for humans and agents").
+> **Atlas record:** `tool:portless` — `packages/atlas/graph/domain/tools/portless.yaml` (evidence `evidence:portless-homepage-2026-06`, `evidence:portless-npm-2026-06`).
 
 ---
 
@@ -45,5 +46,5 @@ This repo runs heavily in **git worktrees** (agent isolation, parallel runs). Po
 
 ## 6. Caveats / open questions
 
-- Single source (vendor homepage); OSS/licensing, Windows `hosts`/CA behavior, and the Node 24+ floor unverified against real use.
-- Port-443 binding may need elevated privileges on some platforms (not stated).
+- License/OSS/repo **verified** (Apache-2.0, Vercel Labs) via npm + GitHub. Early version (0.14.x).
+- Windows `hosts`/CA behavior, the Node 24+ floor, and any port-443 privilege requirement are unverified against real use.

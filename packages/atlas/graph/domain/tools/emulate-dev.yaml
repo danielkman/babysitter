@@ -5,7 +5,8 @@ attributes:
   homepageUrl: "https://emulate.dev"
   kind: api-tool
   description: |
-    CLI that provides offline, stateful local emulation of ~11 popular third-party
+    Open source (Apache-2.0) by Vercel Labs — github.com/vercel-labs/emulate
+    (npm `emulate`). CLI that provides offline, stateful local emulation of ~11 popular third-party
     APIs (Stripe, GitHub, Google, AWS, Slack, and others) — no network, API keys, or
     real accounts needed. Emulates authentic protocols (OAuth with RS256 tokens, AWS
     XML responses) and persists state across requests (create repos, push commits,
@@ -27,3 +28,4 @@ edges:
       comparison: "Pact does consumer-driven contract testing; Emulate runs runnable, stateful local service replicas for integration/E2E"
   sourced_from:
     - target: evidence:emulate-dev-homepage-2026-06
+    - target: evidence:emulate-dev-npm-2026-06

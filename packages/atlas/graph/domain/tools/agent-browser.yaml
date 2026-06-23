@@ -5,7 +5,8 @@ attributes:
   homepageUrl: "https://agent-browser.dev"
   kind: ai-dev-tool
   description: |
-    Browser-automation CLI built for AI coding agents to verify changes in a real
+    Open source (Apache-2.0) by Vercel Labs — github.com/vercel-labs/agent-browser
+    (npm `agent-browser`). Browser-automation CLI built for AI coding agents to verify changes in a real
     browser. A native Rust CLI talks to a Rust daemon that drives Chrome over the
     Chrome DevTools Protocol (CDP). Output is optimized for token efficiency:
     accessibility-tree snapshots with stable element references (`@e1`, `@e2`) for
@@ -33,3 +34,4 @@ edges:
       comparison: "Browserbase is hosted/remote browser infra; agent-browser runs a local Rust daemon driving local Chrome"
   sourced_from:
     - target: evidence:agent-browser-homepage-2026-06
+    - target: evidence:agent-browser-npm-2026-06

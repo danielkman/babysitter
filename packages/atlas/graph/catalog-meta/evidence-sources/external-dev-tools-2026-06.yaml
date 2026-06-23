@@ -53,3 +53,60 @@ attributes:
 edges:
   has_trust_level:
   - trust-level:official-web
+---
+# Corroborating provenance: npm registry + GitHub (vercel-labs, Apache-2.0).
+nodeKind: EvidenceSource
+id: evidence:agent-browser-npm-2026-06
+attributes:
+  displayName: agent-browser npm package + repo (vercel-labs/agent-browser, Apache-2.0, v0.29.1)
+  kindLabel: package
+  sourceUrl: https://github.com/vercel-labs/agent-browser
+  trustLevel: trust-level:repo
+  observedAt: '2026-06-23T00:00:00Z'
+  observedBy: a5c-ai-catalog
+  locator: npm:agent-browser
+edges:
+  has_trust_level:
+  - trust-level:repo
+---
+nodeKind: EvidenceSource
+id: evidence:portless-npm-2026-06
+attributes:
+  displayName: portless npm package + repo (vercel-labs/portless, Apache-2.0, v0.14.0)
+  kindLabel: package
+  sourceUrl: https://github.com/vercel-labs/portless
+  trustLevel: trust-level:repo
+  observedAt: '2026-06-23T00:00:00Z'
+  observedBy: a5c-ai-catalog
+  locator: npm:portless
+edges:
+  has_trust_level:
+  - trust-level:repo
+---
+nodeKind: EvidenceSource
+id: evidence:emulate-dev-npm-2026-06
+attributes:
+  displayName: emulate npm package + repo (vercel-labs/emulate, Apache-2.0, v0.7.0)
+  kindLabel: package
+  sourceUrl: https://github.com/vercel-labs/emulate
+  trustLevel: trust-level:repo
+  observedAt: '2026-06-23T00:00:00Z'
+  observedBy: a5c-ai-catalog
+  locator: npm:emulate
+edges:
+  has_trust_level:
+  - trust-level:repo
+---
+nodeKind: EvidenceSource
+id: evidence:ai-cli-npm-2026-06
+attributes:
+  displayName: ai-cli npm package + repo (vercel-labs/ai-cli, Apache-2.0, v0.3.1)
+  kindLabel: package
+  sourceUrl: https://github.com/vercel-labs/ai-cli
+  trustLevel: trust-level:repo
+  observedAt: '2026-06-23T00:00:00Z'
+  observedBy: a5c-ai-catalog
+  locator: npm:ai-cli
+edges:
+  has_trust_level:
+  - trust-level:repo

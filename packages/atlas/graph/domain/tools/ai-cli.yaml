@@ -5,7 +5,8 @@ attributes:
   homepageUrl: "https://ai-cli.dev"
   kind: ai-dev-tool
   description: |
-    Terminal CLI for generating text, images, and video from prompts, with
+    Open source (Apache-2.0) by Vercel Labs — github.com/vercel-labs/ai-cli
+    (npm `ai-cli`; self-described "agent-native"). Terminal CLI for generating text, images, and video from prompts, with
     multi-model comparison and pipeable I/O. Routes to models from OpenAI,
     Anthropic, Google, Black Forest Labs, and ByteDance through the Vercel AI
     Gateway; short names auto-resolve (e.g. `flux-2-pro`, `gpt-image-2`) and model
@@ -21,3 +22,4 @@ edges:
     - target: skill-area:video-processing
   sourced_from:
     - target: evidence:ai-cli-homepage-2026-06
+    - target: evidence:ai-cli-npm-2026-06

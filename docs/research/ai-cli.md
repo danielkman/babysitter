@@ -3,8 +3,9 @@
 > **Status:** Assimilation research note (no code change beyond the atlas record).
 > **Date:** 2026-06-23.
 > **Tagline (requester):** "Image + video gen via CLI."
-> **Method:** single-source pass over the vendor homepage <https://ai-cli.dev>. Claims below are vendor-stated and not independently verified.
-> **Atlas record:** `tool:ai-cli` — `packages/atlas/graph/domain/tools/ai-cli.yaml` (evidence `evidence:ai-cli-homepage-2026-06`).
+> **Method:** vendor homepage <https://ai-cli.dev> + npm/GitHub corroboration. Behavioral claims are vendor-stated and not independently exercised.
+> **Provenance (verified 2026-06-23):** open source, **Apache-2.0**, by **Vercel Labs** — `github.com/vercel-labs/ai-cli`, npm `ai-cli` (v0.3.1; npm self-describes as "agent-native" with "predictable artifact outputs").
+> **Atlas record:** `tool:ai-cli` — `packages/atlas/graph/domain/tools/ai-cli.yaml` (evidence `evidence:ai-cli-homepage-2026-06`, `evidence:ai-cli-npm-2026-06`).
 
 ---
 
@@ -46,4 +47,5 @@ No direct `alternative_to` recorded — no equivalently-scoped multi-provider me
 
 ## 6. Caveats / open questions
 
-- Single source (vendor homepage); provider/model list, pricing, auth model (env vars → which keys / Vercel AI Gateway billing), and video-gen latency/quality are vendor claims.
+- License/OSS/repo **verified** (Apache-2.0, Vercel Labs) via npm + GitHub. Early version (0.3.x).
+- Provider/model list, pricing, auth model (env vars → which keys / Vercel AI Gateway billing), and video-gen latency/quality are vendor claims, not independently exercised here.
