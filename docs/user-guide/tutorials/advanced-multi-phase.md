@@ -4,7 +4,7 @@
 
 **Version:** 1.0
 **Date:** 2026-01-25
-Last refreshed: 2026-06-10
+Last refreshed: 2026-06-23
 **Category:** Tutorial
 **Level:** Advanced
 **Estimated Time:** 90-120 minutes
@@ -29,12 +29,14 @@ Last refreshed: 2026-06-10
 
 ---
 
+> **What this tutorial demonstrates:** Babysitter orchestrates complex, multi-phase agentic workflows deterministically — your process is code the orchestrator can only obey, with a mandatory stop and process check between phases (enforcement, not assistance). The quality convergence loops below are one of the gates your multi-phase process enforces, not the headline capability.
+
 ## Learning Objectives
 
 By the end of this tutorial, you will be able to:
 
-1. **Design multi-phase workflows** that follow Research-Plan-Implement-Test-Deploy patterns
-2. **Implement quality convergence loops** with agent-based scoring
+1. **Design multi-phase workflows** that follow Research-Plan-Implement-Test-Deploy patterns, enforced deterministically by your process code
+2. **Implement quality convergence loops** with agent-based scoring (one of the gates your process can enforce)
 3. **Configure team collaboration patterns** with strategic breakpoints
 4. **Use parallel quality checks** to accelerate feedback cycles
 5. **Create governance-ready processes** with comprehensive audit trails

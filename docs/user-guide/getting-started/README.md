@@ -1,7 +1,7 @@
 ---
 title: Getting Started
 description: Install Babysitter, configure your environment, and understand your first run.
-last_updated: 2026-04-27
+last_updated: 2026-06-23
 category: landing
 ---
 
@@ -29,26 +29,26 @@ category: landing
 
 ## 30-Second Overview
 
-**Babysitter = your AI coding harness + autopilot + quality control**
+**Babysitter = deterministic, obedient orchestration of your AI coding harness**
+
+Your workflow is real code, and the orchestrator can only do what that code permits. After every step it stops, checks what the process allows next, and either permits the next task or halts until a gate passes. Enforcement, not assistance.
 
 Instead of:
 ```
 You: "Build me a login page"
-Claude: *builds something*
-You: "Make it better"
-Claude: *tweaks it*
-You: "Run the tests"
-Claude: *tests fail*
-You: "Fix the tests"
-... (repeat for hours)
+Claude: *builds something, decides on its own it's done*
+You: "Wait, you skipped the tests"
+Claude: *backtracks*
+You: "Now run them"
+... (you babysit it by hand for hours)
 ```
 
-You just say:
+You define the process once and say:
 ```
-/babysitter:call build a login page with 90% quality target
+/babysitter:call build a login page
 ```
 
-Babysitter handles the iteration, testing, and quality checks automatically. Come back later, it's still working (or waiting for your approval).
+Babysitter then enforces that process step by step — running tasks, pausing at breakpoints for your approval, and blocking progression at any gate (including quality gates) until it's satisfied. Come back later, it's still working (or waiting for your approval), exactly where the process left it.
 
 ---
 
@@ -66,46 +66,54 @@ Babysitter handles the iteration, testing, and quality checks automatically. Com
 
 ## What is Babysitter?
 
-Babysitter is an **orchestration framework** for AI coding harnesses that transforms how you work with AI-assisted development. It runs across 12 supported harnesses (see the [Install Matrix](../harnesses/install-matrix.md)) via its harness-agnostic [Adapters](../features/adapters.md) layer. Instead of manually iterating with your harness until your code is "good enough," Babysitter automates the entire process with:
+Babysitter is an **orchestration framework** for AI coding harnesses that enforces obedience on agentic work. It runs across 12 supported harnesses (see the [Install Matrix](../harnesses/install-matrix.md)) via its harness-agnostic [Adapters](../features/adapters.md) layer. Instead of trusting an agent's own judgment about what to do and when it's done, Babysitter makes it follow a process you define. The triad:
 
-- **Automatic quality convergence** - Set a quality target (like 85%), and Babysitter iterates until it's achieved
-- **Session persistence** - Close your laptop, come back tomorrow, and pick up exactly where you left off
-- **Human-in-the-loop approval** - Add approval gates (breakpoints) for critical decisions before they execute
-- **Complete audit trails** - Every decision, iteration, and change is recorded in an event [journal](../reference/glossary.md)
+- **Deterministic process execution** - Your workflow is real JavaScript code; the orchestrator can only do what that code permits, and every run is event-sourced for deterministic replay and resume from any point
+- **Complex agentic workflows** - Tasks, breakpoints, sleeps, parallel dispatch, dependencies, and sub-agent delegation across harnesses, all orchestrated from a single entry point
+- **Policy / process adherence (obedience)** - A hook-enforced mandatory stop after every step, a process check, and a decision: permit the next task or halt until a gate passes. Enforcement, not assistance
 
-Think of Babysitter as a project manager for your AI coding sessions - it keeps track of progress, ensures quality standards are met, and never loses context.
+Alongside the triad you also get **human-in-the-loop breakpoints**, **complete audit trails** in an event [journal](../reference/glossary.md), and **quality convergence** as one of the gate types you can encode. Think of Babysitter as a process foreman for your AI coding sessions - it never lets the agent skip a step, and never loses context.
 
 ### Why You Will Love Babysitter
 
 | Without Babysitter | With Babysitter |
 |-------------------|-----------------|
-| "Claude, can you improve that?" (repeat 10x) | Set quality target once, iterate automatically |
-| Lose all context when session ends | Resume from any point, even days later |
-| Hope the AI made good decisions | Review and approve at key decision points |
-| No record of what happened | Complete journal of every action |
-| Run tasks one at a time | Parallel execution for faster results |
+| Agent decides on its own what to do and when it's "done" | Orchestrator can only do what your process code permits |
+| Hope the AI followed the steps you wanted | Mandatory stop + process check after every step — enforcement, not assistance |
+| Lose all context when session ends | Deterministic replay; resume from any point, even days later |
+| Hope the AI made good decisions | Review and approve at enforced breakpoints |
+| Run tasks one at a time | Parallel execution and sub-agent delegation for faster results |
+| "Claude, can you improve that?" (repeat 10x) | Encode a quality gate once; it iterates automatically |
 
 ---
 
 ## Key Benefits
 
-### 1. Quality Convergence
-Stop manually asking Claude to "make it better." Define your quality target (test coverage, code standards, etc.) and Babysitter iterates until it's achieved.
+### 1. Deterministic, Enforced Execution
+Your workflow is real code; the orchestrator can only do what that code permits. A hook-enforced mandatory stop after every step means the agent cannot "keep running" on its own — the process decides what's next. Enforcement, not assistance.
 
 ```
-# Example: Iterate until 85% quality score
-claude "/babysitter:call implement user auth with TDD, 85% quality target"
+# The agent does exactly what the process permits, nothing more
+claude "/babysitter:call implement user auth with TDD"
 ```
 
-### 2. Never Lose Progress
-Every action is recorded in an event-sourced journal. Session interrupted? No problem.
+### 2. Complex Agentic Workflows
+Tasks, breakpoints, sleeps, parallel dispatch, dependencies, and sub-agent delegation across harnesses — orchestrate multi-agent work from a single entry point.
+
+```
+# One entry point, many delegated tasks
+claude "/babysitter:call build and test the API, then prepare a deploy plan"
+```
+
+### 3. Never Lose Progress (Deterministic Replay)
+Every action is recorded in an event-sourced, immutable journal. Session interrupted? Replay the journal and resume exactly where you left off.
 
 ```
 # Resume exactly where you left off
 claude "Resume the babysitter run for the auth feature"
 ```
 
-### 3. Human-in-the-Loop Control
+### 4. Human-in-the-Loop Control
 Add approval gates for critical decisions. Review context, approve or reject, and only then does execution continue.
 
 ```
@@ -113,7 +121,15 @@ Add approval gates for critical decisions. Review context, approve or reject, an
 claude "/babysitter:call deploy to production with breakpoint approval"
 ```
 
-### 4. Structured Workflows
+### 5. Quality Convergence (One Gate Type Among Several)
+Because gates are code, you can encode a quality gate: define a target (test coverage, code standards, etc.) and the gate iterates until it's met before permitting the next step.
+
+```
+# Example: a quality gate iterates until 85% quality score
+claude "/babysitter:call implement user auth with TDD, 85% quality target"
+```
+
+### 6. Structured Workflows
 Choose from built-in methodologies (TDD, Spec-Kit, GSD) or create your own. Consistent, repeatable processes across your team.
 
 ---

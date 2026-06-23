@@ -4,13 +4,14 @@
 
 **Time:** ~10 minutes | **Level:** Beginner | **Prerequisites:** [Installation complete](./installation.md)
 
-**End state:** in about 10 minutes you will have run Babysitter once, watched it iterate a calculator module to a quality target on its own, and seen the result land on disk - all from a single command in your harness.
+**End state:** in about 10 minutes you will have run a deterministic Babysitter process once — where the orchestrator only did what the code permitted, stopping after every step before deciding what's next — and seen the result land on disk, all from a single command in your harness.
 
 Welcome! In this quickstart, you will build a calculator module using Test-Driven Development (TDD) with Babysitter. By the end, you will have experienced:
 
-- Automatic quality [convergence](../reference/glossary.md) (iterate until quality target met)
+- **Deterministic, obedient execution** - the orchestrator only ran what the process permitted, with a mandatory stop after each step (enforcement, not assistance)
+- **Journal-based persistence** - everything recorded in an immutable, replayable journal
+- **A quality gate in action** - quality [convergence](../reference/glossary.md) (iterate until the target is met) as one of the gates the process enforced
 - The TDD workflow (tests first, then implementation)
-- Journal-based persistence (everything is recorded)
 
 **Note:** TDD Quality Convergence is the full name; we use "TDD" as shorthand throughout this guide.
 
@@ -366,10 +367,11 @@ Let's recap what Babysitter did for you:
 
 ### Key Takeaways
 
-1. **Quality Convergence:** You set 80% target, Babysitter iterated until it achieved 88%
-2. **TDD Methodology:** Tests were written before implementation
-3. **Complete Audit Trail:** Every action logged in the journal
-4. **No Context Loss:** If interrupted, you can resume exactly where you left off
+1. **Deterministic, Obedient Execution:** The orchestrator only did what your process permitted, stopping after each step to decide what's next — enforcement, not assistance
+2. **Complete Audit Trail:** Every action logged in the immutable journal
+3. **No Context Loss:** If interrupted, you can replay the journal and resume exactly where you left off
+4. **TDD Methodology:** Tests were written before implementation
+5. **Quality Convergence (one gate type):** You set an 80% target and the quality gate iterated until it achieved 88%
 
 ---
 
@@ -521,12 +523,13 @@ ls .a5c/runs/
 
 In just 10 minutes, you:
 
+- Ran a deterministic process where the orchestrator only did what your code permitted
 - Built a calculator module with TDD methodology
-- Achieved automatic quality convergence (set target, iterate until met)
-- Explored the event journal (complete audit trail)
+- Explored the event journal (complete, replayable audit trail)
 - Learned how to resume interrupted sessions
+- Saw a quality gate converge to its target (one gate type among several)
 
-**Babysitter turns complex AI workflows into single commands with deterministic, resumable execution.**
+**Babysitter enforces obedience on agentic work: it turns complex AI workflows into single commands with deterministic, resumable execution.**
 
 Ready to go deeper? Continue to [First Run Deep Dive](./first-run.md) to understand exactly what happened under the hood.
 

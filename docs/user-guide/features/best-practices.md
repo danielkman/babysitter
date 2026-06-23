@@ -3,14 +3,14 @@
 # Best Practices Guide: Comprehensive Reference for Babysitter
 
 **Version:** 2.0
-**Last Updated:** 2026-01-26
+**Last Updated:** 2026-06-23
 **Category:** Feature Guide
 
 ---
 
 ## Overview
 
-This guide consolidates best practices from across the Babysitter ecosystem into a single reference. Whether you are designing workflows, developing [processes](../reference/glossary.md), optimizing performance, or collaborating with your team, these patterns will help you get the most out of Babysitter.
+This guide consolidates best practices from across the Babysitter ecosystem into a single reference. Babysitter's job is **enforcement, not assistance**: your workflow is deterministic code, the orchestrator can only do what that code permits, and a mandatory stop after every step keeps complex agentic work obedient. The practices below are about designing that enforced process well. Quality gates are *one* of the guardrail mechanisms covered here, not the headline. Whether you are designing workflows, developing [processes](../reference/glossary.md), optimizing performance, or collaborating with your team, these patterns will help you get the most out of Babysitter.
 
 ## On this page
 
@@ -29,10 +29,10 @@ This guide consolidates best practices from across the Babysitter ecosystem into
 
 Babysitter implements a **hybrid agentic system** where:
 
-- A **symbolic orchestrator** governs progression, journaling, and phase boundaries
-- An **agentic harness** performs adaptive work with tools
+- A **symbolic orchestrator** governs progression, journaling, and phase boundaries — and can only do what your process code permits
+- An **agentic harness** performs adaptive work with tools, but cannot advance until the orchestrator's mandatory stop and process check permit it
 
-The key insight: **quality is evidence-driven, not assertion-driven.**
+The key insight: **enforcement, not assistance.** Gates block progression until satisfied; they're not suggestions. One consequence of code-defined gates is that quality becomes evidence-driven, not assertion-driven.
 
 > If you don't have evidence, you don't have completion.
 

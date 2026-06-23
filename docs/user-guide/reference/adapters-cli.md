@@ -586,6 +586,8 @@ A handful of items appear in help text or are reserved internally but are **not*
 ## Related Documentation
 
 - [Adapters](../features/adapters.md) - The conceptual guide to the Adapters runtime
+- [Adapter Types reference](./adapter-types.md) - All 20 adapter package types enumerated (Adapters is a family, not one thing)
+- [Adapters (ecosystem overview)](../ecosystem/adapters.md) - Introductory tour of the adapters family
 - [Installation](../getting-started/installation.md) - Installing the `adapters` CLI and harness plugins
 - [CLI Reference](./cli-reference.md) - The core `babysitter` orchestration CLI
 - [Slash Commands](./slash-commands.md) - The in-session `/babysitter:*` surface
@@ -596,4 +598,4 @@ A handful of items appear in help text or are reserved internally but are **not*
 ## Next steps
 
 - **Next:** [Configuration](./configuration.md)
-- **Related:** [Adapters (concept)](../features/adapters.md), [Install Matrix](../harnesses/install-matrix.md), [CLI Reference](./cli-reference.md)
+- **Related:** [Adapters (concept)](../features/adapters.md), [Adapter Types reference](./adapter-types.md), [Install Matrix](../harnesses/install-matrix.md), [CLI Reference](./cli-reference.md)

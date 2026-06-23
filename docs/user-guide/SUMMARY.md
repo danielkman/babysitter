@@ -29,6 +29,25 @@ This is the GitBook-style table of contents for the Babysitter User Guide. It is
 
 ---
 
+## Ecosystem
+
+* [Ecosystem Overview](./ecosystem/overview.md)
+* [babysitter-sdk (core engine)](./ecosystem/babysitter-sdk.md)
+* [adapters (the family)](./ecosystem/adapters.md)
+* [atlas (catalog & knowledge graph)](./ecosystem/atlas.md)
+* [genty (agent runtime)](./ecosystem/genty.md)
+* [observer-dashboard](./ecosystem/observer-dashboard.md)
+* [kradle (K8s Git forge — MVP)](./ecosystem/kradle.md)
+* [kip-sdk (memory substrate — spec only)](./ecosystem/kip-sdk.md)
+
+---
+
+## Architecture
+
+* [Architecture & How It Fits Together](./architecture.md)
+
+---
+
 ## Features
 
 * [Features Overview](./features/index.md)
@@ -58,6 +77,7 @@ This is the GitBook-style table of contents for the Babysitter User Guide. It is
 ## Reference
 
 * [Reference Overview](./reference/index.md)
+* [Adapter Types (all 20)](./reference/adapter-types.md)
 * [Slash Commands](./reference/slash-commands.md)
 * [CLI Reference](./reference/cli-reference.md)
 * [Adapters CLI](./reference/adapters-cli.md)
@@ -78,6 +98,17 @@ docs/user-guide/
 +-- index.md                              # Landing page
 +-- SUMMARY.md                            # Table of contents (this file)
 +-- navigation.md                         # Docusaurus navigation configuration
++-- architecture.md                       # Vision + Mermaid diagram + runtime flow
+|
++-- ecosystem/                            # Monorepo components
+|   +-- overview.md                       # Whole monorepo + how to choose
+|   +-- babysitter-sdk.md                 # Core event-sourced engine (GA)
+|   +-- adapters.md                       # The adapters family (GA)
+|   +-- atlas.md                          # Catalog / knowledge graph (GA)
+|   +-- genty.md                          # Unified agent runtime (GA)
+|   +-- observer-dashboard.md             # Real-time SSE dashboard (GA)
+|   +-- kradle.md                         # K8s-native Git forge (MVP)
+|   +-- kip-sdk.md                        # Memory substrate (spec only)
 |
 +-- getting-started/                      # Getting Started Section
 |   +-- README.md                         # Overview
@@ -114,6 +145,7 @@ docs/user-guide/
 |
 +-- reference/                            # Technical Reference
     +-- index.md                          # Reference overview
+    +-- adapter-types.md                  # All 20 adapter package types enumerated
     +-- slash-commands.md                 # In-session /babysitter:* command surface
     +-- cli-reference.md                  # Command-line interface
     +-- adapters-cli.md                   # Host-side `adapters` CLI reference (v6)
@@ -132,13 +164,15 @@ docs/user-guide/
 | Section | Pages | Status |
 |---------|-------|--------|
 | Getting Started | 5 | Complete |
+| Ecosystem | 8 | Complete |
+| Architecture | 1 | Complete |
 | Tutorials | 4 | Complete |
 | Features | 13 | Complete |
 | Harnesses | 3 | Complete |
-| Reference | 10 | Complete |
+| Reference | 11 | Complete |
 | Navigation | 2 | Complete |
 | Home | 1 | Complete |
-| **Total** | **38** | **Active** |
+| **Total** | **48** | **Active** |
 
 ---
 

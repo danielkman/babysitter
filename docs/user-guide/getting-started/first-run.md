@@ -4,7 +4,7 @@
 
 **Time:** 10 minutes | **Level:** Beginner | **Prerequisites:** [Completed the Quickstart](./quickstart.md)
 
-In the quickstart, you built a calculator with a single command and watched Babysitter iterate to quality. Now let's understand exactly what happened under the hood. This knowledge will help you use Babysitter more effectively and debug issues when they arise.
+In the quickstart, you built a calculator with a single command and watched Babysitter run a deterministic process where the orchestrator only did what the code permitted — stopping after every step, checking what the process allowed next, and (among other gates) iterating a quality gate until its target was met. Now let's understand exactly what happened under the hood. This knowledge will help you use Babysitter more effectively and debug issues when they arise.
 
 > **Note on commands:** This page uses Claude Code's `/babysitter:call` command. Babysitter is harness-agnostic, and the in-session command surface varies by harness (for example, `$babysitter:call` on Codex, `$call` on Cursor/Copilot, `/status` on opencode). The run directory, journal, and convergence concepts described here are identical across all harnesses. See the [Slash Commands reference](../reference/slash-commands.md) and the [Install Matrix](../harnesses/install-matrix.md) for your harness's token.
 
@@ -254,7 +254,7 @@ The journal enables:
 
 ## How Quality Convergence Works
 
-Quality convergence is Babysitter's core value proposition. Here's how it works:
+Quality convergence is one of Babysitter's gate types — a consequence of the fact that gates are code-defined. It is not the product thesis (that's deterministic, obedient orchestration of complex workflows), but it's a useful gate to understand because the calculator run used one. Here's how it works:
 
 ### The Quality Loop
 

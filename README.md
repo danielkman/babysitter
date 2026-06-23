@@ -528,14 +528,15 @@ library/                  # Process library (methodologies + specializations)
 
 | Traditional Approach | Babysitter |
 |---------------------|------------|
-| Run script once, hope it works | Process enforces quality gates before completion |
+| Agent decides what to do and when it's "done" | Orchestrator can only do what your process code permits |
+| Ad-hoc workflow | Deterministic, code-defined processes — mandatory stop after every step (enforcement, not assistance) |
+| Single task execution | Complex agentic workflows: parallel execution, dependencies, sub-agent delegation across harnesses |
+| State lost on session end | Event-sourced, deterministic replay, fully resumable |
 | Manual approval via chat | Structured breakpoints with context |
-| State lost on session end | Event-sourced, fully resumable |
-| Single task execution | Parallel execution, dependencies |
 | No audit trail | Complete journal of all events |
-| Ad-hoc workflow | Deterministic, code-defined processes |
+| Run script once, hope it works | Gates (including quality gates) block progression until satisfied |
 
-**Key differentiators:** Process enforcement, deterministic replay, quality convergence, human-in-the-loop breakpoints, and parallel execution.
+**Key differentiators:** Process enforcement, deterministic replay, human-in-the-loop breakpoints, parallel execution, and quality convergence (one gate type among several).
 
 ---
 

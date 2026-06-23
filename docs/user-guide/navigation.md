@@ -17,7 +17,7 @@ This document defines the navigation structure for the Babysitter User Guide doc
 +------------------------------------------------------------------------+
 |  [Logo] Babysitter Docs                                                 |
 +------------------------------------------------------------------------+
-|  Home  |  Getting Started  |  Tutorials  |  Features  |  Harnesses  |  Reference  |  [Search]  |
+|  Home  |  Getting Started  |  Ecosystem  |  Architecture  |  Tutorials  |  Features  |  Harnesses  |  Reference  |  [Search]  |
 +------------------------------------------------------------------------+
 ```
 
@@ -60,6 +60,40 @@ This document defines the navigation structure for the Babysitter User Guide doc
     - title: Multi-Phase Workflows
       path: /tutorials/advanced-multi-phase.md
       level: advanced
+```
+
+### Ecosystem
+
+```yaml
+- section: Ecosystem
+  path: /ecosystem/
+  items:
+    - title: Ecosystem Overview
+      path: /ecosystem/overview.md
+    - title: babysitter-sdk (core engine)
+      path: /ecosystem/babysitter-sdk.md
+    - title: adapters (the family)
+      path: /ecosystem/adapters.md
+    - title: atlas (catalog & knowledge graph)
+      path: /ecosystem/atlas.md
+    - title: genty (agent runtime)
+      path: /ecosystem/genty.md
+    - title: observer-dashboard
+      path: /ecosystem/observer-dashboard.md
+    - title: kradle (K8s Git forge — MVP)
+      path: /ecosystem/kradle.md
+    - title: kip-sdk (memory substrate — spec only)
+      path: /ecosystem/kip-sdk.md
+```
+
+### Architecture
+
+```yaml
+- section: Architecture
+  path: /architecture.md
+  items:
+    - title: Architecture & How It Fits Together
+      path: /architecture.md
 ```
 
 ### Features
@@ -123,6 +157,8 @@ This document defines the navigation structure for the Babysitter User Guide doc
   items:
     - title: Reference Overview
       path: /reference/index.md
+    - title: Adapter Types (all 20)
+      path: /reference/adapter-types.md
     - title: Slash Commands
       path: /reference/slash-commands.md
       highlight: true
@@ -184,6 +220,27 @@ For documentation platforms that use JSON configuration (e.g., Docusaurus, ViteP
       },
       {
         "type": "dropdown",
+        "label": "Ecosystem",
+        "position": "left",
+        "items": [
+          { "label": "Ecosystem Overview", "to": "/ecosystem/overview" },
+          { "label": "babysitter-sdk (core engine)", "to": "/ecosystem/babysitter-sdk" },
+          { "label": "adapters (the family)", "to": "/ecosystem/adapters" },
+          { "label": "atlas (catalog & knowledge graph)", "to": "/ecosystem/atlas" },
+          { "label": "genty (agent runtime)", "to": "/ecosystem/genty" },
+          { "label": "observer-dashboard", "to": "/ecosystem/observer-dashboard" },
+          { "label": "kradle (K8s Git forge — MVP)", "to": "/ecosystem/kradle" },
+          { "label": "kip-sdk (memory substrate — spec only)", "to": "/ecosystem/kip-sdk" }
+        ]
+      },
+      {
+        "type": "doc",
+        "docId": "architecture",
+        "position": "left",
+        "label": "Architecture"
+      },
+      {
+        "type": "dropdown",
         "label": "Features",
         "position": "left",
         "items": [
@@ -218,6 +275,7 @@ For documentation platforms that use JSON configuration (e.g., Docusaurus, ViteP
         "position": "left",
         "items": [
           { "label": "Reference Overview", "to": "/reference/" },
+          { "label": "Adapter Types (all 20)", "to": "/reference/adapter-types" },
           { "label": "Slash Commands", "to": "/reference/slash-commands" },
           { "label": "CLI Reference", "to": "/reference/cli-reference" },
           { "label": "Adapters CLI", "to": "/reference/adapters-cli" },
@@ -253,6 +311,26 @@ For documentation platforms that use JSON configuration (e.g., Docusaurus, ViteP
           "getting-started/first-run",
           "getting-started/migration"
         ]
+      },
+      {
+        "type": "category",
+        "label": "Ecosystem",
+        "collapsed": false,
+        "items": [
+          "ecosystem/overview",
+          "ecosystem/babysitter-sdk",
+          "ecosystem/adapters",
+          "ecosystem/atlas",
+          "ecosystem/genty",
+          "ecosystem/observer-dashboard",
+          "ecosystem/kradle",
+          "ecosystem/kip-sdk"
+        ]
+      },
+      {
+        "type": "doc",
+        "id": "architecture",
+        "label": "Architecture"
       },
       {
         "type": "category",
@@ -301,6 +379,7 @@ For documentation platforms that use JSON configuration (e.g., Docusaurus, ViteP
         "collapsed": false,
         "link": { "type": "doc", "id": "reference/index" },
         "items": [
+          "reference/adapter-types",
           "reference/slash-commands",
           "reference/cli-reference",
           "reference/adapters-cli",
@@ -332,6 +411,8 @@ For documentation platforms that use JSON configuration (e.g., Docusaurus, ViteP
 +---------------------------+
 | Home                      |
 | Getting Started      [>]  |
+| Ecosystem            [>]  |
+| Architecture              |
 | Tutorials            [>]  |
 | Features             [>]  |
 | Harnesses            [>]  |
@@ -339,6 +420,8 @@ For documentation platforms that use JSON configuration (e.g., Docusaurus, ViteP
 +---------------------------+
 | Quick Links               |
 | - Installation            |
+| - Ecosystem Overview      |
+| - Architecture            |
 | - CLI Reference           |
 | - Glossary                |
 +---------------------------+
@@ -350,11 +433,11 @@ For documentation platforms that use JSON configuration (e.g., Docusaurus, ViteP
 
 ```
 +-------------------------------------------------------------------------+
-| Getting Started   | Tutorials      | Features          | Reference      |
-| - Installation    | - REST API     | - Two-Loops       | - CLI          |
-| - Quickstart      | - Custom Proc. | - Adapters        | - Config       |
-| - First Run       | - Multi-Phase  | - Quality Conv.   | - Security     |
-|                   |                | - Breakpoints     | - Glossary     |
+| Getting Started   | Ecosystem      | Features          | Reference      |
+| - Installation    | - Overview     | - Two-Loops       | - CLI          |
+| - Quickstart      | - Adapters     | - Adapters        | - Adapter Types|
+| - First Run       | - genty        | - Quality Conv.   | - Config       |
+| - Architecture    | - kradle       | - Breakpoints     | - Glossary     |
 +-------------------------------------------------------------------------+
 | Resources                                                                |
 | GitHub | Issues | Discussions | Releases | Support                      |
@@ -370,6 +453,10 @@ Every content page opens with a compact breadcrumb of the form `Docs › Section
 | Page | Breadcrumb Path |
 |------|-----------------|
 | Home | `Docs` |
+| Ecosystem Overview | `Docs › Ecosystem › Overview` |
+| babysitter-sdk | `Docs › Ecosystem › babysitter-sdk` |
+| Architecture | `Docs › Architecture` |
+| Adapter Types | `Docs › Reference › Adapter Types` |
 | Installation | `Docs › Getting Started › Installation` |
 | Two-Loops Architecture | `Docs › Features › Two-Loops Architecture` |
 | Process Library | `Docs › Features › Process Library` |

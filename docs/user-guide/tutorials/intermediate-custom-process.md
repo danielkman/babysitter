@@ -3,7 +3,7 @@
 # Intermediate Tutorial: Custom Process Definition
 
 **Version:** 1.0
-**Date:** 2026-01-25
+**Date:** 2026-06-23
 **Category:** Tutorial
 **Level:** Intermediate
 **Estimated Time:** 60-90 minutes
@@ -27,14 +27,16 @@
 
 ---
 
+> **What this tutorial demonstrates:** Authoring a custom process *is* the heart of Babysitter — your workflow is real JavaScript code, and the orchestrator can only do what that code permits. You'll define complex agentic work (tasks, parallel dispatch, breakpoints) that the engine then enforces deterministically, with a mandatory stop after each step. The quality checks you configure are one of the gates your code can enforce.
+
 ## Learning Objectives
 
 By the end of this tutorial, you will be able to:
 
-1. **Create a custom process definition** that orchestrates multiple tasks
+1. **Create a custom process definition** that orchestrates multiple tasks — the code the orchestrator is bound to obey
 2. **Implement parallel execution** for independent tasks to improve performance
-3. **Add strategic breakpoints** for human approval at critical decision points
-4. **Configure quality checks** that run as part of your workflow
+3. **Add strategic breakpoints** for human approval at critical decision points (enforced, not optional)
+4. **Configure quality checks** as one of the gates that run as part of your workflow
 5. **Parameterize your process** to make it reusable across different scenarios
 
 ---

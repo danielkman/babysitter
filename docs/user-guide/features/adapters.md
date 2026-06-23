@@ -19,6 +19,8 @@ There are two ways you will touch Adapters:
 
 > **Headline change for v6:** Babysitter is no longer "an orchestration framework for Claude Code." It is an orchestration framework for *any supported harness*, and Adapters is the subsystem that makes that true.
 
+> **Adapters is a FAMILY, not one thing.** What this page calls "Adapters" is really 20 distinct package types under `packages/adapters/` — triggers (CI), extensions (plugin compile), hooks (mandatory-stop lifecycle), proxy (140+ providers), tasks (durable breakpoints), codecs (per-harness drivers), and more. When you hear "adapters," ask *which* adapter. The full enumeration is in the [Adapter Types reference](../reference/adapter-types.md).
+
 ---
 
 ## On this page
@@ -133,7 +135,10 @@ To use Adapters from inside a harness as a Babysitter orchestration run, install
 
 ## Related Documentation
 
+- [Adapter Types reference](../reference/adapter-types.md) - All 20 adapter package types enumerated (Adapters is a family)
+- [Adapters (ecosystem overview)](../ecosystem/adapters.md) - Introductory tour of the adapters family
 - [Adapters CLI Reference](../reference/adapters-cli.md) - Every `adapters` command and flag
+- [Architecture & How It Fits Together](../architecture.md) - Where Adapters sits in the whole ecosystem
 - [Architecture Overview](architecture-overview.md) - Where Adapters sits in the v6 architecture
 - [Hooks](hooks.md) - The Hooks Adapter and per-harness continuation models
 - [Harnesses: Install Matrix](../harnesses/install-matrix.md) - All supported harnesses
@@ -142,5 +147,5 @@ To use Adapters from inside a harness as a Babysitter orchestration run, install
 
 ## Next steps
 
-- **Next:** [Adapters CLI Reference](../reference/adapters-cli.md)
-- **Related:** [Install Matrix](../harnesses/install-matrix.md), [Hooks](./hooks.md), [Architecture Overview](./architecture-overview.md)
+- **Next:** [Adapter Types reference](../reference/adapter-types.md) — all 20 types
+- **Related:** [Adapters CLI Reference](../reference/adapters-cli.md), [Install Matrix](../harnesses/install-matrix.md), [Hooks](./hooks.md), [Architecture & How It Fits Together](../architecture.md)

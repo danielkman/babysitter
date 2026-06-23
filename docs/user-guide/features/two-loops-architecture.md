@@ -3,7 +3,7 @@
 # Two-Loops Architecture: Understanding Hybrid Agentic Systems
 
 **Version:** 1.1
-**Last Updated:** 2026-01-26
+**Last Updated:** 2026-06-23
 **Category:** Feature Guide
 
 ---
@@ -12,7 +12,11 @@
 
 **Skip this section if you just want to USE babysitter.** This document explains the architecture for those who want to understand WHY babysitter works the way it does, or who are building custom processes.
 
-**The key insight:** Babysitter separates "what must happen" (deterministic rules) from "how to do it" (AI reasoning). This makes AI workflows reliable and debuggable.
+**The key insight:** Babysitter separates "what must happen" (deterministic rules) from "how to do it" (AI reasoning). This is what makes the product triad possible:
+
+1. **Deterministic process execution** — the boss loop is real code; the orchestrator can only do what it permits, and state is event-sourced for deterministic replay.
+2. **Complex agentic workflows** — the worker loop handles tasks, breakpoints, sleeps, parallel dispatch, dependencies, and sub-agent delegation across harnesses.
+3. **Policy / process adherence (obedience)** — a mandatory stop after every step, a process check, and a permit/halt decision. **Enforcement, not assistance — gates block progression until satisfied; they're not suggestions.**
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -37,7 +41,7 @@
 **When to skip this document:**
 - You just want to run existing processes
 - You're following a tutorial
-- You're a beginner (start with [Quality Convergence](./quality-convergence.md) instead)
+- You're a beginner (start with the [Getting Started overview](../getting-started/README.md) instead; [Quality Convergence](./quality-convergence.md) covers one gate type once you're ready)
 
 ---
 
@@ -309,7 +313,7 @@ const behavioralConfig = {
 
 ## Quality Gates: Turning Agentic Work into Reliable Outcomes
 
-Quality gates convert "it seems done" into "it is done."
+Quality gates are one consequence of code-defined gates: because the orchestrator only advances when the process permits, you can encode a gate that demands evidence before progression — converting "it seems done" into "it is done." Quality convergence is one such gate type, not the product thesis.
 
 ### The Evidence-Driven Pattern
 

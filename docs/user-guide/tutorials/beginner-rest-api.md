@@ -3,7 +3,7 @@
 # Beginner Tutorial: Build a Simple REST API with TDD
 
 **Version:** 1.0
-**Date:** 2026-01-25
+**Date:** 2026-06-23
 **Category:** Tutorial
 **Level:** Beginner
 **Estimated Time:** 45-60 minutes
@@ -27,15 +27,18 @@
 
 ---
 
+> **What this tutorial demonstrates:** Babysitter's core value is deterministic, obedient execution — the orchestrator only does what your process permits, stopping after every step to decide what's next (enforcement, not assistance). The quality convergence you'll observe here is *one* gate the process enforces, not the whole point.
+
 ## Learning Objectives
 
 By the end of this tutorial, you will be able to:
 
 1. **Start a Babysitter workflow** using natural language commands
-2. **Understand the TDD (Test-Driven Development) process** as orchestrated by Babysitter
-3. **Observe quality convergence** as Babysitter iterates toward your quality target
-4. **Interpret run output** including the journal, artifacts, and quality scores
-5. **Resume an interrupted workflow** if your session ends unexpectedly
+2. **See deterministic, obedient execution** — the orchestrator running only what the process permits, step by step
+3. **Understand the TDD (Test-Driven Development) process** as orchestrated by Babysitter
+4. **Observe a quality gate converge** toward your target (one of the gates the process enforces)
+5. **Interpret run output** including the journal, artifacts, and quality scores
+6. **Resume an interrupted workflow** via journal replay if your session ends unexpectedly
 
 ---
 
