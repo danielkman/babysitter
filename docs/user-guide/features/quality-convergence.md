@@ -2,15 +2,19 @@
 
 # Quality Convergence: Iterative Improvement Until Targets Met
 
-**Version:** 2.1
-**Last Updated:** 2026-01-26
+**Version:** 3.0 (v6 edition)
+**Last Updated:** 2026-06-23
 **Category:** Feature Guide
 
 ---
 
-## Quick Summary (Read This First)
+## Where This Fits
 
-**Quality Convergence = "Keep trying until it's good enough"**
+> **Quality convergence is *one* of Babysitter's roughly five core capabilities — not the whole product.** Babysitter is an enforcement engine for agentic work: it delivers (1) deterministic, event-sourced process execution, (2) complex agentic workflows (parallelism, dependencies, sub-agent delegation), (3) policy/process adherence and obedience (the orchestrator does only what your code permits), (4) multi-harness portability via the [Adapters](./adapters.md) runtime, and (5) quality convergence. For the full picture, start with the [Two-Loops Architecture](./two-loops-architecture.md) and the [Architecture Overview](./architecture-overview.md). This page documents capability #5: iterating until a defined quality target is met.
+
+## What Quality Convergence Is
+
+**Quality convergence is the pattern of looping — implement, measure, refine — until quality metrics meet a defined target, instead of running a task once and hoping.**
 
 Instead of:
 ```
@@ -21,6 +25,8 @@ Babysitter does:
 ```
 AI writes code → Tests: 60% pass → AI fixes → Tests: 85% pass → AI fixes → Tests: 95% pass ✓ Done!
 ```
+
+It is enforced by the same process-as-code authority that governs every other capability: the convergence loop is a gate your process defines, not a magic "try harder" mode.
 
 ### What You'll Learn in This Document
 

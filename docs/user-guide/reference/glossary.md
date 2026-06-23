@@ -4,7 +4,6 @@
 
 **Version:** 1.2
 **Last Updated:** 2026-06-22
-Last refreshed: 2026-06-10
 **Audience:** All users
 
 This glossary provides definitions for technical terms and concepts used in Babysitter documentation. Terms are organized alphabetically with cross-references to related concepts and links to detailed documentation.
@@ -756,7 +755,7 @@ A JavaScript/TypeScript function that is the *low-level code implementation* of 
 **Key distinction:** Process = low-level code implementation; [Methodology](#methodology) = high-level concept/pattern that a process implements.
 
 <!-- glossary:process-library:start -->
-**Babysitter currently exposes 2,239 JavaScript process files in the live repository tree** organized across methodologies, shared processes, and specializations.
+**Babysitter exposes roughly 2,000+ JavaScript process files in the live repository tree**, organized across methodologies, shared processes, and specializations. The four specialization domains below account for **2,038** of them; the remainder live under methodologies and shared processes.
 
 | Domain | Processes | Browse |
 |--------|-----------|--------|
@@ -764,6 +763,7 @@ A JavaScript/TypeScript function that is the *low-level code implementation* of 
 | **Business domains** | 490 | [Browse →](../../../library/specializations/domains/business/) |
 | **Science & engineering domains** | 551 | [Browse →](../../../library/specializations/domains/science/) |
 | **Social sciences & humanities** | 160 | [Browse →](../../../library/specializations/domains/social-sciences-humanities/) |
+| **Specialization domains subtotal** | **2,038** | |
 <!-- glossary:process-library:end -->
 
 **Structure:**

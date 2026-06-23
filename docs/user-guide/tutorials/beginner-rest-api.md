@@ -639,7 +639,7 @@ If you were to close Claude Code mid-run (please don't do this for a completed r
 To resume a previously interrupted run, you would use:
 
 ```
-/babysitter:call resume --run-id 01KFFTSF8TK8C9GT3YM9QYQ6WG
+/babysitter:resume 01KFFTSF8TK8C9GT3YM9QYQ6WG
 ```
 
 Or in natural language:
@@ -677,7 +677,7 @@ Congratulations! You have successfully completed your first Babysitter tutorial.
 
 ### What You Learned
 
-1. **Starting a Babysitter workflow** with the `/babysit` command
+1. **Starting a Babysitter workflow** with the `/babysitter:call` command
 2. **Understanding the phases**: Research, Specifications, TDD Implementation
 3. **Using breakpoints** for human-in-the-loop approval
 4. **Observing quality convergence** as Babysitter iterates to meet targets
@@ -719,7 +719,7 @@ claude plugin enable --scope user babysitter@a5c.ai
 **Solution (Interactive Mode - Claude Code):**
 1. Look for Claude's question in the chat - scroll up if needed
 2. Respond to the question to continue
-3. If the session timed out, resume with `/babysitter:call resume`
+3. If the session timed out, resume with `/babysitter:resume`
 
 **Solution (Non-Interactive Mode):**
 1. In non-interactive mode, breakpoints are routed to the durable Breakpoints Adapter backend / UI (not disabled)
@@ -761,5 +761,5 @@ claude plugin enable --scope user babysitter@a5c.ai
 ---
 
 **Document Status:** Complete
-**Last Updated:** 2026-01-25
+**Last Updated:** 2026-06-23
 **Feedback:** Found an issue? [Report it on GitHub](https://github.com/a5c-ai/babysitter/issues)

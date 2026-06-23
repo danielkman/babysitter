@@ -698,8 +698,11 @@ For harness-specific install problems on any other harness, see that harness's r
 
 **Solution:**
 ```bash
-# Check journal integrity
-cat .a5c/runs/<runId>/journal/journal.jsonl | head
+# Inspect the journal — it is one JSON file per event (not a single .jsonl)
+ls .a5c/runs/<runId>/journal/
+
+# Read the first event
+cat .a5c/runs/<runId>/journal/000001.*.json | jq .
 
 # Ask Claude to analyze
 claude "Analyze the babysitter run error for <runId> and try to recover"

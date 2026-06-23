@@ -487,7 +487,7 @@ Congratulations! You've completed your first Babysitter run. Here's what to expl
 
 - **Explore methodologies:**
   - TDD (Test-Driven Development) - what you just used
-  - GSD (Get Shit Done) - faster, less formal
+  - GSD (Get Stuff Done) - faster, less formal
   - Spec-Kit - specification-driven development
 - **Configure breakpoints** for approval workflows
 

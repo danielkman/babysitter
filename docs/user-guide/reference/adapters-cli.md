@@ -1,3 +1,10 @@
+---
+title: Adapters CLI Reference
+description: The host-side `adapters` CLI (@a5c-ai/adapters-cli) — install, run, manage, and authenticate AI coding harnesses directly from your shell.
+category: reference
+last_updated: 2026-06-23
+---
+
 [Docs](../index.md) › [Reference](./index.md) › Adapters CLI
 
 # Adapters CLI Reference

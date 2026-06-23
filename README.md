@@ -662,7 +662,7 @@ See [CONTRIBUTING.md](https://github.com/a5c-ai/babysitter/blob/main/CONTRIBUTIN
 
 | Tool | Description |
 |------|-------------|
-| [Observer Dashboard](https://github.com/yoavmayer/babysitter-observer-dashboard) | Real-time monitoring UI for parallel runs |
+| [Observer Dashboard](https://github.com/a5c-ai/babysitter) | Real-time monitoring UI for parallel runs — install and launch with the built-in `/babysitter:observe` command |
 | [Telegram Bot](https://github.com/a5c-ai/claude-code-telegram-bot) | Control sessions remotely |
 | [vibe-kanban](https://github.com/BloopAI/vibe-kanban) | Parallel process management |
 

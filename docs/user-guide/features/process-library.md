@@ -151,7 +151,7 @@ Click any link to view the current source location:
 | Area | Description | Link |
 |------|-------------|------|
 | **library/methodologies/** | Methodology families such as Agile, Devin, GSD, Kanban, Spec-Kit, and more | [Browse →](../../../library/methodologies/) |
-| **library/methodologies/gsd/** | Get Shit Done workflows | [Browse →](../../../library/methodologies/gsd/README.md) |
+| **library/methodologies/gsd/** | Get Stuff Done workflows | [Browse →](../../../library/methodologies/gsd/README.md) |
 | **library/specializations/** | Domain-specific processes across the specialization tree | [Browse →](../../../library/specializations/) |
 | **library/processes/shared/** | Shared reusable process components | [Browse →](../../../library/processes/shared/README.md) |
 | **library/tdd-quality-convergence.js** | Featured TDD workflow at the library root | [View](../../../library/tdd-quality-convergence.js) |

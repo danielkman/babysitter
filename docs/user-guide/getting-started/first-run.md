@@ -419,7 +419,7 @@ Different methodologies for different needs:
 | Methodology | Best For | Quality Focus |
 |-------------|----------|---------------|
 | TDD Quality Convergence | Feature development | High |
-| GSD (Get Shit Done) | Quick prototypes | Medium |
+| GSD (Get Stuff Done) | Quick prototypes | Medium |
 | Spec-Kit | Complex specifications | High |
 
 ```bash
