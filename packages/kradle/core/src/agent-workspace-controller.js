@@ -24,7 +24,11 @@ export function createAgentWorkspaceController() {
 
       const workspaceName = name || `ws-${repository.replace(/[^a-z0-9-]/gi, '-').toLowerCase()}-${Date.now()}`;
       const pvcName = `kradle-ws-${workspaceName}`;
-      const storageClassName = volumeSpec.storageClassName || 'standard';
+      // Omit storageClassName unless explicitly set (or overridden via env) so the
+      // PVC binds against the cluster's DEFAULT StorageClass. Hardcoding 'standard'
+      // broke AKS (whose default is 'default'/'managed-csi') — the PVC never bound
+      // ("storageclass 'standard' not found") and the agent pod stayed Pending.
+      const storageClassName = volumeSpec.storageClassName || process.env.KRADLE_WORKSPACE_STORAGE_CLASS || undefined;
       const capacity = volumeSpec.capacity || '10Gi';
       const accessModes = volumeSpec.accessModes || ['ReadWriteOnce'];
 
@@ -32,7 +36,7 @@ export function createAgentWorkspaceController() {
         organizationRef,
         repository,
         volumeSpec: {
-          storageClassName,
+          ...(storageClassName ? { storageClassName } : {}),
           capacity,
           accessModes,
         },
@@ -57,7 +61,7 @@ export function createAgentWorkspaceController() {
           },
         },
         spec: {
-          storageClassName,
+          ...(storageClassName ? { storageClassName } : {}),
           accessModes,
           resources: {
             requests: { storage: capacity },
