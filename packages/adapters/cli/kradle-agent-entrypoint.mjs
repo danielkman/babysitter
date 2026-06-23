@@ -30,6 +30,13 @@ const CLI = resolve(__dirname, 'dist/index.js');
 const harness = process.env.KRADLE_HARNESS || 'claude';
 const provider = process.env.KRADLE_PROVIDER || 'openai';
 const model = process.env.KRADLE_MODEL || '';
+// The launcher's resolveProvider does NOT auto-populate apiBase from
+// AGENT_MUX_API_BASE for the openai provider, so without an explicit --api-base
+// it creates no completion engine and the transport-mux proxy 404s every harness
+// request. Pass apiBase/apiKey explicitly (the model-provider secret supplies
+// them) so the proxy can translate the harness ↔ provider.
+const apiBase = process.env.AGENT_MUX_API_BASE || process.env.KRADLE_ASSISTANT_BASE_URL || '';
+const apiKey = process.env.OPENAI_API_KEY || process.env.AZURE_API_KEY || process.env.KRADLE_ASSISTANT_API_KEY || '';
 const task = process.env.AGENT_TASK || '';
 const systemPrompt = process.env.AGENT_SYSTEM_PROMPT || '';
 const callbackUrl = process.env.KRADLE_CALLBACK_URL || '';
@@ -100,6 +107,8 @@ function runHarness() {
     const args = [
       CLI, 'launch', harness, provider,
       ...(model ? ['--model', model] : []),
+      ...(apiBase ? ['--api-base', apiBase] : []),
+      ...(apiKey ? ['--api-key', apiKey] : []),
       '--with-proxy-if-needed',
       '--no-interactive',
       '-p', fullTask,
