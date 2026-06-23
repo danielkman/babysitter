@@ -375,6 +375,14 @@ export function withOrgScope(resource, options = {}) {
       spec: { createNamespace: true, ...(resource.spec || {}), organizationRef: org, namespace: orgNamespace, labels: { ...(resource.spec?.labels || {}), [KRADLE_ORG_LABEL]: org } }
     };
   }
+  // Non-kradle resources (e.g. a batch/v1 agent Job, a core ServiceAccount/Secret)
+  // are not org-scoped CRDs: they carry their own namespace and must NOT have
+  // spec.organizationRef injected — Kubernetes strict decoding rejects the unknown
+  // field ("Job ... cannot be handled ... unknown field spec.organizationRef"),
+  // which silently dropped every dispatched agent Job. Apply them as-is.
+  if (!String(resource.apiVersion || '').startsWith(`${KRADLE_API_GROUP}/`)) {
+    return resource;
+  }
   const { org, namespace } = resolveResourceOrg(resource, options);
   if (resource.metadata?.namespace && resource.metadata.namespace !== namespace) throw new Error(`${resource.kind} namespace ${resource.metadata.namespace} does not match organization ${org} namespace ${namespace}`);
   if (resource.metadata?.labels?.[KRADLE_ORG_LABEL] && resource.metadata.labels[KRADLE_ORG_LABEL] !== org) throw new Error(`${resource.kind} org label does not match spec.organizationRef`);

@@ -291,6 +291,17 @@ export function createKradleApiController(options = {}) {
           result.memorySnapshot
         );
       }
+      // Apply the workspace PVC the dispatch built. createManualDispatch returns
+      // the manifest but has no gateway to apply it, so without this the agent
+      // Job references a PVC that never exists and the pod stays Pending. The PVC
+      // is a core/v1 resource (passed through withOrgScope unchanged).
+      if (result && !result.error && result.workspace?.pvcManifest) {
+        try {
+          await resourceGateway.apply(result.workspace.pvcManifest);
+        } catch (err) {
+          result.workspaceApplyError = err.message || String(err);
+        }
+      }
       return result;
     },
     async approveAgentAction(input) {
