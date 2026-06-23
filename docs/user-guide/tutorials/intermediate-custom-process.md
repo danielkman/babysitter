@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Tutorials](./index.md) › Custom Process
+
 # Intermediate Tutorial: Custom Process Definition
 
 **Version:** 1.0
@@ -10,6 +12,18 @@
 ---
 
 > **Works on any harness:** This tutorial uses Claude Code's `/babysitter:call` command token, but Babysitter is harness-agnostic and the same custom-process flow runs on every supported harness with its own in-session token. See the [Install Matrix](../harnesses/install-matrix.md) for per-harness setup.
+
+---
+
+## On this page
+
+- [Prerequisites](#prerequisites)
+- [Step 1: Understand Process Definition Structure](#step-1-understand-process-definition-structure)
+- [Step 3: Define Your Task Definitions](#step-3-define-your-task-definitions)
+- [Step 4: Write the Main Process Definition](#step-4-write-the-main-process-definition)
+- [Step 7: Run Your Custom Process](#step-7-run-your-custom-process)
+- [Step 10: Understanding Parallel Execution Benefits](#step-10-understanding-parallel-execution-benefits)
+- [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -128,7 +142,7 @@ This process demonstrates several powerful Babysitter features:
 
 Before we write code, let's understand how Babysitter process definitions work.
 
-A **process definition** is a JavaScript function that orchestrates tasks using a context object (`ctx`). The context provides methods for:
+A **[process definition](../reference/glossary.md)** is a JavaScript function that orchestrates tasks using a context object (`ctx`). The context provides methods for:
 
 | Method | Purpose | Example |
 |--------|---------|---------|
@@ -964,23 +978,6 @@ Congratulations! You have successfully created a custom Babysitter process defin
 
 ---
 
-## Next Steps
-
-Now that you've mastered custom process definitions, here are paths to continue:
-
-### Continue Learning
-- **[Advanced Tutorial: Multi-Phase Feature Development](./advanced-multi-phase.md)** - Team workflows with agent scoring and quality convergence
-
-### Go Deeper
-- **[Process Engine Architecture](../features/process-definitions.md)** - Understand how processes execute
-- **[Task Types Reference](../reference/cli-reference.md)** - Complete reference for all task types
-
-### Apply Your Knowledge
-- **[How to Create Team Templates](../features/process-definitions.md)** - Share processes across your team
-- **[Quality Convergence](../features/quality-convergence.md)** - Custom quality evaluators
-
----
-
 ## Troubleshooting
 
 ### Issue: "Process file not found"
@@ -1028,6 +1025,14 @@ Now that you've mastered custom process definitions, here are paths to continue:
 - [CLI Reference](../reference/cli-reference.md) - Running processes via CLI
 - [Configuration Reference](../reference/configuration.md) - All configuration options
 - [Breakpoints](../features/breakpoints.md) - How breakpoints work
+
+---
+
+## Next steps
+
+- **Previous:** [Build a REST API](./beginner-rest-api.md)
+- **Next:** [Multi-Phase Workflows](./advanced-multi-phase.md)
+- **Related:** [Process Definitions](../features/process-definitions.md), [Best Practices](../features/best-practices.md)
 
 ---
 

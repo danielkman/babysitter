@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Features](./index.md) › Process Library
+
 # Process Library
 
 <!-- process-library:lead:start -->
@@ -26,6 +28,18 @@ The Babysitter Process Library is the SDK-managed library under [`library/`](../
 
 ---
 
+## On this page
+
+- [Quick Start: Using the Library](#quick-start-using-the-library)
+- [What is the Process Library?](#what-is-the-process-library)
+- [How Babysitter Uses the Process Library](#how-babysitter-uses-the-process-library)
+- [Library Structure](#library-structure)
+- [Browsing and Discovering Processes](#browsing-and-discovering-processes)
+- [Customizing Processes](#customizing-processes)
+- [Best Practices](#best-practices)
+
+---
+
 ## Quick Start: Using the Library
 
 **Most users never need to browse the library directly.** Just describe what you want:
@@ -48,7 +62,7 @@ That's it! See the sections below for details on what's available.
 
 The Process Library provides ready-to-use orchestration workflows for virtually any task you might encounter. Each process is:
 
-- **Battle-tested**: Designed with best practices and quality gates built-in
+- **Battle-tested**: Designed with best practices and [quality gates](../reference/glossary.md) built-in
 - **Composable**: Can be combined with other processes to create complex workflows
 - **Customizable**: Extend or modify any process to match your requirements
 - **Self-documenting**: Includes clear inputs, outputs, and execution flow
@@ -572,3 +586,8 @@ Most processes accept configuration through inputs:
 - [Quality Convergence](./quality-convergence.md) - Quality gates and scoring
 - [Breakpoints](./breakpoints.md) - Human-in-the-loop approval
 - [Parallel Execution](./parallel-execution.md) - Running tasks concurrently
+
+## Next steps
+
+- **Next:** [Process Definitions](./process-definitions.md)
+- **Related:** [Best Practices](./best-practices.md), [Quality Convergence](./quality-convergence.md)

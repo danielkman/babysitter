@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Features](./index.md) › Run Resumption
+
 # Run Resumption: Pause and Continue Workflows
 
 **Version:** 1.1
@@ -23,9 +25,21 @@ Close your laptop, end your session, or even have your computer crash - when you
 
 ---
 
+## On this page
+
+- [Overview](#overview)
+- [Use Cases and Scenarios](#use-cases-and-scenarios)
+- [Step-by-Step Instructions](#step-by-step-instructions)
+- [Configuration Options](#configuration-options)
+- [Code Examples and Best Practices](#code-examples-and-best-practices)
+- [Common Pitfalls and Troubleshooting](#common-pitfalls-and-troubleshooting)
+- [How Resumption Works](#how-resumption-works)
+
+---
+
 ## Overview
 
-Run resumption enables pausing and continuing Babysitter workflows at any point. Whether a session times out, a breakpoint awaits approval, or you simply need to continue later, Babysitter's event-sourced architecture ensures no work is lost. Workflows automatically resume from exactly where they left off.
+Run resumption enables pausing and continuing Babysitter workflows at any point. Whether a session times out, a [breakpoint](../reference/glossary.md) awaits approval, or you simply need to continue later, Babysitter's event-sourced architecture ensures no work is lost. Workflows automatically resume from exactly where they left off.
 
 ### Why Use Run Resumption
 
@@ -517,3 +531,10 @@ export async function process(inputs, ctx) {
 ## Summary
 
 Run resumption is a fundamental Babysitter capability that ensures workflow progress is never lost. The event-sourced journal captures every state change, enabling workflows to resume from exactly where they paused. Use breakpoints for natural pause points, check run status before resuming, and design processes with resumption in mind.
+
+---
+
+## Next steps
+
+- **Next:** [Journal System](./journal-system.md)
+- **Related:** [Breakpoints](./breakpoints.md), [CLI Reference](../reference/cli-reference.md)

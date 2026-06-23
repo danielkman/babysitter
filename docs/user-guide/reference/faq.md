@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Reference](./index.md) › FAQ
+
 # Frequently Asked Questions (FAQ)
 
 **Version:** 1.2
@@ -41,7 +43,7 @@ Still have questions? Browse the full FAQ below, or check the [Troubleshooting g
 
 ### What is Babysitter?
 
-Babysitter is an event-sourced, harness-agnostic orchestration framework (v6) that enables deterministic, resumable, and human-in-the-loop workflow management across any supported AI coding harness via the Adapters runtime. It allows you to build complex, multi-step development processes with built-in quality gates, human approval checkpoints, and automatic iteration until quality targets are met.
+Babysitter is an event-sourced, harness-agnostic orchestration framework (v6) that enables deterministic, resumable, and human-in-the-loop workflow management across any supported AI coding harness via the Adapters runtime. It allows you to build complex, multi-step development processes with built-in [quality gates](./glossary.md), human approval checkpoints, and automatic iteration until quality targets are met.
 
 **Key features:**
 - Structured multi-step workflows
@@ -850,6 +852,13 @@ Kill the conflicting process or configure a different port in your SDK settings.
 - [Error Catalog](./error-catalog.md) - Common error messages explained
 - [GitHub Issues](https://github.com/a5c-ai/babysitter/issues) - Report bugs
 - [GitHub Discussions](https://github.com/a5c-ai/babysitter/discussions) - Ask questions
+
+---
+
+## Next steps
+
+- **Next:** [Troubleshooting](./troubleshooting.md)
+- **Related:** [Glossary](./glossary.md), [Error Catalog](./error-catalog.md)
 
 ---
 

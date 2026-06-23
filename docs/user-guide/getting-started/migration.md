@@ -1,6 +1,17 @@
+[Docs](../index.md) › [Getting Started](./README.md) › Migration
+
 # Migration Guide: Prod (0.0.x) to v6 (5.1.0)
 
 **Category:** Getting Started · **Last Updated:** 2026-06-22
+
+## On this page
+
+- [In Plain English](#in-plain-english)
+- [Version Jump](#version-jump)
+- [Breaking Changes](#breaking-changes)
+- [Deprecated (still works, will be removed)](#deprecated-still-works-will-be-removed)
+- [Migration Checklist](#migration-checklist)
+- [Related Documentation](#related-documentation)
 
 ---
 
@@ -110,3 +121,11 @@ These are marked deprecated throughout the docs and will be removed in a future 
 - [Adapters](../features/adapters.md) · [Hooks](../features/hooks.md)
 - [Configuration](../reference/configuration.md) · [Glossary](../reference/glossary.md)
 - [Install Matrix](../harnesses/install-matrix.md)
+
+---
+
+## Next steps
+
+- **Next:** [Installation](./installation.md) — install the v6 packages
+- **Related:** [CLI Reference](../reference/cli-reference.md)
+- **Related:** [Adapters CLI](../reference/adapters-cli.md)

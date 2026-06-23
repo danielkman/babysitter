@@ -1,6 +1,6 @@
 # Summary
 
-This is the GitBook-style table of contents for the Babysitter User Guide.
+This is the GitBook-style table of contents for the Babysitter User Guide. It is kept in sync with the Docusaurus sidebar in [navigation.md](./navigation.md) and the entry points on the [landing page](./index.md).
 
 ---
 
@@ -20,15 +20,27 @@ This is the GitBook-style table of contents for the Babysitter User Guide.
 
 ---
 
+## Tutorials
+
+* [Tutorials Overview](./tutorials/index.md)
+* [Build a REST API (Beginner)](./tutorials/beginner-rest-api.md)
+* [Custom Process (Intermediate)](./tutorials/intermediate-custom-process.md)
+* [Multi-Phase Workflows (Advanced)](./tutorials/advanced-multi-phase.md)
+
+---
+
 ## Features
 
-* [**Process Library** (current library snapshot)](./features/process-library.md)
+* [Features Overview](./features/index.md)
+* [Architecture Overview](./features/architecture-overview.md)
+* [**Two-Loops Architecture** (the core model)](./features/two-loops-architecture.md)
 * [**Adapters** (run on any harness)](./features/adapters.md)
+* [**Process Library** (current library snapshot)](./features/process-library.md)
+* [Process Definitions](./features/process-definitions.md)
+* [**Quality Convergence**](./features/quality-convergence.md)
 * [**Best Practices Guide**](./features/best-practices.md)
 * [Breakpoints](./features/breakpoints.md)
 * [Hooks](./features/hooks.md)
-* [Quality Convergence](./features/quality-convergence.md)
-* [Process Definitions](./features/process-definitions.md)
 * [Journal System](./features/journal-system.md)
 * [Run Resumption](./features/run-resumption.md)
 * [Parallel Execution](./features/parallel-execution.md)
@@ -43,20 +55,14 @@ This is the GitBook-style table of contents for the Babysitter User Guide.
 
 ---
 
-## Tutorials
-
-* [Build a REST API](./tutorials/beginner-rest-api.md)
-* [Custom Process](./tutorials/intermediate-custom-process.md)
-* [Multi-Phase Workflows](./tutorials/advanced-multi-phase.md)
-
----
-
 ## Reference
 
+* [Reference Overview](./reference/index.md)
 * [Slash Commands](./reference/slash-commands.md)
 * [CLI Reference](./reference/cli-reference.md)
 * [Adapters CLI](./reference/adapters-cli.md)
 * [Configuration](./reference/configuration.md)
+* [Security](./reference/security.md)
 * [Error Catalog](./reference/error-catalog.md)
 * [Glossary](./reference/glossary.md)
 * [FAQ](./reference/faq.md)
@@ -71,7 +77,7 @@ docs/user-guide/
 |
 +-- index.md                              # Landing page
 +-- SUMMARY.md                            # Table of contents (this file)
-+-- navigation.md                         # Navigation configuration
++-- navigation.md                         # Docusaurus navigation configuration
 |
 +-- getting-started/                      # Getting Started Section
 |   +-- README.md                         # Overview
@@ -80,14 +86,23 @@ docs/user-guide/
 |   +-- first-run.md                      # First workflow execution
 |   +-- migration.md                      # Prod (0.0.x) to v6 migration guide
 |
++-- tutorials/                            # Step-by-Step Tutorials
+|   +-- index.md                          # Tutorials overview
+|   +-- beginner-rest-api.md              # Build REST API (beginner)
+|   +-- intermediate-custom-process.md    # Custom process (intermediate)
+|   +-- advanced-multi-phase.md           # Multi-phase workflows (advanced)
+|
 +-- features/                             # Core Features
+|   +-- index.md                          # Features overview
+|   +-- architecture-overview.md          # How the v6 subsystems fit together
+|   +-- two-loops-architecture.md         # Symbolic + agentic hybrid model
+|   +-- adapters.md                        # Run Babysitter on any harness (v6)
 |   +-- process-library.md                # SDK-managed built-in library and current counts
-|   +-- adapters.md                       # Run Babysitter on any harness (v6)
+|   +-- process-definitions.md            # Workflow templates
+|   +-- quality-convergence.md            # Iterative quality improvement
 |   +-- best-practices.md                 # Comprehensive best practices guide
 |   +-- breakpoints.md                    # Human-in-the-loop approval
 |   +-- hooks.md                          # Extensible lifecycle events
-|   +-- quality-convergence.md            # Iterative quality improvement
-|   +-- process-definitions.md            # Workflow templates
 |   +-- journal-system.md                 # Event sourcing and audit
 |   +-- run-resumption.md                 # Continue interrupted work
 |   +-- parallel-execution.md             # Concurrent task execution
@@ -97,20 +112,17 @@ docs/user-guide/
 |   +-- claude-code.md                    # Claude Code (fully supported)
 |   +-- codex.md                          # Codex (fully supported)
 |
-+-- tutorials/                            # Step-by-Step Tutorials
-|   +-- beginner-rest-api.md              # Build REST API (beginner)
-|   +-- intermediate-custom-process.md    # Custom process (intermediate)
-|   +-- advanced-multi-phase.md           # Multi-phase workflows (advanced)
-|
 +-- reference/                            # Technical Reference
-|   +-- slash-commands.md                 # In-session /babysitter:* command surface
-|   +-- cli-reference.md                  # Command-line interface
-|   +-- adapters-cli.md                   # Host-side `adapters` CLI reference (v6)
-|   +-- configuration.md                  # Config options
-|   +-- error-catalog.md                  # Error codes and solutions
-|   +-- glossary.md                       # Terminology
-|   +-- faq.md                            # Frequently asked questions
-|   +-- troubleshooting.md                # Problem resolution
+    +-- index.md                          # Reference overview
+    +-- slash-commands.md                 # In-session /babysitter:* command surface
+    +-- cli-reference.md                  # Command-line interface
+    +-- adapters-cli.md                   # Host-side `adapters` CLI reference (v6)
+    +-- configuration.md                  # Config options
+    +-- security.md                       # Security model and hardening
+    +-- error-catalog.md                  # Error codes and solutions
+    +-- glossary.md                       # Terminology
+    +-- faq.md                            # Frequently asked questions
+    +-- troubleshooting.md                # Problem resolution
 ```
 
 ---
@@ -120,12 +132,13 @@ docs/user-guide/
 | Section | Pages | Status |
 |---------|-------|--------|
 | Getting Started | 5 | Complete |
-| Features | 10 | Complete |
+| Tutorials | 4 | Complete |
+| Features | 13 | Complete |
 | Harnesses | 3 | Complete |
-| Tutorials | 3 | Complete |
-| Reference | 8 | Complete |
-| Navigation | 3 | Complete |
-| **Total** | **32** | **Active** |
+| Reference | 10 | Complete |
+| Navigation | 2 | Complete |
+| Home | 1 | Complete |
+| **Total** | **38** | **Active** |
 
 ---
 
@@ -184,4 +197,4 @@ docs/user-guide/
 
 ---
 
-*Last updated: 2026-01-25*
+*Last updated: 2026-06-23*

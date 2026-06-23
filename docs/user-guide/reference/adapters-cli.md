@@ -1,6 +1,18 @@
+[Docs](../index.md) › [Reference](./index.md) › Adapters CLI
+
 # Adapters CLI Reference
 
 **Package:** `@a5c-ai/adapters-cli` · **Binary:** `adapters` · **Version:** 5.1.0 · **Node:** >=20.9.0
+
+## On this page
+
+- [In Plain English](#in-plain-english)
+- [Technical Reference](#technical-reference)
+- [adapters run](#adapters-run)
+- [adapters install (and uninstall / update / detect)](#adapters-install-and-uninstall--update--detect)
+- [adapters auth](#adapters-auth)
+- [adapters doctor](#adapters-doctor)
+- [Not Supported](#not-supported)
 
 ---
 
@@ -8,7 +20,7 @@
 
 **The `adapters` CLI lets you run any supported AI coding harness from your shell with one command - and manage its install, models, sessions, config, and auth in the same place.**
 
-It is the host-side companion to Babysitter's [Adapters](../features/adapters.md) runtime. Where the in-session `/babysitter:*` commands drive an orchestration run from *inside* a harness, `adapters` drives a harness from *outside* it.
+It is the host-side companion to Babysitter's [Adapters](../features/adapters.md) runtime. Where the in-session `/babysitter:*` commands drive an orchestration [run](./glossary.md) from *inside* a harness, `adapters` drives a harness from *outside* it.
 
 A two-line taste:
 
@@ -578,3 +590,10 @@ A handful of items appear in help text or are reserved internally but are **not*
 - [CLI Reference](./cli-reference.md) - The core `babysitter` orchestration CLI
 - [Slash Commands](./slash-commands.md) - The in-session `/babysitter:*` surface
 - [CLI Examples](../../cli-examples.md) - Worked command examples
+
+---
+
+## Next steps
+
+- **Next:** [Configuration](./configuration.md)
+- **Related:** [Adapters (concept)](../features/adapters.md), [Install Matrix](../harnesses/install-matrix.md), [CLI Reference](./cli-reference.md)

@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Reference](./index.md) › Configuration
+
 # Babysitter Configuration Reference
 
 **Version:** 5.1.0 (v6)
@@ -50,7 +52,7 @@ Babysitter configuration is managed through:
 
 - **Convention over configuration** - Sensible defaults work out of the box
 - **Explicit overrides** - Environment variables and CLI flags for customization
-- **Immutable runs** - Run configuration is captured at creation time
+- **Immutable runs** - [Run](./glossary.md) configuration is captured at creation time
 - **Git-friendly** - Human-readable JSON and markdown files
 
 ---
@@ -647,3 +649,10 @@ env:
 - [CLI Reference](./cli-reference.md) - Complete CLI documentation
 - [Glossary](./glossary.md) - Term definitions
 - [Troubleshooting](./troubleshooting.md) - Common issues and solutions
+
+---
+
+## Next steps
+
+- **Next:** [Security](./security.md)
+- **Related:** [CLI Reference](./cli-reference.md), [Troubleshooting](./troubleshooting.md)

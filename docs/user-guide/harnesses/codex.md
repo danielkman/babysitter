@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Harnesses](./install-matrix.md) › Codex
+
 # Codex
 
 **Tier:** Fully supported · **Repo:** `a5c-ai/babysitter-codex` · **Harness key:** `codex`
@@ -8,9 +10,20 @@
 
 **On Codex you get the full Babysitter experience through the `$` mention picker: type `$babysitter:call` (and friends) to drive an orchestration run.**
 
-Install the plugin once, and Babysitter surfaces as a set of skills you invoke from Codex's mention picker. The orchestration loop is driven by Codex's `SessionStart + UserPromptSubmit + Stop` hooks, auto-detected from the plugin's `hooks.json`.
+Install the [plugin](../reference/glossary.md) once, and Babysitter surfaces as a set of skills you invoke from Codex's mention picker. The orchestration loop is driven by Codex's `SessionStart + UserPromptSubmit + Stop` hooks, auto-detected from the plugin's `hooks.json`.
 
 **Estimated time to first run:** about 5 minutes. **End state:** you can mention `$babysitter:call` in Codex and watch a run iterate to a quality target.
+
+---
+
+## On this page
+
+- [Install](#install)
+- [Verify](#verify)
+- [Command Surface](#command-surface)
+- [Hook / Continuation Model](#hook--continuation-model)
+- [First Run](#first-run)
+- [Related Documentation](#related-documentation)
 
 ---
 
@@ -96,3 +109,10 @@ Babysitter creates a run and iterates toward your quality target, pausing for ap
 - [Hooks](../features/hooks.md) · [Adapters](../features/adapters.md)
 - [Install Matrix](install-matrix.md) - all other supported harnesses
 - [Claude Code](claude-code.md) - the other fully-supported harness
+
+---
+
+## Next steps
+
+- **Next:** [Install Matrix](./install-matrix.md)
+- **Related:** [Claude Code](./claude-code.md), [Slash Commands](../reference/slash-commands.md), [Adapters](../features/adapters.md)

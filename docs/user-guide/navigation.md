@@ -2,7 +2,7 @@
 title: Navigation Configuration
 description: Sidebar and menu navigation structure for Babysitter documentation
 category: config
-last_updated: 2026-01-25
+last_updated: 2026-06-23
 ---
 
 # Navigation Configuration
@@ -17,7 +17,7 @@ This document defines the navigation structure for the Babysitter User Guide doc
 +------------------------------------------------------------------------+
 |  [Logo] Babysitter Docs                                                 |
 +------------------------------------------------------------------------+
-|  Home  |  Getting Started  |  Features  |  Harnesses  |  Tutorials  |  Reference  |  [Search]  |
+|  Home  |  Getting Started  |  Tutorials  |  Features  |  Harnesses  |  Reference  |  [Search]  |
 +------------------------------------------------------------------------+
 ```
 
@@ -43,21 +43,46 @@ This document defines the navigation structure for the Babysitter User Guide doc
       path: /getting-started/migration.md
 ```
 
+### Tutorials
+
+```yaml
+- section: Tutorials
+  path: /tutorials/
+  items:
+    - title: Tutorials Overview
+      path: /tutorials/index.md
+    - title: Build a REST API
+      path: /tutorials/beginner-rest-api.md
+      level: beginner
+    - title: Custom Process
+      path: /tutorials/intermediate-custom-process.md
+      level: intermediate
+    - title: Multi-Phase Workflows
+      path: /tutorials/advanced-multi-phase.md
+      level: advanced
+```
+
 ### Features
 
 ```yaml
 - section: Features
   path: /features/
   items:
-    - title: Process Library
-      path: /features/process-library.md
+    - title: Features Overview
+      path: /features/index.md
+    - title: Architecture Overview
+      path: /features/architecture-overview.md
+    - title: Two-Loops Architecture
+      path: /features/two-loops-architecture.md
       highlight: true
     - title: Adapters
       path: /features/adapters.md
       highlight: true
-    - title: Two-Loops Architecture
-      path: /features/two-loops-architecture.md
+    - title: Process Library
+      path: /features/process-library.md
       highlight: true
+    - title: Process Definitions
+      path: /features/process-definitions.md
     - title: Quality Convergence
       path: /features/quality-convergence.md
       highlight: true
@@ -68,8 +93,6 @@ This document defines the navigation structure for the Babysitter User Guide doc
       path: /features/breakpoints.md
     - title: Hooks
       path: /features/hooks.md
-    - title: Process Definitions
-      path: /features/process-definitions.md
     - title: Journal System
       path: /features/journal-system.md
     - title: Run Resumption
@@ -92,29 +115,14 @@ This document defines the navigation structure for the Babysitter User Guide doc
       path: /harnesses/codex.md
 ```
 
-### Tutorials
-
-```yaml
-- section: Tutorials
-  path: /tutorials/
-  items:
-    - title: Build a REST API
-      path: /tutorials/beginner-rest-api.md
-      level: beginner
-    - title: Custom Process
-      path: /tutorials/intermediate-custom-process.md
-      level: intermediate
-    - title: Multi-Phase Workflows
-      path: /tutorials/advanced-multi-phase.md
-      level: advanced
-```
-
 ### Reference
 
 ```yaml
 - section: Reference
   path: /reference/
   items:
+    - title: Reference Overview
+      path: /reference/index.md
     - title: Slash Commands
       path: /reference/slash-commands.md
       highlight: true
@@ -124,6 +132,8 @@ This document defines the navigation structure for the Babysitter User Guide doc
       path: /reference/adapters-cli.md
     - title: Configuration
       path: /reference/configuration.md
+    - title: Security
+      path: /reference/security.md
     - title: Error Catalog
       path: /reference/error-catalog.md
     - title: Glossary
@@ -163,16 +173,30 @@ For documentation platforms that use JSON configuration (e.g., Docusaurus, ViteP
       },
       {
         "type": "dropdown",
+        "label": "Tutorials",
+        "position": "left",
+        "items": [
+          { "label": "Tutorials Overview", "to": "/tutorials/" },
+          { "label": "Build a REST API", "to": "/tutorials/beginner-rest-api" },
+          { "label": "Custom Process", "to": "/tutorials/intermediate-custom-process" },
+          { "label": "Multi-Phase Workflows", "to": "/tutorials/advanced-multi-phase" }
+        ]
+      },
+      {
+        "type": "dropdown",
         "label": "Features",
         "position": "left",
         "items": [
-          { "label": "Process Library", "to": "/features/process-library" },
+          { "label": "Features Overview", "to": "/features/" },
+          { "label": "Architecture Overview", "to": "/features/architecture-overview" },
+          { "label": "Two-Loops Architecture", "to": "/features/two-loops-architecture" },
           { "label": "Adapters", "to": "/features/adapters" },
+          { "label": "Process Library", "to": "/features/process-library" },
+          { "label": "Process Definitions", "to": "/features/process-definitions" },
+          { "label": "Quality Convergence", "to": "/features/quality-convergence" },
           { "label": "Best Practices Guide", "to": "/features/best-practices" },
           { "label": "Breakpoints", "to": "/features/breakpoints" },
           { "label": "Hooks", "to": "/features/hooks" },
-          { "label": "Quality Convergence", "to": "/features/quality-convergence" },
-          { "label": "Process Definitions", "to": "/features/process-definitions" },
           { "label": "Journal System", "to": "/features/journal-system" },
           { "label": "Run Resumption", "to": "/features/run-resumption" },
           { "label": "Parallel Execution", "to": "/features/parallel-execution" }
@@ -190,23 +214,15 @@ For documentation platforms that use JSON configuration (e.g., Docusaurus, ViteP
       },
       {
         "type": "dropdown",
-        "label": "Tutorials",
-        "position": "left",
-        "items": [
-          { "label": "Build a REST API", "to": "/tutorials/beginner-rest-api" },
-          { "label": "Custom Process", "to": "/tutorials/intermediate-custom-process" },
-          { "label": "Multi-Phase Workflows", "to": "/tutorials/advanced-multi-phase" }
-        ]
-      },
-      {
-        "type": "dropdown",
         "label": "Reference",
         "position": "left",
         "items": [
+          { "label": "Reference Overview", "to": "/reference/" },
           { "label": "Slash Commands", "to": "/reference/slash-commands" },
           { "label": "CLI Reference", "to": "/reference/cli-reference" },
           { "label": "Adapters CLI", "to": "/reference/adapters-cli" },
           { "label": "Configuration", "to": "/reference/configuration" },
+          { "label": "Security", "to": "/reference/security" },
           { "label": "Error Catalog", "to": "/reference/error-catalog" },
           { "label": "Glossary", "to": "/reference/glossary" },
           { "label": "FAQ", "to": "/reference/faq" },
@@ -240,16 +256,30 @@ For documentation platforms that use JSON configuration (e.g., Docusaurus, ViteP
       },
       {
         "type": "category",
+        "label": "Tutorials",
+        "collapsed": false,
+        "link": { "type": "doc", "id": "tutorials/index" },
+        "items": [
+          "tutorials/beginner-rest-api",
+          "tutorials/intermediate-custom-process",
+          "tutorials/advanced-multi-phase"
+        ]
+      },
+      {
+        "type": "category",
         "label": "Features",
         "collapsed": false,
+        "link": { "type": "doc", "id": "features/index" },
         "items": [
-          "features/process-library",
+          "features/architecture-overview",
+          "features/two-loops-architecture",
           "features/adapters",
+          "features/process-library",
+          "features/process-definitions",
+          "features/quality-convergence",
           "features/best-practices",
           "features/breakpoints",
           "features/hooks",
-          "features/quality-convergence",
-          "features/process-definitions",
           "features/journal-system",
           "features/run-resumption",
           "features/parallel-execution"
@@ -267,23 +297,15 @@ For documentation platforms that use JSON configuration (e.g., Docusaurus, ViteP
       },
       {
         "type": "category",
-        "label": "Tutorials",
-        "collapsed": false,
-        "items": [
-          "tutorials/beginner-rest-api",
-          "tutorials/intermediate-custom-process",
-          "tutorials/advanced-multi-phase"
-        ]
-      },
-      {
-        "type": "category",
         "label": "Reference",
         "collapsed": false,
+        "link": { "type": "doc", "id": "reference/index" },
         "items": [
           "reference/slash-commands",
           "reference/cli-reference",
           "reference/adapters-cli",
           "reference/configuration",
+          "reference/security",
           "reference/error-catalog",
           "reference/glossary",
           "reference/faq",
@@ -327,11 +349,11 @@ For documentation platforms that use JSON configuration (e.g., Docusaurus, ViteP
 
 ```
 +-------------------------------------------------------------------------+
-| Getting Started   | Features          | Tutorials      | Reference      |
-| - Installation    | - Breakpoints     | - REST API     | - CLI          |
-| - Quickstart      | - Hooks           | - Custom Proc. | - Config       |
-| - First Run       | - Quality Conv.   | - Multi-Phase  | - Errors       |
-|                   | - Processes       |                | - Glossary     |
+| Getting Started   | Tutorials      | Features          | Reference      |
+| - Installation    | - REST API     | - Two-Loops       | - CLI          |
+| - Quickstart      | - Custom Proc. | - Adapters        | - Config       |
+| - First Run       | - Multi-Phase  | - Quality Conv.   | - Security     |
+|                   |                | - Breakpoints     | - Glossary     |
 +-------------------------------------------------------------------------+
 | Resources                                                                |
 | GitHub | Issues | Discussions | Releases | Support                      |
@@ -342,17 +364,22 @@ For documentation platforms that use JSON configuration (e.g., Docusaurus, ViteP
 
 ## Breadcrumb Configuration
 
+Every content page opens with a compact breadcrumb of the form `Docs › Section › Page`, rendered as Markdown links so it works on GitBook, Docusaurus, and plain GitHub. Examples:
+
 | Page | Breadcrumb Path |
 |------|-----------------|
 | Home | `Docs` |
-| Installation | `Docs > Getting Started > Installation` |
-| Process Library | `Docs > Features > Process Library` |
-| Best Practices Guide | `Docs > Features > Best Practices Guide` |
-| Breakpoints | `Docs > Features > Breakpoints` |
-| Hooks | `Docs > Features > Hooks` |
-| REST API Tutorial | `Docs > Tutorials > Build a REST API` |
-| CLI Reference | `Docs > Reference > CLI Reference` |
-| Glossary | `Docs > Reference > Glossary` |
+| Installation | `Docs › Getting Started › Installation` |
+| Two-Loops Architecture | `Docs › Features › Two-Loops Architecture` |
+| Process Library | `Docs › Features › Process Library` |
+| Best Practices Guide | `Docs › Features › Best Practices Guide` |
+| Breakpoints | `Docs › Features › Breakpoints` |
+| Hooks | `Docs › Features › Hooks` |
+| REST API Tutorial | `Docs › Tutorials › Build a REST API` |
+| Install Matrix | `Docs › Harnesses › Install Matrix` |
+| CLI Reference | `Docs › Reference › CLI Reference` |
+| Security | `Docs › Reference › Security` |
+| Glossary | `Docs › Reference › Glossary` |
 
 ---
 
@@ -419,7 +446,7 @@ The user guide currently tracks the current release only:
 {
   "versions": {
     "current": {
-      "label": "5.1.0",
+      "label": "v6 (5.1.0)",
       "path": "/docs/"
     }
   }
@@ -428,4 +455,4 @@ The user guide currently tracks the current release only:
 
 ---
 
-*Last updated: 2026-01-25*
+*Last updated: 2026-06-23*

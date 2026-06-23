@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Features](./index.md) › Two-Loops Architecture
+
 # Two-Loops Architecture: Understanding Hybrid Agentic Systems
 
 **Version:** 1.1
@@ -36,6 +38,19 @@
 - You just want to run existing processes
 - You're following a tutorial
 - You're a beginner (start with [Quality Convergence](./quality-convergence.md) instead)
+
+---
+
+## On this page
+
+- [Overview](#overview)
+- [The Core Building Blocks](#the-core-building-blocks)
+- [The Two Loops in Detail](#the-two-loops-in-detail)
+- [What Goes Where?](#what-goes-where)
+- [The Four Guardrail Layers](#the-four-guardrail-layers)
+- [Quality Gates: Turning Agentic Work into Reliable Outcomes](#quality-gates-turning-agentic-work-into-reliable-outcomes)
+- [The Journal: Making Execution Testable](#the-journal-making-execution-testable)
+- [The Doctrine](#the-doctrine)
 
 ---
 
@@ -373,7 +388,7 @@ await ctx.breakpoint({
 
 ## The Journal: Making Execution Testable
 
-A journaled control plane turns agentic behavior into something you can:
+A [journaled](../reference/glossary.md) control plane turns agentic behavior into something you can:
 
 | Capability | Value |
 |------------|-------|
@@ -611,3 +626,10 @@ Based on your role, here's your next step:
 | **Debugging a run** | Check [Journal System](./journal-system.md) to understand event sourcing |
 | **Adding approvals** | See [Breakpoints](./breakpoints.md) for human-in-the-loop patterns |
 | **Evaluating for team** | Review the Four Guardrail Layers section above |
+
+---
+
+## Next steps
+
+- **Next:** [Quality Convergence](./quality-convergence.md)
+- **Related:** [Best Practices](./best-practices.md), [Architecture Overview](./architecture-overview.md)

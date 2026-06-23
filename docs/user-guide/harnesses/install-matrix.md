@@ -1,3 +1,5 @@
+[Docs](../index.md) › Harnesses › Install Matrix
+
 # Harness Install Matrix
 
 **Category:** Harnesses · **Last Updated:** 2026-06-22
@@ -6,7 +8,7 @@
 
 ## In Plain English
 
-**Babysitter v6 runs on a dozen AI coding harnesses. This page lists them all - what to install, how you invoke Babysitter inside each one, and how each one drives the orchestration loop.**
+**Babysitter v6 runs on a dozen AI coding [harnesses](../reference/glossary.md). This page lists them all - what to install, how you invoke Babysitter inside each one, and how each one drives the orchestration loop.**
 
 The two most-used harnesses, **Claude Code** and **Codex**, have their own fully-worked pages ([Claude Code](claude-code.md), [Codex](codex.md)). The rest are listed here.
 
@@ -24,6 +26,15 @@ Then install the per-harness plugin using either the universal SDK helper or the
 # Universal helper (note: the argument is the HARNESS KEY, not always the harness name)
 babysitter harness:install-plugin <harness-key> [--workspace <path>]
 ```
+
+---
+
+## On this page
+
+- [Fully Supported (own pages)](#fully-supported-own-pages)
+- [Matrix Harnesses](#matrix-harnesses)
+- [Picking the Right Invocation Token](#picking-the-right-invocation-token)
+- [Related Documentation](#related-documentation)
 
 ---
 
@@ -180,3 +191,10 @@ Because each harness surfaces Babysitter differently, the [Slash Commands and Mo
 - [Hooks](../features/hooks.md) - per-harness continuation models
 - [Slash Commands and Modes](../reference/slash-commands.md)
 - [Installation](../getting-started/installation.md)
+
+---
+
+## Next steps
+
+- **Next:** [Claude Code](./claude-code.md)
+- **Related:** [Codex](./codex.md), [Adapters](../features/adapters.md), [Slash Commands](../reference/slash-commands.md)

@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Getting Started](./README.md) › First Run
+
 # First Run Deep Dive: Understanding What Happened
 
 **Time:** 10 minutes | **Level:** Beginner | **Prerequisites:** [Completed the Quickstart](./quickstart.md)
@@ -17,7 +19,8 @@ In the quickstart, you built a calculator with a single command and watched Baby
 - [The TDD Methodology in Action](#the-tdd-methodology-in-action)
 - [Configuration and Customization](#configuration-and-customization)
 - [Verifying Success](#verifying-success)
-- [Next Steps](#next-steps)
+- [Keep Practicing](#keep-practicing)
+- [Next steps](#next-steps)
 
 ---
 
@@ -163,7 +166,7 @@ Contains **artifacts from each task**:
 
 ## The Event Journal Explained
 
-The journal is the heart of Babysitter's persistence. Let's examine it:
+The [journal](../reference/glossary.md) is the heart of Babysitter's persistence. Let's examine it:
 
 ```bash
 # List all journal events (each is an individual JSON file)
@@ -585,7 +588,7 @@ ls -la .a5c/runs/
 
 ---
 
-## Next Steps
+## Keep Practicing
 
 Now that you understand what happened in your first run, you're ready to explore more:
 
@@ -664,3 +667,11 @@ JOURNAL FORMAT:
 Congratulations! You now understand how Babysitter works under the hood. This knowledge will help you use it more effectively, debug issues when they arise, and eventually create your own custom processes.
 
 **Happy orchestrating!**
+
+---
+
+## Next steps
+
+- **Next:** [Build a REST API tutorial](../tutorials/beginner-rest-api.md) — apply what you learned on a real project
+- **Previous:** [Quickstart](./quickstart.md)
+- **Related:** [Two-Loops Architecture](../features/two-loops-architecture.md), [Journal System](../features/journal-system.md)

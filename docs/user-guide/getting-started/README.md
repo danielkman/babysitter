@@ -5,9 +5,21 @@ last_updated: 2026-04-27
 category: landing
 ---
 
+[Docs](../index.md) › Getting Started
+
 # Getting Started with Babysitter
 
 **Welcome to Babysitter!** This guide will help you go from zero to running your first AI-orchestrated development workflow in just a few minutes.
+
+## On this page
+
+- [30-Second Overview](#30-second-overview)
+- [Choose Your Path](#choose-your-path)
+- [What is Babysitter?](#what-is-babysitter)
+- [Prerequisites](#prerequisites)
+- [Installation Overview](#installation-overview)
+- [How Babysitter Works (The Big Picture)](#how-babysitter-works-the-big-picture)
+- [Getting Help](#getting-help)
 
 > **Source-of-truth precedence:** When docs disagree, the reference docs win. The [CLI Reference](../reference/cli-reference.md), [Adapters CLI](../reference/adapters-cli.md), and [Configuration Reference](../reference/configuration.md) are authoritative over tutorials, quickstarts, and archived material. If a tutorial conflicts with a reference page, trust the reference.
 
@@ -59,7 +71,7 @@ Babysitter is an **orchestration framework** for AI coding harnesses that transf
 - **Automatic quality convergence** - Set a quality target (like 85%), and Babysitter iterates until it's achieved
 - **Session persistence** - Close your laptop, come back tomorrow, and pick up exactly where you left off
 - **Human-in-the-loop approval** - Add approval gates (breakpoints) for critical decisions before they execute
-- **Complete audit trails** - Every decision, iteration, and change is recorded in an event journal
+- **Complete audit trails** - Every decision, iteration, and change is recorded in an event [journal](../reference/glossary.md)
 
 Think of Babysitter as a project manager for your AI coding sessions - it keeps track of progress, ensures quality standards are met, and never loses context.
 
@@ -292,14 +304,6 @@ Coverage: 92%
 
 ---
 
-## Ready to Begin?
-
-Your journey starts with installation. Let's get Babysitter running on your machine.
-
-**Next Step:** [Installation Guide](./installation.md)
-
----
-
 ## Quick Reference Card
 
 Keep these commands handy:
@@ -326,3 +330,11 @@ ls .a5c/runs/
 [Start Installation](./installation.md)
 
 </div>
+
+---
+
+## Next steps
+
+- **Next:** [Installation](./installation.md) — get Babysitter running on your machine
+- **Related:** [Quickstart](./quickstart.md) — run your first workflow in 10 minutes
+- **Related:** [Install Matrix](../harnesses/install-matrix.md) — setup and command token for every supported harness

@@ -2,12 +2,56 @@
 title: Babysitter User Guide
 description: Comprehensive documentation for Babysitter - the AI-powered development workflow orchestrator with quality convergence and human-in-the-loop approval
 category: landing
-last_updated: 2026-01-26
+last_updated: 2026-06-23
 ---
 
 # Babysitter User Guide
 
-Welcome to the Babysitter documentation. Babysitter is an AI-powered development workflow orchestrator that enables iterative quality convergence with human-in-the-loop approval through breakpoints.
+**Babysitter is a harness-agnostic orchestrator that runs the "try, check, fix, repeat" loop for AI coding work until your quality target is met — on any supported harness, with a full audit trail and human approval where you want it.**
+
+New here? Jump straight to [Start here](#start-here) for the 20-minute path, or use the [task-based](#i-want-to) and [role-based](#by-role-and-level) entry points below to go directly to the page you need.
+
+---
+
+## Start here
+
+The fastest path from zero to a working run:
+
+1. [Installation](./getting-started/installation.md) — install the CLI and your harness plugin (5 min)
+2. [Quickstart](./getting-started/quickstart.md) — run your first workflow (10 min)
+3. [First Run Deep Dive](./getting-started/first-run.md) — understand what just happened (10 min)
+
+Prefer to learn the ideas first? Read [What is Babysitter?](#what-is-babysitter-start-here-if-youre-new) (2 min), then the [Two-Loops Architecture](./features/two-loops-architecture.md).
+
+---
+
+## I want to…
+
+Task-based entry points — pick the goal that matches what you are doing right now.
+
+| I want to… | Go to |
+|------------|-------|
+| **Create a process** (custom workflow) | [Process Definitions](./features/process-definitions.md) → [Custom Process tutorial](./tutorials/intermediate-custom-process.md) |
+| **Run on my harness** (Codex, Cursor, Gemini, …) | [Install Matrix](./harnesses/install-matrix.md) → [Slash Commands](./reference/slash-commands.md) |
+| **Debug a run** (errors, stuck runs, recovery) | [Troubleshooting](./reference/troubleshooting.md) → [Error Catalog](./reference/error-catalog.md) |
+| **Write tests / set quality targets** | [Quality Convergence](./features/quality-convergence.md) → [Best Practices](./features/best-practices.md) |
+| **Understand the architecture** | [Architecture Overview](./features/architecture-overview.md) → [Two-Loops Architecture](./features/two-loops-architecture.md) |
+| **Run Babysitter from CI** | [Adapters CLI](./reference/adapters-cli.md) → [Configuration](./reference/configuration.md) |
+| **Look up a command or flag** | [CLI Reference](./reference/cli-reference.md) · [Adapters CLI](./reference/adapters-cli.md) |
+| **Learn a term** | [Glossary](./reference/glossary.md) |
+
+---
+
+## By role and level
+
+Role-based entry points — start where you fit, then follow the detailed [Learning Paths](#learning-paths) below.
+
+| You are a… | Start with |
+|------------|-----------|
+| **New user** (first time) | [Getting Started overview](./getting-started/README.md) → [Quickstart](./getting-started/quickstart.md) |
+| **Process author** (build workflows) | [Process Definitions](./features/process-definitions.md) → [Custom Process tutorial](./tutorials/intermediate-custom-process.md) |
+| **CI / automation integrator** | [Adapters CLI](./reference/adapters-cli.md) → [Configuration](./reference/configuration.md) → [Security](./reference/security.md) |
+| **Technical lead / architect** | [Two-Loops Architecture](./features/two-loops-architecture.md) → [Best Practices](./features/best-practices.md) |
 
 ---
 
@@ -153,7 +197,7 @@ Deep dives into Babysitter's core capabilities.
 > **Highlight:** The Process Library snapshot currently tracks 2,239 process files across 38 methodology families and the full specialization tree. [Explore the library →](./features/process-library.md)
 <!-- user-guide-index:process-library-highlight:end -->
 
-> **Essential Reading:** Understanding the [Two-Loops Architecture](./features/two-loops-architecture.md) is key to designing reliable, bounded agentic workflows with proper guardrails and evidence-driven completion.
+> **Essential Reading:** Understanding the [Two-Loops Architecture](./features/two-loops-architecture.md) is key to designing reliable, bounded agentic workflows with proper guardrails and evidence-driven completion. For how the v6 subsystems fit together, start with the [Architecture Overview](./features/architecture-overview.md).
 
 ---
 
@@ -182,6 +226,7 @@ Technical specifications and lookup resources.
 | [Adapters CLI](./reference/adapters-cli.md) | The host-side `adapters` CLI - run, install, and manage any harness (v6) |
 | [Package & Plugin Map](../package-and-plugin-map.md) | Canonical public/internal docs map for active packages, apps, and harness plugins |
 | [Configuration](./reference/configuration.md) | Environment variables and config file options |
+| [Security](./reference/security.md) | Security model, trust boundaries, and hardening guidance |
 | [Error Catalog](./reference/error-catalog.md) | All error codes with solutions |
 | [Glossary](./reference/glossary.md) | Terminology and definitions |
 | [FAQ](./reference/faq.md) | Frequently asked questions |
@@ -302,4 +347,4 @@ Found an issue with the documentation? Contributions are welcome.
 
 ---
 
-*Last updated: 2026-01-25*
+*Last updated: 2026-06-23*

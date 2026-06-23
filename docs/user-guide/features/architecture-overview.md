@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Features](./index.md) › Architecture Overview
+
 # Architecture Overview
 
 **Version:** 5.1.0 (v6)
@@ -23,11 +25,23 @@ Think of it like this:
 
 ---
 
+## On this page
+
+- [Overview](#overview)
+- [High-Level Architecture](#high-level-architecture)
+- [Core Components](#core-components)
+- [Data Flow](#data-flow)
+- [State Management](#state-management)
+- [Extensibility](#extensibility)
+- [Design Patterns](#design-patterns)
+
+---
+
 ## Overview
 
 Babysitter v6 uses a modular, **harness-agnostic** architecture designed for reliability, debuggability, and extensibility. The system combines a deterministic orchestration engine with adaptive AI capabilities, runs on top of the **Adapters** runtime so it is not tied to any single harness, and is backed by an event-sourced persistence layer.
 
-The central change from the prior (Claude-only) design: orchestration no longer assumes one harness and one continuation hook. The Adapters runtime - together with the [Hooks Adapter](./hooks.md), [Breakpoints Adapter](./breakpoints.md), Transport Adapter, and the Atlas catalog - makes harness-agnosticism the core story.
+The central change from the prior (Claude-only) design: orchestration no longer assumes one harness and one continuation hook. The Adapters runtime - together with the [Hooks Adapter](./hooks.md), [Breakpoints Adapter](./breakpoints.md), Transport Adapter, and the Atlas catalog - makes [harness](../reference/glossary.md)-agnosticism the core story.
 
 ---
 
@@ -474,3 +488,10 @@ Babysitter's v6 architecture is built on these key principles:
 - **Human-in-the-Loop**: Breakpoints enable approval workflows
 
 This architecture enables reliable, debuggable, and auditable AI-powered workflows that can run on any harness and be paused, resumed, and replayed at any point.
+
+---
+
+## Next steps
+
+- **Next:** [Two-Loops Architecture](./two-loops-architecture.md)
+- **Related:** [Adapters](./adapters.md), [Journal System](./journal-system.md), [Hooks](./hooks.md)

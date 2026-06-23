@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Reference](./index.md) › Troubleshooting
+
 # Troubleshooting Guide
 
 **Version:** 1.0
@@ -177,7 +179,7 @@ command not found: jq
 jq: command not found
 ```
 
-Many Babysitter diagnostic commands use `jq` for JSON processing. Without it, commands like journal analysis and status inspection will fail.
+Many Babysitter diagnostic commands use `jq` for JSON processing. Without it, commands like [journal](./glossary.md) analysis and status inspection will fail.
 
 **Diagnosis:**
 ```bash
@@ -1112,6 +1114,13 @@ Contact support if you experience:
 - [Install Matrix](../harnesses/install-matrix.md) - Supported harnesses and their harness keys
 - [Installation Guide](../getting-started/installation.md) - Setup instructions
 - [Run Resumption](../features/run-resumption.md) - Recovery procedures
+
+---
+
+## Next steps
+
+- **Next:** [Error Catalog](./error-catalog.md)
+- **Related:** [FAQ](./faq.md), [Configuration](./configuration.md)
 
 ---
 

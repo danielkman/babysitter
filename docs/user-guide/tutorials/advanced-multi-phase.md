@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Tutorials](./index.md) › Multi-Phase Workflows
+
 # Advanced Tutorial: Multi-Phase Feature Development
 
 **Version:** 1.0
@@ -11,6 +13,19 @@ Last refreshed: 2026-06-10
 ---
 
 > **Runs on the Adapters runtime:** These multi-phase workflows are harness-agnostic. They execute on Babysitter's [Adapters](../features/adapters.md) runtime, so the same [process definitions](../features/process-definitions.md) run unchanged across every supported harness. The `/babysitter:call` token shown below is Claude Code's; substitute your harness's token as needed.
+
+---
+
+## On this page
+
+- [Prerequisites](#prerequisites)
+- [Step 1: Understanding Quality Convergence](#step-1-understanding-quality-convergence)
+- [Step 3: Define the Task Definitions](#step-3-define-the-task-definitions)
+- [Step 4: Create the Multi-Phase Process Definition](#step-4-create-the-multi-phase-process-definition)
+- [Step 6: Run the Multi-Phase Process](#step-6-run-the-multi-phase-process)
+- [Step 8: Monitor Quality Convergence](#step-8-monitor-quality-convergence)
+- [Step 9: Review the Audit Trail](#step-9-review-the-audit-trail)
+- [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -131,7 +146,7 @@ In this tutorial, we will create a **comprehensive feature development workflow*
 
 ## Step 1: Understanding Quality Convergence
 
-Before we dive into code, let's understand the core concept of **quality convergence**.
+Before we dive into code, let's understand the core concept of **[quality convergence](../reference/glossary.md)**.
 
 ### What is Quality Convergence?
 
@@ -1435,27 +1450,6 @@ Congratulations! You have completed the advanced tutorial on multi-phase feature
 
 ---
 
-## Next Steps
-
-You have completed the advanced tutorials. Here are paths to continue your expertise:
-
-### Apply Your Knowledge
-- **Implement in your team** - Customize for your team's workflow
-- **Create team templates** - Share processes across projects
-- **Build governance policies** - Define approval requirements
-
-### Go Deeper
-- **[Process Engine Architecture](../features/process-definitions.md)** - Understand internals
-- **[Configuration Reference](../reference/configuration.md)** - Meet regulatory requirements
-- **[FAQ](../reference/faq.md)** - Common questions and answers
-
-### Contribute
-- **Share your processes** - Contribute to the community
-- **Report issues** - Help improve Babysitter
-- **Write tutorials** - Help others learn
-
----
-
 ## Troubleshooting
 
 ### Issue: "Quality score not improving between iterations"
@@ -1504,6 +1498,13 @@ You have completed the advanced tutorials. Here are paths to continue your exper
 - [Event Sourcing Explained](../features/journal-system.md) - Architecture concepts
 - [Quality Convergence Explained](../features/quality-convergence.md) - Deep dive
 - [FAQ](../reference/faq.md) - Common questions and rollout strategies
+
+---
+
+## Next steps
+
+- **Previous:** [Custom Process](./intermediate-custom-process.md)
+- **Related:** [Parallel Execution](../features/parallel-execution.md), [Two-Loops Architecture](../features/two-loops-architecture.md), [Journal System](../features/journal-system.md)
 
 ---
 

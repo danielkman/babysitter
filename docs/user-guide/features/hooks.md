@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Features](./index.md) › Hooks
+
 # Hooks: Extensible Lifecycle Events
 
 **Version:** 5.1.0 (v6)
@@ -10,7 +12,7 @@
 
 **Hooks are automatic triggers that run your custom code at specific moments.**
 
-Like setting up an automatic notification: "When the workflow finishes, send me a Slack message." That's a hook.
+Like setting up an automatic notification: "When the workflow finishes, send me a Slack message." That's a [hook](../reference/glossary.md).
 
 **Common examples:**
 - 📧 Send an email when a run completes
@@ -20,6 +22,19 @@ Like setting up an automatic notification: "When the workflow finishes, send me 
 **Do you need hooks as a beginner?** No - they're an advanced feature for customizing behavior. You can use Babysitter perfectly well without ever writing a hook.
 
 **One thing to know for v6:** how Babysitter *keeps a run going turn-to-turn* differs by harness. Claude Code uses a `Stop` hook; Gemini and antigravity use `AfterAgent`; openclaw uses a daemon `agent_end`; opencode uses `session.idle`; Hermes uses ACP. The **Hooks Adapter** normalizes all of these into one consistent contract so your processes don't care which harness they run on.
+
+---
+
+## On this page
+
+- [Overview](#overview)
+- [Hook Lifecycle Overview](#hook-lifecycle-overview)
+- [Available Hook Types](#available-hook-types)
+- [Creating Custom Hooks](#creating-custom-hooks)
+- [Hook Payloads and Environment Variables](#hook-payloads-and-environment-variables)
+- [Configuration in hooks.json](#configuration-in-hooksjson)
+- [Troubleshooting](#troubleshooting)
+- [Best Practices](#best-practices)
 
 ---
 
@@ -683,3 +698,10 @@ The `hooks.json` file registers **Claude Code** hooks (SessionStart, Stop, PreTo
 ## Summary
 
 Hooks provide a powerful extension mechanism for customizing Babysitter behavior at every lifecycle stage. Use SDK lifecycle hooks for run orchestration, notifications, and metrics. Use Claude Code hooks for session management and continuous orchestration loops. Follow the input/output protocol (stdin JSON, stdout JSON, stderr logging) and ensure scripts are executable. Place hooks in per-repo, per-user, or plugin directories based on your needs.
+
+---
+
+## Next steps
+
+- **Next:** [Install Matrix](../harnesses/install-matrix.md)
+- **Related:** [Adapters](./adapters.md), [Breakpoints](./breakpoints.md), [Architecture Overview](./architecture-overview.md)

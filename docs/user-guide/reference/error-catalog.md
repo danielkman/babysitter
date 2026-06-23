@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Reference](./index.md) › Error Catalog
+
 # Error Catalog
 
 **Version:** 1.0
@@ -49,7 +51,7 @@ Error: Cannot find module '@a5c-ai/babysitter-sdk'
    ```bash
    npx -y @a5c-ai/babysitter@latest --version
    ```
-3. If your process code imports the SDK, install it in the project:
+3. If your [process](./glossary.md) code imports the SDK, install it in the project:
    ```bash
    npm install @a5c-ai/babysitter-sdk
    ```
@@ -947,6 +949,13 @@ If you encounter an error not listed here:
 
 3. **Report at:**
    [GitHub Issues](https://github.com/a5c-ai/babysitter/issues)
+
+---
+
+## Next steps
+
+- **Next:** [Troubleshooting](./troubleshooting.md)
+- **Related:** [FAQ](./faq.md), [CLI Reference](./cli-reference.md)
 
 ---
 

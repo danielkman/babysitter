@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Getting Started](./README.md) › Installation
+
 # Installation Guide
 
 This guide walks you through installing Babysitter v6 on your system. By the end, you will have a fully working installation and will have run an Adapter to confirm it works.
@@ -11,7 +13,7 @@ This guide walks you through installing Babysitter v6 on your system. By the end
 **v6 has two install tracks. Don't conflate them:**
 
 1. **The host-side `adapters` CLI** — run any supported AI coding harness directly from your shell. Install `@a5c-ai/adapters-cli`, then `adapters run claude "..."`.
-2. **The in-session per-harness plugin** — drive a full Babysitter orchestration run from *inside* your harness (Claude Code, Codex, Cursor, and 9 more). Install the core CLI plus your harness's plugin.
+2. **The in-session per-harness plugin** — drive a full Babysitter orchestration [run](../reference/glossary.md) from *inside* your harness (Claude Code, Codex, Cursor, and 9 more). Install the core CLI plus your harness's plugin.
 
 Most people want both. Install the core CLI and the Adapters CLI first (this page), then pick your harness and follow its page. Babysitter supports **12 harnesses**; the two fully-worked ones are [Claude Code](../harnesses/claude-code.md) and [Codex](../harnesses/codex.md), and every harness is listed in the [Install Matrix](../harnesses/install-matrix.md).
 
@@ -719,14 +721,6 @@ If you're still stuck:
 
 ---
 
-## Next Steps
-
-Congratulations! You have Babysitter v6 installed and have run an Adapter.
-
-**Your next step:** [Quickstart Tutorial](./quickstart.md) - Build your first feature in 10 minutes!
-
----
-
 ## Quick Reference
 
 Commands you'll use most often:
@@ -748,3 +742,11 @@ babysitter harness:install-plugin <harness-key>
 npm update -g @a5c-ai/babysitter @a5c-ai/adapters-cli @a5c-ai/genty-platform
 claude plugin update babysitter@a5c.ai
 ```
+
+---
+
+## Next steps
+
+- **Next:** [Quickstart](./quickstart.md) — build your first feature in 10 minutes
+- **Previous:** [Getting Started overview](./README.md)
+- **Related:** [Install Matrix](../harnesses/install-matrix.md) — setup and command token for every supported harness

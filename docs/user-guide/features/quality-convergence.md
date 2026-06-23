@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Features](./index.md) › Quality Convergence
+
 # Quality Convergence: Iterative Improvement Until Targets Met
 
 **Version:** 2.1
@@ -92,9 +94,21 @@ This flexibility means quality convergence adapts to any domain - from ML model 
 
 ---
 
+## On this page
+
+- [Overview](#overview)
+- [The Five Quality Gate Categories](#the-five-quality-gate-categories)
+- [The 90-Score Quality Convergence Pattern](#the-90-score-quality-convergence-pattern)
+- [Real-World Process Examples](#real-world-process-examples)
+- [Step-by-Step Instructions](#step-by-step-instructions)
+- [Configuration Options](#configuration-options)
+- [Common Pitfalls and Troubleshooting](#common-pitfalls-and-troubleshooting)
+
+---
+
 ## Overview
 
-Quality convergence is an iterative improvement pattern where Babysitter repeatedly refines work until a defined quality target is achieved. Instead of executing a task once and hoping for the best, quality convergence loops through implementation, testing, and scoring cycles until the output meets your standards.
+Quality [convergence](../reference/glossary.md) is an iterative improvement pattern where Babysitter repeatedly refines work until a defined quality target is achieved. Instead of executing a task once and hoping for the best, quality convergence loops through implementation, testing, and scoring cycles until the output meets your standards.
 
 ### The Core Principle: Evidence-Driven Completion
 
@@ -1128,3 +1142,10 @@ Quality convergence enables automated iterative improvement until defined qualit
 3. **Pass feedback between iterations** - AI learns from each failure
 4. **Detect plateaus early** - Don't waste iterations on no improvement
 5. **Parallelize independent checks** - Faster iterations mean faster convergence
+
+---
+
+## Next steps
+
+- **Next:** [Best Practices](./best-practices.md)
+- **Related:** [Two-Loops Architecture](./two-loops-architecture.md), [Process Definitions](./process-definitions.md)

@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Reference](./index.md) › CLI Reference
+
 # Babysitter CLI Reference
 
 **Version:** 1.1
@@ -46,7 +48,7 @@ Complete reference documentation for the core `babysitter` orchestration command
 
 ## Overview
 
-The Babysitter CLI provides deterministic orchestration for event-sourced workflows. It enables run lifecycle management, task introspection, plugin/profile management, and result posting.
+The Babysitter CLI provides deterministic orchestration for event-sourced workflows. It enables [run](./glossary.md) lifecycle management, task introspection, plugin/profile management, and result posting.
 
 **Binary Names:**
 - `babysitter` (primary)
@@ -1158,3 +1160,10 @@ babysitter breakpoint:history [--breakpoint-id <id>] [--runs-dir <dir>] [--limit
 - [Glossary](./glossary.md) - Term definitions
 - [Configuration Reference](./configuration.md) - Environment variables and settings
 - [Troubleshooting](./troubleshooting.md) - Common issues and solutions
+
+---
+
+## Next steps
+
+- **Next:** [Adapters CLI](./adapters-cli.md)
+- **Related:** [Configuration](./configuration.md), [Slash Commands](./slash-commands.md), [Error Catalog](./error-catalog.md)

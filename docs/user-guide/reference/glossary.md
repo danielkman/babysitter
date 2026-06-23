@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Reference](./index.md) › Glossary
+
 # Babysitter Glossary
 
 **Version:** 1.2
@@ -1250,3 +1252,10 @@ A run status indicating a blocking effect (breakpoint or sleep) is active. Orche
 - [Configuration Reference](./configuration.md) - Environment variables and settings
 - [FAQ](./faq.md) - Frequently asked questions
 - [Troubleshooting](./troubleshooting.md) - Common issues and solutions
+
+---
+
+## Next steps
+
+- **Next:** [Getting Started overview](../getting-started/README.md)
+- **Related:** [Two-Loops Architecture](../features/two-loops-architecture.md), [FAQ](./faq.md)

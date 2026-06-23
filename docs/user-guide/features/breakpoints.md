@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Features](./index.md) › Breakpoints
+
 # Breakpoints: Human-in-the-Loop Approval
 
 **Version:** 3.0
@@ -8,7 +10,7 @@
 
 ## In Plain English
 
-**A breakpoint is a pause button.** When your workflow reaches a breakpoint, it stops and waits for you to say "OK, continue."
+**A [breakpoint](../reference/glossary.md) is a pause button.** When your workflow reaches a breakpoint, it stops and waits for you to say "OK, continue."
 
 **Why does this matter?**
 - The AI writes a plan → pauses → you review it → approve → then it builds
@@ -18,6 +20,18 @@
 **How it works:** When a breakpoint is reached, the harness asks you directly. In a Claude Code session this uses the `AskUserQuestion` tool in the chat; the in-session prompt mechanism varies by harness. You respond, and the workflow continues. For approvals that need to outlive the session — or happen somewhere other than the chat — the **Breakpoints Adapter** can route the question to a durable backend (see below).
 
 **No setup required!** Breakpoints work out of the box in Claude Code sessions.
+
+---
+
+## On this page
+
+- [Overview](#overview)
+- [Use Cases and Scenarios](#use-cases-and-scenarios)
+- [Using Breakpoints](#using-breakpoints)
+- [Configuration Options](#configuration-options)
+- [Code Examples and Best Practices](#code-examples-and-best-practices)
+- [Auto-Approval Rules](#auto-approval-rules)
+- [Common Pitfalls and Troubleshooting](#common-pitfalls-and-troubleshooting)
 
 ---
 
@@ -666,3 +680,10 @@ Breakpoints enable human-in-the-loop approval within automated workflows. Use `c
 - The workflow continues based on your response
 - No external services or setup required - breakpoints work in-session
 - Backward compatible: existing code that ignores the return value still works
+
+---
+
+## Next steps
+
+- **Next:** [Hooks](./hooks.md)
+- **Related:** [Run Resumption](./run-resumption.md), [Best Practices](./best-practices.md), [Slash Commands](../reference/slash-commands.md)

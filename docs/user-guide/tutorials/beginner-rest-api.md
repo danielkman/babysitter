@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Tutorials](./index.md) › Build a REST API
+
 # Beginner Tutorial: Build a Simple REST API with TDD
 
 **Version:** 1.0
@@ -10,6 +12,18 @@
 ---
 
 > **Works on any harness:** This tutorial uses Claude Code's `/babysitter:call` command token. Babysitter is harness-agnostic, so the exact same flow works on every supported harness using its own in-session token (for example, `$babysitter:call` on Codex, `$call` on Cursor/Copilot). See the [Install Matrix](../harnesses/install-matrix.md) for setup per harness and the [Slash Commands reference](../reference/slash-commands.md) for the right token.
+
+---
+
+## On this page
+
+- [Prerequisites](#prerequisites)
+- [Step 3: Start Your First Babysitter Run](#step-3-start-your-first-babysitter-run)
+- [Step 6: Approve the Specifications (Breakpoint)](#step-6-approve-the-specifications-breakpoint)
+- [Step 7: Watch the TDD Implementation Loop](#step-7-watch-the-tdd-implementation-loop)
+- [Step 10: Explore the Journal](#step-10-explore-the-journal)
+- [Step 12: Simulate Session Interruption and Resume](#step-12-simulate-session-interruption-and-resume)
+- [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -535,7 +549,7 @@ Tests:       21 passed, 21 total
 
 ## Step 10: Explore the Journal
 
-One of Babysitter's most powerful features is its **event-sourced journal**. This provides a complete audit trail of everything that happened during the run.
+One of Babysitter's most powerful features is its **event-sourced [journal](../reference/glossary.md)**. This provides a complete audit trail of everything that happened during the run.
 
 Let's examine it:
 
@@ -679,24 +693,6 @@ Congratulations! You have successfully completed your first Babysitter tutorial.
 
 ---
 
-## Next Steps
-
-Now that you've completed the beginner tutorial, here are some paths to continue your learning:
-
-### Continue Learning
-- **[Intermediate Tutorial: Custom Process Definition](./intermediate-custom-process.md)** - Learn to create custom workflows with parallel execution and approval gates
-- **[Advanced Tutorial: Multi-Phase Feature Development](./advanced-multi-phase.md)** - Master complex team workflows with quality convergence
-
-### Go Deeper
-- **[Event Sourcing Explained](../features/journal-system.md)** - Understand the architecture behind Babysitter
-- **[Quality Convergence Explained](../features/quality-convergence.md)** - Learn how quality scoring works
-
-### Apply Your Knowledge
-- **[Quality Convergence](../features/quality-convergence.md)** - Fine-tune quality settings for your projects
-- **[Breakpoints](../features/breakpoints.md)** - Customize approval workflows
-
----
-
 ## Troubleshooting
 
 ### Issue: "Plugin not found: babysitter@a5c.ai"
@@ -751,6 +747,13 @@ claude plugin enable --scope user babysitter@a5c.ai
 - [Glossary](../reference/glossary.md) - Definitions of all Babysitter terms
 - [CLI Reference](../reference/cli-reference.md) - Complete command reference
 - [Getting Started](../getting-started/first-run.md) - Conceptual overview
+
+---
+
+## Next steps
+
+- **Next:** [Custom Process tutorial](./intermediate-custom-process.md)
+- **Related:** [Quality Convergence](../features/quality-convergence.md), [Process Definitions](../features/process-definitions.md)
 
 ---
 

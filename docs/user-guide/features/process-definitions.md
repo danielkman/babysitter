@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Features](./index.md) › Process Definitions
+
 # Process Definitions: JavaScript Workflow Orchestration
 
 **Version:** 1.1
@@ -27,9 +29,21 @@ Just like a cooking recipe says "chop vegetables, then cook them, then serve" - 
 
 ---
 
+## On this page
+
+- [Overview](#overview)
+- [Use Cases and Scenarios](#use-cases-and-scenarios)
+- [Step-by-Step Instructions](#step-by-step-instructions)
+- [Configuration Options](#configuration-options)
+- [Code Examples and Best Practices](#code-examples-and-best-practices)
+- [Common Pitfalls and Troubleshooting](#common-pitfalls-and-troubleshooting)
+- [Pre-Built Workflows: Methodologies & Processes](#pre-built-workflows-methodologies--processes)
+
+---
+
 ## Overview
 
-Process definitions are JavaScript functions that orchestrate workflows in Babysitter. A process defines what tasks to execute, in what order, and how to handle results. The process function acts as the "brain" of your workflow, making decisions and coordinating execution while Babysitter handles state management, persistence, and resumability.
+Process definitions are JavaScript functions that orchestrate workflows in Babysitter. A [process](../reference/glossary.md) defines what tasks to execute, in what order, and how to handle results. The process function acts as the "brain" of your workflow, making decisions and coordinating execution while Babysitter handles state management, persistence, and resumability.
 
 ### Why Use Process Definitions
 
@@ -631,3 +645,10 @@ See the full catalog with descriptions in the [Process Library](./process-librar
 ## Summary
 
 Process definitions are JavaScript functions that orchestrate workflows. Define reusable tasks, compose them with conditionals and loops, and let Babysitter handle state management. Keep processes deterministic for reliable replay and resumption. Use the full power of JavaScript while benefiting from event-sourced persistence.
+
+---
+
+## Next steps
+
+- **Next:** [Custom Process tutorial](../tutorials/intermediate-custom-process.md)
+- **Related:** [Process Library](./process-library.md), [Parallel Execution](./parallel-execution.md), [Breakpoints](./breakpoints.md)

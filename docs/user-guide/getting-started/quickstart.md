@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Getting Started](./README.md) › Quickstart
+
 # Quickstart: Your First Babysitter Run
 
 **Time:** ~10 minutes | **Level:** Beginner | **Prerequisites:** [Installation complete](./installation.md)
@@ -6,11 +8,21 @@
 
 Welcome! In this quickstart, you will build a calculator module using Test-Driven Development (TDD) with Babysitter. By the end, you will have experienced:
 
-- Automatic quality convergence (iterate until quality target met)
+- Automatic quality [convergence](../reference/glossary.md) (iterate until quality target met)
 - The TDD workflow (tests first, then implementation)
 - Journal-based persistence (everything is recorded)
 
 **Note:** TDD Quality Convergence is the full name; we use "TDD" as shorthand throughout this guide.
+
+## On this page
+
+- [What You Will Build](#what-you-will-build)
+- [Before You Begin](#before-you-begin)
+- [Step 1: Launch Your First Run](#step-1-launch-your-first-run)
+- [Step 2: Watch the Magic Happen](#step-2-watch-the-magic-happen)
+- [Step 4: Explore the Journal](#step-4-explore-the-journal)
+- [Bonus: Experience Session Resumption](#bonus-experience-session-resumption)
+- [Common First-Run Issues](#common-first-run-issues)
 
 ### Pick your harness first
 
@@ -459,32 +471,29 @@ No work lost!
 
 ---
 
-## Next Steps
+## Explore Further
 
 Congratulations! You've completed your first Babysitter run. Here's what to explore next:
 
-### Immediate Next Steps
+### Try different prompts
 
-1. **[First Run Deep Dive](./first-run.md)** - Understand exactly what happened in detail
-2. **Try different prompts:**
-   - `/babysitter:call refactor the calculator for better error handling`
-   - `/babysitter:call add comprehensive documentation to the calculator`
-   - `/babysitter:call increase test coverage to 95%`
+- `/babysitter:call refactor the calculator for better error handling`
+- `/babysitter:call add comprehensive documentation to the calculator`
+- `/babysitter:call increase test coverage to 95%`
 
 ### This Week
 
-3. **Explore methodologies:**
-   - TDD (Test-Driven Development) - what you just used
-   - GSD (Get Shit Done) - faster, less formal
-   - Spec-Kit - specification-driven development
-
-4. **Configure breakpoints** for approval workflows
+- **Explore methodologies:**
+  - TDD (Test-Driven Development) - what you just used
+  - GSD (Get Shit Done) - faster, less formal
+  - Spec-Kit - specification-driven development
+- **Configure breakpoints** for approval workflows
 
 ### Advanced Topics
 
-5. **Custom quality targets** and scoring criteria
-6. **Parallel execution** for faster runs
-7. **Custom process definitions** (for power users)
+- **Custom quality targets** and scoring criteria
+- **Parallel execution** for faster runs
+- **Custom process definitions** (for power users)
 
 ---
 
@@ -520,3 +529,11 @@ In just 10 minutes, you:
 **Babysitter turns complex AI workflows into single commands with deterministic, resumable execution.**
 
 Ready to go deeper? Continue to [First Run Deep Dive](./first-run.md) to understand exactly what happened under the hood.
+
+---
+
+## Next steps
+
+- **Next:** [First Run Deep Dive](./first-run.md) — understand exactly what happened under the hood
+- **Previous:** [Installation](./installation.md)
+- **Related:** [Slash Commands](../reference/slash-commands.md) — every mode and command token

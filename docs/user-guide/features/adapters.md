@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Features](./index.md) › Adapters
+
 # Adapters: Run Babysitter on Any Harness
 
 **Version:** 5.1.0 (v6) · **Last Updated:** 2026-06-22 · **Category:** Feature Guide
@@ -19,9 +21,19 @@ There are two ways you will touch Adapters:
 
 ---
 
+## On this page
+
+- [Why Adapters Exist](#why-adapters-exist)
+- [The Adapters Runtime (Technical Depth)](#the-adapters-runtime-technical-depth)
+- [How Adapters Replace the Legacy Model](#how-adapters-replace-the-legacy-model)
+- [Getting Started with Adapters](#getting-started-with-adapters)
+- [Related Documentation](#related-documentation)
+
+---
+
 ## Why Adapters Exist
 
-The original Babysitter design assumed one harness (Claude Code) and one continuation mechanism (Claude's `Stop` hook). Every new harness meant hand-rolling the orchestration loop against that harness's specific lifecycle - bespoke code, duplicated logic, and drift between integrations.
+The original Babysitter design assumed one [harness](../reference/glossary.md) (Claude Code) and one continuation mechanism (Claude's `Stop` hook). Every new harness meant hand-rolling the orchestration loop against that harness's specific lifecycle - bespoke code, duplicated logic, and drift between integrations.
 
 Adapters invert that. A harness is integrated by describing it - its capabilities, its hook model, its command surface - as data in a catalog, and the runtime adapts. Adding or updating a harness becomes an **adapter/data change**, not a fork of the orchestration engine.
 
@@ -127,3 +139,8 @@ To use Adapters from inside a harness as a Babysitter orchestration run, install
 - [Harnesses: Install Matrix](../harnesses/install-matrix.md) - All supported harnesses
 - [Claude Code](../harnesses/claude-code.md) · [Codex](../harnesses/codex.md) - Fully-worked harness pages
 - [Glossary](../reference/glossary.md) - Adapter, Harness, Atlas, and related terms
+
+## Next steps
+
+- **Next:** [Adapters CLI Reference](../reference/adapters-cli.md)
+- **Related:** [Install Matrix](../harnesses/install-matrix.md), [Hooks](./hooks.md), [Architecture Overview](./architecture-overview.md)

@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Harnesses](./install-matrix.md) › Claude Code
+
 # Claude Code
 
 **Tier:** Fully supported · **Repo:** `a5c-ai/babysitter-claude` · **Harness key:** `claude-code`
@@ -8,9 +10,20 @@
 
 **On Claude Code you get the full Babysitter experience: the `/babysitter:*` slash-commands and the `babysit` skill, driven by Claude Code's session and `Stop` hook.**
 
-Install the plugin once, restart Claude Code, and run `/babysitter:call <your request>`. Babysitter orchestrates the run from inside your Claude Code session - one orchestration phase per turn - and pauses for your approval at breakpoints right in the chat.
+Install the [plugin](../reference/glossary.md) once, restart Claude Code, and run `/babysitter:call <your request>`. Babysitter orchestrates the run from inside your Claude Code session - one orchestration phase per turn - and pauses for your approval at breakpoints right in the chat.
 
 **Estimated time to first run:** about 5 minutes. **End state:** you can type `/babysitter:call` in Claude Code and watch a run iterate to a quality target.
+
+---
+
+## On this page
+
+- [Install](#install)
+- [Verify](#verify)
+- [Command Surface](#command-surface)
+- [Hook / Continuation Model](#hook--continuation-model)
+- [First Run](#first-run)
+- [Related Documentation](#related-documentation)
 
 ---
 
@@ -98,3 +111,10 @@ Babysitter creates a run, iterates (write → test → fix) toward your quality 
 - [Hooks](../features/hooks.md) · [Adapters](../features/adapters.md)
 - [Install Matrix](install-matrix.md) - all other supported harnesses
 - [Codex](codex.md) - the other fully-supported harness
+
+---
+
+## Next steps
+
+- **Next:** [Codex](./codex.md)
+- **Related:** [Install Matrix](./install-matrix.md), [Slash Commands](../reference/slash-commands.md), [Adapters](../features/adapters.md)

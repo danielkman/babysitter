@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Reference](./index.md) › Security
+
 # Security Guide
 
 **Version:** 1.1
@@ -46,7 +48,7 @@ Babysitter handles code generation, execution, and may interact with credentials
 
 **DO:**
 - Review all code changes before final approval
-- Use breakpoints before deploying to production
+- Use [breakpoints](./glossary.md) before deploying to production
 - Keep `.a5c/` directories out of version control (add to `.gitignore`)
 - Regularly update to latest versions
 - Run with least privilege necessary
@@ -268,3 +270,10 @@ gpg --symmetric --cipher-algo AES256 .a5c/runs/sensitive-run/journal/000001.*.js
 - [CLI Reference](./cli-reference.md) - Command-line options
 - [Troubleshooting](./troubleshooting.md) - Common issues and solutions
 - [Glossary](./glossary.md) - Term definitions
+
+---
+
+## Next steps
+
+- **Next:** [Configuration](./configuration.md)
+- **Related:** [Breakpoints](../features/breakpoints.md), [Troubleshooting](./troubleshooting.md)
