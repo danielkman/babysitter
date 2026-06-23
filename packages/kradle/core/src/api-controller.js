@@ -275,18 +275,21 @@ export function createKradleApiController(options = {}) {
       // whether the agent runtime is available to pick it up.
       if (result && !result.error && result.run) {
         const runOrg = input.organizationRef || result.run.spec?.organizationRef || 'default';
+        // Capture the intended initial status BEFORE applying. `applyResourceForOrg`
+        // (kubectl apply) strips the status subresource, so reading it back off the
+        // applied resource yields undefined — the board would then never see the run
+        // as Running. Persist the initial phase via the status subresource explicitly
+        // (same reason the callback patches status), and reflect it on the returned
+        // run so the dispatch response carries it too.
+        const initialStatus = result.run.status;
         try {
           const applied = await this.applyResourceForOrg(runOrg, result.run);
           result.run = applied.resource || result.run;
           result.runApplyResult = applied;
-          // `applyResourceForOrg` (kubectl apply) strips the status subresource,
-          // so the just-created run would have an empty status and the board would
-          // never see it as Running. Persist the initial phase via the status
-          // subresource explicitly (same reason the callback patches status).
-          const initialStatus = result.run.status;
           if (initialStatus && typeof this.patchResourceStatusForOrg === 'function') {
             try {
               await this.patchResourceStatusForOrg(runOrg, 'AgentDispatchRun', result.run.metadata?.name, initialStatus);
+              if (!result.run.status) result.run.status = initialStatus;
             } catch (statusErr) {
               result.runStatusApplyError = statusErr.message || String(statusErr);
             }

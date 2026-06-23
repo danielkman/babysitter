@@ -46,6 +46,21 @@ export interface FoundryProps {
 
 type FoundryTab = 'commission' | 'stacks' | 'agents';
 
+/**
+ * Append a graph-picked ref to a comma-separated field, de-duplicating. Lets the
+ * GraphLayerPicker contribute concrete graph objects (tools, skills, mcp servers)
+ * to a stack's CSV ref lists — the same per-layer object selection kradle's
+ * stack-builder offers.
+ */
+function appendCsv(csv: string, value: string): string {
+  const parts = (csv || '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (!value || parts.includes(value)) return csv;
+  return [...parts, value].join(', ');
+}
+
 /** v4-r1: small anvil glyph for the Forge From chip (path-only — census). */
 const ANVIL_GLYPH =
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width="100%" height="100%" aria-hidden="true">' +
@@ -254,7 +269,7 @@ function StacksTab({ orders, views }: { orders: Orders; views: SimViews }): Reac
             />
             <GraphLayerPicker
               label="Model"
-              kinds={['ModelFamily', 'ModelVersion']}
+              kinds={['ModelFamily', 'ModelVersion', 'SessionModel']}
               selectedId={draft.model}
               onSelect={(h) => setDraft({ ...draft, model: h.displayName || h.id })}
             />
@@ -270,7 +285,7 @@ function StacksTab({ orders, views }: { orders: Orders; views: SimViews }): Reac
             />
             <GraphLayerPicker
               label="Provider"
-              kinds={['Provider']}
+              kinds={['Provider', 'ModelProviderProduct', 'ModelProviderVersion']}
               selectedId={draft.provider}
               onSelect={(h) => setDraft({ ...draft, provider: h.displayName || h.id })}
             />
@@ -340,6 +355,11 @@ function StacksTab({ orders, views }: { orders: Orders; views: SimViews }): Reac
               placeholder="kradle-mcp, atlas-mcp"
               onChange={(e) => setDraft({ ...draft, mcpServerRefs: e.target.value })}
             />
+            <GraphLayerPicker
+              label="Tools / MCP"
+              kinds={['Tool', 'ToolServer', 'MCPPrompt', 'MCPResource']}
+              onSelect={(h) => setDraft({ ...draft, mcpServerRefs: appendCsv(draft.mcpServerRefs, h.displayName || h.id) })}
+            />
           </label>
           <label className="wr-foundry-field">
             <span className="wr-foundry-label">cli tools (csv)</span>
@@ -350,6 +370,11 @@ function StacksTab({ orders, views }: { orders: Orders; views: SimViews }): Reac
               placeholder="gh, kubectl"
               onChange={(e) => setDraft({ ...draft, cliToolRefs: e.target.value })}
             />
+            <GraphLayerPicker
+              label="CLI Tools"
+              kinds={['Tool', 'ToolDescriptor']}
+              onSelect={(h) => setDraft({ ...draft, cliToolRefs: appendCsv(draft.cliToolRefs, h.displayName || h.id) })}
+            />
           </label>
           <label className="wr-foundry-field">
             <span className="wr-foundry-label">skills (csv)</span>
@@ -359,6 +384,11 @@ function StacksTab({ orders, views }: { orders: Orders; views: SimViews }): Reac
               value={draft.skillRefs}
               placeholder="skill-x, skill-y"
               onChange={(e) => setDraft({ ...draft, skillRefs: e.target.value })}
+            />
+            <GraphLayerPicker
+              label="Skills"
+              kinds={['Skill', 'LibrarySkill', 'SkillArea', 'Capability']}
+              onSelect={(h) => setDraft({ ...draft, skillRefs: appendCsv(draft.skillRefs, h.displayName || h.id) })}
             />
           </label>
           <label className="wr-foundry-field">
