@@ -114,13 +114,120 @@ async function checkV1_schedulerUnit() {
 }
 
 // --- V2: captureStream yields a live video track ----------------------------------------------
-async function checkV2_captureStream(/* page */) {
-  return { ...NOT_IMPLEMENTED, name: 'V2 captureStream live track', soft: false };
+// In-page: build the effect from the #out canvas, call startEffect(new MediaStream()), and assert
+// the returned object is a MediaStream whose video track is { kind:'video', readyState:'live' }.
+async function checkV2_captureStream(page) {
+  const name = 'V2 captureStream live track';
+
+  const res = await page.evaluate(async () => {
+    const poc = window.__avatarPoc;
+    if (!poc || !poc.ready) {
+      return { ok: false, error: `bootstrap not ready: ${poc ? poc.error : 'no __avatarPoc'}` };
+    }
+    if (!poc.publish || typeof poc.publish.createCanvasPublishEffect !== 'function') {
+      return { ok: false, error: 'publish-effect.js / createCanvasPublishEffect not loaded' };
+    }
+    try {
+      const effect = poc.publish.createCanvasPublishEffect({ canvas: poc.out, fps: 25 });
+      const returned = effect.startEffect(new MediaStream());
+      const isStream = returned instanceof MediaStream;
+      const vtracks = isStream ? returned.getVideoTracks() : [];
+      const track = vtracks[0] || null;
+      const result = {
+        ok: isStream && !!track && track.kind === 'video' && track.readyState === 'live',
+        isMediaStream: isStream,
+        videoTrackCount: vtracks.length,
+        kind: track ? track.kind : null,
+        readyState: track ? track.readyState : null,
+      };
+      // Clean up the capture so it does not keep ticking for the rest of the run.
+      effect.stopEffect();
+      return result;
+    } catch (e) {
+      return { ok: false, error: String((e && (e.message || e)) || e) };
+    }
+  });
+
+  if (res.error) {
+    return { status: 'FAIL', soft: false, name, detail: res.error };
+  }
+  if (res.ok) {
+    return {
+      status: 'PASS',
+      soft: false,
+      name,
+      detail: `MediaStream=${res.isMediaStream} videoTracks=${res.videoTrackCount} kind=${res.kind} readyState=${res.readyState}`,
+    };
+  }
+  return {
+    status: 'FAIL',
+    soft: false,
+    name,
+    detail: `MediaStream=${res.isMediaStream} videoTracks=${res.videoTrackCount} kind=${res.kind} readyState=${res.readyState}`,
+  };
 }
 
 // --- V3: effect-wiring shape ------------------------------------------------------------------
-async function checkV3_effectShape(/* page */) {
-  return { ...NOT_IMPLEMENTED, name: 'V3 effect-wiring shape', soft: false };
+// In-page: assert the effect exposes isEnabled/startEffect/stopEffect (functions), isEnabled
+// returns true for a video track, and stopEffect() ends the captured track (readyState 'ended').
+// No lib-jitsi-meet needed — this validates the contract shape that setEffect consumes.
+async function checkV3_effectShape(page) {
+  const name = 'V3 effect-wiring shape';
+
+  const res = await page.evaluate(async () => {
+    const poc = window.__avatarPoc;
+    if (!poc || !poc.ready) {
+      return { ok: false, error: `bootstrap not ready: ${poc ? poc.error : 'no __avatarPoc'}` };
+    }
+    if (!poc.publish || typeof poc.publish.createCanvasPublishEffect !== 'function') {
+      return { ok: false, error: 'publish-effect.js / createCanvasPublishEffect not loaded' };
+    }
+    try {
+      const effect = poc.publish.createCanvasPublishEffect({ canvas: poc.out, fps: 25 });
+
+      const hasFns =
+        typeof effect.isEnabled === 'function' &&
+        typeof effect.startEffect === 'function' &&
+        typeof effect.stopEffect === 'function';
+
+      // isEnabled must accept a video track. Use a real captured video track as the source.
+      const probeStream = poc.out.captureStream(1);
+      const videoTrack = probeStream.getVideoTracks()[0];
+      const enabledForVideo = effect.isEnabled(videoTrack);
+      // ...and reject a non-video (audio-shaped) source.
+      const enabledForAudio = effect.isEnabled({ kind: 'audio' });
+      for (const t of probeStream.getTracks()) t.stop();
+
+      // stopEffect() must end the track it returned from startEffect().
+      const started = effect.startEffect(new MediaStream());
+      const startedTrack = started.getVideoTracks()[0];
+      const beforeStop = startedTrack ? startedTrack.readyState : null;
+      effect.stopEffect();
+      const afterStop = startedTrack ? startedTrack.readyState : null;
+
+      return {
+        ok: hasFns && enabledForVideo === true && enabledForAudio === false && afterStop === 'ended',
+        hasFns,
+        enabledForVideo,
+        enabledForAudio,
+        beforeStop,
+        afterStop,
+      };
+    } catch (e) {
+      return { ok: false, error: String((e && (e.message || e)) || e) };
+    }
+  });
+
+  if (res.error) {
+    return { status: 'FAIL', soft: false, name, detail: res.error };
+  }
+  const detail =
+    `fns=${res.hasFns} isEnabled(video)=${res.enabledForVideo} ` +
+    `isEnabled(audio)=${res.enabledForAudio} readyState ${res.beforeStop}->${res.afterStop}`;
+  if (res.ok) {
+    return { status: 'PASS', soft: false, name, detail };
+  }
+  return { status: 'FAIL', soft: false, name, detail };
 }
 
 // --- V4: canvas renders non-blank frames (THE render check) -----------------------------------
