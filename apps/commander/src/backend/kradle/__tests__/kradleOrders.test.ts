@@ -594,6 +594,21 @@ describe('createAgentIdentity → applyResource(persona+soul+appearance+voice)',
     expect((applies[2].spec as Record<string, unknown>).emoji).toBe('🔍');
     expect((applies[3].spec as { ttsProvider: string }).ttsProvider).toBe('openai');
   });
+
+  it('optimistically surfaces the new persona + appearance before the snapshot confirms', async () => {
+    const { client } = makeFakeClient();
+    const optimistic: Array<{ collection: string; resource: ResourceApplyBody }> = [];
+    const orders = makeKradleOrders(client, {
+      ...noopOptions(null),
+      applyOptimistic: (entries) => optimistic.push(...entries),
+    });
+    orders.createAgentIdentity({ name: 'ada', displayName: 'Ada' });
+    // applyOptimistic fires synchronously (before the async applyResource chain).
+    expect(optimistic.map((e) => e.collection)).toEqual(['personas', 'appearances']);
+    expect(optimistic[0].resource.kind).toBe('AgentPersona');
+    expect(optimistic[0].resource.metadata.name).toBe('ada');
+    expect(optimistic[1].resource.kind).toBe('AgentAppearance');
+  });
 });
 
 // ===========================================================================

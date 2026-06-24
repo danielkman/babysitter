@@ -43,6 +43,10 @@ export interface KradleOrdersOptions {
   getSnapshot(): KradleControllerSnapshot | null;
   /** Ask the boot layer to schedule a debounced refresh after a write (§6.3). */
   scheduleRefresh(): void;
+  /** Show just-created resources immediately (overlaid on the cached snapshot)
+   *  so the Foundry reflects them without waiting for the next poll; the real
+   *  snapshot reconciles them. Optional — only the live cache provides it. */
+  applyOptimistic?(entries: Array<{ collection: string; resource: ResourceApplyBody }>): void;
   /** The gateway `Orders` when a gateway backend is also present (§3.3 routing). */
   gatewayOrders?: Orders;
 }
@@ -477,7 +481,7 @@ export function makeKradleOrders(
   client: KradleControllerClient,
   options: KradleOrdersOptions,
 ): Orders {
-  const { getSnapshot, scheduleRefresh, gatewayOrders } = options;
+  const { getSnapshot, scheduleRefresh, gatewayOrders, applyOptimistic } = options;
   const repo = options.repo || 'default';
   const warned = new Set<string>();
 
@@ -617,9 +621,11 @@ export function makeKradleOrders(
       const body = stackInputToResourceBody(stack, client.org);
       if (stack.stackRef !== undefined && stack.stackRef !== '') {
         body.metadata.name = stack.stackRef;
+        if (applyOptimistic) applyOptimistic([{ collection: 'stacks', resource: body }]);
         run('upsertStack/applyResource', () => client.applyResource(body));
         return stack.stackRef;
       }
+      if (applyOptimistic) applyOptimistic([{ collection: 'stacks', resource: body }]);
       run('upsertStack/applyResource', () => client.applyResource(body));
       return stack.metadata.name;
     },
@@ -628,6 +634,22 @@ export function makeKradleOrders(
       // deployment binding) via the generic CRD gateway. `organizationRef` is
       // stamped from the active org by `applyDefinition`. The definition
       // reconciles onto the board on the next snapshot refresh.
+      if (applyOptimistic) {
+        applyOptimistic([{
+          collection: 'definitions',
+          resource: {
+            apiVersion: 'kradle.a5c.ai/v1alpha1',
+            kind: 'AgentDefinition',
+            metadata: { name: input.name },
+            spec: {
+              organizationRef: client.org,
+              personaRef: input.personaRef,
+              stackRef: input.stackRef,
+              ...(input.roleContext ? { roleContext: input.roleContext } : {}),
+            },
+          },
+        }]);
+      }
       run('upsertDefinition/applyDefinition', () =>
         applyDefinition(client, {
           name: input.name,
@@ -648,6 +670,14 @@ export function makeKradleOrders(
       // gateway, mirroring kradle's agent-create wizard. The persona reconciles
       // onto the gallery on the next snapshot refresh and is then selectable in
       // the definition (persona↔stack) binding form.
+      if (applyOptimistic) {
+        // Show the new persona (+ its appearance, for the emoji) immediately.
+        const [persona, , appearance] = agentIdentityResourceBodies(input, client.org);
+        applyOptimistic([
+          { collection: 'personas', resource: persona },
+          { collection: 'appearances', resource: appearance },
+        ]);
+      }
       run('createAgentIdentity/applyAgentIdentity', () => applyAgentIdentity(client, input));
       return input.name;
     },

@@ -50,6 +50,7 @@ import {
   createKradleControllerClient,
   type KradleControllerClient,
   type KradleControllerSnapshot,
+  type KradleResourceItem,
 } from '../kradle/controllerClient';
 import {
   mapMemoryIO,
@@ -250,8 +251,21 @@ interface KradleControllerCacheDeps {
   clearTimer(handle: ReturnType<typeof setTimeout>): void;
 }
 
+/** An optimistic resource shown immediately after a write, before the snapshot
+ *  poll confirms it — keyed `<agents-collection>/<name>`. */
+interface OptimisticItem {
+  collection: string;
+  resource: KradleResourceItem;
+}
+
 class KradleControllerCache {
+  /** Merged view = rawSnapshot + optimistic overlay. `views()`/`getSnapshot()`
+   *  read this so a just-created resource shows instantly. */
   private snapshot: KradleControllerSnapshot | null = null;
+  /** The last real snapshot from the server (no overlay) — reconciliation base. */
+  private rawSnapshot: KradleControllerSnapshot | null = null;
+  /** Optimistic items awaiting confirmation by a real snapshot (§6.3 UX). */
+  private readonly optimistic = new Map<string, OptimisticItem>();
   private readonly deps: KradleControllerCacheDeps;
   private pollHandle: ReturnType<typeof setTimeout> | null = null;
   private debounceHandle: ReturnType<typeof setTimeout> | null = null;
@@ -269,6 +283,44 @@ class KradleControllerCache {
 
   getSnapshot(): KradleControllerSnapshot | null {
     return this.snapshot;
+  }
+
+  /** Overlay optimistic items onto a raw snapshot (by name, never duplicating a
+   *  resource the server already returned). Returns a shallow clone. */
+  private withOptimistic(raw: KradleControllerSnapshot | null): KradleControllerSnapshot | null {
+    if (!raw || this.optimistic.size === 0) return raw;
+    const agents: Record<string, unknown> = { ...(raw.agents ?? {}) };
+    for (const { collection, resource } of this.optimistic.values()) {
+      const coll = (agents[collection] as { items?: KradleResourceItem[] } | undefined) ?? {};
+      const items = Array.isArray(coll.items) ? coll.items : [];
+      if (!items.some((i) => i.metadata?.name === resource.metadata?.name)) {
+        agents[collection] = { ...coll, items: [...items, resource] };
+      }
+    }
+    return { ...raw, agents } as KradleControllerSnapshot;
+  }
+
+  /** Drop optimistic items the latest real snapshot now contains (reconciled). */
+  private pruneOptimistic(raw: KradleControllerSnapshot): void {
+    for (const [key, { collection, resource }] of this.optimistic) {
+      const items = (raw.agents as Record<string, { items?: KradleResourceItem[] }> | undefined)?.[collection]?.items;
+      if (Array.isArray(items) && items.some((i) => i.metadata?.name === resource.metadata?.name)) {
+        this.optimistic.delete(key);
+      }
+    }
+  }
+
+  /** Public (Orders write path): show created resources immediately, then let the
+   *  next snapshot reconcile them. No-op until the first snapshot has loaded. */
+  applyOptimistic(entries: OptimisticItem[]): void {
+    if (this.disposed || entries.length === 0) return;
+    for (const e of entries) {
+      if (e.resource?.metadata?.name) this.optimistic.set(`${e.collection}/${e.resource.metadata.name}`, e);
+    }
+    if (this.rawSnapshot) {
+      this.snapshot = this.withOptimistic(this.rawSnapshot);
+      this.deps.onSnapshot(this.snapshot!);
+    }
   }
 
   /** The live `SimViews` over the current snapshot (empty until first arrives). */
@@ -337,11 +389,15 @@ class KradleControllerCache {
       (snapshot) => {
         this.inFlight = false;
         if (this.disposed) return;
-        this.snapshot = snapshot;
+        this.rawSnapshot = snapshot;
+        // Drop optimistic items the server now confirms, then overlay the rest so
+        // a just-created resource keeps showing until its real copy arrives.
+        this.pruneOptimistic(snapshot);
+        this.snapshot = this.withOptimistic(snapshot);
         // A new snapshot generation invalidates the lazy memory cache (§2.6).
         this.memoryIo.clear();
         this.memoryInFlight.clear();
-        this.deps.onSnapshot(snapshot);
+        this.deps.onSnapshot(this.snapshot!);
       },
       (error: unknown) => {
         this.inFlight = false;
@@ -525,6 +581,7 @@ export function bootReal(
     repo: config!.kradleRepo ?? 'default',
     getSnapshot: () => cache.getSnapshot(),
     scheduleRefresh: () => cache.scheduleRefresh(),
+    applyOptimistic: (entries) => cache.applyOptimistic(entries),
     ...(hasGateway ? { gatewayOrders } : {}),
   });
 

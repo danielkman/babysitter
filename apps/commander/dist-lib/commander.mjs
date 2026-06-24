@@ -14059,11 +14059,11 @@ function Jc(e, t) {
 	return Ac(e).some((e) => e.metadata.name === t);
 }
 function Yc(e, t) {
-	let { getSnapshot: n, scheduleRefresh: r, gatewayOrders: i } = t, a = t.repo || "default", o = /* @__PURE__ */ new Set();
-	function s(e) {
-		o.has(e) || (o.add(e), console.warn(`kradleOrders: '${e}' has no kradle write path (documented no-op)`));
+	let { getSnapshot: n, scheduleRefresh: r, gatewayOrders: i, applyOptimistic: a } = t, o = t.repo || "default", s = /* @__PURE__ */ new Set();
+	function c(e) {
+		s.has(e) || (s.add(e), console.warn(`kradleOrders: '${e}' has no kradle write path (documented no-op)`));
 	}
-	function c(e, t) {
+	function l(e, t) {
 		t().then(() => {
 			r();
 		}, (t) => {
@@ -14073,22 +14073,22 @@ function Yc(e, t) {
 	return {
 		abort(t) {
 			let r = n();
-			for (let n of t) Jc(r, n) ? c("abort/cancelRun", () => e.cancelRun(n)) : i ? i.abort([n]) : s("abort");
+			for (let n of t) Jc(r, n) ? l("abort/cancelRun", () => e.cancelRun(n)) : i ? i.abort([n]) : c("abort");
 		},
 		steer(e, t) {
-			i ? i.steer(e, t) : s("steer");
+			i ? i.steer(e, t) : c("steer");
 		},
 		decide(t, r) {
 			if (qc(n(), t)) {
 				let n = r === "allow" ? "approve" : "deny";
-				c("decide/decideApproval", () => e.decideApproval(t, n));
+				l("decide/decideApproval", () => e.decideApproval(t, n));
 				return;
 			}
 			if (i) {
 				i.decide(t, r);
 				return;
 			}
-			s("decide");
+			c("decide");
 		},
 		answerInquiry(t, r) {
 			let a = n();
@@ -14098,47 +14098,66 @@ function Yc(e, t) {
 			}
 			if (qc(a, t)) {
 				let n = r === null || /^(approve|proceed|allow|yes|continue|ship|go)$/i.test(r) ? "approve" : "deny";
-				c("answerInquiry/decideApproval", () => e.decideApproval(t, n));
+				l("answerInquiry/decideApproval", () => e.decideApproval(t, n));
 				return;
 			}
 			if (i) {
 				i.answerInquiry(t, r);
 				return;
 			}
-			s("answerInquiry");
+			c("answerInquiry");
 		},
 		createTask(t) {
 			let r = n(), i = Lc(r, t.taskKind);
 			if (i !== null) {
 				let n = {
 					agentDefinition: i,
-					repository: a,
+					repository: o,
 					ref: "main",
 					...t.title ? { task: t.title } : {},
 					taskKind: t.taskKind,
 					actor: "owner"
 				};
-				return c("createTask/dispatch(definition)", () => e.dispatch(n)), `dispatched:${i}`;
+				return l("createTask/dispatch(definition)", () => e.dispatch(n)), `dispatched:${i}`;
 			}
-			let o = Ic(r, t.taskKind);
-			if (o === null) return s("createTask"), null;
-			let l = {
-				agentStack: o,
-				stackRef: o,
-				repository: a,
+			let a = Ic(r, t.taskKind);
+			if (a === null) return c("createTask"), null;
+			let s = {
+				agentStack: a,
+				stackRef: a,
+				repository: o,
 				ref: "main",
 				...t.title ? { task: t.title } : {},
 				taskKind: t.taskKind,
 				actor: "owner"
 			};
-			return c("createTask/dispatch", () => e.dispatch(l)), `dispatched:${o}`;
+			return l("createTask/dispatch", () => e.dispatch(s)), `dispatched:${a}`;
 		},
 		upsertStack(t) {
 			let n = zc(t, e.org);
-			return t.stackRef !== void 0 && t.stackRef !== "" ? (n.metadata.name = t.stackRef, c("upsertStack/applyResource", () => e.applyResource(n)), t.stackRef) : (c("upsertStack/applyResource", () => e.applyResource(n)), t.metadata.name);
+			return t.stackRef !== void 0 && t.stackRef !== "" ? (n.metadata.name = t.stackRef, a && a([{
+				collection: "stacks",
+				resource: n
+			}]), l("upsertStack/applyResource", () => e.applyResource(n)), t.stackRef) : (a && a([{
+				collection: "stacks",
+				resource: n
+			}]), l("upsertStack/applyResource", () => e.applyResource(n)), t.metadata.name);
 		},
 		upsertDefinition(t) {
-			return c("upsertDefinition/applyDefinition", () => Vc(e, {
+			return a && a([{
+				collection: "definitions",
+				resource: {
+					apiVersion: "kradle.a5c.ai/v1alpha1",
+					kind: "AgentDefinition",
+					metadata: { name: t.name },
+					spec: {
+						organizationRef: e.org,
+						personaRef: t.personaRef,
+						stackRef: t.stackRef,
+						...t.roleContext ? { roleContext: t.roleContext } : {}
+					}
+				}
+			}]), l("upsertDefinition/applyDefinition", () => Vc(e, {
 				name: t.name,
 				spec: {
 					personaRef: t.personaRef,
@@ -14148,62 +14167,72 @@ function Yc(e, t) {
 			})), t.name;
 		},
 		createAgentIdentity(t) {
-			return c("createAgentIdentity/applyAgentIdentity", () => Uc(e, t)), t.name;
+			if (a) {
+				let [n, , r] = Hc(t, e.org);
+				a([{
+					collection: "personas",
+					resource: n
+				}, {
+					collection: "appearances",
+					resource: r
+				}]);
+			}
+			return l("createAgentIdentity/applyAgentIdentity", () => Uc(e, t)), t.name;
 		},
 		createRosterAgent() {
-			return s("createRosterAgent"), null;
+			return c("createRosterAgent"), null;
 		},
 		deleteRosterAgent() {
-			s("deleteRosterAgent");
+			c("deleteRosterAgent");
 		},
 		pauseUnits() {
-			s("pauseUnits");
+			c("pauseUnits");
 		},
 		resumeUnits() {
-			s("resumeUnits");
+			c("resumeUnits");
 		},
 		prioritize() {
-			s("prioritize");
+			c("prioritize");
 		},
 		toggleSim() {
-			s("toggleSim");
+			c("toggleSim");
 		},
 		moveCard(e, t) {
-			s("moveCard");
+			c("moveCard");
 		},
 		setYolo() {
-			s("setYolo");
+			c("setYolo");
 		},
 		revertCard() {
-			s("revertCard");
+			c("revertCard");
 		},
 		release() {
-			return s("release"), null;
+			return c("release"), null;
 		},
 		rollbackCard() {
-			s("rollbackCard");
+			c("rollbackCard");
 		},
 		setSpeed() {
-			return s("setSpeed"), !1;
+			return c("setSpeed"), !1;
 		},
 		updateTask(e, t) {
-			return s("updateTask"), !1;
+			return c("updateTask"), !1;
 		},
 		updateProcessTemplate(t, n) {
 			let r = n.map((e) => e.trim()).filter((e) => e.length > 0);
-			return r.length === 0 ? null : (c("updateProcessTemplate/applyProcessTemplate", () => Kc(e, {
+			return r.length === 0 ? null : (l("updateProcessTemplate/applyProcessTemplate", () => Kc(e, {
 				taskKind: t,
 				phases: r
 			})), 1);
 		},
 		writeFile() {
-			return s("writeFile"), !1;
+			return c("writeFile"), !1;
 		},
 		assignTaskAgent(e, t, n) {
-			s("assignTaskAgent");
+			c("assignTaskAgent");
 		},
 		assignTaskHuman() {
-			s("assignTaskHuman");
+			c("assignTaskHuman");
 		},
 		focusInquiryCard() {}
 	};
@@ -14342,6 +14371,8 @@ function Zc(e, t) {
 }
 var Qc = 5e3, $c = 500, el = class {
 	snapshot = null;
+	rawSnapshot = null;
+	optimistic = /* @__PURE__ */ new Map();
 	deps;
 	pollHandle = null;
 	debounceHandle = null;
@@ -14355,6 +14386,33 @@ var Qc = 5e3, $c = 500, el = class {
 	}
 	getSnapshot() {
 		return this.snapshot;
+	}
+	withOptimistic(e) {
+		if (!e || this.optimistic.size === 0) return e;
+		let t = { ...e.agents ?? {} };
+		for (let { collection: e, resource: n } of this.optimistic.values()) {
+			let r = t[e] ?? {}, i = Array.isArray(r.items) ? r.items : [];
+			i.some((e) => e.metadata?.name === n.metadata?.name) || (t[e] = {
+				...r,
+				items: [...i, n]
+			});
+		}
+		return {
+			...e,
+			agents: t
+		};
+	}
+	pruneOptimistic(e) {
+		for (let [t, { collection: n, resource: r }] of this.optimistic) {
+			let i = e.agents?.[n]?.items;
+			Array.isArray(i) && i.some((e) => e.metadata?.name === r.metadata?.name) && this.optimistic.delete(t);
+		}
+	}
+	applyOptimistic(e) {
+		if (!(this.disposed || e.length === 0)) {
+			for (let t of e) t.resource?.metadata?.name && this.optimistic.set(`${t.collection}/${t.resource.metadata.name}`, t);
+			this.rawSnapshot && (this.snapshot = this.withOptimistic(this.rawSnapshot), this.deps.onSnapshot(this.snapshot));
+		}
 	}
 	views() {
 		return {
@@ -14396,7 +14454,7 @@ var Qc = 5e3, $c = 500, el = class {
 	}
 	refresh() {
 		this.disposed || this.inFlight || (this.inFlight = !0, this.deps.client.snapshot().then((e) => {
-			this.inFlight = !1, !this.disposed && (this.snapshot = e, this.memoryIo.clear(), this.memoryInFlight.clear(), this.deps.onSnapshot(e));
+			this.inFlight = !1, !this.disposed && (this.rawSnapshot = e, this.pruneOptimistic(e), this.snapshot = this.withOptimistic(e), this.memoryIo.clear(), this.memoryInFlight.clear(), this.deps.onSnapshot(this.snapshot));
 		}, (e) => {
 			this.inFlight = !1, console.warn("KradleControllerCache: snapshot refresh failed", e);
 		}));
@@ -14489,6 +14547,7 @@ function tl(e, t, n, r = {}) {
 		repo: n.kradleRepo ?? "default",
 		getSnapshot: () => h.getSnapshot(),
 		scheduleRefresh: () => h.scheduleRefresh(),
+		applyOptimistic: (e) => h.applyOptimistic(e),
 		...g ? { gatewayOrders: p } : {}
 	});
 	return h.start(), {
