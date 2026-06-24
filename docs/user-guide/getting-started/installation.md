@@ -186,7 +186,7 @@ babysitter --version
 
 #### Step 2: Install the Adapters CLI (host-side track)
 
-The **Adapters CLI** (`adapters`) is a host-side binary for running and managing harnesses directly from your shell. It is published separately as `@a5c-ai/adapters-cli` (version **5.1.0**) and needs **Node >=20.9.0**:
+The **Adapters CLI** (`adapters`) is a host-side binary for running and managing harnesses directly from your shell. It is published separately as `@a5c-ai/adapters-cli` (version **6.0.0**) and needs **Node >=20.9.0**:
 
 ```bash
 npm install -g @a5c-ai/adapters-cli
@@ -498,14 +498,14 @@ Run each command and verify the expected result:
 ```bash
 babysitter --version
 ```
-**Expected:** The v6 release version (`5.1.0` for this edition)
+**Expected:** The v6 release version (`6.0.0` for this edition)
 
 #### 2. Adapters CLI Installed (host-side track)
 ```bash
 adapters version
 adapters doctor
 ```
-**Expected:** `adapters version` reports `5.1.0`; `adapters doctor` reports all checks passing.
+**Expected:** `adapters version` reports `6.0.0`; `adapters doctor` reports all checks passing.
 
 #### 3. Try an Adapter
 ```bash
@@ -521,7 +521,7 @@ If you installed `@a5c-ai/genty-platform`:
 genty --version
 ```
 
-**Expected:** The v6 release version (`5.1.0`)
+**Expected:** The v6 release version (`6.0.0`)
 
 #### 5. Plugin Active
 In Claude Code, type:
@@ -542,11 +542,11 @@ In Claude Code:
 | Check | Command | Expected |
 |-------|---------|----------|
 | jq | `jq --version` | jq-1.6 or higher |
-| Core CLI | `babysitter --version` | `5.1.0` |
-| Adapters CLI | `adapters version` | `5.1.0` |
+| Core CLI | `babysitter --version` | `6.0.0` |
+| Adapters CLI | `adapters version` | `6.0.0` |
 | Adapter health | `adapters doctor` | All checks pass |
 | Try an Adapter | `adapters run claude "say hi"` | The harness responds |
-| Runtime CLI | `genty --version` | `5.1.0` if installed |
+| Runtime CLI | `genty --version` | `6.0.0` if installed |
 | Plugin (Claude Code) | `/skills` in Claude Code | "babysit" listed |
 
 **All checks passed?** You're ready for the [Quickstart](./quickstart.md)!

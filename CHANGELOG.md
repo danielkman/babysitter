@@ -1,6 +1,14 @@
 # Changelog
 
-## [Unreleased] - 2026-06-05
+## [Unreleased]
+
+- No unreleased changes.
+
+
+## [6.0.0] - 2026-06-24
+- 2026-06-05
+
+
 
 ### Features
 

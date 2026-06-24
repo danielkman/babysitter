@@ -9,7 +9,7 @@ last_updated: 2026-06-23
 
 # babysitter-sdk — the core engine
 
-**Package:** `@a5c-ai/babysitter-sdk` · **Metapackage:** `@a5c-ai/babysitter` · **Version:** 5.1.0 · **Maturity:** GA / core
+**Package:** `@a5c-ai/babysitter-sdk` · **Metapackage:** `@a5c-ai/babysitter` · **Version:** 6.0.0 · **Maturity:** GA / core
 
 **`babysitter-sdk` is the event-sourced orchestration engine at the center of the whole ecosystem. It is what makes Babysitter deterministic and obedient: your workflow is real code, the orchestrator can only do what that code permits, and every step is recorded in an immutable journal.**
 

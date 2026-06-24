@@ -1,6 +1,6 @@
 {
   "name": "@a5c-ai/hooks-adapter-cli",
-  "version": "5.1.0",
+  "version": "6.0.0",
   "description": "CLI entrypoint for the hooks-adapter system",
   "license": "MIT",
   "type": "commonjs",
@@ -34,18 +34,18 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@a5c-ai/hooks-adapter-claude": "5.1.0",
-    "@a5c-ai/hooks-adapter-antigravity": "5.1.0",
-    "@a5c-ai/hooks-adapter-codex": "5.1.0",
-    "@a5c-ai/hooks-adapter-copilot": "5.1.0",
-    "@a5c-ai/hooks-adapter-cursor": "5.1.0",
-    "@a5c-ai/hooks-adapter-gemini": "5.1.0",
-    "@a5c-ai/hooks-adapter-hermes": "5.1.0",
-    "@a5c-ai/hooks-adapter-oh-my-pi": "5.1.0",
-    "@a5c-ai/hooks-adapter-openclaw": "5.1.0",
-    "@a5c-ai/hooks-adapter-opencode": "5.1.0",
-    "@a5c-ai/hooks-adapter-pi": "5.1.0",
-    "@a5c-ai/hooks-adapter-core": "5.1.0",
+    "@a5c-ai/hooks-adapter-claude": "6.0.0",
+    "@a5c-ai/hooks-adapter-antigravity": "6.0.0",
+    "@a5c-ai/hooks-adapter-codex": "6.0.0",
+    "@a5c-ai/hooks-adapter-copilot": "6.0.0",
+    "@a5c-ai/hooks-adapter-cursor": "6.0.0",
+    "@a5c-ai/hooks-adapter-gemini": "6.0.0",
+    "@a5c-ai/hooks-adapter-hermes": "6.0.0",
+    "@a5c-ai/hooks-adapter-oh-my-pi": "6.0.0",
+    "@a5c-ai/hooks-adapter-openclaw": "6.0.0",
+    "@a5c-ai/hooks-adapter-opencode": "6.0.0",
+    "@a5c-ai/hooks-adapter-pi": "6.0.0",
+    "@a5c-ai/hooks-adapter-core": "6.0.0",
     "yargs": "^17.0.0"
   },
   "devDependencies": {

@@ -319,7 +319,7 @@ function BabysitterStatusView({ active }: TuiViewProps) {
 
 export const babysitterStatusPlugin = definePlugin({
   name: 'babysitter:status',
-  version: '5.0.0',
+  version: '6.0.0',
   register(ctx) {
     ctx.registerView({
       id: 'babysitter',

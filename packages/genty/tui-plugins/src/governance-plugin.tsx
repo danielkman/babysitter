@@ -287,7 +287,7 @@ function BabysitterBreakpointRenderer({ event }: { event: AgentEvent }) {
 
 export const babysitterGovernancePlugin = definePlugin({
   name: 'babysitter:governance',
-  version: '5.0.0',
+  version: '6.0.0',
   register(ctx) {
     ctx.registerView({
       id: 'babysitter-governance',

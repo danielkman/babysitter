@@ -98,7 +98,7 @@ Be honest about what is shipping versus what is forward-looking:
 
 | Component | Status | What "status" means here |
 |-----------|--------|--------------------------|
-| babysitter-sdk / babysitter / atlas / genty / observer-dashboard | **GA** (v5.1.0) | Versioned, runtime, generally available. |
+| babysitter-sdk / babysitter / atlas / genty / observer-dashboard | **GA** (v6.0.0) | Versioned, runtime, generally available. |
 | adapters family | **GA** | Versioned and consumed by the runtime. A couple of subdirs are thin (see [adapter types](../reference/adapter-types.md) for the honest per-package notes). |
 | kradle | **MVP** | Described by its own README as an "executable MVP runtime and handoff package." Early; expect rough edges. |
 | kip-sdk | **Spec only** | Entirely Markdown — `SPEC.md` + numbered design docs. No `package.json`, no `src/`. Treat any kip "feature" as **design, not shipping code.** |

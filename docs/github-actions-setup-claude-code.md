@@ -727,7 +727,7 @@ For reproducible builds, consider pinning to specific versions:
 
 ```yaml
 plugins: |
-  babysitter@a5c.ai@5.1.0
+  babysitter@a5c.ai@6.0.0
 ```
 
 ### 2. Set Reasonable Iteration Limits

@@ -6,7 +6,7 @@ last_updated: 2026-04-26
 
 # Babysitter CLI & SDK Examples
 
-This guide walks through a realistic flow that exercises the `babysitter` CLI and the deterministic test harness exposed from `@a5c-ai/babysitter-sdk/testing`. The examples target Babysitter **5.1.0** (edition v6). The end-user CLI is installed from `@a5c-ai/babysitter`; the programmatic runtime used by the testing harness ships in `@a5c-ai/babysitter-sdk`:
+This guide walks through a realistic flow that exercises the `babysitter` CLI and the deterministic test harness exposed from `@a5c-ai/babysitter-sdk/testing`. The examples target Babysitter **6.0.0** (edition v6). The end-user CLI is installed from `@a5c-ai/babysitter`; the programmatic runtime used by the testing harness ships in `@a5c-ai/babysitter-sdk`:
 
 ```bash
 # Core CLI (end users)

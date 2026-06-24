@@ -9,7 +9,7 @@ last_updated: 2026-06-23
 
 # observer-dashboard — real-time run observability
 
-**Package:** `@a5c-ai/babysitter-observer-dashboard` · **Version:** 5.1.0 · **Maturity:** GA
+**Package:** `@a5c-ai/babysitter-observer-dashboard` · **Version:** 6.0.0 · **Maturity:** GA
 
 **The observer dashboard is a real-time observability UI for Babysitter orchestration runs. It streams run events over SSE and renders task progress, journal events, and orchestration state live in your browser.**
 

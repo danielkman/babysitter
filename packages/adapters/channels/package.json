@@ -1,6 +1,6 @@
 {
   "name": "@a5c-ai/channels-adapter",
-  "version": "5.1.0",
+  "version": "6.0.0",
   "type": "module",
   "license": "MIT",
   "description": "MCP-server mini-framework turning GitHub/Jira backends into Claude Code channels via declarative YAML: polling, dedup, declarative filters, opaque HMAC reply relay, and per-event session spawning via @a5c-ai/adapters.",
@@ -53,9 +53,9 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@a5c-ai/adapters": "5.1.0",
-    "@a5c-ai/triggers-adapter": "5.1.0",
-    "@a5c-ai/atlas": "5.1.0",
+    "@a5c-ai/adapters": "6.0.0",
+    "@a5c-ai/triggers-adapter": "6.0.0",
+    "@a5c-ai/atlas": "6.0.0",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "js-yaml": "^4.2.0",
     "zod": "^4.4.3"

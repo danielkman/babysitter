@@ -1,6 +1,6 @@
 {
   "name": "babysitter",
-  "version": "5.1.0",
+  "version": "6.0.0",
   "license": "MIT",
   "private": true,
   "workspaces": [
@@ -166,7 +166,7 @@
     "@csstools/media-query-list-parser": "^5.0.0"
   },
   "dependencies": {
-    "@a5c-ai/adapters": "^5.0.0",
+    "@a5c-ai/adapters": "^6.0.0",
     "@a5c-ai/compendium": "^0.1.0",
     "@earendil-works/pi-coding-agent": "0.75.5",
     "@modelcontextprotocol/sdk": "1.29.0",

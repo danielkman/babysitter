@@ -83,7 +83,7 @@ adapters version
 /babysitter:doctor
 ```
 
-You should see version numbers (e.g. `@a5c-ai/babysitter@5.1.0` and `5.1.0`). If not, revisit the [installation guide](./installation.md).
+You should see version numbers (e.g. `@a5c-ai/babysitter@6.0.0` and `6.0.0`). If not, revisit the [installation guide](./installation.md).
 
 ### Open Your Project
 

@@ -22,7 +22,7 @@ describe('babysitter-tui-plugins metadata', () => {
     });
 
     it('has version', () => {
-      expect(babysitterStatusPlugin.version).toBe('5.0.0');
+      expect(babysitterStatusPlugin.version).toBe('6.0.0');
     });
 
     it('has register function', () => {
@@ -36,7 +36,7 @@ describe('babysitter-tui-plugins metadata', () => {
     });
 
     it('has version', () => {
-      expect(babysitterCostPlugin.version).toBe('5.0.0');
+      expect(babysitterCostPlugin.version).toBe('6.0.0');
     });
 
     it('has register function', () => {
@@ -50,7 +50,7 @@ describe('babysitter-tui-plugins metadata', () => {
     });
 
     it('has version', () => {
-      expect(babysitterGovernancePlugin.version).toBe('5.0.0');
+      expect(babysitterGovernancePlugin.version).toBe('6.0.0');
     });
 
     it('has register function', () => {

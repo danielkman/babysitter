@@ -1,6 +1,6 @@
 {
   "name": "@a5c-ai/genty-ui",
-  "version": "5.1.0",
+  "version": "6.0.0",
   "type": "module",
   "license": "MIT",
   "description": "Shared UI foundation and session-flow projection surface for browser and React Native adapters apps",
@@ -129,7 +129,7 @@
     "prepublishOnly": "npm run build:realtime && npm run test:realtime && npm run verify:release"
   },
   "dependencies": {
-    "@a5c-ai/comm-adapter": "5.1.0",
+    "@a5c-ai/comm-adapter": "6.0.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-native": "^0.85.3",

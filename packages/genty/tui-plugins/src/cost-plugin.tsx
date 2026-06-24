@@ -232,7 +232,7 @@ function BabysitterCostView({ active, eventStream }: TuiViewProps) {
 
 export const babysitterCostPlugin = definePlugin({
   name: 'babysitter:cost',
-  version: '5.0.0',
+  version: '6.0.0',
   register(ctx) {
     ctx.registerView({
       id: 'babysitter-cost',
