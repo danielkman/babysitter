@@ -902,6 +902,14 @@ export function Foundry({ store, orders, views }: FoundryProps): React.JSX.Eleme
   // §V5-3 landing intent: openFoundry() lands on Commission Task (the
   // historical default); the registry's "open in Foundry" lands on Stacks.
   const landingTab = useStore(store, (s) => s.meta.foundryTab);
+  // Re-render the Foundry (and its tabs) on every snapshot commit. StacksTab /
+  // AgentsTab read `views.listStacks()/listPersonas()` directly in render but
+  // subscribe to NO store value of their own, so without this an open Foundry
+  // shows a stale roster — a stack/persona/dispatch created from the form (or by
+  // anyone) wouldn't appear until a full page reload. `meta.tickIndex` bumps on
+  // every commitTick (poll + post-write scheduleRefresh), so this keeps the
+  // open Foundry live.
+  useStore(store, (s) => s.meta.tickIndex);
   const [tab, setTab] = useState<FoundryTab>('commission');
   useEffect(() => {
     if (open) setTab(landingTab);

@@ -8189,7 +8189,9 @@ function zr({ orders: e, views: t }) {
 	});
 }
 function Br({ store: e, orders: t, views: r }) {
-	let i = B(e, (e) => e.meta.foundryOpen), a = B(e, (e) => e.meta.foundryTab), [s, c] = o("commission");
+	let i = B(e, (e) => e.meta.foundryOpen), a = B(e, (e) => e.meta.foundryTab);
+	B(e, (e) => e.meta.tickIndex);
+	let [s, c] = o("commission");
 	return n(() => {
 		i && c(a);
 	}, [i, a]), i ? /* @__PURE__ */ l("div", {
