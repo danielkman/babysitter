@@ -95,8 +95,16 @@ export function createJitsiSidecarRuntime({ config, jitsi, broadcast = () => {},
         case 'share_screen':
           await jitsi.shareScreen(command.url || '');
           return { ok: true };
-        case 'speak_tts':
-          return audioPipeline.speak(command.text || '', { voice: command.voice });
+        case 'speak_tts': {
+          const result = await audioPipeline.speak(command.text || '', { voice: command.voice });
+          // Additive: on a successful synthesis, forward the audio descriptor to the page-side
+          // Web Audio graph (G3) best-effort. Never alters the structured IPC result returned
+          // to the client; absence of publishAudio (e.g. mock adapters / tests) is a no-op.
+          if (result?.ok && result.audio && typeof jitsi.publishAudio === 'function') {
+            await Promise.resolve(jitsi.publishAudio(result.audio)).catch(() => {});
+          }
+          return result;
+        }
         case 'get_transcript':
           return { ok: true, transcript: state.getTranscript() };
         case 'get_participants':
@@ -131,6 +139,17 @@ export function createJitsiSidecarRuntime({ config, jitsi, broadcast = () => {},
         default:
           return { ok: false, error: `Unsupported action: ${command.action}` };
       }
+    },
+
+    // G5: inbound audio frames (produced by the page-side remote-audio tap) are transcribed
+    // through the STT provider and broadcast via the EXISTING `transcript` event path — no new
+    // event type. When STT is not configured, this is a no-op (gating preserved). Returns the
+    // broadcast transcript event, or null when nothing was emitted.
+    onInboundAudio(chunk) {
+      if (!audioPipeline.canTranscribe()) return null;
+      const result = audioPipeline.transcribe(chunk);
+      if (!result?.ok || !result.text) return null;
+      return this.handleJitsiEvent({ type: 'transcript', text: result.text, speaker: result.speaker });
     },
 
     async stop(reason = 'shutdown', options = {}) {
