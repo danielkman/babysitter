@@ -66,7 +66,15 @@ export function resolveAdapterName(spec) {
 
 const JITSI_SOCKET_PATH = '/tmp/jitsi-agent.sock';
 
-function jitsiResourceProfile(audioMode = 'listen') {
+function jitsiResourceProfile(audioMode = 'listen', videoMode = 'none') {
+  // Video publish (WebGL avatar composite) needs the most headroom — match/exceed
+  // the 'both' audio profile. Additive: receive-only/none fall through to audio sizing.
+  if (videoMode === 'publish') {
+    return {
+      requests: { cpu: '1000m', memory: '1Gi' },
+      limits: { cpu: '4000m', memory: '4Gi' },
+    };
+  }
   if (audioMode === 'both') {
     return {
       requests: { cpu: '500m', memory: '512Mi' },
@@ -96,9 +104,13 @@ function createJitsiSidecarContainer(jitsi = {}) {
   const tts = jitsi.tts || {};
   const stt = jitsi.stt || {};
   const vad = jitsi.vad || {};
+  // Video capability (G10): resolved appearance/voice threaded from the bridge.
+  const avatar = jitsi.avatar || {};
+  const voice = jitsi.voice || {};
   const audioMode = capabilities.audio || jitsi.audioMode || 'listen';
   const chatMode = capabilities.chat || jitsi.chatMode || 'read';
   const screenshareMode = capabilities.screenshare || jitsi.screenshareMode || 'none';
+  const videoMode = capabilities.video || jitsi.video || 'none';
   const env = [
     { name: 'JITSI_ROOM_URL', value: jitsi.roomUrl || '' },
     { name: 'JITSI_JWT', value: jitsi.jwt || '' },
@@ -109,20 +121,31 @@ function createJitsiSidecarContainer(jitsi = {}) {
     { name: 'JITSI_AUDIO_MODE', value: audioMode },
     { name: 'JITSI_CHAT_MODE', value: chatMode },
     { name: 'JITSI_SCREENSHARE_MODE', value: screenshareMode },
+    { name: 'JITSI_VIDEO_MODE', value: videoMode },
     { name: 'AGENT_SOCKET_PATH', value: JITSI_SOCKET_PATH },
   ];
+  // TTS env: explicit jitsi.tts (stack) wins; otherwise honor identity-resolved voice.
   if (tts.provider) env.push({ name: 'JITSI_TTS_PROVIDER', value: tts.provider });
+  else if (voice.provider) env.push({ name: 'JITSI_TTS_PROVIDER', value: voice.provider });
   if (tts.voice) env.push({ name: 'JITSI_TTS_VOICE', value: tts.voice });
+  else if (voice.voice) env.push({ name: 'JITSI_TTS_VOICE', value: voice.voice });
   if (tts.speed) env.push({ name: 'JITSI_TTS_SPEED', value: String(tts.speed) });
+  else if (voice.speed) env.push({ name: 'JITSI_TTS_SPEED', value: String(voice.speed) });
   if (stt.provider) env.push({ name: 'JITSI_STT_PROVIDER', value: stt.provider });
   if (vad.provider) env.push({ name: 'JITSI_VAD_PROVIDER', value: vad.provider });
+  // Avatar model env (G10) — guarded, mirroring the TTS block.
+  if (avatar.renderer) env.push({ name: 'JITSI_AVATAR_RENDERER', value: avatar.renderer });
+  if (avatar.avatarModelUrl) env.push({ name: 'JITSI_AVATAR_MODEL_URL', value: avatar.avatarModelUrl });
+  if (avatar.visemeSet) env.push({ name: 'JITSI_AVATAR_VISEME_SET', value: avatar.visemeSet });
+  if (avatar.defaultMood) env.push({ name: 'JITSI_AVATAR_DEFAULT_MOOD', value: avatar.defaultMood });
+  if (avatar.defaultView) env.push({ name: 'JITSI_AVATAR_DEFAULT_VIEW', value: avatar.defaultView });
   if (jitsi.goodbyeMessage) env.push({ name: 'JITSI_GOODBYE_MESSAGE', value: jitsi.goodbyeMessage });
 
   return {
     name: 'jitsi-agent-sidecar',
     image: jitsi.sidecarImage || 'kradle/jitsi-agent-sidecar:latest',
     env,
-    resources: jitsi.resources || jitsiResourceProfile(audioMode),
+    resources: jitsi.resources || jitsiResourceProfile(audioMode, videoMode),
     volumeMounts: [{ name: 'agent-socket', mountPath: '/tmp' }],
     lifecycle: {
       preStop: {

@@ -436,4 +436,58 @@ describe('createAgentMuxClient — Jitsi sidecar job contract from docs/jitsi/06
     assert.deepEqual(sidecar.resources.requests, { cpu: '200m', memory: '256Mi' });
     assert.deepEqual(sidecar.resources.limits, { cpu: '1000m', memory: '1Gi' });
   });
+
+  it('G10: threads resolved avatar/voice/video into JITSI_AVATAR_*, JITSI_VIDEO_MODE, JITSI_TTS_* sidecar env', () => {
+    const client = createAgentMuxClient();
+    const { jobManifest } = client.createAgentJob({
+      adapter: 'claude-code',
+      provider: 'anthropic',
+      org: 'test-org',
+      runId: 'run-video',
+      stackName: 'aria',
+      meetingContext: {
+        roomUrl: 'https://meet.example.test/aria',
+        roomId: 'aria-room',
+        role: 'agent',
+        capabilities: { audio: 'publish', video: 'publish', chat: 'readwrite' },
+        avatar: { renderer: 'talkinghead', avatarModelUrl: 'https://x/a.glb', visemeSet: 'oculus', defaultMood: 'neutral', defaultView: 'upper' },
+        voice: { provider: 'azure', voice: 'en-US-Aria', speed: 1 },
+      },
+    });
+    const podSpec = jobManifest.spec.template.spec;
+    const sidecar = podSpec.containers.find((c) => c.name === 'jitsi-agent-sidecar');
+    const env = Object.fromEntries(sidecar.env.map((e) => [e.name, e.value]));
+    assert.equal(env.JITSI_VIDEO_MODE, 'publish');
+    assert.equal(env.JITSI_AVATAR_RENDERER, 'talkinghead');
+    assert.equal(env.JITSI_AVATAR_MODEL_URL, 'https://x/a.glb');
+    assert.equal(env.JITSI_AVATAR_VISEME_SET, 'oculus');
+    assert.equal(env.JITSI_AVATAR_DEFAULT_MOOD, 'neutral');
+    assert.equal(env.JITSI_AVATAR_DEFAULT_VIEW, 'upper');
+    // identity-resolved voice fills JITSI_TTS_* when jitsi.tts is absent
+    assert.equal(env.JITSI_TTS_PROVIDER, 'azure');
+    assert.equal(env.JITSI_TTS_VOICE, 'en-US-Aria');
+    assert.equal(env.JITSI_TTS_SPEED, '1');
+    // video publish sizes the resource profile up
+    assert.deepEqual(sidecar.resources.limits, { cpu: '4000m', memory: '4Gi' });
+  });
+
+  it('G10 regression: audio-only meetingContext emits no JITSI_AVATAR_* env and JITSI_VIDEO_MODE=none', () => {
+    const client = createAgentMuxClient();
+    const { jobManifest } = client.createAgentJob({
+      adapter: 'claude-code',
+      org: 'test-org',
+      runId: 'run-audio',
+      meetingContext: {
+        roomUrl: 'https://meet.example.test/audio',
+        roomId: 'audio-room',
+        role: 'participant',
+        capabilities: { audio: 'speak', chat: 'readwrite' },
+      },
+    });
+    const sidecar = jobManifest.spec.template.spec.containers.find((c) => c.name === 'jitsi-agent-sidecar');
+    const env = Object.fromEntries(sidecar.env.map((e) => [e.name, e.value]));
+    assert.equal(env.JITSI_VIDEO_MODE, 'none');
+    assert.equal(env.JITSI_AUDIO_MODE, 'speak');
+    assert.ok(!sidecar.env.some((e) => e.name.startsWith('JITSI_AVATAR_')), 'no avatar env for audio-only');
+  });
 });

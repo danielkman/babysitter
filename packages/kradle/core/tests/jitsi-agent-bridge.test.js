@@ -83,6 +83,83 @@ test('Jitsi agent bridge can resolve meetings from resources and keeps generated
   assert.equal(run.spec.meetingContext.role, 'participant');
 });
 
+function activeMeetingResources() {
+  return {
+    JitsiMeeting: [
+      createResource('JitsiMeeting', { name: 'daily', namespace: 'kradle-org-default' }, {
+        organizationRef: 'default',
+        providerRef: 'jitsi-prod',
+        roomId: 'daily-default',
+        ttlMinutes: 30,
+      }, { phase: 'Active', roomUrl: 'https://meet.example/daily-default' }),
+    ],
+  };
+}
+
+test('G10: identity appearance/voice are embedded into meetingContext.avatar/voice/video', async () => {
+  const bridge = createJitsiAgentBridge({ now: () => new Date('2026-05-30T12:00:00Z') });
+  const run = { metadata: { name: 'dispatch-1' }, spec: {}, status: {} };
+  const identity = {
+    appearance: { spec: { renderer: 'talkinghead', avatarModelUrl: 'https://x/a.glb', visemeSet: 'oculus', defaultMood: 'neutral', defaultView: 'upper' } },
+    voiceProfile: { spec: { ttsProvider: 'azure', ttsConfig: { voice: 'en-US-Aria', speed: 1 } } },
+  };
+  await bridge.prepareMeetingContext(run, 'daily', stack({
+    jitsiCapability: true,
+    jitsiConfig: { role: 'agent', capabilities: { audio: 'publish', video: 'publish', chat: 'readwrite' } },
+  }), { resources: activeMeetingResources(), identity });
+
+  const ctx = run.spec.meetingContext;
+  assert.equal(ctx.video, 'publish');
+  assert.deepEqual(ctx.avatar, { renderer: 'talkinghead', avatarModelUrl: 'https://x/a.glb', visemeSet: 'oculus', defaultMood: 'neutral', defaultView: 'upper' });
+  assert.deepEqual(ctx.voice, { provider: 'azure', voice: 'en-US-Aria', speed: 1 });
+});
+
+test('G10: avatarRef on the stack resolves from resources when there is no identity', async () => {
+  const bridge = createJitsiAgentBridge({ now: () => new Date('2026-05-30T12:00:00Z') });
+  const run = { metadata: { name: 'dispatch-1' }, spec: {}, status: {} };
+  const resources = activeMeetingResources();
+  resources.AgentAppearance = [
+    createResource('AgentAppearance', { name: 'aria-appearance', namespace: 'kradle-org-default' }, {
+      organizationRef: 'default', renderer: 'live2d', avatarModelUrl: 'https://x/live2d.json', visemeSet: 'arkit',
+    }),
+  ];
+  await bridge.prepareMeetingContext(run, 'daily', stack({
+    jitsiCapability: true,
+    jitsiConfig: { role: 'agent', capabilities: { video: 'publish' }, avatarRef: 'aria-appearance' },
+  }), { resources });
+
+  assert.equal(run.spec.meetingContext.avatar.renderer, 'live2d');
+  assert.equal(run.spec.meetingContext.avatar.avatarModelUrl, 'https://x/live2d.json');
+});
+
+test('G10: a declared avatarRef that cannot be resolved hard-fails (throws, no silent fallback)', async () => {
+  const bridge = createJitsiAgentBridge({ now: () => new Date('2026-05-30T12:00:00Z') });
+  const run = { metadata: { name: 'dispatch-1' }, spec: {}, status: {} };
+  await assert.rejects(
+    () => bridge.prepareMeetingContext(run, 'daily', stack({
+      jitsiCapability: true,
+      jitsiConfig: { role: 'agent', capabilities: { video: 'publish' }, avatarRef: 'ghost-appearance' },
+    }), { resources: activeMeetingResources() }),
+    /AgentAppearance\/ghost-appearance/,
+  );
+});
+
+test('G10 regression: audio-only stack yields no avatar key and intact capabilities/role', async () => {
+  const bridge = createJitsiAgentBridge({ now: () => new Date('2026-05-30T12:00:00Z') });
+  const run = { metadata: { name: 'dispatch-1' }, spec: {}, status: {} };
+  await bridge.prepareMeetingContext(run, 'daily', stack({
+    jitsiCapability: true,
+    jitsiConfig: { role: 'participant', capabilities: { audio: 'listen', chat: 'readwrite' } },
+  }), { resources: activeMeetingResources() });
+
+  const ctx = run.spec.meetingContext;
+  assert.equal(ctx.avatar, undefined);
+  assert.equal(ctx.voice, undefined);
+  assert.equal(ctx.video, 'none');
+  assert.equal(ctx.role, 'participant');
+  assert.deepEqual(ctx.capabilities, { audio: 'listen', chat: 'readwrite' });
+});
+
 test('Jitsi agent bridge builds sidecar specs and Agent Adapter injects them only for meeting runs', () => {
   const bridge = createJitsiAgentBridge({
     sidecarImage: 'ghcr.io/a5c-ai/jitsi-agent-sidecar:test',

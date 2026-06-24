@@ -168,3 +168,66 @@ test('Jitsi meeting controller auto-dispatches template agents when autoJoin is 
   assert.equal(calls[0].meetingRef, 'daily');
   assert.equal(calls[0].taskKind, 'meeting');
 });
+
+test('G12: reconcile emits media/transcript/session/governanceRuns status', async () => {
+  const persisted = [];
+  const active = meeting({ status: { phase: 'Active', roomUrl: 'https://meet.example/daily-default' } });
+  const controller = createJitsiMeetingController({
+    providerClient: {
+      async getRoom() {
+        return {
+          phase: 'Active',
+          participantCount: 3,
+          agentTracks: [{ participant: 'aria', audio: true, video: true, screenshare: false }],
+          transcriptLive: true,
+          transcriptRef: 'transcript-1',
+          sessionAgents: [{ stackRef: 'aria-stack', jobRef: 'run-1', phase: 'Active' }],
+        };
+      },
+    },
+    resourceGateway: {
+      async list() { return { items: [active] }; },
+      async apply(resource) { persisted.push(resource); return { resource }; },
+      async get(_kind, name) { return name === active.metadata.name ? active : null; },
+    },
+    now: () => new Date('2026-05-30T12:00:00Z'),
+  });
+
+  const reconciled = await controller.reconcile(active);
+  assert.deepEqual(reconciled.status.media.agentTracks, [{ participant: 'aria', audio: true, video: true, screenshare: false }]);
+  assert.equal(reconciled.status.transcript.live, true);
+  assert.equal(reconciled.status.transcript.ref, 'transcript-1');
+  assert.deepEqual(reconciled.status.session.agents, [{ stackRef: 'aria-stack', jobRef: 'run-1', phase: 'Active' }]);
+  assert.deepEqual(reconciled.status.governanceRuns, []);
+});
+
+test('G12: reconcile preserves an existing status.recording (does not clear it)', async () => {
+  const active = meeting({ status: { phase: 'Active', roomUrl: 'https://meet.example/daily-default', recording: { active: true, recordingId: 'rec-99' } } });
+  const controller = createJitsiMeetingController({
+    providerClient: { async getRoom() { return { phase: 'Active', participantCount: 1 }; } },
+    resourceGateway: {
+      async list() { return { items: [active] }; },
+      async apply(resource) { return { resource }; },
+      async get() { return active; },
+    },
+    now: () => new Date('2026-05-30T12:00:00Z'),
+  });
+
+  const reconciled = await controller.reconcile(active);
+  assert.deepEqual(reconciled.status.recording, { active: true, recordingId: 'rec-99' });
+  // and the new status keys are also present and idempotent
+  assert.deepEqual(reconciled.status.governanceRuns, []);
+  assert.equal(reconciled.status.transcript.live, false);
+});
+
+test('G12: applyMeetingMediaStatus is a pure patch that preserves recording and unspecified keys', () => {
+  const controller = createJitsiMeetingController({
+    resourceGateway: { async list() { return { items: [] }; }, async apply(r) { return { resource: r }; }, async get() { return null; } },
+  });
+  const m = meeting({ status: { phase: 'Active', recording: { active: true, recordingId: 'rec-1' } } });
+  const patched = controller.applyMeetingMediaStatus(m, { governanceRuns: [{ tool: 'kradle_draw_canvas', runId: 'r1', phase: 'Running' }] });
+  assert.deepEqual(patched.status.recording, { active: true, recordingId: 'rec-1' });
+  assert.equal(patched.status.phase, 'Active');
+  assert.deepEqual(patched.status.governanceRuns, [{ tool: 'kradle_draw_canvas', runId: 'r1', phase: 'Running' }]);
+  assert.notEqual(patched, m, 'returns a new resource');
+});

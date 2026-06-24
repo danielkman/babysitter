@@ -48,7 +48,7 @@ function parseToolResult(resp) {
 }
 
 test('MCP_TOOLS includes Jitsi meeting management and in-meeting tools with required schemas', () => {
-  assert.equal(MCP_TOOLS.length, 33);
+  assert.equal(MCP_TOOLS.length, 42);
   const byName = new Map(MCP_TOOLS.map((tool) => [tool.name, tool]));
   for (const name of [
     'kradle_create_meeting',
@@ -72,6 +72,67 @@ test('MCP_TOOLS includes Jitsi meeting management and in-meeting tools with requ
   assert.deepEqual(byName.get('kradle_send_chat_message').inputSchema.required, ['text']);
   assert.deepEqual(byName.get('kradle_share_screen').inputSchema.required, ['url']);
   assert.deepEqual(byName.get('kradle_react').inputSchema.required, ['emoji']);
+});
+
+test('MCP_TOOLS registers the nine video-capability tools with object schemas and required keys', () => {
+  const byName = new Map(MCP_TOOLS.map((tool) => [tool.name, tool]));
+  const expectedRequired = {
+    kradle_set_expression: ['mood'],
+    kradle_play_gesture: ['gesture'],
+    kradle_set_posture: ['posture'],
+    kradle_look_at: ['target'],
+    kradle_set_view: ['view'],
+    kradle_draw_canvas: ['content'],
+    kradle_publish_video: [],
+    kradle_share_surface: ['surface'],
+    kradle_send_video_metadata: ['metadata'],
+  };
+  for (const [name, required] of Object.entries(expectedRequired)) {
+    assert.ok(byName.has(name), `${name} must be registered`);
+    assert.equal(byName.get(name).inputSchema.type, 'object');
+    assert.deepEqual(byName.get(name).inputSchema.required, required, `${name} required mismatch`);
+  }
+});
+
+test('video-capability MCP tools return sidecar socket descriptors for an agent role with video publish', async () => {
+  const server = createMcpServer({ controller: createMockController() });
+  const meetingContext = {
+    roomId: 'daily-room',
+    role: 'agent',
+    capabilities: { video: 'publish', screenshare: 'share', chat: 'readwrite', audio: 'publish' },
+  };
+  const call = async (name, args) => parseToolResult(await server.handleMessage(rpc('tools/call', { name, arguments: { ...args, meetingContext } })));
+
+  const expr = await call('kradle_set_expression', { mood: 'happy' });
+  assert.equal(expr.socketPath, '/tmp/jitsi-agent.sock');
+  assert.deepEqual(expr.command, { action: 'set_expression', mood: 'happy' });
+
+  assert.deepEqual((await call('kradle_play_gesture', { gesture: 'wave' })).command, { action: 'play_gesture', gesture: 'wave' });
+  assert.deepEqual((await call('kradle_set_posture', { posture: 'standing' })).command, { action: 'set_posture', posture: 'standing' });
+  assert.deepEqual((await call('kradle_look_at', { target: 'camera' })).command, { action: 'look_at', target: 'camera' });
+  assert.deepEqual((await call('kradle_set_view', { view: 'upper' })).command, { action: 'set_view', view: 'upper' });
+  assert.deepEqual((await call('kradle_publish_video', { enabled: true })).command, { action: 'publish_video', enabled: true });
+  assert.deepEqual((await call('kradle_draw_canvas', { content: 'hi' })).command, { action: 'draw_canvas', content: 'hi' });
+  assert.deepEqual((await call('kradle_share_surface', { surface: 'browser', url: 'https://x' })).command, { action: 'share_surface', surface: 'browser', url: 'https://x' });
+  assert.deepEqual((await call('kradle_send_video_metadata', { metadata: { caption: 'slide 1' } })).command, { action: 'send_video_metadata', metadata: { caption: 'slide 1' } });
+});
+
+test('video-capability MCP tools enforce video-publish and participant gates', async () => {
+  const server = createMcpServer({ controller: createMockController() });
+
+  // video publish gate: capabilities.video !== 'publish' rejects draw_canvas / publish_video
+  const noVideo = { roomId: 'daily-room', role: 'agent', capabilities: { video: 'none', screenshare: 'share', chat: 'readwrite', audio: 'publish' } };
+  for (const name of ['kradle_draw_canvas', 'kradle_publish_video', 'kradle_send_video_metadata']) {
+    const denied = await server.handleMessage(rpc('tools/call', { name, arguments: { content: 'x', enabled: true, metadata: {}, meetingContext: noVideo } }));
+    assert.equal(denied.result.isError, true, `${name} must be denied without video publish`);
+    assert.match(JSON.parse(denied.result.content[0].text).error, /video publish is not enabled/);
+  }
+
+  // participant gate: observer cannot drive the avatar
+  const observer = { roomId: 'daily-room', role: 'observer', capabilities: { video: 'publish', screenshare: 'share', chat: 'readwrite', audio: 'listen' } };
+  const denied = await server.handleMessage(rpc('tools/call', { name: 'kradle_set_expression', arguments: { mood: 'happy', meetingContext: observer } }));
+  assert.equal(denied.result.isError, true);
+  assert.match(JSON.parse(denied.result.content[0].text).error, /cannot perform set_expression/);
 });
 
 test('kradle_create_meeting creates an org-scoped JitsiMeeting resource', async () => {

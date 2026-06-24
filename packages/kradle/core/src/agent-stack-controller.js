@@ -10,7 +10,7 @@ export const AGENT_STACK_CONTROLLER_BOUNDARY = {
 };
 
 const MCP_HEALTH_TIMEOUT_MS = 3000;
-const JITSI_ROLES = new Set(['observer', 'participant', 'moderator']);
+const JITSI_ROLES = new Set(['observer', 'participant', 'moderator', 'agent']);
 const JITSI_TOOLS = new Set([
   'kradle_send_chat_message',
   'kradle_get_meeting_transcript',
@@ -20,6 +20,17 @@ const JITSI_TOOLS = new Set([
   'kradle_invite_to_meeting',
   'kradle_start_recording',
   'kradle_react',
+  // Video capability tools (G9) — avatar drive, canvas/video publish, surface share.
+  'kradle_speak',
+  'kradle_set_expression',
+  'kradle_play_gesture',
+  'kradle_set_posture',
+  'kradle_look_at',
+  'kradle_set_view',
+  'kradle_draw_canvas',
+  'kradle_publish_video',
+  'kradle_share_surface',
+  'kradle_send_video_metadata',
 ]);
 
 /**
@@ -232,7 +243,28 @@ export function createAgentStackController(options = {}) {
           if (!providerFound) missing.push(`JitsiMeetProvider/${providerRef}`);
         }
         const observerCanSpeak = role === 'observer' && ['speak', 'both'].includes(jitsiConfig.capabilities?.audio);
-        const valid = Boolean(providerRef) && providerFound && JITSI_ROLES.has(role) && invalidTools.length === 0 && !observerCanSpeak;
+
+        // --- Video capability validations (G9) — additive, audio/chat path above untouched ---
+        const videoMode = jitsiConfig.capabilities?.video; // 'publish' | 'receive' | undefined
+        // An observer role cannot publish video (mirrors observerCanSpeak).
+        const observerCanPublishVideo = role === 'observer' && videoMode === 'publish';
+        // avatarRef must resolve against resources.AgentAppearance when publishing video.
+        const avatarRef = typeof jitsiConfig.avatarRef === 'object' && jitsiConfig.avatarRef
+          ? jitsiConfig.avatarRef.name
+          : jitsiConfig.avatarRef;
+        let avatarRefFound = true;
+        if (avatarRef) {
+          avatarRefFound = (resources.AgentAppearance || []).some((appearance) => appearance.metadata?.name === avatarRef);
+          if (!avatarRefFound && videoMode === 'publish') missing.push(`AgentAppearance/${avatarRef}`);
+        }
+        // governedTools must be a subset of the declared tools.
+        const ungoverned = (jitsiConfig.governedTools || []).filter((tool) => !tools.includes(tool));
+
+        const valid = Boolean(providerRef) && providerFound && JITSI_ROLES.has(role)
+          && invalidTools.length === 0 && !observerCanSpeak
+          && !observerCanPublishVideo
+          && (videoMode !== 'publish' || avatarRefFound)
+          && ungoverned.length === 0;
         conditions.push({
           type: 'JitsiCapabilityReady',
           status: valid ? 'True' : 'False',
@@ -244,6 +276,9 @@ export function createAgentStackController(options = {}) {
                 providerRef && !providerFound ? `JitsiMeetProvider/${providerRef} not found` : null,
                 !JITSI_ROLES.has(role) ? `Invalid role: ${role}` : null,
                 observerCanSpeak ? 'observer role cannot use speak or both audio modes' : null,
+                observerCanPublishVideo ? 'observer role cannot publish video' : null,
+                (videoMode === 'publish' && !avatarRefFound) ? `AgentAppearance/${avatarRef} not found` : null,
+                ungoverned.length ? `governedTools not in tools: ${ungoverned.join(', ')}` : null,
                 invalidTools.length ? `Invalid Jitsi tools: ${invalidTools.join(', ')}` : null,
               ].filter(Boolean).join('; ')
         });

@@ -362,4 +362,34 @@ describe('agent dispatch and trigger target validation', () => {
     assert.equal(run.spec.approvalPolicy.autoApprove, true);
     assert.equal(run.spec.approvalPolicy.requireWriteBackApproval, false);
   });
+
+  it('G11: AgentAppearance round-trips the optional realtime avatar-model fields', () => {
+    const appearance = createResource('AgentAppearance', { name: 'aria-appearance', namespace: 'kradle-org-default' }, {
+      organizationRef: 'default',
+      avatar: { fallbackInitials: 'AR' },
+      // New optional avatar-model fields — permissive, no enum enforcement (like AgentVoiceProfile TTS).
+      renderer: 'talkinghead',
+      avatarModelUrl: 'https://x/a.glb',
+      visemeSet: 'oculus',
+      defaultMood: 'neutral',
+      defaultView: 'upper',
+    });
+
+    // requiredSpec is organizationRef only — the optional fields must survive validation untouched.
+    assert.equal(validateResource(appearance), appearance);
+    assert.equal(appearance.spec.renderer, 'talkinghead');
+    assert.equal(appearance.spec.avatarModelUrl, 'https://x/a.glb');
+    assert.equal(appearance.spec.visemeSet, 'oculus');
+    assert.equal(appearance.spec.defaultMood, 'neutral');
+    assert.equal(appearance.spec.defaultView, 'upper');
+  });
+
+  it('G11: AgentAppearance with only generation settings (no avatar-model fields) still validates', () => {
+    const appearance = createResource('AgentAppearance', { name: 'legacy-appearance', namespace: 'kradle-org-default' }, {
+      organizationRef: 'default',
+      avatar: { type: 'emoji', value: '🤖' },
+    });
+    assert.equal(validateResource(appearance), appearance);
+    assert.equal(appearance.spec.renderer, undefined);
+  });
 });

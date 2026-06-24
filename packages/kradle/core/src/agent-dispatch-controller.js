@@ -480,7 +480,7 @@ export function createAgentDispatchController(options = {}) {
       let runtimeMeetingContext = null;
       if (meetingRef) {
         try {
-          runtimeMeetingContext = await jitsiAgentBridge.prepareMeetingContext(run, meetingRef, stack, { resources, organizationRef, namespace });
+          runtimeMeetingContext = await jitsiAgentBridge.prepareMeetingContext(run, meetingRef, stack, { resources, organizationRef, namespace, identity });
         } catch (err) {
           return { error: true, reason: 'meeting-unavailable', message: err.message || `Meeting ${meetingRef} is not available` };
         }

@@ -58,6 +58,16 @@ export const MCP_TOOLS = [
   { name: 'kradle_share_screen', description: 'Share a URL or surface into the current Jitsi meeting', inputSchema: { type: 'object', properties: { url: { type: 'string' }, meetingContext: { type: 'object' } }, required: ['url'] } },
   { name: 'kradle_start_recording', description: 'Start recording the current Jitsi meeting', inputSchema: { type: 'object', properties: { meetingContext: { type: 'object' } } } },
   { name: 'kradle_react', description: 'Send a reaction to the current Jitsi meeting', inputSchema: { type: 'object', properties: { emoji: { type: 'string' }, meetingContext: { type: 'object' } }, required: ['emoji'] } },
+  // Video capability tools (G16) — avatar drive + canvas/video publish + surface share.
+  { name: 'kradle_set_expression', description: 'Set the avatar facial expression/mood in the current Jitsi meeting', inputSchema: { type: 'object', properties: { mood: { type: 'string' }, meetingContext: { type: 'object' } }, required: ['mood'] } },
+  { name: 'kradle_play_gesture', description: 'Play an avatar gesture animation in the current Jitsi meeting', inputSchema: { type: 'object', properties: { gesture: { type: 'string' }, meetingContext: { type: 'object' } }, required: ['gesture'] } },
+  { name: 'kradle_set_posture', description: 'Set the avatar posture in the current Jitsi meeting', inputSchema: { type: 'object', properties: { posture: { type: 'string' }, meetingContext: { type: 'object' } }, required: ['posture'] } },
+  { name: 'kradle_look_at', description: 'Direct the avatar gaze at a target in the current Jitsi meeting', inputSchema: { type: 'object', properties: { target: { type: 'string' }, meetingContext: { type: 'object' } }, required: ['target'] } },
+  { name: 'kradle_set_view', description: 'Set the avatar camera view (upper/full/head) in the current Jitsi meeting', inputSchema: { type: 'object', properties: { view: { type: 'string' }, meetingContext: { type: 'object' } }, required: ['view'] } },
+  { name: 'kradle_draw_canvas', description: 'Draw content onto the agent video canvas in the current Jitsi meeting', inputSchema: { type: 'object', properties: { content: {}, meetingContext: { type: 'object' } }, required: ['content'] } },
+  { name: 'kradle_publish_video', description: 'Enable or disable the agent avatar video track in the current Jitsi meeting', inputSchema: { type: 'object', properties: { enabled: { type: 'boolean' }, meetingContext: { type: 'object' } }, required: [] } },
+  { name: 'kradle_share_surface', description: 'Share a surface/URL into the agent video track in the current Jitsi meeting', inputSchema: { type: 'object', properties: { surface: { type: 'string' }, url: { type: 'string' }, meetingContext: { type: 'object' } }, required: ['surface'] } },
+  { name: 'kradle_send_video_metadata', description: 'Send structured video metadata for the agent track in the current Jitsi meeting', inputSchema: { type: 'object', properties: { metadata: { type: 'object' }, meetingContext: { type: 'object' } }, required: ['metadata'] } },
 ];
 
 export const MCP_PROMPTS = [
@@ -630,6 +640,33 @@ async function executeTool(controller, toolName, args) {
     case 'kradle_react':
       return meetingToolCommand('react', args, { payload: { emoji: args.emoji } });
 
+    case 'kradle_set_expression':
+      return meetingToolCommand('set_expression', args, { requireParticipant: true, payload: { mood: args.mood } });
+
+    case 'kradle_play_gesture':
+      return meetingToolCommand('play_gesture', args, { requireParticipant: true, payload: { gesture: args.gesture } });
+
+    case 'kradle_set_posture':
+      return meetingToolCommand('set_posture', args, { requireParticipant: true, payload: { posture: args.posture } });
+
+    case 'kradle_look_at':
+      return meetingToolCommand('look_at', args, { requireParticipant: true, payload: { target: args.target } });
+
+    case 'kradle_set_view':
+      return meetingToolCommand('set_view', args, { requireParticipant: true, payload: { view: args.view } });
+
+    case 'kradle_publish_video':
+      return meetingToolCommand('publish_video', args, { requireVideoPublish: true, payload: { enabled: args.enabled !== false } });
+
+    case 'kradle_draw_canvas':
+      return meetingToolCommand('draw_canvas', args, { requireVideoPublish: true, payload: { content: args.content } });
+
+    case 'kradle_share_surface':
+      return meetingToolCommand('share_surface', args, { requireScreenshare: true, payload: { surface: args.surface, url: args.url } });
+
+    case 'kradle_send_video_metadata':
+      return meetingToolCommand('send_video_metadata', args, { requireVideoPublish: true, payload: { metadata: args.metadata } });
+
     default:
       throw new Error(`Tool not implemented: ${toolName}`);
   }
@@ -702,6 +739,7 @@ function resolveMeetingToolContext(args = {}) {
       chat: capabilities.chat || process.env.JITSI_CHAT_MODE || 'read',
       audio: capabilities.audio || process.env.JITSI_AUDIO_MODE || 'listen',
       screenshare: capabilities.screenshare || process.env.JITSI_SCREENSHARE_MODE || 'none',
+      video: capabilities.video || process.env.JITSI_VIDEO_MODE || 'none',
     },
   };
 }
@@ -712,11 +750,14 @@ function meetingToolCommand(action, args = {}, gates = {}) {
   if (gates.requireChatWrite && context.capabilities.chat !== 'readwrite') {
     throw new Error('Jitsi chat is not writable for this agent');
   }
-  if (gates.requireParticipant && !['participant', 'moderator'].includes(context.role)) {
+  if (gates.requireParticipant && !['participant', 'moderator', 'agent'].includes(context.role)) {
     throw new Error(`Jitsi role ${context.role} cannot perform ${action}`);
   }
   if (gates.requireScreenshare && context.capabilities.screenshare !== 'share') {
     throw new Error('Jitsi screenshare is not enabled for this agent');
+  }
+  if (gates.requireVideoPublish && context.capabilities.video !== 'publish') {
+    throw new Error('Jitsi video publish is not enabled for this agent');
   }
   if (gates.requireModerator && context.role !== 'moderator') {
     throw new Error(`Jitsi role ${context.role} cannot perform ${action}`);

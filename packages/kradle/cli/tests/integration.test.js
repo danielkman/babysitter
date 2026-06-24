@@ -105,7 +105,7 @@ test('CLI integration: initialize → tools/list → kradle_snapshot all succeed
   const listResp = await server.handleMessage(rpc('tools/list'));
   assert.ok(listResp.result, 'tools/list must return a result');
   assert.ok(Array.isArray(listResp.result.tools), 'result.tools must be an array');
-  assert.equal(listResp.result.tools.length, 33, 'must list exactly 33 tools');
+  assert.equal(listResp.result.tools.length, 42, 'must list exactly 42 tools');
 
   // kradle_snapshot
   const snapResp = await server.handleMessage(rpc('tools/call', {
@@ -160,9 +160,9 @@ test('CLI integration: kradle_apply_resource → kradle_list_resources round-tri
 // Test 3: All tools listed in tools/list
 // ---------------------------------------------------------------------------
 
-test('CLI integration: all 33 tools listed in MCP_TOOLS and tools/list', async () => {
+test('CLI integration: all 42 tools listed in MCP_TOOLS and tools/list', async () => {
   // MCP_TOOLS static array
-  assert.equal(MCP_TOOLS.length, 33, 'MCP_TOOLS must have exactly 33 entries');
+  assert.equal(MCP_TOOLS.length, 42, 'MCP_TOOLS must have exactly 42 entries');
 
   const expectedTools = [
     'kradle_snapshot',
@@ -198,6 +198,15 @@ test('CLI integration: all 33 tools listed in MCP_TOOLS and tools/list', async (
     'kradle_share_screen',
     'kradle_start_recording',
     'kradle_react',
+    'kradle_set_expression',
+    'kradle_play_gesture',
+    'kradle_set_posture',
+    'kradle_look_at',
+    'kradle_set_view',
+    'kradle_draw_canvas',
+    'kradle_publish_video',
+    'kradle_share_surface',
+    'kradle_send_video_metadata',
   ];
 
   const toolNames = MCP_TOOLS.map((t) => t.name);
@@ -208,7 +217,7 @@ test('CLI integration: all 33 tools listed in MCP_TOOLS and tools/list', async (
   // Also verify via tools/list response
   const server = createMcpServer({ controller: createMockController() });
   const resp = await server.handleMessage(rpc('tools/list'));
-  assert.equal(resp.result.tools.length, 33, 'tools/list must return exactly 33 tools');
+  assert.equal(resp.result.tools.length, 42, 'tools/list must return exactly 42 tools');
 
   const responsedNames = resp.result.tools.map((t) => t.name);
   assert.ok(responsedNames.includes('kradle_snapshot'));

@@ -70,6 +70,18 @@ function makeJitsiProvider(name) {
   });
 }
 
+function makeAppearance(name, overrides = {}) {
+  return createResource('AgentAppearance', { name, namespace: 'kradle-org-default' }, {
+    organizationRef: 'default',
+    renderer: 'talkinghead',
+    avatarModelUrl: 'https://x/a.glb',
+    visemeSet: 'oculus',
+    defaultMood: 'neutral',
+    defaultView: 'upper',
+    ...overrides,
+  });
+}
+
 function makeRoleBinding(name, subject) {
   return createResource('AgentRoleBinding', { name, namespace: 'kradle-org-default' }, {
     organizationRef: 'default',
@@ -239,6 +251,157 @@ test('Jitsi-capable stack blocks observer speak mode and unknown meeting tools',
   assert.match(condition.message, /observer role cannot use speak or both audio modes/);
   assert.match(condition.message, /Invalid Jitsi tools: bad_tool/);
   assert.equal(result.validation, 'invalid');
+});
+
+test('G9: video-capable stack with agent role, video publish, avatarRef, and governed tools is valid', () => {
+  const controller = createAgentStackController();
+  const stack = makeStack('video-stack', {
+    jitsiCapability: true,
+    jitsiMeetingProviderRef: 'jitsi-prod',
+    jitsiConfig: {
+      role: 'agent',
+      capabilities: { audio: 'publish', video: 'publish', chat: 'readwrite' },
+      avatarRef: 'aria-appearance',
+      tools: ['kradle_set_expression', 'kradle_draw_canvas', 'kradle_publish_video', 'kradle_speak'],
+      governedTools: ['kradle_draw_canvas'],
+    },
+  });
+  const resources = {
+    AgentStack: [stack],
+    JitsiMeetProvider: [makeJitsiProvider('jitsi-prod')],
+    AgentAppearance: [makeAppearance('aria-appearance')],
+    AgentServiceAccount: [makeServiceAccount('sa-default')],
+    AgentRoleBinding: [makeRoleBinding('rb-1', 'sa-default')],
+    AgentSecretGrant: [makeSecretGrant('sg-model', 'sa-default', 'model-provider')],
+  };
+  const result = controller.reconcileStack(stack, resources);
+  const condition = result.conditions.find((c) => c.type === 'JitsiCapabilityReady');
+  assert.equal(condition.status, 'True', condition.message);
+  assert.equal(result.validation, 'valid');
+});
+
+test('G9: video publish tool names are accepted (no Invalid Jitsi tools)', () => {
+  const controller = createAgentStackController();
+  const stack = makeStack('video-tools-stack', {
+    jitsiCapability: true,
+    jitsiMeetingProviderRef: 'jitsi-prod',
+    jitsiConfig: {
+      role: 'agent',
+      capabilities: { video: 'receive' },
+      tools: [
+        'kradle_set_expression', 'kradle_play_gesture', 'kradle_set_posture',
+        'kradle_look_at', 'kradle_set_view', 'kradle_draw_canvas',
+        'kradle_publish_video', 'kradle_share_surface', 'kradle_send_video_metadata',
+        'kradle_speak',
+      ],
+    },
+  });
+  const resources = {
+    JitsiMeetProvider: [makeJitsiProvider('jitsi-prod')],
+    AgentServiceAccount: [makeServiceAccount('sa-default')],
+    AgentRoleBinding: [makeRoleBinding('rb-1', 'sa-default')],
+    AgentSecretGrant: [makeSecretGrant('sg-model', 'sa-default', 'model-provider')],
+  };
+  const result = controller.reconcileStack(stack, resources);
+  const condition = result.conditions.find((c) => c.type === 'JitsiCapabilityReady');
+  assert.equal(condition.status, 'True', condition.message);
+  assert.doesNotMatch(condition.message, /Invalid Jitsi tools/);
+});
+
+test('G9: observer role cannot publish video', () => {
+  const controller = createAgentStackController();
+  const stack = makeStack('observer-video', {
+    jitsiCapability: true,
+    jitsiMeetingProviderRef: 'jitsi-prod',
+    jitsiConfig: {
+      role: 'observer',
+      capabilities: { video: 'publish' },
+      avatarRef: 'aria-appearance',
+    },
+  });
+  const resources = {
+    JitsiMeetProvider: [makeJitsiProvider('jitsi-prod')],
+    AgentAppearance: [makeAppearance('aria-appearance')],
+    AgentServiceAccount: [makeServiceAccount('sa-default')],
+    AgentRoleBinding: [makeRoleBinding('rb-1', 'sa-default')],
+    AgentSecretGrant: [makeSecretGrant('sg-model', 'sa-default', 'model-provider')],
+  };
+  const result = controller.reconcileStack(stack, resources);
+  const condition = result.conditions.find((c) => c.type === 'JitsiCapabilityReady');
+  assert.equal(condition.status, 'False');
+  assert.match(condition.message, /observer role cannot publish video/);
+});
+
+test('G9: video publish with missing avatarRef is rejected', () => {
+  const controller = createAgentStackController();
+  const stack = makeStack('missing-avatar', {
+    jitsiCapability: true,
+    jitsiMeetingProviderRef: 'jitsi-prod',
+    jitsiConfig: {
+      role: 'agent',
+      capabilities: { video: 'publish' },
+      avatarRef: 'ghost-appearance',
+    },
+  });
+  const resources = {
+    JitsiMeetProvider: [makeJitsiProvider('jitsi-prod')],
+    AgentServiceAccount: [makeServiceAccount('sa-default')],
+    AgentRoleBinding: [makeRoleBinding('rb-1', 'sa-default')],
+    AgentSecretGrant: [makeSecretGrant('sg-model', 'sa-default', 'model-provider')],
+  };
+  const result = controller.reconcileStack(stack, resources);
+  const condition = result.conditions.find((c) => c.type === 'JitsiCapabilityReady');
+  assert.equal(condition.status, 'False');
+  assert.match(condition.message, /AgentAppearance\/ghost-appearance not found/);
+  // Overall validation is invalid because JitsiCapabilityReady is False.
+  assert.equal(result.validation, 'invalid');
+});
+
+test('G9: governedTools not in tools is rejected', () => {
+  const controller = createAgentStackController();
+  const stack = makeStack('ungoverned', {
+    jitsiCapability: true,
+    jitsiMeetingProviderRef: 'jitsi-prod',
+    jitsiConfig: {
+      role: 'agent',
+      capabilities: { video: 'receive' },
+      tools: ['kradle_set_expression'],
+      governedTools: ['kradle_draw_canvas'],
+    },
+  });
+  const resources = {
+    JitsiMeetProvider: [makeJitsiProvider('jitsi-prod')],
+    AgentServiceAccount: [makeServiceAccount('sa-default')],
+    AgentRoleBinding: [makeRoleBinding('rb-1', 'sa-default')],
+    AgentSecretGrant: [makeSecretGrant('sg-model', 'sa-default', 'model-provider')],
+  };
+  const result = controller.reconcileStack(stack, resources);
+  const condition = result.conditions.find((c) => c.type === 'JitsiCapabilityReady');
+  assert.equal(condition.status, 'False');
+  assert.match(condition.message, /governedTools not in tools: kradle_draw_canvas/);
+});
+
+test('G9: audio-only stack (no video key) is unregressed and valid', () => {
+  const controller = createAgentStackController();
+  const stack = makeStack('audio-only', {
+    jitsiCapability: true,
+    jitsiMeetingProviderRef: 'jitsi-prod',
+    jitsiConfig: {
+      role: 'participant',
+      capabilities: { audio: 'speak', chat: 'readwrite' },
+      tools: ['kradle_send_chat_message'],
+    },
+  });
+  const resources = {
+    JitsiMeetProvider: [makeJitsiProvider('jitsi-prod')],
+    AgentServiceAccount: [makeServiceAccount('sa-default')],
+    AgentRoleBinding: [makeRoleBinding('rb-1', 'sa-default')],
+    AgentSecretGrant: [makeSecretGrant('sg-model', 'sa-default', 'model-provider')],
+  };
+  const result = controller.reconcileStack(stack, resources);
+  const condition = result.conditions.find((c) => c.type === 'JitsiCapabilityReady');
+  assert.equal(condition.status, 'True', condition.message);
+  assert.equal(result.validation, 'valid');
 });
 
 test('listStackCapabilities returns correct normalized capability list', () => {

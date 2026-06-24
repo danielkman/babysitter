@@ -167,10 +167,46 @@ export function createJitsiMeetingController(options = {}) {
             total: currentTotal,
             peak: Math.max(Number(meeting.status?.participants?.peak || 0), currentTotal),
           },
+          // Video-capability status (G12) — additive, idempotent, provider-reported.
+          // status.recording is preserved by the spread above (set elsewhere).
+          media: {
+            agentTracks: state.agentTracks ?? meeting.status?.media?.agentTracks ?? [],
+          },
+          transcript: {
+            live: state.transcriptLive ?? meeting.status?.transcript?.live ?? false,
+            ref: state.transcriptRef ?? meeting.status?.transcript?.ref ?? null,
+          },
+          session: {
+            agents: state.sessionAgents ?? meeting.status?.session?.agents ?? [],
+          },
+          // Shape reserved here; populated by the G13 governance bridge later.
+          governanceRuns: meeting.status?.governanceRuns ?? [],
           lastReconciledAt: isoNow(now),
         },
       };
       return persist(updated);
+    },
+
+    /**
+     * Pure helper: apply a media/session/governance status patch to a meeting without
+     * re-deriving from the provider. Returns a new resource; the caller persists.
+     * Preserves recording and any unspecified status keys.
+     * @param {object} meeting
+     * @param {{ media?: object, transcript?: object, session?: object, governanceRuns?: Array }} patch
+     * @returns {object}
+     */
+    applyMeetingMediaStatus(meeting, patch = {}) {
+      const status = meeting?.status || {};
+      return {
+        ...meeting,
+        status: {
+          ...status,
+          ...(patch.media !== undefined ? { media: { ...(status.media || {}), ...patch.media } } : {}),
+          ...(patch.transcript !== undefined ? { transcript: { ...(status.transcript || {}), ...patch.transcript } } : {}),
+          ...(patch.session !== undefined ? { session: { ...(status.session || {}), ...patch.session } } : {}),
+          ...(patch.governanceRuns !== undefined ? { governanceRuns: patch.governanceRuns } : {}),
+        },
+      };
     },
 
     async listActiveMeetings(organizationRef) {

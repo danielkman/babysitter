@@ -92,8 +92,8 @@ function rpc(method, params = {}, id = 1) {
 // Tests
 // ---------------------------------------------------------------------------
 
-test('MCP_TOOLS array has 33 entries', () => {
-  assert.equal(MCP_TOOLS.length, 33);
+test('MCP_TOOLS array has 42 entries', () => {
+  assert.equal(MCP_TOOLS.length, 42);
   const names = MCP_TOOLS.map((t) => t.name);
   assert.ok(names.includes('kradle_list_resources'));
   assert.ok(names.includes('kradle_get_resource'));
@@ -125,6 +125,15 @@ test('MCP_TOOLS array has 33 entries', () => {
   assert.ok(names.includes('kradle_share_screen'));
   assert.ok(names.includes('kradle_start_recording'));
   assert.ok(names.includes('kradle_react'));
+  assert.ok(names.includes('kradle_set_expression'));
+  assert.ok(names.includes('kradle_play_gesture'));
+  assert.ok(names.includes('kradle_set_posture'));
+  assert.ok(names.includes('kradle_look_at'));
+  assert.ok(names.includes('kradle_set_view'));
+  assert.ok(names.includes('kradle_draw_canvas'));
+  assert.ok(names.includes('kradle_publish_video'));
+  assert.ok(names.includes('kradle_share_surface'));
+  assert.ok(names.includes('kradle_send_video_metadata'));
 });
 
 test('createMcpServer returns object with start, stop, handleMessage', () => {
@@ -145,10 +154,10 @@ test('handleMessage initialize returns capabilities with tools', async () => {
   assert.equal(resp.result.protocolVersion, '2024-11-05');
 });
 
-test('handleMessage tools/list returns all 33 tool definitions', async () => {
+test('handleMessage tools/list returns all 42 tool definitions', async () => {
   const server = createMcpServer({ controller: createMockController() });
   const resp = await server.handleMessage(rpc('tools/list'));
-  assert.equal(resp.result.tools.length, 33);
+  assert.equal(resp.result.tools.length, 42);
   for (const tool of resp.result.tools) {
     assert.ok(tool.name, 'each tool has a name');
     assert.ok(tool.description, 'each tool has a description');

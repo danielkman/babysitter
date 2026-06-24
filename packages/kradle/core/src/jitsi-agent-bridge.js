@@ -59,7 +59,7 @@ export function createJitsiAgentBridge(options = {}) {
       return stack?.spec?.jitsiCapability === true;
     },
 
-    async prepareMeetingContext(dispatchRun, meetingRef, stack = {}, { resources = {} } = {}) {
+    async prepareMeetingContext(dispatchRun, meetingRef, stack = {}, { resources = {}, identity = null } = {}) {
       if (!meetingRef) return null;
       if (!this.hasMeetingCapability(stack)) return null;
       const meeting = await resolveMeeting(meetingRef, resources);
@@ -78,6 +78,23 @@ export function createJitsiAgentBridge(options = {}) {
         participant,
         meeting.spec.ttlMinutes || 120,
       );
+      // Resolve effective appearance/voice (G10): identity (AgentDefinition dispatch) wins;
+      // otherwise fall back to the stack's own jitsiConfig.avatarRef / tts (bare-stack dispatch).
+      // A declared-but-unresolvable avatarRef is a hard failure — NO silent fallback.
+      const jitsiConfig = stack.spec?.jitsiConfig || {};
+      let appearance = identity?.appearance || null;
+      if (!appearance && jitsiConfig.avatarRef) {
+        const avatarRefName = typeof jitsiConfig.avatarRef === 'object'
+          ? jitsiConfig.avatarRef.name
+          : jitsiConfig.avatarRef;
+        appearance = (resources.AgentAppearance || []).find((candidate) => candidate.metadata?.name === avatarRefName) || null;
+        if (!appearance) {
+          throw new Error(`AgentAppearance/${avatarRefName} declared by stack ${stack.metadata?.name || ''} could not be resolved`);
+        }
+      }
+      const voiceProfile = identity?.voiceProfile || (jitsiConfig.tts ? { spec: jitsiConfig.tts } : null);
+      const videoMode = jitsiConfig.capabilities?.video || 'none';
+
       const context = {
         roomUrl: meeting.status.roomUrl,
         roomId: meeting.spec.roomId,
@@ -87,14 +104,34 @@ export function createJitsiAgentBridge(options = {}) {
         capabilities: stack.spec?.jitsiConfig?.capabilities || {},
       };
       dispatchRun.spec.meetingRef = meetingRef;
-      dispatchRun.spec.meetingContext = {
+      const meetingContext = {
         roomUrl: context.roomUrl,
         roomId: context.roomId,
         participantName: context.participantName,
         role: context.role,
         capabilities: context.capabilities,
+        video: videoMode,
         tokenRef: { runtimeOnly: true },
       };
+      if (appearance?.spec) {
+        const a = appearance.spec;
+        meetingContext.avatar = {
+          renderer: a.renderer,
+          avatarModelUrl: a.avatarModelUrl,
+          visemeSet: a.visemeSet,
+          defaultMood: a.defaultMood,
+          defaultView: a.defaultView,
+        };
+      }
+      if (voiceProfile?.spec) {
+        const v = voiceProfile.spec;
+        meetingContext.voice = {
+          provider: v.provider || v.ttsProvider,
+          voice: v.voice || v.ttsConfig?.voice,
+          speed: v.speed || v.ttsConfig?.speed,
+        };
+      }
+      dispatchRun.spec.meetingContext = meetingContext;
       return context;
     },
 
