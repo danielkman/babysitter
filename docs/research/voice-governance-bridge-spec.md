@@ -40,7 +40,7 @@ packages/adapters/voice/
   graph: → packages/atlas/graph/catalog-meta/package-surfaces/voice-adapter.yaml
 ```
 
-Dependencies (all in-repo, `5.1.0`): `@a5c-ai/babysitter-sdk`, `@a5c-ai/genty-core`, `@a5c-ai/transport-adapter`, `@a5c-ai/channels-adapter`, kradle core/sdk; external `@modelcontextprotocol/sdk`. Architecture family: `dispatch-core` (depends on adapters + babysitter, like channels-adapter).
+Dependencies (all in-repo, `6.0.0`): `@a5c-ai/babysitter-sdk`, `@a5c-ai/genty-core`, `@a5c-ai/transport-adapter`, `@a5c-ai/channels-adapter`, kradle core/sdk; external `@modelcontextprotocol/sdk`. Architecture family: `dispatch-core` (depends on adapters + babysitter, like channels-adapter).
 
 ## 3. Component 1 — MCP server exposing governed tools
 

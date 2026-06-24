@@ -2,7 +2,7 @@
 
 # Babysitter Configuration Reference
 
-**Version:** 5.1.0 (v6)
+**Version:** 6.0.0 (v6)
 **Last Updated:** 2026-06-22
 
 Complete reference for all Babysitter configuration options, environment variables, file paths, and settings.

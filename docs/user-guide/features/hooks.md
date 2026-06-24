@@ -2,7 +2,7 @@
 
 # Hooks: Extensible Lifecycle Events
 
-**Version:** 5.1.0 (v6)
+**Version:** 6.0.0 (v6)
 **Last Updated:** 2026-06-22
 **Category:** Feature Guide
 

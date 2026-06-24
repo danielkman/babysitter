@@ -9,7 +9,7 @@ last_updated: 2026-06-23
 
 # adapters — a family, not one thing
 
-**Umbrella package:** `@a5c-ai/adapters` · **Source:** `packages/adapters/*` (20 package directories) · **Version:** 5.1.0 · **Maturity:** GA
+**Umbrella package:** `@a5c-ai/adapters` · **Source:** `packages/adapters/*` (20 package directories) · **Version:** 6.0.0 · **Maturity:** GA
 
 > **The single most important point on this page:** "Adapters" is a **family of packages**, not one package. There are 20 adapter package directories under `packages/adapters/`, each with a distinct job. When someone says "adapters," ask *which* adapter.
 

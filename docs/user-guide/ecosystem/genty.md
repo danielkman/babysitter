@@ -9,7 +9,7 @@ last_updated: 2026-06-23
 
 # genty — the unified agent runtime
 
-**Packages:** `@a5c-ai/genty` + `@a5c-ai/genty-core` / `@a5c-ai/genty-runtime` / `@a5c-ai/genty-platform` · **CLI:** `genty` · **Version:** 5.1.0 · **Maturity:** GA (actively consolidating)
+**Packages:** `@a5c-ai/genty` + `@a5c-ai/genty-core` / `@a5c-ai/genty-runtime` / `@a5c-ai/genty-platform` · **CLI:** `genty` · **Version:** 6.0.0 · **Maturity:** GA (actively consolidating)
 
 **Genty is the unified agent product that composes every layer of the Babysitter agent stack into a single distributable binary, `genty`. It is how you run processes headlessly, serve MCP, run the internal harness, and drive the daemon/TUI.**
 

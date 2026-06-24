@@ -1,6 +1,6 @@
 {
   "name": "babysitter",
-  "version": "5.0.1-staging.28347f861706",
+  "version": "6.0.0",
   "interface": {
     "displayName": "Babysitter"
   },

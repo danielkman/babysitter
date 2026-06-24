@@ -3,7 +3,7 @@
 # Babysitter CLI Reference
 
 **Version:** 1.1
-**CLI/SDK Version:** 5.1.0 (v6)
+**CLI/SDK Version:** 6.0.0 (v6)
 **Last Updated:** 2026-06-22
 
 Complete reference documentation for the core `babysitter` orchestration command-line interface.
@@ -93,7 +93,7 @@ npx -y @a5c-ai/babysitter@latest <command>
 
 ```bash
 babysitter --version
-# Output: 5.1.0
+# Output: 6.0.0
 ```
 
 ### Alias Setup

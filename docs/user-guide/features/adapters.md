@@ -2,7 +2,7 @@
 
 # Adapters: Run Babysitter on Any Harness
 
-**Version:** 5.1.0 (v6) · **Last Updated:** 2026-06-22 · **Category:** Feature Guide
+**Version:** 6.0.0 (v6) · **Last Updated:** 2026-06-22 · **Category:** Feature Guide
 
 ---
 

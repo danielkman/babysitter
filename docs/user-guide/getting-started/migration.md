@@ -1,6 +1,6 @@
 [Docs](../index.md) › [Getting Started](./README.md) › Migration
 
-# Migration Guide: Prod (0.0.x) to v6 (5.1.0)
+# Migration Guide: Prod (0.0.x) to v6 (6.0.0)
 
 **Category:** Getting Started · **Last Updated:** 2026-06-22
 
@@ -27,8 +27,8 @@ This page lists every breaking change and what to do about it. Read it before up
 
 | Surface | Prod | v6 |
 |---------|------|-----|
-| Core CLI / SDK | `0.0.175` | **5.1.0** |
-| Adapters CLI | (did not exist) | **5.1.0** |
+| Core CLI / SDK | `0.0.175` | **6.0.0** |
+| Adapters CLI | (did not exist) | **6.0.0** |
 | Edition | - | **v6** |
 
 This is a deliberate **semver-major jump**. Treat the upgrade as a breaking change and test your processes after migrating.

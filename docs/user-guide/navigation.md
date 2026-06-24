@@ -534,7 +534,7 @@ The user guide currently tracks the current release only:
 {
   "versions": {
     "current": {
-      "label": "v6 (5.1.0)",
+      "label": "v6 (6.0.0)",
       "path": "/docs/"
     }
   }

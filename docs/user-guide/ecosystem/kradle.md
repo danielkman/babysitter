@@ -9,7 +9,7 @@ last_updated: 2026-06-23
 
 # kradle — Kubernetes-native Git forge (MVP)
 
-**Packages:** `@a5c-ai/kradle` (core) + `@a5c-ai/kradle-cli` · **Version:** 5.1.0 · **Maturity:** MVP
+**Packages:** `@a5c-ai/kradle` (core) + `@a5c-ai/kradle-cli` · **Version:** 6.0.0 · **Maturity:** MVP
 
 > **Maturity warning — read this first.** Kradle's own README describes it as an "executable MVP runtime and handoff package." Treat it as **early / MVP**: APIs, charts, and CRDs may change, and rough edges are expected. It is included here for completeness and forward planning, not as a hardened production system.
 

@@ -9,7 +9,7 @@ last_updated: 2026-06-23
 
 # atlas — the catalog & knowledge graph
 
-**Package:** `@a5c-ai/atlas` · **CLI:** `atlas` (alias `a5c-atlas`) · **Version:** 5.1.0 · **Maturity:** GA
+**Package:** `@a5c-ai/atlas` · **CLI:** `atlas` (alias `a5c-atlas`) · **Version:** 6.0.0 · **Maturity:** GA
 
 **Atlas is the unified knowledge graph and catalog for the ecosystem. It is the single source of truth for harness metadata, discovery snapshots, plugin targets, host detection, and package/process topology — and it is what lets you add a harness as a *data change* rather than a code change.**
 

@@ -9,7 +9,7 @@ last_updated: 2026-06-23
 
 # Adapters CLI Reference
 
-**Package:** `@a5c-ai/adapters-cli` · **Binary:** `adapters` · **Version:** 5.1.0 · **Node:** >=20.9.0
+**Package:** `@a5c-ai/adapters-cli` · **Binary:** `adapters` · **Version:** 6.0.0 · **Node:** >=20.9.0
 
 ## On this page
 

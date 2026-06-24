@@ -302,7 +302,7 @@ Choose a path based on your role and goals.
 
 ## What's New
 
-### Version 5.1.0
+### Version 6.0.0
 
 - v6 launch edition: documented the harness-agnostic Adapters runtime across all 12 supported harnesses
 - Unified the public npm surface around `@a5c-ai/babysitter` for the main CLI
@@ -313,7 +313,7 @@ Choose a path based on your role and goals.
 
 | Version | Date | Highlights |
 |---------|------|------------|
-| 5.1.0 | 2026-06-22 | v6 launch edition: harness-agnostic Adapters runtime documented across 12 harnesses |
+| 6.0.0 | 2026-06-22 | v6 launch edition: harness-agnostic Adapters runtime documented across 12 harnesses |
 | 5.0.0 | 2026-04-25 | CLI/runtime package split clarified across public docs |
 
 For the complete changelog, see the [GitHub Releases](https://github.com/a5c-ai/babysitter/releases).
