@@ -11,6 +11,14 @@ const SUPPORTED_ACTIONS = new Set([
   'get_transcript',
   'get_participants',
   'disconnect',
+  'set_expression',
+  'set_posture',
+  'play_gesture',
+  'look_at',
+  'set_view',
+  'draw_canvas',
+  'start_screenshare',
+  'send_video_metadata',
 ]);
 
 function writeJson(socket, message) {

@@ -20,6 +20,15 @@ function adapter() {
     async lowerHand() { calls.push(['lowerHand']); },
     async react(emoji) { calls.push(['react', emoji]); },
     async shareScreen(url) { calls.push(['shareScreen', url]); },
+    // G8 video/avatar actions
+    async setExpression(expression, opts) { calls.push(['setExpression', expression, opts]); },
+    async setPosture(posture) { calls.push(['setPosture', posture]); },
+    async playGesture(gesture, opts) { calls.push(['playGesture', gesture, opts]); },
+    async lookAt(target) { calls.push(['lookAt', target]); },
+    async setView(view) { calls.push(['setView', view]); },
+    async drawCanvas(ops) { calls.push(['drawCanvas', ops]); },
+    async startScreenshare(opts) { calls.push(['startScreenshare', opts]); },
+    async sendVideoMetadata(metadata) { calls.push(['sendVideoMetadata', metadata]); },
   };
 }
 
@@ -77,6 +86,35 @@ describe('Jitsi sidecar runtime command/event contract', () => {
       ['lowerHand'],
       ['react', 'thumbsup'],
       ['shareScreen', 'https://kradle.example/run'],
+    ]);
+  });
+
+  it('dispatches the new video/avatar (G8) actions to the Jitsi adapter', async () => {
+    const jitsi = adapter();
+    const runtime = createJitsiSidecarRuntime({
+      config: { roomUrl: 'https://meet.example.test/standup', jwt: 'jwt', roomId: 'standup', capabilities: { video: 'publish', screenshare: 'share' } },
+      jitsi,
+      broadcast: () => {},
+    });
+
+    await runtime.handleCommand({ action: 'set_expression', expression: 'happy', intensity: 0.8 });
+    await runtime.handleCommand({ action: 'set_posture', posture: 'lean-in' });
+    await runtime.handleCommand({ action: 'play_gesture', gesture: 'thumbup', loop: false });
+    await runtime.handleCommand({ action: 'look_at', target: 'camera' });
+    await runtime.handleCommand({ action: 'set_view', view: 'upper' });
+    await runtime.handleCommand({ action: 'draw_canvas', ops: [{ type: 'rect' }] });
+    await runtime.handleCommand({ action: 'start_screenshare', source: 'vnc', url: 'vnc://host:5900' });
+    await runtime.handleCommand({ action: 'send_video_metadata', metadata: { lowerThird: 'Aria' } });
+
+    assert.deepEqual(jitsi.calls, [
+      ['setExpression', 'happy', { intensity: 0.8 }],
+      ['setPosture', 'lean-in'],
+      ['playGesture', 'thumbup', { loop: false }],
+      ['lookAt', 'camera'],
+      ['setView', 'upper'],
+      ['drawCanvas', [{ type: 'rect' }]],
+      ['startScreenshare', { source: 'vnc', url: 'vnc://host:5900' }],
+      ['sendVideoMetadata', { lowerThird: 'Aria' }],
     ]);
   });
 

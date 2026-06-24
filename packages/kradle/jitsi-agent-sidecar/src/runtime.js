@@ -59,6 +59,14 @@ export function createJitsiSidecarRuntime({ config, jitsi, broadcast = () => {},
       let outbound = timestamped(event);
       if (event.type === 'transcript') {
         outbound = { type: 'transcript', ...state.addTranscript(outbound) };
+      } else if (event.type === 'chat') {
+        outbound = {
+          type: 'chat',
+          sender: event.sender ?? event.id ?? event.from,
+          text: event.text ?? event.message ?? '',
+          ...(event.private != null ? { private: event.private } : {}),
+          timestamp: outbound.timestamp,
+        };
       } else if (event.type === 'participant_joined') {
         const participant = state.setParticipant(outbound);
         outbound = { ...outbound, ...participant };
@@ -95,6 +103,30 @@ export function createJitsiSidecarRuntime({ config, jitsi, broadcast = () => {},
           return { ok: true, participants: state.getParticipants() };
         case 'disconnect':
           await this.stop(command.reason || 'agent_disconnect');
+          return { ok: true };
+        case 'set_expression':
+          await jitsi.setExpression(command.expression, { intensity: command.intensity });
+          return { ok: true };
+        case 'set_posture':
+          await jitsi.setPosture(command.posture);
+          return { ok: true };
+        case 'play_gesture':
+          await jitsi.playGesture(command.gesture, { loop: command.loop });
+          return { ok: true };
+        case 'look_at':
+          await jitsi.lookAt(command.target);
+          return { ok: true };
+        case 'set_view':
+          await jitsi.setView(command.view);
+          return { ok: true };
+        case 'draw_canvas':
+          await jitsi.drawCanvas(command.ops || command.payload);
+          return { ok: true };
+        case 'start_screenshare':
+          await jitsi.startScreenshare({ source: command.source, url: command.url });
+          return { ok: true };
+        case 'send_video_metadata':
+          await jitsi.sendVideoMetadata(command.metadata);
           return { ok: true };
         default:
           return { ok: false, error: `Unsupported action: ${command.action}` };
