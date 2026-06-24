@@ -24,10 +24,12 @@
 // Exit code: non-zero if any non-soft check FAILs. SKIP (soft) does not fail the run.
 
 import puppeteer from 'puppeteer-core'; // resolved from root node_modules — no new dependency
+import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { buildVisemeSchedule } from './lipsync.js'; // PURE — no GPU/audio/browser
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -109,8 +111,62 @@ const NOT_IMPLEMENTED = { status: 'FAIL', detail: 'not implemented (PoC skeleton
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // --- V1: pure scheduler unit test (node-only) -------------------------------------------------
+// Imports buildVisemeSchedule() directly in NODE (no browser, no audio, no GPU) and asserts on a
+// fixed sample. This is the hard, fully-deterministic CI gate.
 async function checkV1_schedulerUnit() {
-  return { ...NOT_IMPLEMENTED, name: 'V1 scheduler unit test', soft: false };
+  const name = 'V1 scheduler unit test';
+  try {
+    // Sample: silence -> aɪ (11/aa, wide open) -> l (14/nn) -> silence, offsets in 100ns ticks.
+    const visemes = [0, 11, 14, 0];
+    const vtimes = [0, 1500000, 3000000, 4500000];
+    const sched = buildVisemeSchedule(visemes, vtimes, { unit: 'ticks' });
+
+    // Length.
+    assert.equal(sched.length, 4, `expected length 4, got ${sched.length}`);
+
+    // ticks/10000 -> ms, strictly ascending.
+    assert.deepEqual(sched.map((e) => e.timeMs), [0, 150, 300, 450], 'timesMs ticks->ms');
+    for (let i = 1; i < sched.length; i += 1) {
+      assert.ok(sched[i].timeMs > sched[i - 1].timeMs, 'timeMs strictly ascending');
+    }
+
+    // Every entry: valid string morph + numeric weight in [0,1].
+    for (const e of sched) {
+      assert.equal(typeof e.morph, 'string', 'morph is a string');
+      assert.ok(e.morph.length > 0, 'morph non-empty');
+      assert.equal(typeof e.weight, 'number', 'weight is numeric');
+      assert.ok(Number.isFinite(e.weight), 'weight finite');
+      assert.ok(e.weight >= 0 && e.weight <= 1, `weight in [0,1] (got ${e.weight})`);
+      assert.equal(typeof e.visemeId, 'number', 'visemeId is numeric');
+    }
+
+    // Viseme 0 (silence) -> closed/zero-openness mouth.
+    assert.equal(sched[0].visemeId, 0, 'first cue is viseme 0');
+    assert.equal(sched[0].morph, 'sil', 'viseme 0 maps to silence morph');
+    assert.equal(sched[0].weight, 0, 'viseme 0 weight is zero (closed mouth)');
+    assert.equal(sched[3].weight, 0, 'trailing viseme 0 weight is zero (closed mouth)');
+
+    // Non-zero viseme (11/aa) -> open mouth; openness strictly greater than silence.
+    assert.equal(sched[1].visemeId, 11, 'second cue is viseme 11');
+    assert.equal(sched[1].morph, 'aa', 'viseme 11 maps to aa (open)');
+    assert.ok(sched[1].weight > 0, 'viseme 11 weight > 0 (open mouth)');
+    assert.ok(sched[1].weight > sched[0].weight, 'open vowel more open than silence');
+    assert.ok(sched[2].weight > sched[0].weight, 'viseme 14 more open than silence');
+
+    // Determinism: calling twice yields deep-equal output.
+    const sched2 = buildVisemeSchedule(visemes, vtimes, { unit: 'ticks' });
+    assert.deepEqual(sched, sched2, 'deterministic — two calls deep-equal');
+
+    return {
+      status: 'PASS',
+      soft: false,
+      name,
+      detail: `len=${sched.length} timesMs=[${sched.map((e) => e.timeMs).join(',')}] ` +
+        `morphs=[${sched.map((e) => e.morph).join(',')}] deterministic=true`,
+    };
+  } catch (e) {
+    return { status: 'FAIL', soft: false, name, detail: String((e && (e.message || e)) || e) };
+  }
 }
 
 // --- V2: captureStream yields a live video track ----------------------------------------------
