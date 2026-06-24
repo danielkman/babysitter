@@ -9,7 +9,7 @@
     output <canvas id="out"> that will become the published Jitsi video track, plus an
     off-DOM-ish stage container for TalkingHead's own WebGL renderer canvas.
 
-    A <script type="module"> bootstrap wires together the (currently stub) modules
+    A <script type="module"> bootstrap wires together the modules
     ./avatar.js, ./compositor.js, ./lipsync.js and ./publish-effect.js and exposes
     window.__avatarPoc so that verify.mjs (headless puppeteer-core) and the manual
     live-Jitsi path can drive the PoC via page.evaluate().

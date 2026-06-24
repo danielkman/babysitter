@@ -13,9 +13,9 @@ harness, plus the A/V-sync fix:
   single shared `AudioContext` clock (the **X1** A/V-sync fix: audio + visemes originate from
   one page / one clock → bounded drift).
 
-> **Status: SKELETON.** Every module is currently a documented stub (`throw new Error(... not
-> implemented ...)`). This commit is config/layout only — no rendering, publish, or lipsync
-> logic yet.
+> **Status: IMPLEMENTED (PoC).** All four modules carry real logic and the headless harness
+> passes V1–V4 (`exit 0`) on a SwiftShader box. What remains is the **manual live-Jitsi + real-GPU**
+> publish (see the last section) — that is intentionally not a CI gate.
 
 ## No-install design
 
@@ -72,7 +72,8 @@ node packages/kradle/jitsi-agent-sidecar/avatar-poc/verify.mjs
 | **V4** | `#out` renders non-blank frames (pixel sample). | **Conditional on headless WebGL (X2) — best-effort, may SKIP.** |
 
 V1 is the hard gate; V2/V3 should pass under `--headless=new` on most boxes; V4 is best-effort.
-(All checks currently report `not implemented` until the modules carry logic.)
+Current state on this repo's CI-shaped run: **V1, V2, V3, V4 all PASS, `exit 0`** (V4 rendered
+non-blank frames via SwiftShader; on a GPU-less host V4 SKIPs rather than failing).
 
 ### Visual inspection in a normal browser
 

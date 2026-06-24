@@ -9,16 +9,18 @@
 // set of well-known Windows fallbacks for local dev convenience.
 //
 // Checks (per the plan's §3 table):
-//   V1  Scheduler unit test  — import buildVisemeSchedule() in NODE (no browser). [not run in --render-only]
-//   V2  captureStream live track — in-page (live video MediaStreamTrack). [not run in --render-only]
-//   V3  Effect-wiring shape  — CanvasPublishEffect isEnabled/startEffect/stopEffect. [not run in --render-only]
+//   V1  Scheduler unit test  — import buildVisemeSchedule() in NODE (no browser). [skipped in --render-only]
+//   V2  captureStream live track — in-page (live video MediaStreamTrack). [skipped in --render-only]
+//   V3  Effect-wiring shape  — CanvasPublishEffect isEnabled/startEffect/stopEffect. [skipped in --render-only]
 //   V4  Non-blank frames     — run the compositor a few frames; getImageData sample of #out is not
-//                              all-transparent/all-black. *** This is the focus of this task. ***
+//                              all-transparent/all-black.
 //                              Conditional on headless WebGL (X2); if WebGL is unavailable the
 //                              harness reports V4 as SKIP with the REAL error — it does NOT fake a pass.
 //
+// All four checks are IMPLEMENTED and currently PASS (exit 0) on a SwiftShader host.
+//
 // Modes:
-//   (default)        run V1 + (V2/V3/V4 in browser).  [V1/V2/V3 remain plan stubs for now.]
+//   (default)        run V1 (node) + V2/V3/V4 (in browser).
 //   --render-only    run ONLY the V4 render check.
 //
 // Exit code: non-zero if any non-soft check FAILs. SKIP (soft) does not fail the run.
@@ -105,8 +107,6 @@ const LAUNCH_OPTS = {
     '--autoplay-policy=no-user-gesture-required',
   ],
 };
-
-const NOT_IMPLEMENTED = { status: 'FAIL', detail: 'not implemented (PoC skeleton)' };
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
