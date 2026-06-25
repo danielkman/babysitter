@@ -143,6 +143,8 @@ export function createPuppeteerJitsiClient(config = {}) {
   let page = null;
   // Static server for src/browser/* modules; only started when videoMode === 'publish'.
   let moduleServer = null;
+  // Last avatar-injection error, if any (kept observable instead of silently swallowed).
+  let injectAvatarError = null;
 
   async function evaluateBestEffort(fn, ...args) {
     if (!page) return;
@@ -170,8 +172,12 @@ export function createPuppeteerJitsiClient(config = {}) {
       await page.addScriptTag({ content: avatarBootstrapSource(moduleServer.baseUrl, avatarCfg) });
       // Give the shim a moment to evaluate the bootstrap (it sets window.__kradleAvatarBoot).
       await page.waitForFunction(() => !!window.__kradleAvatarBoot, { timeout: 20000 }).catch(() => {});
-    } catch {
-      // CSP or addScriptTag variance must never crash connect; the G8 methods stay best-effort no-ops.
+    } catch (err) {
+      // CSP or addScriptTag variance must never crash connect; the G8 methods stay best-effort
+      // no-ops. Surface the cause (not silent): record it and log so a missing avatar is diagnosable.
+      injectAvatarError = String(err && err.stack ? err.stack : err);
+      // eslint-disable-next-line no-console
+      console.error('[kradle-avatar] avatar injection failed (G8 methods remain no-ops):', err);
     }
   }
 
@@ -284,7 +290,16 @@ export function createPuppeteerJitsiClient(config = {}) {
               conf.replaceTrack(localAudio, track);
             }
             return;
-          } catch { /* fall through to the unchanged tone/pcm render below */ }
+          } catch (err) {
+            // NOT a fallback: the avatar is present and the descriptor carries viseme timing, so
+            // lipsync is the INTENDED path. Surface the failure loudly (probe + console) and
+            // re-throw — do NOT silently degrade to a plain tone, which would mask a real lipsync
+            // fault behind audible-but-wrong output. evaluateBestEffort still keeps connect() alive.
+            w.__kradleLipsyncError = String(err && err.stack ? err.stack : err);
+            // eslint-disable-next-line no-console
+            console.error('[kradle-avatar] lipsync publish failed:', err);
+            throw err;
+          }
         }
         if (desc.kind === 'tone') {
           const osc = ctx.createOscillator();
@@ -379,6 +394,11 @@ export function createPuppeteerJitsiClient(config = {}) {
 
     async sendVideoMetadata(metadata) {
       await evaluateBestEffort((value) => window.__kradleAvatar?.sendVideoMetadata?.(value), metadata);
+    },
+
+    // Diagnostic: surfaces the avatar-injection failure (if any) instead of leaving it swallowed.
+    get lastAvatarError() {
+      return injectAvatarError;
     },
 
     async disconnect() {
