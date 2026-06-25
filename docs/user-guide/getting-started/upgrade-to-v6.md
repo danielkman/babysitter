@@ -124,9 +124,16 @@ Restart Claude Code after installing. Depth: [Claude Code](../harnesses/claude-c
 
 ### Codex (most proven)
 
-```bash
-babysitter harness:install-plugin codex [--workspace <path>]
-```
+    babysitter harness:install-plugin codex [--workspace <path>]
+
+    # Marketplace path
+    codex plugin marketplace add a5c-ai/babysitter --ref <released-tag> --sparse .agents/plugins
+    codex plugin list --marketplace babysitter
+    codex plugin add babysitter --marketplace babysitter
+
+    # Alternative (npx installer)
+    npx --yes @a5c-ai/babysitter-codex install --global
+    npx --yes @a5c-ai/babysitter-codex install --workspace <path>
 
 Depth: [Codex](../harnesses/codex.md).
 
