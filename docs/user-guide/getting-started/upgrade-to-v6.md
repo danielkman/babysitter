@@ -57,7 +57,7 @@ Drop the deprecated/removed environment variables from your shell profile and sc
 
 - `BABYSITTER_SESSION_ID` (renamed to `AGENT_SESSION_ID` in v6)
 - `CLAUDE_SESSION_ID` (now the harness-agnostic `AGENT_SESSION_ID`)
-- `CLAUDE_PLUGIN_ROOT` (now a harness-agnostic plugin root)
+- `CLAUDE_PLUGIN_ROOT` (removed in v6 — the runtime injects `BABYSITTER_PLUGIN_ROOT` into hooks; you do not set it)
 
 Remove the dropped `--plugin-root` flag from any command or script — it is removed in v6, and plugin/root resolution is now handled by the harness-agnostic runtime.
 
