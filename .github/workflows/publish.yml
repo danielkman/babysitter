@@ -2360,7 +2360,13 @@ jobs:
           AZURE_OPENAI_PROJECT_NAME: ${{ vars.AZURE_OPENAI_PROJECT_NAME }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          # Shared HS256 secret the controller SIGNS the meeting JWT with and prosody VALIDATES with.
+          # Both sides must match exactly. Prefer a dedicated secret; fall back to the stable test-auth
+          # secret so staging stays self-consistent without a new secret. (G0-RT in-cluster Jitsi.)
+          KRADLE_JITSI_JWT_SECRET: ${{ secrets.KRADLE_JITSI_JWT_SECRET }}
         run: |
+          # Resolve the effective shared Jitsi JWT secret once, reuse for prosody + the controller.
+          JITSI_JWT_SECRET="${KRADLE_JITSI_JWT_SECRET:-$KRADLE_TEST_AUTH_SECRET}"
           kubectl -n "$KUBE_NAMESPACE" create secret generic kradle-assistant-keys \
             --from-literal=AZURE_API_KEY="${AZURE_OPENAI_API_KEY}" \
             --from-literal=AGENT_MUX_API_BASE="https://${AZURE_OPENAI_PROJECT_NAME}.services.ai.azure.com" \
@@ -2370,9 +2376,13 @@ jobs:
             --from-literal=GOOGLE_API_KEY="${GOOGLE_API_KEY}" \
             --from-literal=KRADLE_AGENT_IMAGE="${ADAPTERS_AGENT_IMAGE:-${ACR_NAME}.azurecr.io/adapters-agent:latest}" \
             --from-literal=KRADLE_JITSI_AGENT_SIDECAR_IMAGE="${JITSI_AGENT_SIDECAR_IMAGE:-${ACR_NAME}.azurecr.io/jitsi-agent-sidecar:latest}" \
+            --from-literal=KRADLE_JITSI_JWT_SECRET="${JITSI_JWT_SECRET}" \
             --dry-run=client -o yaml | kubectl apply -f -
 
           helm upgrade --install kradle packages/kradle/charts \
+            --set jitsi.install=true \
+            --set jitsi.prosody.auth.jwt.appSecret="${JITSI_JWT_SECRET}" \
+            --set "jitsi-subchart.prosody.secretEnvs.JWT_APP_SECRET=${JITSI_JWT_SECRET}" \
             --namespace "$KUBE_NAMESPACE" \
             --create-namespace \
             --set image.controller.repository="${ACR_NAME}.azurecr.io/kradle-controller" \
