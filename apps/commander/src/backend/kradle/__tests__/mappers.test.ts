@@ -214,6 +214,24 @@ describe('card observability — cost / tokens / duration from the run status', 
     expect(card.tokensBurned).toBe(0);
     expect(card.durationMs).toBeNull();
   });
+
+  it('surfaces pullRequestUrl from status.pullRequest.url (repo-work mode)', () => {
+    const s = snap({
+      runs: {
+        items: [
+          run('dispatch-pr', { taskKind: 'implement' }, 'Completed', {}, {
+            pullRequest: { url: 'http://gitea/a5c-ai/agent-sandbox/pulls/1', number: 1, branch: 'kradle/x' },
+          }),
+        ],
+      },
+    });
+    expect(mapCards(s)[0].pullRequestUrl).toBe('http://gitea/a5c-ai/agent-sandbox/pulls/1');
+  });
+
+  it('leaves pullRequestUrl null for scratch runs (no status.pullRequest)', () => {
+    const s = snap({ runs: { items: [run('dispatch-np', { taskKind: 'fix' }, 'Completed')] } });
+    expect(mapCards(s)[0].pullRequestUrl).toBeNull();
+  });
 });
 
 // ===========================================================================

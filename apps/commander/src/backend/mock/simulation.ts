@@ -302,6 +302,12 @@ export interface SimCardView {
   tokensBurned: number;
   /** Wall-clock ms from queued→completed, null while running or unstarted. */
   durationMs: number | null;
+  /**
+   * URL of the pull request the agent opened in repo-work mode (from the run's
+   * `status.pullRequest.url`). Absent for scratch/diagnostic runs that touched
+   * no repository.
+   */
+  pullRequestUrl?: string | null;
 }
 
 export interface SimAgentView {

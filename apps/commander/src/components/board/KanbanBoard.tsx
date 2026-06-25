@@ -447,6 +447,18 @@ function CardBody({
             </span>
           )}
           {card.hasPendingInquiry && <span className="wr-card-inquiry" title="inquiry pending">?</span>}
+          {!mini && card.pullRequestUrl && (
+            <a
+              className="wr-card-pr"
+              href={card.pullRequestUrl}
+              target="_blank"
+              rel="noreferrer"
+              title={`open pull request: ${card.pullRequestUrl}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              PR
+            </a>
+          )}
         </span>
       </span>
       <ProgressRing progress={card.progress} />

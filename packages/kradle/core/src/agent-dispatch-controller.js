@@ -549,6 +549,27 @@ export function createAgentDispatchController(options = {}) {
           }
         }
 
+        // Repo-work mode: when a concrete repository is targeted (not the
+        // scratch sentinel), hand the agent pod a real checkout so it can edit
+        // code, push a branch, and open a PR. The owner defaults to the org
+        // (Gitea org == kradle org); a slug "owner/name" overrides it. The git
+        // origin + token come from the web pod env (set by the chart). A missing
+        // base/token here is NOT papered over — the entrypoint fails the clone
+        // loudly so the misconfiguration is visible rather than silently running
+        // a scratch job the user did not ask for.
+        if (repository && repository !== 'default') {
+          const gitBase = (process.env.KRADLE_GIT_BASE_URL || '').replace(/\/$/, '');
+          const gitToken = process.env.KRADLE_GITEA_TOKEN || '';
+          const [repoOwner, repoName] = repository.includes('/')
+            ? repository.split('/')
+            : [organizationRef, repository];
+          jobEnv.KRADLE_REPO_OWNER = repoOwner;
+          jobEnv.KRADLE_REPO_NAME = repoName;
+          jobEnv.KRADLE_BASE_BRANCH = branch;
+          if (gitBase) jobEnv.KRADLE_GIT_BASE_URL = gitBase;
+          if (gitToken) jobEnv.KRADLE_GIT_TOKEN = gitToken;
+        }
+
         const { jobManifest, jobName } = agentMuxClient.createAgentJob({
           adapter: executionConfig.adapter,
           provider: executionConfig.provider,

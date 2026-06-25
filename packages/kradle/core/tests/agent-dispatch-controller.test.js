@@ -124,6 +124,66 @@ test('Successful dispatch with Agent Adapter available', async () => {
   assert.equal(gw.applied[0].kind, 'Job', 'Applied resource should be a Job');
 });
 
+test('Repo-work mode threads repository + git env into the Job when repository is concrete', async () => {
+  const gw = createMockResourceGateway();
+  const muxClient = createAgentMuxClient({ resourceGateway: gw });
+  const resources = buildValidResources('repo-stack');
+  const controller = createAgentDispatchController({ agentMuxClient: muxClient });
+
+  const prevBase = process.env.KRADLE_GIT_BASE_URL;
+  const prevToken = process.env.KRADLE_GITEA_TOKEN;
+  process.env.KRADLE_GIT_BASE_URL = 'http://gitea.test:3000/';
+  process.env.KRADLE_GITEA_TOKEN = 'tok-123';
+  try {
+    // Bare repo name (no slash): owner defaults to the org. This is the form the
+    // board sends; a slashed "owner/name" override is rejected by the permission
+    // review's repository-scope check, so the dispatch path uses the bare name.
+    const result = await controller.createManualDispatch({
+      repository: 'agent-sandbox',
+      ref: 'main',
+      agentStack: 'repo-stack',
+      task: 'add a subtract function',
+      actor: 'test-user',
+      namespace: 'kradle-org-default',
+      organizationRef: 'default',
+      resources,
+    });
+    assert.equal(result.error, false, 'Dispatch should succeed');
+    const env = gw.applied[0].spec.template.spec.containers[0].env;
+    const byName = Object.fromEntries(env.map((e) => [e.name, e.value]));
+    assert.equal(byName.KRADLE_REPO_OWNER, 'default', 'owner defaults to org');
+    assert.equal(byName.KRADLE_REPO_NAME, 'agent-sandbox');
+    assert.equal(byName.KRADLE_BASE_BRANCH, 'main');
+    assert.equal(byName.KRADLE_GIT_BASE_URL, 'http://gitea.test:3000', 'trailing slash trimmed');
+    assert.equal(byName.KRADLE_GIT_TOKEN, 'tok-123');
+  } finally {
+    if (prevBase === undefined) delete process.env.KRADLE_GIT_BASE_URL; else process.env.KRADLE_GIT_BASE_URL = prevBase;
+    if (prevToken === undefined) delete process.env.KRADLE_GITEA_TOKEN; else process.env.KRADLE_GITEA_TOKEN = prevToken;
+  }
+});
+
+test('Scratch mode omits repo/git env when repository is the default sentinel', async () => {
+  const gw = createMockResourceGateway();
+  const muxClient = createAgentMuxClient({ resourceGateway: gw });
+  const resources = buildValidResources('scratch-stack');
+  const controller = createAgentDispatchController({ agentMuxClient: muxClient });
+
+  const result = await controller.createManualDispatch({
+    repository: 'default',
+    ref: 'main',
+    agentStack: 'scratch-stack',
+    task: 'just answer a question',
+    actor: 'test-user',
+    namespace: 'kradle-org-default',
+    organizationRef: 'default',
+    resources,
+  });
+  assert.equal(result.error, false);
+  const env = gw.applied[0].spec.template.spec.containers[0].env;
+  assert.ok(!env.some((e) => e.name === 'KRADLE_REPO_OWNER'), 'no repo env in scratch mode');
+  assert.ok(!env.some((e) => e.name === 'KRADLE_GIT_TOKEN'), 'no git token in scratch mode');
+});
+
 test('Meeting-aware dispatch injects meeting context only for Jitsi-capable stacks', async () => {
   const gw = createMockResourceGateway();
   const muxClient = createAgentMuxClient({ resourceGateway: gw });

@@ -4381,6 +4381,15 @@ function hn({ card: e, orders: t, mini: n }) {
 							className: "wr-card-inquiry",
 							title: "inquiry pending",
 							children: "?"
+						}),
+						!n && e.pullRequestUrl && /* @__PURE__ */ l("a", {
+							className: "wr-card-pr",
+							href: e.pullRequestUrl,
+							target: "_blank",
+							rel: "noreferrer",
+							title: `open pull request: ${e.pullRequestUrl}`,
+							onClick: (e) => e.stopPropagation(),
+							children: "PR"
 						})
 					]
 				})]
@@ -13477,7 +13486,8 @@ function Ks(e) {
 			humanAssigneeId: u["commander.a5c.ai/human"] ?? null,
 			costUsd: J(m.cost) ?? 0,
 			tokensBurned: g,
-			durationMs: y
+			durationMs: y,
+			pullRequestUrl: q(Y(m.pullRequest)?.url) ?? null
 		};
 		c.push({
 			view: R,

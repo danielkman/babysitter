@@ -29,7 +29,7 @@ export async function POST(request, { params }) {
 
   try {
     const body = await request.json();
-    const { status, result, transcript, tokenUsage, artifacts, error: errorMsg } = body;
+    const { status, result, transcript, tokenUsage, artifacts, error: errorMsg, pullRequest } = body;
 
     if (!status || !['completed', 'failed'].includes(status)) {
       return errorResponse('status must be "completed" or "failed"', 400);
@@ -56,6 +56,9 @@ export async function POST(request, { params }) {
       ...(errorMsg ? { failureReason: errorMsg } : {}),
       ...(result ? { result } : {}),
       ...(tokenUsage ? { tokenUsage } : {}),
+      // Surface the opened PR (repo-work mode) on the run status so the board
+      // card can link to it. Accept it at the top level or nested in result.
+      ...((pullRequest || result?.pullRequest) ? { pullRequest: pullRequest || result.pullRequest } : {}),
     };
 
     await controller.patchResourceStatusForOrg(org, 'AgentDispatchRun', name, statusPatch);

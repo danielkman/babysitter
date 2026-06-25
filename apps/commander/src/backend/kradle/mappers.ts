@@ -1132,6 +1132,9 @@ export function mapCards(snapshot: KradleControllerSnapshot): SimCardView[] {
       costUsd: asNumber(st.cost) ?? 0,
       tokensBurned,
       durationMs,
+      // Repo-work mode: the agent's callback records the opened PR on
+      // `status.pullRequest`. Surface its URL so the card can link to it.
+      pullRequestUrl: asString(asRecord(st.pullRequest)?.url) ?? null,
     };
     built.push({ view, sortKey: creationMs(run) ?? seq, seq });
     seq += 1;
