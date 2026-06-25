@@ -1189,7 +1189,7 @@ var at = "kradle.a5c.ai/v1alpha1", ot = 177e10, st = [
 	codex: ["gpt-5.2-codex", "gpt-5.1-codex-mini"],
 	"gemini-cli": ["gemini-3-pro", "gemini-3-flash"],
 	pi: ["pi-2.5"]
-}, U = [
+}, ct = [
 	"implement",
 	"review",
 	"fix",
@@ -1200,7 +1200,7 @@ var at = "kradle.a5c.ai/v1alpha1", ot = 177e10, st = [
 	"deploy",
 	"research",
 	"migrate"
-], ct = {
+], lt = {
 	implement: "claude-code",
 	fix: "claude-code",
 	migrate: "claude-code",
@@ -1211,8 +1211,8 @@ var at = "kradle.a5c.ai/v1alpha1", ot = 177e10, st = [
 	research: "gemini-cli",
 	polish: "codex",
 	deploy: "codex"
-}, lt = "kradle.a5c.ai/parent-task";
-function ut(e, t, n, r, i) {
+}, ut = "kradle.a5c.ai/parent-task";
+function dt(e, t, n, r, i) {
 	return {
 		stackRef: e,
 		stack: {
@@ -1238,12 +1238,12 @@ function ut(e, t, n, r, i) {
 		}
 	};
 }
-var dt = [
-	ut("stk-01", "Meticulous Reviewer", "claude-code", "A meticulous reviewer who reads every diff line twice and trusts nothing without a failing test first. It cites the exact file and line for every finding and never waves a change through on vibes.", "Prefer small reviewed steps; demand a regression test for every fix."),
-	ut("stk-02", "Bold Refactorer", "codex", "A bold refactorer who would rather rebuild the mechanism than patch around it. It moves fast, deletes dead weight without sentiment, and leaves the architecture simpler than it found it.", "When duplication appears twice, extract; when a module fights you, replace it."),
-	ut("stk-03", "Careful Archivist", "gemini-cli", "A careful archivist who documents every decision before acting and never lets a finding go unrecorded. It writes prose first, code second, and keeps the ledgers immaculate.", "Every change ships with updated docs and a one-line rationale in the changelog."),
-	ut("stk-04", "Swift Scout", "pi", "A swift scout that maps the territory in minutes and reports back before committing to anything heavy. It favors the smallest probe that answers the question and abandons dead ends without regret.", "Time-box every investigation; surface findings early and often.")
-], ft = Object.fromEntries(U.map((e) => [e, dt.find((t) => t.stack.spec.adapter === ct[e]).stackRef])), pt = {
+var ft = [
+	dt("stk-01", "Meticulous Reviewer", "claude-code", "A meticulous reviewer who reads every diff line twice and trusts nothing without a failing test first. It cites the exact file and line for every finding and never waves a change through on vibes.", "Prefer small reviewed steps; demand a regression test for every fix."),
+	dt("stk-02", "Bold Refactorer", "codex", "A bold refactorer who would rather rebuild the mechanism than patch around it. It moves fast, deletes dead weight without sentiment, and leaves the architecture simpler than it found it.", "When duplication appears twice, extract; when a module fights you, replace it."),
+	dt("stk-03", "Careful Archivist", "gemini-cli", "A careful archivist who documents every decision before acting and never lets a finding go unrecorded. It writes prose first, code second, and keeps the ledgers immaculate.", "Every change ships with updated docs and a one-line rationale in the changelog."),
+	dt("stk-04", "Swift Scout", "pi", "A swift scout that maps the territory in minutes and reports back before committing to anything heavy. It favors the smallest probe that answers the question and abandons dead ends without regret.", "Time-box every investigation; surface findings early and often.")
+], pt = Object.fromEntries(ct.map((e) => [e, ft.find((t) => t.stack.spec.adapter === lt[e]).stackRef])), mt = {
 	implement: "Forge the new mechanism",
 	review: "Audit the incoming diff",
 	fix: "Hunt the regression",
@@ -1254,7 +1254,7 @@ var dt = [
 	deploy: "Stage the launch sequence",
 	research: "Survey the unknown plateau",
 	migrate: "Relocate the archive vault"
-}, mt = [
+}, ht = [
 	{
 		name: "frontier",
 		repository: "a5c-ai/frontier"
@@ -1268,7 +1268,7 @@ var dt = [
 		repository: "a5c-ai/relay"
 	}
 ];
-function ht(e, t, n, r, i, a) {
+function gt(e, t, n, r, i, a) {
 	return {
 		resource: {
 			apiVersion: at,
@@ -1281,14 +1281,14 @@ function ht(e, t, n, r, i, a) {
 					"kradle.a5c.ai/repository": r.repository,
 					"kradle.a5c.ai/agent-stack": "commander-fleet",
 					"kradle.a5c.ai/runner-pool": "untrusted-linux",
-					...a === null ? {} : { [lt]: a }
+					...a === null ? {} : { [ut]: a }
 				}
 			},
 			spec: {
 				repository: r.repository,
 				ref: "refs/heads/main",
 				branch: "main",
-				sha: bt(e),
+				sha: xt(e),
 				sourceRefs: { triggerRule: "commander-manual-dispatch" },
 				agentStack: "commander-fleet",
 				taskKind: n,
@@ -1306,7 +1306,7 @@ function ht(e, t, n, r, i, a) {
 		parentId: a
 	};
 }
-var gt = [
+var _t = [
 	{
 		kind: "Repository",
 		prefix: "repository",
@@ -1440,7 +1440,7 @@ var gt = [
 			"docs-voice"
 		]
 	}
-], _t = [
+], vt = [
 	"documents",
 	"implements",
 	"depends_on",
@@ -1451,7 +1451,7 @@ var gt = [
 	"derived_from",
 	"resolved_by"
 ];
-function vt(e, t) {
+function yt(e, t) {
 	let n = [], r = [
 		"team:platform",
 		"team:cogwheel",
@@ -1464,7 +1464,7 @@ function vt(e, t) {
 		"draft",
 		"deprecated"
 	];
-	for (let t of gt) for (let a of t.stems) n.push({
+	for (let t of _t) for (let a of t.stems) n.push({
 		nodeKind: t.kind,
 		id: `${t.prefix}:${a}`,
 		attributes: {
@@ -1485,7 +1485,7 @@ function vt(e, t) {
 	for (let t of n) {
 		let r = e.int(1, 3), i = {};
 		for (let a = 0; a < r; a += 1) {
-			let r = e.pick(_t), a = e.pick(n).id;
+			let r = e.pick(vt), a = e.pick(n).id;
 			a === t.id && (a = n[(n.indexOf(t) + 1) % n.length].id);
 			let o = i[r] ?? [];
 			o.push({ target: a }), i[r] = o;
@@ -1519,8 +1519,8 @@ function vt(e, t) {
 						storage: "etcd",
 						phase: "Ready",
 						conditions: [],
-						currentCommit: bt(e),
-						indexDigest: `sha256:${bt(e)}${bt(e)}`
+						currentCommit: xt(e),
+						indexDigest: `sha256:${xt(e)}${xt(e)}`
 					}
 				},
 				source: {
@@ -1564,23 +1564,23 @@ function vt(e, t) {
 		records: n
 	};
 }
-function yt(e) {
-	let t = new N((e ^ 1592639710) >>> 0), n = t.int(2, 3), r = mt.slice(0, n).map((e, t) => ({
+function bt(e) {
+	let t = new N((e ^ 1592639710) >>> 0), n = t.int(2, 3), r = ht.slice(0, n).map((e, t) => ({
 		workspaceId: `ws-${String(t + 1).padStart(2, "0")}-${e.name}`,
 		name: e.name,
 		repository: e.repository
-	})), i = [], a = 0, o = (e) => (a += 1, `adr-${String(a).padStart(2, "0")}-${e}`), s = t.shuffle(U), c = t.int(6, 8);
+	})), i = [], a = 0, o = (e) => (a += 1, `adr-${String(a).padStart(2, "0")}-${e}`), s = t.shuffle(ct), c = t.int(6, 8);
 	for (let e = 0; e < c; e += 1) {
 		let n = s[e % s.length], a = r[e % r.length];
-		i.push(ht(t, o(n), n, a, pt[n], null));
+		i.push(gt(t, o(n), n, a, mt[n], null));
 	}
 	for (let e = 0; e < 2; e += 1) {
 		let n = s[(c + e) % s.length], a = r[e % r.length], l = o(n);
-		i.push(ht(t, l, n, a, pt[n], null));
+		i.push(gt(t, l, n, a, mt[n], null));
 		let u = t.int(2, 3);
 		for (let n = 0; n < u; n += 1) {
 			let r = s[(c + e + n + 1) % s.length];
-			i.push(ht(t, o(r), r, a, `${pt[r]} (${n + 1})`, l));
+			i.push(gt(t, o(r), r, a, `${mt[r]} (${n + 1})`, l));
 		}
 	}
 	return {
@@ -1588,17 +1588,17 @@ function yt(e) {
 		epochMs: ot,
 		workspaces: r,
 		cards: i,
-		memory: vt(t, r)
+		memory: yt(t, r)
 	};
 }
-function bt(e) {
+function xt(e) {
 	let t = "";
 	for (let n = 0; n < 12; n += 1) t += "0123456789abcdef"[e.int(0, 15)];
 	return t;
 }
 //#endregion
 //#region src/backend/mock/simulation.ts
-function xt(e) {
+function St(e) {
 	switch (e) {
 		case "Ready":
 		case "Pending":
@@ -1615,11 +1615,11 @@ function xt(e) {
 		default: return "Pending";
 	}
 }
-var St = [
+var Ct = [
 	.5,
 	1,
 	2
-], Ct = [
+], wt = [
 	"backlog",
 	"do",
 	"ai-review",
@@ -1627,7 +1627,7 @@ var St = [
 	"approved",
 	"merged",
 	"in-production"
-], wt = {
+], Tt = {
 	fix: [
 		"reproduce",
 		"diagnose",
@@ -1681,7 +1681,7 @@ var St = [
 		"verify",
 		"review"
 	]
-}, Tt = [
+}, Et = [
 	{
 		inquiryKind: "strategy",
 		question: (e) => `Choose the working strategy for "${e}"`,
@@ -1775,7 +1775,7 @@ var St = [
 			tone: "danger"
 		}]
 	}
-], Et = {
+], Dt = {
 	implement: [
 		"src/core/mechanism.ts",
 		"src/core/mechanism.test.ts",
@@ -1829,7 +1829,7 @@ var St = [
 		"src/storage/vault.test.ts",
 		"docs/migration-plan.md"
 	]
-}, Dt = [
+}, Ot = [
 	"manifold",
 	"regulator",
 	"flywheel",
@@ -1840,7 +1840,7 @@ var St = [
 	"gimbal",
 	"capacitor",
 	"aether"
-], Ot = [
+], kt = [
 	"calibrate",
 	"engage",
 	"temper",
@@ -1849,7 +1849,7 @@ var St = [
 	"regulate",
 	"prime",
 	"anneal"
-], kt = [
+], At = [
 	[
 		"Scanning the objective perimeter... ",
 		"Sweeping the objective perimeter a second time... ",
@@ -1880,7 +1880,7 @@ var St = [
 		"Sketching the smallest cut that heals the fault. ",
 		"Drafting a patch plan that touches nothing it need not. "
 	]
-], At = [
+], jt = [
 	[
 		"Applying the fix to the affected module. ",
 		"Landing the fix in the affected module. ",
@@ -1912,17 +1912,17 @@ var St = [
 		"Retiring the second copy of this logic. "
 	]
 ];
-function jt(e, t, n) {
+function Mt(e, t, n) {
 	let r = e[t];
 	return r[n % r.length];
 }
-var Mt = [
+var Nt = [
 	"Bash",
 	"Read",
 	"Edit",
 	"Grep",
 	"WebFetch"
-], Nt = [
+], Pt = [
 	(e) => `Consider tightening the error handling in ${e}.`,
 	(e) => `${e}: naming is clear; add a regression test for the edge case.`,
 	(e) => `The diff in ${e} looks correct; verify the rollback path.`,
@@ -1930,19 +1930,19 @@ var Mt = [
 	(e) => `Second pass over ${e}: the boundary condition still worries me.`,
 	(e) => `${e} reads well now; document the invariant inline before merge.`
 ];
-function Pt(e, t, n, r) {
-	let i = Nt.length, a = (r + Math.max(0, t - 1)) % i;
+function Ft(e, t, n, r) {
+	let i = Pt.length, a = (r + Math.max(0, t - 1)) % i;
 	for (let t = 0; t < i; t += 1) {
-		let r = Nt[(a + t) % i](e);
+		let r = Pt[(a + t) % i](e);
 		if (!n.includes(r)) return r;
 	}
-	return Nt[a](e);
+	return Pt[a](e);
 }
-var Ft = [
+var It = [
 	"Changes requested: the verify phase is missing coverage for the failure path.",
 	"Changes requested: the patch leaks state across iterations — isolate it.",
 	"Changes requested: documentation does not match the implemented behavior."
-], It = {
+], Lt = {
 	"claude-code": {
 		input: 3e-6,
 		output: 15e-6
@@ -1959,12 +1959,12 @@ var Ft = [
 		input: 1e-6,
 		output: 5e-6
 	}
-}, Lt = 15e3, Rt = "mock-commander/3.0.0", zt = 100, Bt = /* @__PURE__ */ "Brassbeak.Cogsworth.Pinion.Gearhart.Sprocketta.Tinwhistle.Boilerbun.Flywheel.Copperdove.Ratchet.Camshaft.Steamwick.Gimbal.Soldera.Rivetta.Clankston.Pendula.Axleby.Vapoura.Dynamo.Quillgear.Ironmoth.Bellowsby.Cinderlatch.Mainspring.Thimblecog.Valvette.Smokestack.Borewell.Latchkey.Turbina.Weldwyn".split("."), Vt = {
+}, Rt = 15e3, zt = "mock-commander/3.0.0", Bt = 100, Vt = /* @__PURE__ */ "Brassbeak.Cogsworth.Pinion.Gearhart.Sprocketta.Tinwhistle.Boilerbun.Flywheel.Copperdove.Ratchet.Camshaft.Steamwick.Gimbal.Soldera.Rivetta.Clankston.Pendula.Axleby.Vapoura.Dynamo.Quillgear.Ironmoth.Bellowsby.Cinderlatch.Mainspring.Thimblecog.Valvette.Smokestack.Borewell.Latchkey.Turbina.Weldwyn".split("."), Ht = {
 	worker: "the Worker",
 	reviewer: "the Reviewer",
 	integration: "the Integrator"
 };
-function Ht(e) {
+function Ut(e) {
 	let t = "created";
 	for (let n of e) switch (n.type) {
 		case "RUN_CREATED":
@@ -1988,7 +1988,7 @@ function Ht(e) {
 	}
 	return t;
 }
-var Ut = class {
+var Wt = class {
 	seed;
 	scenario;
 	rng;
@@ -2019,29 +2019,29 @@ var Ut = class {
 	memoryUpdateCounter = 0;
 	speedValue = 1;
 	constructor(e) {
-		this.seed = e.seed >>> 0, this.scenario = e.scenario ?? yt(this.seed), this.rng = new N(this.seed);
-		for (let e of dt) this.stacks.set(e.stackRef, {
+		this.seed = e.seed >>> 0, this.scenario = e.scenario ?? bt(this.seed), this.rng = new N(this.seed);
+		for (let e of ft) this.stacks.set(e.stackRef, {
 			stackRef: e.stackRef,
 			custom: !1,
 			stack: JSON.parse(JSON.stringify(e.stack))
 		});
-		for (let e of U) this.templates.set(e, {
+		for (let e of ct) this.templates.set(e, {
 			revision: 1,
-			phases: [...wt[e]]
+			phases: [...Tt[e]]
 		});
 		let t = [
 			{
-				stackRef: dt[0].stackRef,
+				stackRef: ft[0].stackRef,
 				name: "Cogsworth",
 				role: "worker"
 			},
 			{
-				stackRef: dt[1].stackRef,
+				stackRef: ft[1].stackRef,
 				name: "Pendula",
 				role: "reviewer"
 			},
 			{
-				stackRef: dt[2].stackRef,
+				stackRef: ft[2].stackRef,
 				name: "Brassbeak",
 				role: "worker"
 			}
@@ -2094,10 +2094,10 @@ var Ut = class {
 		return 800 / this.speedValue;
 	}
 	setSpeed(e) {
-		return St.includes(e) ? (this.speedValue = e, this.interval !== null && (this.stop(), this.start(this.intervalOverride ?? void 0)), !0) : (this.emit({
+		return Ct.includes(e) ? (this.speedValue = e, this.interval !== null && (this.stop(), this.start(this.intervalOverride ?? void 0)), !0) : (this.emit({
 			type: "error",
 			code: "invalid_speed",
-			message: `Speed must be one of ${St.join("/")}; got ${String(e)}`
+			message: `Speed must be one of ${Ct.join("/")}; got ${String(e)}`
 		}), !1);
 	}
 	onFrame(e) {
@@ -2111,7 +2111,7 @@ var Ut = class {
 				this.emit({
 					type: "hello",
 					protocolVersions: ["1"],
-					serverVersion: Rt,
+					serverVersion: zt,
 					serverTime: new Date(this.now()).toISOString()
 				});
 				return;
@@ -2148,7 +2148,7 @@ var Ut = class {
 	}
 	moveCard(e, t) {
 		let n = this.cards.get(e);
-		if (!n || !Ct.includes(t)) return this.emit({
+		if (!n || !wt.includes(t)) return this.emit({
 			type: "error",
 			code: "task_not_found",
 			message: `Unknown task: ${e}`
@@ -2186,7 +2186,7 @@ var Ut = class {
 		}), !1);
 	}
 	createTask(e) {
-		if (!U.includes(e.taskKind)) return this.emit({
+		if (!ct.includes(e.taskKind)) return this.emit({
 			type: "error",
 			code: "invalid_task_kind",
 			message: `Unknown task kind: ${String(e.taskKind)}`
@@ -2198,7 +2198,7 @@ var Ut = class {
 			message: `Unknown parent task: ${e.parentId}`
 		}), null;
 		this.creationCounter += 1;
-		let n = `adr-c${String(this.creationCounter).padStart(2, "0")}-${e.taskKind}`, r = this.scenario.workspaces.find((t) => t.workspaceId === e.workspaceId) ?? this.scenario.workspaces[0], i = e.title ?? pt[e.taskKind], a = {
+		let n = `adr-c${String(this.creationCounter).padStart(2, "0")}-${e.taskKind}`, r = this.scenario.workspaces.find((t) => t.workspaceId === e.workspaceId) ?? this.scenario.workspaces[0], i = e.title ?? mt[e.taskKind], a = {
 			apiVersion: "kradle.a5c.ai/v1alpha1",
 			kind: "AgentDispatchRun",
 			metadata: {
@@ -2209,7 +2209,7 @@ var Ut = class {
 					"kradle.a5c.ai/repository": r.repository,
 					"kradle.a5c.ai/agent-stack": "commander-fleet",
 					"kradle.a5c.ai/runner-pool": "untrusted-linux",
-					...t ? { [lt]: t.taskId } : {}
+					...t ? { [ut]: t.taskId } : {}
 				}
 			},
 			spec: {
@@ -2353,7 +2353,7 @@ var Ut = class {
 			code: "task_not_found",
 			message: `Unknown task: ${e}`
 		}), !1;
-		if (t.taskKind !== void 0 && !U.includes(t.taskKind)) return this.emit({
+		if (t.taskKind !== void 0 && !ct.includes(t.taskKind)) return this.emit({
 			type: "error",
 			code: "invalid_task_kind",
 			message: `Unknown task kind: ${String(t.taskKind)}`
@@ -2392,9 +2392,9 @@ var Ut = class {
 				let r = this.cards.get(t.parentId);
 				r.childIds.includes(e) || r.childIds.push(e), n.resource.metadata.labels = {
 					...n.resource.metadata.labels,
-					[lt]: t.parentId
+					[ut]: t.parentId
 				};
-			} else n.resource.metadata.labels && delete n.resource.metadata.labels[lt];
+			} else n.resource.metadata.labels && delete n.resource.metadata.labels[ut];
 			i.parentId = t.parentId;
 		}
 		return r && (n.resource.spec.workspaceRef = r.workspaceId, n.resource.spec.repository = r.repository, n.resource.metadata.labels = {
@@ -2651,7 +2651,7 @@ var Ut = class {
 		let t = this.stacks.get(e.stackRef);
 		if (!t) return null;
 		this.rosterCounter += 1;
-		let n = `ra-${String(this.rosterCounter).padStart(3, "0")}`, r = this.adapterOfStackSpec(t.stack.spec), i = e.name?.trim() || `${Bt[this.rosterCounter % Bt.length]}`;
+		let n = `ra-${String(this.rosterCounter).padStart(3, "0")}`, r = this.adapterOfStackSpec(t.stack.spec), i = e.name?.trim() || `${Vt[this.rosterCounter % Vt.length]}`;
 		return this.rosterAgents.set(n, {
 			agentId: n,
 			name: i,
@@ -2726,7 +2726,7 @@ var Ut = class {
 		}), !0) : !1;
 	}
 	listProcessTemplates() {
-		return U.map((e) => {
+		return ct.map((e) => {
 			let t = this.templates.get(e);
 			return {
 				kind: e,
@@ -2763,7 +2763,7 @@ var Ut = class {
 				}, t.children.push(o)), t = o;
 			});
 		}
-		return Gt(r), r;
+		return Kt(r), r;
 	}
 	getFileContent(e, t) {
 		let n = this.cards.get(e);
@@ -2771,7 +2771,7 @@ var Ut = class {
 		let r = n.fileOverrides.get(t);
 		if (r !== void 0) return r;
 		if (!(this.workspacePathsOf(n).includes(t) || n.ws.files.some((e) => e.path === t))) return null;
-		let i = new N(P(`${this.seed}:content:${n.taskId}:${t}`)), a = this.titleOf(n), o = [], s = t.includes(".") ? t.slice(t.lastIndexOf(".") + 1) : "", c = i.int(20, 56), l = () => i.pick(Dt), u = () => i.pick(Ot), d = (e) => e.charAt(0).toUpperCase() + e.slice(1);
+		let i = new N(P(`${this.seed}:content:${n.taskId}:${t}`)), a = this.titleOf(n), o = [], s = t.includes(".") ? t.slice(t.lastIndexOf(".") + 1) : "", c = i.int(20, 56), l = () => i.pick(Ot), u = () => i.pick(kt), d = (e) => e.charAt(0).toUpperCase() + e.slice(1);
 		if (s === "json") {
 			o.push("{", `  "name": "${this.workspaceOf(n.taskId) || "workspace"}",`, `  "version": "0.${i.int(1, 9)}.${i.int(0, 9)}",`);
 			for (let e = o.length; e < c - 1; e += 1) o.push(`  "${l()}-${e}": "${u()}-${i.int(100, 999)}",`);
@@ -2849,7 +2849,7 @@ var Ut = class {
 			order: e.order,
 			yolo: e.yolo,
 			merged: e.merged,
-			progress: Wt(this.progressOf(e), 4),
+			progress: Gt(this.progressOf(e), 4),
 			parentId: e.parentId,
 			childIds: [...e.childIds],
 			agentIds: [...this.agents.values()].filter((t) => t.taskId === e.taskId).map((e) => e.unitId),
@@ -2964,7 +2964,7 @@ var Ut = class {
 		return {
 			runId: n.runId,
 			taskId: e,
-			observedState: n.terminal === "completed" ? "completed" : n.terminal === "failed" ? "failed" : Ht(n.journal),
+			observedState: n.terminal === "completed" ? "completed" : n.terminal === "failed" ? "failed" : Ut(n.journal),
 			pendingEffectsByKind: r,
 			phases: n.phases.map((e, t) => ({
 				label: e,
@@ -3018,8 +3018,8 @@ var Ut = class {
 			workspaceId: e.resource.spec.workspaceRef ?? "",
 			title: e.resource.metadata.labels?.["a5c.ai/title"] ?? e.taskId,
 			state: this.compatTaskState(e),
-			phase: xt(e.resource.status.phase),
-			progress: Wt(this.progressOf(e), 4),
+			phase: St(e.resource.status.phase),
+			progress: Gt(this.progressOf(e), 4),
 			assigneeIds: [...this.agents.values()].filter((t) => t.taskId === e.taskId).map((e) => e.unitId),
 			priority: -e.order
 		}));
@@ -3170,7 +3170,7 @@ var Ut = class {
 		let t = [...this.agents.values()].filter((t) => t.taskId === e.taskId && t.role === "reviewer");
 		for (let e of t) e.held || this.streamAgentTick(e);
 		if (--e.reviewTicksLeft, e.reviewTicksLeft === 4 && t[0]) {
-			let n = e.ws.files[0]?.path ?? "src/index.ts", r = this.rng.int(0, Nt.length - 1), i = Pt(n, e.attempt, e.ws.reviewerNotes, r);
+			let n = e.ws.files[0]?.path ?? "src/index.ts", r = this.rng.int(0, Pt.length - 1), i = Ft(n, e.attempt, e.ws.reviewerNotes, r);
 			e.ws.reviewerNotes.push(i), this.emitSimEvent(e, {
 				type: "review_note",
 				runId: e.run?.runId ?? "run-none",
@@ -3196,7 +3196,7 @@ var Ut = class {
 			verdict: n ? "pass" : "reject"
 		}), n) t[0] !== void 0 && (e.approvingReviewSessionId = t[0].session.sessionId), e.yolo ? this.transitionCard(e, "approved", "review-pass-yolo") : this.transitionCard(e, "human-review", "review-pass");
 		else {
-			let t = this.rng.pick(Ft);
+			let t = this.rng.pick(It);
 			e.feedback = t, this.emitSimEvent(e, {
 				type: "review_feedback",
 				runId: e.run?.runId ?? "run-none",
@@ -3285,7 +3285,7 @@ var Ut = class {
 		e.workerAdapter = e.childIds.length > 0 ? this.cards.get(e.childIds[0])?.workerAdapter ?? null : e.workerAdapter;
 	}
 	enterAiReview(e) {
-		let t = e.reviewerAgentId ? this.rosterAgents.get(e.reviewerAgentId) : null, n = e.workerAdapter ?? ct[e.taskKind], r = t ? 1 : this.rng.int(1, 2), i = st.filter((e) => e !== n), a = this.latestSession((t) => t.taskId === e.taskId && t.role === "worker");
+		let t = e.reviewerAgentId ? this.rosterAgents.get(e.reviewerAgentId) : null, n = e.workerAdapter ?? lt[e.taskKind], r = t ? 1 : this.rng.int(1, 2), i = st.filter((e) => e !== n), a = this.latestSession((t) => t.taskId === e.taskId && t.role === "worker");
 		for (let n = 0; n < r; n += 1) {
 			let n = t ? this.stacks.get(t.stackRef) : void 0, r = n ? this.adapterOfStackSpec(n.stack.spec) : this.rng.pick(i);
 			this.spawnAgent(r, "reviewer", e.taskId, n, a === void 0 ? void 0 : { reviewOfSessionId: a.sessionId });
@@ -3315,7 +3315,7 @@ var Ut = class {
 		}
 	}
 	spawnAgent(e, t, n, r, i) {
-		let a = r ?? this.stacks.get(dt.find((t) => t.stack.spec.adapter === e).stackRef);
+		let a = r ?? this.stacks.get(ft.find((t) => t.stack.spec.adapter === e).stackRef);
 		this.agentCounter += 1;
 		let o = this.now(), s = `agt-${String(this.agentCounter).padStart(3, "0")}-${t}`, c = a.stack.spec.model || H[e][0], l = this.rng.int(2, 5), u = this.cards.get(n), d = this.createSession({
 			sessionId: s,
@@ -3375,7 +3375,7 @@ var Ut = class {
 		let n = this.agents.get(e);
 		if (!n) return;
 		let r = this.runs.get(this.runIdOf(n));
-		r && (r.tokens.inputTokens += n.session.tokenUsage.inputTokens, r.tokens.outputTokens += n.session.tokenUsage.outputTokens, r.tokens.thinkingTokens += n.session.tokenUsage.thinkingTokens, r.tokens.cachedTokens += n.session.tokenUsage.cachedTokens, r.costUsd = Wt(r.costUsd + this.costOf(n).totalUsd, 6)), this.emitAgentEvent(n, {
+		r && (r.tokens.inputTokens += n.session.tokenUsage.inputTokens, r.tokens.outputTokens += n.session.tokenUsage.outputTokens, r.tokens.thinkingTokens += n.session.tokenUsage.thinkingTokens, r.tokens.cachedTokens += n.session.tokenUsage.cachedTokens, r.costUsd = Gt(r.costUsd + this.costOf(n).totalUsd, 6)), this.emitAgentEvent(n, {
 			type: "session_end",
 			runId: this.runIdOf(n),
 			agent: n.agent,
@@ -3389,19 +3389,19 @@ var Ut = class {
 		for (let n of [...this.agents.values()]) n.taskId === e.taskId && this.despawnAgent(n.unitId, t);
 	}
 	mintCreatureName() {
-		let e = P(`${this.seed}:creature:${this.sessionOrderCounter}`) % Bt.length;
-		for (let t = 0; t < Bt.length; t += 1) {
-			let n = Bt[(e + t) % Bt.length];
+		let e = P(`${this.seed}:creature:${this.sessionOrderCounter}`) % Vt.length;
+		for (let t = 0; t < Vt.length; t += 1) {
+			let n = Vt[(e + t) % Vt.length];
 			if (!this.usedCreatureNames.has(n)) return this.usedCreatureNames.add(n), n;
 		}
-		return `${Bt[e]} ${Math.floor(this.sessionOrderCounter / Bt.length) + 1}`;
+		return `${Vt[e]} ${Math.floor(this.sessionOrderCounter / Vt.length) + 1}`;
 	}
 	createSession(e) {
 		this.sessionOrderCounter += 1;
 		let t = this.mintCreatureName(), n = {
 			sessionId: e.sessionId,
 			order: this.sessionOrderCounter,
-			title: `${t} ${e.coordination ? "the Coordinator" : Vt[e.role]}`,
+			title: `${t} ${e.coordination ? "the Coordinator" : Ht[e.role]}`,
 			creatureName: t,
 			agent: e.agent,
 			model: e.model,
@@ -3535,7 +3535,7 @@ var Ut = class {
 			return;
 		}
 		if (this.rng.chance(.5)) {
-			let n = jt(kt, this.rng.int(0, kt.length - 1), this.tickCount + e.session.transcriptSeq);
+			let n = Mt(At, this.rng.int(0, At.length - 1), this.tickCount + e.session.transcriptSeq);
 			e.accumulatedThinking += n, this.appendStreamEntry(e.session, "thinking", n), e.session.tokenUsage.thinkingTokens += this.rng.int(6, 28), this.emitAgentEvent(e, {
 				type: "thinking_delta",
 				runId: this.runIdOf(e),
@@ -3545,7 +3545,7 @@ var Ut = class {
 				accumulated: e.accumulatedThinking
 			});
 		} else {
-			let n = jt(At, this.rng.int(0, At.length - 1), this.tickCount + e.session.transcriptSeq);
+			let n = Mt(jt, this.rng.int(0, jt.length - 1), this.tickCount + e.session.transcriptSeq);
 			e.accumulatedText += n, this.appendStreamEntry(e.session, "message", n), e.session.tokenUsage.outputTokens += this.rng.int(8, 40), this.emitAgentEvent(e, {
 				type: "text_delta",
 				runId: this.runIdOf(e),
@@ -3557,7 +3557,7 @@ var Ut = class {
 		}
 		if (e.stateTicks >= e.stateDuration) if (this.rng.chance(.5)) {
 			this.toolCounter += 1;
-			let n = this.rng.pick(Mt);
+			let n = this.rng.pick(Nt);
 			e.activeToolName = n, e.state = "tool_running", e.stateTicks = 0, e.stateDuration = this.rng.int(2, 5), this.emitAgentEvent(e, {
 				type: "tool_call_start",
 				runId: this.runIdOf(e),
@@ -3587,7 +3587,7 @@ var Ut = class {
 	}
 	raiseInquiry(e, t) {
 		this.hookCounter += 1;
-		let n = Tt[(this.hookCounter - 1) % Tt.length], r = `hook-${this.seed}-${String(this.hookCounter).padStart(4, "0")}`, i = e.resource.metadata.labels?.["a5c.ai/title"] ?? e.taskId, a = e.run, o = this.requestEffect(a, "breakpoint", `inquiry:${n.inquiryKind}`), s = {
+		let n = Et[(this.hookCounter - 1) % Et.length], r = `hook-${this.seed}-${String(this.hookCounter).padStart(4, "0")}`, i = e.resource.metadata.labels?.["a5c.ai/title"] ?? e.taskId, a = e.run, o = this.requestEffect(a, "breakpoint", `inquiry:${n.inquiryKind}`), s = {
 			hookRequestId: r,
 			runId: a.runId,
 			taskId: e.taskId,
@@ -3595,7 +3595,7 @@ var Ut = class {
 			inquiryKind: n.inquiryKind,
 			question: n.question(i),
 			options: n.options.map((e) => ({ ...e })),
-			deadlineTs: this.now() + Lt,
+			deadlineTs: this.now() + Rt,
 			effectId: o
 		};
 		this.inquiries.set(r, s), this.pushTranscript(t.session, "event", `Inquiry raised: ${s.question}`), t.state = "awaiting_input", t.pendingHookId = r, t.stateTicks = 0, t.updatedAt = this.now();
@@ -3687,8 +3687,8 @@ var Ut = class {
 			runId: t,
 			entry: {
 				runId: t,
-				agent: ct[e.taskKind],
-				model: H[ct[e.taskKind]][0],
+				agent: lt[e.taskKind],
+				model: H[lt[e.taskKind]][0],
 				cwd: `/ws/${e.resource.spec.workspaceRef ?? ""}`,
 				status: "running",
 				createdAt: n,
@@ -3769,7 +3769,7 @@ var Ut = class {
 			recordedAt: this.now(),
 			data: n
 		};
-		e.journal.push(r), e.journal.length > zt && e.journal.splice(0, e.journal.length - zt);
+		e.journal.push(r), e.journal.length > Bt && e.journal.splice(0, e.journal.length - Bt);
 	}
 	initWorkspace(e) {
 		if (e.ws.phase === "ready" && e.ws.files.length > 0) {
@@ -3789,7 +3789,7 @@ var Ut = class {
 		};
 	}
 	addWorkspaceChange(e, t) {
-		let n = Et[e.taskKind], r = n[(t + e.attempt - 1) % n.length], i = e.resource.metadata.labels?.["a5c.ai/title"] ?? e.taskId, a = e.ws.files.find((e) => e.path === r), o = a || t === 0 ? "M" : this.rng.chance(.2) ? "D" : "A", s = this.rng.int(2, 9), c = o === "D" ? 0 : this.rng.int(1, s), l = o === "A" ? this.rng.int(0, 1) : this.rng.int(1, s), u = [`@@ -${this.rng.int(1, 40)},${l + 2} +${this.rng.int(1, 40)},${c + 2} @@`];
+		let n = Dt[e.taskKind], r = n[(t + e.attempt - 1) % n.length], i = e.resource.metadata.labels?.["a5c.ai/title"] ?? e.taskId, a = e.ws.files.find((e) => e.path === r), o = a || t === 0 ? "M" : this.rng.chance(.2) ? "D" : "A", s = this.rng.int(2, 9), c = o === "D" ? 0 : this.rng.int(1, s), l = o === "A" ? this.rng.int(0, 1) : this.rng.int(1, s), u = [`@@ -${this.rng.int(1, 40)},${l + 2} +${this.rng.int(1, 40)},${c + 2} @@`];
 		u.push(` // context: ${i}`);
 		for (let e = 0; e < l; e += 1) u.push(`-  const legacy${e} = previousMechanism('${i}');`);
 		for (let e = 0; e < c; e += 1) u.push(`+  const forged${e} = rebuildMechanism('${i}', ${e});`);
@@ -3871,7 +3871,7 @@ var Ut = class {
 		return e.resource.metadata.labels?.["a5c.ai/title"] ?? e.taskId;
 	}
 	stackRefOf(e) {
-		return e.stackRefOverride !== null && this.stacks.has(e.stackRefOverride) ? e.stackRefOverride : ft[e.taskKind];
+		return e.stackRefOverride !== null && this.stacks.has(e.stackRefOverride) ? e.stackRefOverride : pt[e.taskKind];
 	}
 	adapterOfStackSpec(e) {
 		let t = [
@@ -3916,14 +3916,14 @@ var Ut = class {
 			taskKind: e.taskKind,
 			processId: e.processId,
 			processRevision: e.processRevision,
-			observedState: e.terminal === "completed" ? "completed" : e.terminal === "failed" ? "failed" : Ht(e.journal),
+			observedState: e.terminal === "completed" ? "completed" : e.terminal === "failed" ? "failed" : Ut(e.journal),
 			pendingEffectsByKind: t,
 			phases: e.phases.map((t, n) => ({
 				label: t,
 				status: n < e.phaseIndex ? "done" : n === e.phaseIndex ? "current" : "pending"
 			})),
 			tokens: n,
-			costUsd: Wt(r, 6),
+			costUsd: Gt(r, 6),
 			startedAt: e.entry.startedAt ?? e.entry.createdAt,
 			endedAt: e.entry.endedAt
 		};
@@ -3938,7 +3938,7 @@ var Ut = class {
 			"tests/core.test.ts",
 			"docs/overview.md"
 		]);
-		for (let t of Et[e.taskKind]) n.add(t);
+		for (let t of Dt[e.taskKind]) n.add(t);
 		let r = [
 			"src/core/mechanism.ts",
 			"src/engine/valves.ts",
@@ -3981,12 +3981,12 @@ var Ut = class {
 		return this.cards.get(e.taskId)?.run?.runId ?? "run-none";
 	}
 	accrueSessionCost(e) {
-		let t = It[e.agent] ?? {
+		let t = Lt[e.agent] ?? {
 			input: 2e-6,
 			output: 8e-6
 		}, n = e.tokenUsage;
 		e.cost = {
-			totalUsd: Wt(n.inputTokens * t.input + (n.outputTokens + n.thinkingTokens) * t.output, 6),
+			totalUsd: Gt(n.inputTokens * t.input + (n.outputTokens + n.thinkingTokens) * t.output, 6),
 			inputTokens: n.inputTokens,
 			outputTokens: n.outputTokens,
 			thinkingTokens: n.thinkingTokens
@@ -4044,19 +4044,19 @@ var Ut = class {
 		});
 	}
 };
-function Wt(e, t) {
+function Gt(e, t) {
 	let n = 10 ** t;
 	return Math.round(e * n) / n;
 }
-function Gt(e) {
+function Kt(e) {
 	if (e.children) {
 		e.children.sort((e, t) => e.type === t.type ? e.name < t.name ? -1 : +(e.name > t.name) : e.type === "dir" ? -1 : 1);
-		for (let t of e.children) Gt(t);
+		for (let t of e.children) Kt(t);
 	}
 }
 //#endregion
 //#region src/game/board.ts
-var Kt = {
+var qt = {
 	backlog: "Backlog",
 	do: "Do",
 	"ai-review": "AI Review",
@@ -4065,54 +4065,54 @@ var Kt = {
 	merged: "Merged",
 	"in-production": "In Production"
 };
-function qt(e, t) {
+function Jt(e, t) {
 	return e === "backlog" ? t === "do" || t === "backlog" : e === "human-review" ? t === "do" || t === "ai-review" || t === "approved" : !1;
 }
-function Jt(e) {
+function Yt(e) {
 	return e.parentId !== null || e.merged ? !1 : e.column === "backlog" || e.column === "human-review";
 }
-function Yt(e, t) {
-	return t === null || !Jt(e) || !qt(e.column, t) ? null : {
+function Xt(e, t) {
+	return t === null || !Yt(e) || !Jt(e.column, t) ? null : {
 		taskId: e.taskId,
 		column: t
 	};
 }
-function Xt(e, t) {
+function Zt(e, t) {
 	let n = e.filter((e) => e.parentId === null && e.column === t);
 	return n.sort((e, n) => t === "approved" && e.merged !== n.merged ? e.merged ? 1 : -1 : t === "backlog" && e.order !== n.order ? e.order - n.order : e.taskId < n.taskId ? -1 : +(e.taskId > n.taskId)), n;
 }
-function Zt(e, t) {
+function Qt(e, t) {
 	let n = new Map(e.map((e) => [e.taskId, e]));
 	return t.childIds.map((e) => n.get(e)).filter((e) => e !== void 0);
 }
-function Qt(e) {
+function $t(e) {
 	for (let t of e) {
 		if (t.closest("[data-drag-ghost]") !== null) continue;
 		let e = t.closest("[data-testid^=\"kanban-col-\"]")?.getAttribute("data-testid")?.slice(11) ?? "";
-		return Ct.includes(e) ? e : null;
+		return wt.includes(e) ? e : null;
 	}
 	return null;
 }
-function $t(e) {
+function en(e) {
 	return e.replace(/\s+data-testid="[^"]*"/g, "");
 }
 //#endregion
 //#region src/components/board/KanbanBoard.tsx
-var en = 4, tn = 600, nn = 140, rn = 220, an = 450, on = 250;
-function sn() {
+var tn = 4, nn = 600, rn = 140, an = 220, on = 450, sn = 250;
+function cn() {
 	return typeof window.matchMedia == "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
-function cn(e) {
+function ln(e) {
 	let t = e.getBoundingClientRect(), n = getComputedStyle(e).transform;
 	if (n === "none" || n === "") return t;
 	let r = new DOMMatrixReadOnly(n);
 	return r.e === 0 && r.f === 0 ? t : new DOMRect(t.x - r.e, t.y - r.f, t.width, t.height);
 }
-function ln(e, t) {
-	return Qt(document.elementsFromPoint(e, t));
+function un(e, t) {
+	return $t(document.elementsFromPoint(e, t));
 }
-var un = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" width=\"100%\" height=\"100%\" aria-hidden=\"true\"><path d=\"M4.2 13 L3.4 5.6 L7.2 8.6 L10 4 L12.8 8.6 L16.6 5.6 L15.8 13 Z\" fill=\"currentColor\"/><path d=\"M4.6 15.4 H15.4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\"/></svg>", dn = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" width=\"100%\" height=\"100%\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 16.5 H16 M10 16.5 V10.5 M10 10.5 L14.2 5.2\"/><circle cx=\"15.2\" cy=\"4\" r=\"1.7\"/></g></svg>";
-function fn({ progress: e }) {
+var dn = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" width=\"100%\" height=\"100%\" aria-hidden=\"true\"><path d=\"M4.2 13 L3.4 5.6 L7.2 8.6 L10 4 L12.8 8.6 L16.6 5.6 L15.8 13 Z\" fill=\"currentColor\"/><path d=\"M4.6 15.4 H15.4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\"/></svg>", fn = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" width=\"100%\" height=\"100%\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 16.5 H16 M10 16.5 V10.5 M10 10.5 L14.2 5.2\"/><circle cx=\"15.2\" cy=\"4\" r=\"1.7\"/></g></svg>";
+function pn({ progress: e }) {
 	let t = 2 * Math.PI * 8, n = Math.max(0, Math.min(1, e));
 	return /* @__PURE__ */ l("span", {
 		className: "wr-card-ring",
@@ -4147,7 +4147,7 @@ function fn({ progress: e }) {
 		})
 	});
 }
-function pn({ agentIds: e, agents: t, store: r }) {
+function mn({ agentIds: e, agents: t, store: r }) {
 	let i = a(/* @__PURE__ */ new Map()), [s, c] = o([]);
 	n(() => {
 		let n = i.current, r = /* @__PURE__ */ new Map();
@@ -4160,11 +4160,11 @@ function pn({ agentIds: e, agents: t, store: r }) {
 			unitId: e,
 			adapter: t
 		});
-		if (i.current = r, a.length > 0 && !sn()) {
+		if (i.current = r, a.length > 0 && !cn()) {
 			c((e) => [...e, ...a]);
 			let e = window.setTimeout(() => {
 				c((e) => e.filter((e) => !a.some((t) => t.unitId === e.unitId)));
-			}, an);
+			}, on);
 			return () => window.clearTimeout(e);
 		}
 	}, [e, t]);
@@ -4217,7 +4217,7 @@ function pn({ agentIds: e, agents: t, store: r }) {
 		]
 	});
 }
-function mn({ card: e, rosterAgents: t, orders: n }) {
+function hn({ card: e, rosterAgents: t, orders: n }) {
 	let [r, i] = o(null), a = t.filter((e) => e.role === "worker"), s = t.filter((e) => e.role === "reviewer"), c = e.workerAgentId ? t.find((t) => t.agentId === e.workerAgentId)?.name ?? e.workerAgentId : null, d = e.reviewerAgentId ? t.find((t) => t.agentId === e.reviewerAgentId)?.name ?? e.reviewerAgentId : null, f = e.humanAssigneeId !== null, p = (e) => {
 		e.key === "Escape" && i(null);
 	};
@@ -4329,7 +4329,7 @@ function mn({ card: e, rosterAgents: t, orders: n }) {
 		]
 	});
 }
-function hn({ card: e, orders: t, mini: n }) {
+function gn({ card: e, orders: t, mini: n }) {
 	let r = R({
 		entityId: e.taskId,
 		kind: "task",
@@ -4373,7 +4373,7 @@ function hn({ card: e, orders: t, mini: n }) {
 					]
 				})]
 			}),
-			/* @__PURE__ */ l(fn, { progress: e.progress }),
+			/* @__PURE__ */ l(pn, { progress: e.progress }),
 			/* @__PURE__ */ l("button", {
 				type: "button",
 				"data-testid": `card-yolo-${e.taskId}`,
@@ -4390,22 +4390,22 @@ function hn({ card: e, orders: t, mini: n }) {
 		]
 	});
 }
-function gn({ card: e, allCards: t, agents: r, rosterAgents: i, store: c, orders: d, selected: f, onHoverLane: p }) {
+function _n({ card: e, allCards: t, agents: r, rosterAgents: i, store: c, orders: d, selected: f, onHoverLane: p }) {
 	let m = a(null), h = a(null), g = a(!1), _ = a(null);
 	n(() => () => {
 		_.current !== null && window.clearTimeout(_.current);
 	}, []);
-	let v = a(null), [y, b] = o(null), [x, S] = o(!1), C = Jt(e), w = Zt(t, e), T = w.length > 0, E = (t) => {
-		let n = Yt(e, t);
+	let v = a(null), [y, b] = o(null), [x, S] = o(!1), C = Yt(e), w = Qt(t, e), T = w.length > 0, E = (t) => {
+		let n = Xt(e, t);
 		if (p(null, null), h.current = null, v.current = null, m.current?.style.removeProperty("pointer-events"), n !== null) {
 			b(null), d.moveCard(n.taskId, n.column);
 			return;
 		}
-		if (sn()) {
+		if (cn()) {
 			b(null);
 			return;
 		}
-		S(!0), b(null), window.setTimeout(() => S(!1), rn);
+		S(!0), b(null), window.setTimeout(() => S(!1), an);
 	}, D = (t) => {
 		if (!C || t.button !== 0 || t.target instanceof HTMLElement && t.target.closest("button")) return;
 		h.current = {
@@ -4420,13 +4420,13 @@ function gn({ card: e, allCards: t, agents: r, rosterAgents: i, store: c, orders
 			let n = h.current;
 			if (n === null || t.pointerId !== n.pointerId) return;
 			if (n.dx = t.clientX - n.startX, n.dy = t.clientY - n.startY, !n.dragging) {
-				if (Math.abs(n.dx) < en && Math.abs(n.dy) < en) return;
+				if (Math.abs(n.dx) < tn && Math.abs(n.dy) < tn) return;
 				n.dragging = !0, g.current = !0;
 				let e = m.current;
 				if (e !== null) {
 					let t = e.getBoundingClientRect();
 					v.current = {
-						html: $t(e.outerHTML),
+						html: en(e.outerHTML),
 						left: t.left,
 						top: t.top,
 						width: t.width
@@ -4437,7 +4437,7 @@ function gn({ card: e, allCards: t, agents: r, rosterAgents: i, store: c, orders
 				dx: n.dx,
 				dy: n.dy
 			});
-			let r = ln(t.clientX, t.clientY);
+			let r = un(t.clientX, t.clientY);
 			p(e.column, r);
 		}, r = (e) => {
 			let t = h.current;
@@ -4446,7 +4446,7 @@ function gn({ card: e, allCards: t, agents: r, rosterAgents: i, store: c, orders
 					h.current = null;
 					return;
 				}
-				E(ln(e.clientX, e.clientY)), window.setTimeout(() => {
+				E(un(e.clientX, e.clientY)), window.setTimeout(() => {
 					g.current = !1;
 				}, 0);
 			}
@@ -4457,7 +4457,7 @@ function gn({ card: e, allCards: t, agents: r, rosterAgents: i, store: c, orders
 	}, O = (t) => {
 		if (t.stopPropagation(), !g.current && (c.getState().clickSelect(e.taskId, t.shiftKey), !t.shiftKey)) if (e.column === "human-review" && !e.merged && t.detail === 1) _.current !== null && window.clearTimeout(_.current), _.current = window.setTimeout(() => {
 			_.current = null, c.getState().openReview(e.taskId);
-		}, on);
+		}, sn);
 		else {
 			let t = e.agentIds[0];
 			t === void 0 ? c.getState().openInspectorCard(e.taskId) : c.getState().openInspector(t);
@@ -4505,23 +4505,23 @@ function gn({ card: e, allCards: t, agents: r, rosterAgents: i, store: c, orders
 				className: "wr-card-crown",
 				title: "in production",
 				"aria-label": "in production",
-				dangerouslySetInnerHTML: { __html: un }
+				dangerouslySetInnerHTML: { __html: dn }
 			}),
 			!e.merged && e.agentIds.length > 0 && /* @__PURE__ */ l("span", {
 				className: "wr-card-eye",
 				"aria-hidden": !0
 			}),
-			/* @__PURE__ */ l(hn, {
+			/* @__PURE__ */ l(gn, {
 				card: e,
 				orders: d,
 				mini: !1
 			}),
-			e.column === "backlog" && /* @__PURE__ */ l(mn, {
+			e.column === "backlog" && /* @__PURE__ */ l(hn, {
 				card: e,
 				rosterAgents: i,
 				orders: d
 			}),
-			/* @__PURE__ */ l(pn, {
+			/* @__PURE__ */ l(mn, {
 				agentIds: e.agentIds,
 				agents: r,
 				store: c
@@ -4544,11 +4544,11 @@ function gn({ card: e, allCards: t, agents: r, rosterAgents: i, store: c, orders
 					onKeyDown: (t) => {
 						t.key === "Enter" && c.getState().clickSelect(e.taskId, t.shiftKey);
 					},
-					children: [/* @__PURE__ */ l(hn, {
+					children: [/* @__PURE__ */ l(gn, {
 						card: e,
 						orders: d,
 						mini: !0
-					}), /* @__PURE__ */ l(pn, {
+					}), /* @__PURE__ */ l(mn, {
 						agentIds: e.agentIds,
 						agents: r,
 						store: c
@@ -4558,7 +4558,7 @@ function gn({ card: e, allCards: t, agents: r, rosterAgents: i, store: c, orders
 		]
 	});
 }
-function _n({ store: e, orders: t }) {
+function vn({ store: e, orders: t }) {
 	let i = B(e, (e) => e.board), s = B(e, (e) => e.selection.ids), c = B(e, (e) => e.meta.movingCards), d = B(e, (e) => e.meta.reviewTaskId), f = a(null), p = a(/* @__PURE__ */ new Map()), m = a(/* @__PURE__ */ new Map()), h = a(/* @__PURE__ */ new Map()), [g, _] = o(null), v = i.cardIds.map((e) => i.cards[e]?.view).filter((e) => e !== void 0), y = new Set(s);
 	r(() => {
 		let t = f.current;
@@ -4578,10 +4578,10 @@ function _n({ store: e, orders: t }) {
 			}
 			let o = h.current.get(r);
 			o !== void 0 && (h.current.delete(r), o.cancel());
-			let s = p.current.get(r), c = cn(a), l = () => {
+			let s = p.current.get(r), c = ln(a), l = () => {
 				a.classList.remove("is-moving"), e.getState().clearMoving(r);
 			};
-			if (sn() || s === void 0) {
+			if (cn() || s === void 0) {
 				a.classList.add("is-moving", "wr-card--arrive-glow"), window.setTimeout(() => {
 					a.classList.remove("wr-card--arrive-glow"), l();
 				}, 50);
@@ -4593,7 +4593,7 @@ function _n({ store: e, orders: t }) {
 				continue;
 			}
 			a.classList.add("is-moving");
-			let v = Math.max(0, Math.min(f, c.top) - (u.top + 4)), y = Math.min(64, Math.max(24, Math.hypot(g, _) * .18), Math.max(8, v)), b = i.stagger * nn, x = a.animate([
+			let v = Math.max(0, Math.min(f, c.top) - (u.top + 4)), y = Math.min(64, Math.max(24, Math.hypot(g, _) * .18), Math.max(8, v)), b = i.stagger * rn, x = a.animate([
 				{ transform: `translate(${g}px, ${_}px)` },
 				{
 					transform: `translate(${g * .5}px, ${_ * .5 - y}px)`,
@@ -4605,7 +4605,7 @@ function _n({ store: e, orders: t }) {
 				},
 				{ transform: "translate(0px, 0px)" }
 			], {
-				duration: tn,
+				duration: nn,
 				delay: b,
 				fill: "backwards",
 				easing: "ease-in-out"
@@ -4617,7 +4617,7 @@ function _n({ store: e, orders: t }) {
 			x.addEventListener("finish", S), x.addEventListener("cancel", S);
 		}
 		let r = /* @__PURE__ */ new Map();
-		for (let [e, t] of n) r.set(e, cn(t));
+		for (let [e, t] of n) r.set(e, ln(t));
 		p.current = r;
 	}), n(() => {
 		for (let e of [...m.current.keys()]) c[e] === void 0 && m.current.delete(e);
@@ -4634,19 +4634,19 @@ function _n({ store: e, orders: t }) {
 		className: "wr-board",
 		"data-testid": "kanban-board",
 		"aria-label": "The Cogitator Board",
-		children: Ct.map((n) => {
-			let r = Xt(v, n), a = r.reduce((e, t) => e + 1 + t.childIds.length, 0), o = g !== null && g.lane === n, s = g !== null && qt(g.from, n);
+		children: wt.map((n) => {
+			let r = Zt(v, n), a = r.reduce((e, t) => e + 1 + t.childIds.length, 0), o = g !== null && g.lane === n, s = g !== null && Jt(g.from, n);
 			return /* @__PURE__ */ u("section", {
 				"data-testid": `kanban-col-${n}`,
 				className: V("wr-lane", `wr-lane--${n}`, g !== null && s && "is-drop-legal", o && s && "is-drop-target", o && !s && "is-drop-illegal"),
-				"aria-label": Kt[n],
+				"aria-label": qt[n],
 				children: [
 					/* @__PURE__ */ u("header", {
 						className: "wr-lane-head",
 						children: [
 							/* @__PURE__ */ l("span", {
 								className: "wr-lane-title",
-								children: Kt[n]
+								children: qt[n]
 							}),
 							n === "merged" && /* @__PURE__ */ u("button", {
 								type: "button",
@@ -4660,7 +4660,7 @@ function _n({ store: e, orders: t }) {
 								children: [/* @__PURE__ */ l("span", {
 									className: "wr-release-lever-glyph",
 									"aria-hidden": !0,
-									dangerouslySetInnerHTML: { __html: dn }
+									dangerouslySetInnerHTML: { __html: fn }
 								}), "Release"]
 							}),
 							/* @__PURE__ */ l("span", {
@@ -4681,7 +4681,7 @@ function _n({ store: e, orders: t }) {
 					/* @__PURE__ */ u("div", {
 						className: "wr-lane-cards",
 						children: [r.map((r) => {
-							let a = /* @__PURE__ */ l(gn, {
+							let a = /* @__PURE__ */ l(_n, {
 								card: r,
 								allCards: v,
 								agents: i.agents,
@@ -4709,7 +4709,7 @@ function _n({ store: e, orders: t }) {
 		})
 	});
 }
-function vn(e, t = 3) {
+function yn(e, t = 3) {
 	let n = [...e].reverse();
 	return {
 		visible: n.slice(0, t),
@@ -4718,8 +4718,8 @@ function vn(e, t = 3) {
 }
 //#endregion
 //#region src/components/hud/ChatDock.tsx
-var yn = 650, bn = 900;
-function xn({ inquiry: e, onChoose: t, withTestIds: n }) {
+var bn = 650, xn = 900;
+function Sn({ inquiry: e, onChoose: t, withTestIds: n }) {
 	return /* @__PURE__ */ l("div", {
 		className: "wr-inq-options",
 		role: "group",
@@ -4744,15 +4744,15 @@ function xn({ inquiry: e, onChoose: t, withTestIds: n }) {
 		})
 	});
 }
-function Sn({ store: e, orders: t }) {
+function Cn({ store: e, orders: t }) {
 	let r = B(e, (e) => e.board.inquiries), i = B(e, (e) => e.board.agents), s = B(e, (e) => e.meta.dockPulse), c = a(null), [d, f] = o([]), [p, m] = o(!1);
 	n(() => {
 		if (s === 0) return;
 		c.current?.scrollIntoView({ block: "nearest" }), m(!0);
-		let e = window.setTimeout(() => m(!1), bn);
+		let e = window.setTimeout(() => m(!1), xn);
 		return () => window.clearTimeout(e);
 	}, [s]);
-	let { visible: h, overflow: g } = vn(r), _ = h.length === 0 && d.length === 0, v = (n, r) => {
+	let { visible: h, overflow: g } = yn(r), _ = h.length === 0 && d.length === 0, v = (n, r) => {
 		let a = i[n.unitId]?.agent ?? "claude-code";
 		e.getState().recordResolvedInquiry({
 			hookRequestId: n.hookRequestId,
@@ -4772,7 +4772,7 @@ function Sn({ store: e, orders: t }) {
 		};
 		f((e) => [o, ...e]), window.setTimeout(() => {
 			f((e) => e.filter((e) => e.hookRequestId !== o.hookRequestId));
-		}, yn);
+		}, bn);
 	};
 	return /* @__PURE__ */ u("div", {
 		ref: c,
@@ -4875,7 +4875,7 @@ function Sn({ store: e, orders: t }) {
 							})]
 						}), /* @__PURE__ */ l("div", {
 							className: "wr-inq-main",
-							children: /* @__PURE__ */ l(xn, {
+							children: /* @__PURE__ */ l(Sn, {
 								inquiry: e,
 								onChoose: (t) => v(e, t),
 								withTestIds: !0
@@ -4889,7 +4889,7 @@ function Sn({ store: e, orders: t }) {
 }
 //#endregion
 //#region src/components/hud/CommandCard.tsx
-function Cn({ store: e, orders: t }) {
+function wn({ store: e, orders: t }) {
 	let n = Ke({
 		world: B(e, (e) => e.world),
 		board: B(e, (e) => e.board),
@@ -4947,16 +4947,16 @@ function Cn({ store: e, orders: t }) {
 }
 //#endregion
 //#region src/components/hud/EventTicker.tsx
-var wn = {
+var Tn = {
 	info: "<path d=\"M7 1.8 A5.2 5.2 0 1 0 7 12.2 A5.2 5.2 0 1 0 7 1.8 Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.4\"/><path d=\"M7 6.4 V10 M7 4 V4.6\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\"/>",
 	success: "<path d=\"M2.4 7.4 L5.6 10.6 L11.6 3.6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>",
 	warn: "<path d=\"M7 1.8 L13 12 H1 Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/><path d=\"M7 5.4 V8.4 M7 10 V10.6\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>",
 	alert: "<path d=\"M7 1.4 L12.6 7 L7 12.6 L1.4 7 Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/><path d=\"M4.8 4.8 L9.2 9.2 M9.2 4.8 L4.8 9.2\" stroke=\"currentColor\" stroke-width=\"1.4\" stroke-linecap=\"round\"/>"
 };
-function Tn(e) {
-	return "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 14 14\" width=\"100%\" height=\"100%\" aria-hidden=\"true\">" + wn[e] + "</svg>";
+function En(e) {
+	return "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 14 14\" width=\"100%\" height=\"100%\" aria-hidden=\"true\">" + Tn[e] + "</svg>";
 }
-function En({ store: e }) {
+function Dn({ store: e }) {
 	let t = B(e, (e) => e.events), n = B(e, (e) => e.meta.simStartMs), [r, i] = o(null), a = t, s = r ?? a, c = (t) => {
 		t.entityId !== void 0 && e.getState().clickSelect(t.entityId, !1);
 	};
@@ -4982,7 +4982,7 @@ function En({ store: e }) {
 				children: [
 					/* @__PURE__ */ l("span", {
 						className: "wr-ticker-glyph",
-						dangerouslySetInnerHTML: { __html: Tn(e.severity) }
+						dangerouslySetInnerHTML: { __html: En(e.severity) }
 					}),
 					/* @__PURE__ */ l("span", {
 						className: "wr-ticker-ts",
@@ -5002,27 +5002,27 @@ function En({ store: e }) {
 }
 //#endregion
 //#region src/game/sessions.ts
-var Dn = new Set([
+var On = new Set([
 	"ai-review",
 	"human-review",
 	"approved",
 	"merged",
 	"in-production"
-]), On = new Set([
+]), kn = new Set([
 	"sessions",
 	"process",
 	"workspace",
 	"memory",
 	"terminal"
 ]);
-function kn(e, t) {
-	return t === 0 && e !== void 0 && Dn.has(e) ? "sessions" : "process";
+function An(e, t) {
+	return t === 0 && e !== void 0 && On.has(e) ? "sessions" : "process";
 }
-function An(e, t, n) {
+function jn(e, t, n) {
 	let r = new Set([t, ...n]);
 	return e.filter((e) => r.has(e.taskId));
 }
-function jn(e) {
+function Mn(e) {
 	let t = /* @__PURE__ */ new Map();
 	for (let n of e) t.set(n.sessionId, {
 		session: n,
@@ -5043,52 +5043,52 @@ function jn(e) {
 	}
 	return n;
 }
-var Mn = { mode: "list" };
-function Nn(e) {
+var Nn = { mode: "list" };
+function Pn(e) {
 	return {
 		mode: "transcript",
 		sessionId: e
 	};
 }
-function Pn() {
-	return Mn;
+function Fn() {
+	return Nn;
 }
 //#endregion
 //#region src/game/store.ts
-var Fn = "0.4.0-board", In = 2e5, Ln = 2.5, Rn = 5e3;
-function zn(e, t, n) {
+var In = "0.4.0-board", Ln = 2e5, Rn = 2.5, zn = 5e3;
+function Bn(e, t, n) {
 	return n ? e.includes(t) ? e.filter((e) => e !== t) : [...e, t] : [t];
 }
-var Bn = new Set([
+var Vn = new Set([
 	"dispatching",
 	"thinking",
 	"tool_running",
 	"awaiting_approval",
 	"blocked"
 ]);
-function Vn(e) {
+function Hn(e) {
 	let t = e.tokenUsage;
 	return t.inputTokens + t.outputTokens + t.thinkingTokens;
 }
-function Hn(e, t) {
+function Un(e, t) {
 	return e.unitId === t.unitId && e.agent === t.agent && e.model === t.model && e.title === t.title && e.workspaceId === t.workspaceId && e.state === t.state && e.paused === t.paused && e.taskId === t.taskId && e.runId === t.runId && e.turnIndex === t.turnIndex && e.turnCount === t.turnCount && e.messageCount === t.messageCount && e.pendingHookId === t.pendingHookId && e.tokenUsage.inputTokens === t.tokenUsage.inputTokens && e.tokenUsage.outputTokens === t.tokenUsage.outputTokens && e.tokenUsage.thinkingTokens === t.tokenUsage.thinkingTokens && e.tokenUsage.cachedTokens === t.tokenUsage.cachedTokens && e.cost.totalUsd === t.cost.totalUsd && e.updatedAt === t.updatedAt;
 }
-function Un(e, t) {
+function Wn(e, t) {
 	return e.taskId === t.taskId && e.taskKind === t.taskKind && e.repository === t.repository && e.workspaceId === t.workspaceId && e.title === t.title && e.state === t.state && e.phase === t.phase && e.progress === t.progress && e.priority === t.priority && e.assigneeIds.length === t.assigneeIds.length && e.assigneeIds.every((e, n) => t.assigneeIds[n] === e);
 }
-function Wn(e, t) {
+function Gn(e, t) {
 	return e.taskId === t.taskId && e.taskKind === t.taskKind && e.title === t.title && e.column === t.column && e.order === t.order && e.yolo === t.yolo && e.merged === t.merged && e.progress === t.progress && e.parentId === t.parentId && e.attempt === t.attempt && e.feedback === t.feedback && e.dirtyFileCount === t.dirtyFileCount && e.hasPendingInquiry === t.hasPendingInquiry && e.workerAgentId === t.workerAgentId && e.reviewerAgentId === t.reviewerAgentId && e.humanAssigneeId === t.humanAssigneeId && e.childIds.length === t.childIds.length && e.childIds.every((e, n) => t.childIds[n] === e) && e.agentIds.length === t.agentIds.length && e.agentIds.every((e, n) => t.agentIds[n] === e);
 }
-function W(e) {
+function U(e) {
 	return typeof e == "string" ? e : void 0;
 }
-function Gn(e) {
+function Kn(e) {
 	return typeof e == "number" && Number.isFinite(e) ? e : void 0;
 }
-function Kn(e) {
+function qn(e) {
 	return Array.isArray(e) ? e.filter((e) => typeof e == "string") : [];
 }
-function qn(e, t, n, r, i) {
+function Jn(e, t, n, r, i) {
 	let a = {
 		tickerEntries: [],
 		transcriptOps: /* @__PURE__ */ new Map(),
@@ -5116,11 +5116,11 @@ function qn(e, t, n, r, i) {
 			});
 			break;
 		case "hook.request": {
-			let e = W(t.payload.taskId);
+			let e = U(t.payload.taskId);
 			l({
 				ts: i,
 				severity: "warn",
-				text: `Inquiry raised — ${W(t.payload.question) ?? "the agent needs a decision"}`,
+				text: `Inquiry raised — ${U(t.payload.question) ?? "the agent needs a decision"}`,
 				...e === void 0 ? {} : { entityId: e }
 			});
 			break;
@@ -5129,18 +5129,18 @@ function qn(e, t, n, r, i) {
 		case "pong":
 		case "pairing.consumed": break;
 		case "run.event":
-			Xn(t, a, s, c, l, n, r);
+			Zn(t, a, s, c, l, n, r);
 			break;
 	}
 	return a;
 }
-var Jn = new Set([
+var Yn = new Set([
 	"user-move",
 	"reverted",
 	"release-shipped",
 	"rolled-back"
 ]);
-function Yn(e, t, n) {
+function Xn(e, t, n) {
 	switch (e) {
 		case "work-complete": return `Work complete — ${t} advances to AI REVIEW`;
 		case "review-pass": return `Review passed — ${t} awaits human review`;
@@ -5151,12 +5151,12 @@ function Yn(e, t, n) {
 		default: return `${t} moved to ${n.toUpperCase()}`;
 	}
 }
-function Xn(e, t, n, r, i, a, o) {
-	let s = e.event, c = W(s.type);
+function Zn(e, t, n, r, i, a, o) {
+	let s = e.event, c = U(s.type);
 	if (c === void 0) return;
-	let l = Gn(s.timestamp) ?? 0, u = W(s.sessionId), d = W(s.unitId);
+	let l = Kn(s.timestamp) ?? 0, u = U(s.sessionId), d = U(s.unitId);
 	u !== void 0 && e.runId !== "run-none" && n(e.runId, u);
-	let f = u ?? d ?? t.runToUnit[e.runId], p = W(s.taskId);
+	let f = u ?? d ?? t.runToUnit[e.runId], p = U(s.taskId);
 	switch (c) {
 		case "session_start": {
 			let t = s.resumed === !0;
@@ -5172,7 +5172,7 @@ function Xn(e, t, n, r, i, a, o) {
 			break;
 		}
 		case "turn_start": {
-			let e = Gn(s.turnIndex) ?? 0;
+			let e = Kn(s.turnIndex) ?? 0;
 			f !== void 0 && r(f, {
 				kind: "turn",
 				text: `— turn ${e + 1} —`
@@ -5180,7 +5180,7 @@ function Xn(e, t, n, r, i, a, o) {
 			break;
 		}
 		case "text_delta": {
-			let e = W(s.accumulated) ?? "";
+			let e = U(s.accumulated) ?? "";
 			f !== void 0 && r(f, {
 				kind: "text",
 				text: e
@@ -5188,7 +5188,7 @@ function Xn(e, t, n, r, i, a, o) {
 			break;
 		}
 		case "thinking_delta": {
-			let e = W(s.accumulated) ?? "";
+			let e = U(s.accumulated) ?? "";
 			f !== void 0 && r(f, {
 				kind: "thinking",
 				text: e
@@ -5196,7 +5196,7 @@ function Xn(e, t, n, r, i, a, o) {
 			break;
 		}
 		case "tool_call_start": {
-			let e = W(s.toolName) ?? "tool";
+			let e = U(s.toolName) ?? "tool";
 			f !== void 0 && r(f, {
 				kind: "tool",
 				text: `> ${e} running…`,
@@ -5206,7 +5206,7 @@ function Xn(e, t, n, r, i, a, o) {
 			break;
 		}
 		case "tool_result": {
-			let e = W(s.toolName) ?? "tool", t = Gn(s.durationMs) ?? 0;
+			let e = U(s.toolName) ?? "tool", t = Kn(s.durationMs) ?? 0;
 			f !== void 0 && r(f, {
 				kind: "tool",
 				text: `> ${e} finished (${t}ms)`,
@@ -5217,7 +5217,7 @@ function Xn(e, t, n, r, i, a, o) {
 			break;
 		}
 		case "tool_error": {
-			let e = W(s.toolName) ?? "tool", t = W(s.error) ?? "tool failed";
+			let e = U(s.toolName) ?? "tool", t = U(s.error) ?? "tool failed";
 			f !== void 0 && (r(f, {
 				kind: "tool",
 				text: `> ${e} FAILED: ${t}`,
@@ -5262,7 +5262,7 @@ function Xn(e, t, n, r, i, a, o) {
 			});
 			break;
 		case "error": {
-			let e = W(s.message) ?? "unknown error", t = s.recoverable === !0;
+			let e = U(s.message) ?? "unknown error", t = s.recoverable === !0;
 			f !== void 0 && (r(f, {
 				kind: "note",
 				text: `ERROR: ${e}`
@@ -5281,17 +5281,17 @@ function Xn(e, t, n, r, i, a, o) {
 			});
 			break;
 		case "card_moved": {
-			let e = W(s.from), n = W(s.to), r = W(s.reason) ?? "user-move", a = typeof s.stagger == "number" ? s.stagger : 0;
+			let e = U(s.from), n = U(s.to), r = U(s.reason) ?? "user-move", a = typeof s.stagger == "number" ? s.stagger : 0;
 			p !== void 0 && e !== void 0 && n !== void 0 && (t.cardMoves.push({
 				taskId: p,
 				from: e,
 				to: n,
 				reason: r,
 				stagger: a
-			}), Jn.has(r) || i({
+			}), Yn.has(r) || i({
 				ts: l,
 				severity: "info",
-				text: Yn(r, o(p), n),
+				text: Xn(r, o(p), n),
 				entityId: p
 			}));
 			break;
@@ -5308,7 +5308,7 @@ function Xn(e, t, n, r, i, a, o) {
 			i({
 				ts: l,
 				severity: "success",
-				text: `Release ${W(s.releaseId) ?? "rel-??"} — ${o(p)} ships to production`,
+				text: `Release ${U(s.releaseId) ?? "rel-??"} — ${o(p)} ships to production`,
 				...p === void 0 ? {} : { entityId: p }
 			});
 			break;
@@ -5329,7 +5329,7 @@ function Xn(e, t, n, r, i, a, o) {
 			});
 			break;
 		case "stack_forged": {
-			let e = W(s.name) ?? "unnamed stack", t = W(s.stackRef) ?? "stk-c??";
+			let e = U(s.name) ?? "unnamed stack", t = U(s.stackRef) ?? "stk-c??";
 			i({
 				ts: l,
 				severity: "success",
@@ -5341,7 +5341,7 @@ function Xn(e, t, n, r, i, a, o) {
 			i({
 				ts: l,
 				severity: "success",
-				text: `Process amended — ${W(s.processId) ?? "commander/?@v?"} inscribed; future runs only`
+				text: `Process amended — ${U(s.processId) ?? "commander/?@v?"} inscribed; future runs only`
 			});
 			break;
 		case "card_merged":
@@ -5356,12 +5356,12 @@ function Xn(e, t, n, r, i, a, o) {
 			i({
 				ts: l,
 				severity: "info",
-				text: `Integration — ${W(s.step) ?? "integration step"} (${o(p)})`,
+				text: `Integration — ${U(s.step) ?? "integration step"} (${o(p)})`,
 				...p === void 0 ? {} : { entityId: p }
 			});
 			break;
 		case "review_feedback": {
-			let e = W(s.feedback) ?? "changes requested";
+			let e = U(s.feedback) ?? "changes requested";
 			i({
 				ts: l,
 				severity: "warn",
@@ -5374,7 +5374,7 @@ function Xn(e, t, n, r, i, a, o) {
 			i({
 				ts: l,
 				severity: "info",
-				text: `Reviewer — ${W(s.note) ?? "reviewer note"}`,
+				text: `Reviewer — ${U(s.note) ?? "reviewer note"}`,
 				...p === void 0 ? {} : { entityId: p }
 			});
 			break;
@@ -5382,7 +5382,7 @@ function Xn(e, t, n, r, i, a, o) {
 			i({
 				ts: l,
 				severity: "success",
-				text: `Inquiry resolved — ${W(s.caption) ?? "option chosen"} (${o(p)})`,
+				text: `Inquiry resolved — ${U(s.caption) ?? "option chosen"} (${o(p)})`,
 				...p === void 0 ? {} : { entityId: p }
 			});
 			break;
@@ -5390,12 +5390,12 @@ function Xn(e, t, n, r, i, a, o) {
 			i({
 				ts: l,
 				severity: "info",
-				text: W(s.text) ?? "branch engaged",
+				text: U(s.text) ?? "branch engaged",
 				...p === void 0 ? {} : { entityId: p }
 			});
 			break;
 		case "memory_query": {
-			let e = W(s.silo) ?? "", n = Kn(s.matchedIds), r = W(s.unitId);
+			let e = U(s.silo) ?? "", n = qn(s.matchedIds), r = U(s.unitId);
 			t.pulses.push({
 				kind: "query",
 				silo: e,
@@ -5412,7 +5412,7 @@ function Xn(e, t, n, r, i, a, o) {
 			break;
 		}
 		case "memory_update": {
-			let e = W(s.silo) ?? "", n = W(s.unitId);
+			let e = U(s.silo) ?? "", n = U(s.unitId);
 			t.pulses.push({
 				kind: "update",
 				silo: e,
@@ -5431,7 +5431,7 @@ function Xn(e, t, n, r, i, a, o) {
 		default: break;
 	}
 }
-function Zn() {
+function Qn() {
 	return {
 		unitCount: 0,
 		busyCount: 0,
@@ -5443,7 +5443,7 @@ function Zn() {
 		alertCount: 0
 	};
 }
-function Qn() {
+function $n() {
 	return nt((e, t) => ({
 		world: {
 			units: {},
@@ -5472,7 +5472,7 @@ function Qn() {
 		events: [],
 		alerts: [],
 		meta: {
-			resources: Zn(),
+			resources: Qn(),
 			speed: 1,
 			simTimeMs: 0,
 			simStartMs: 0,
@@ -5504,14 +5504,14 @@ function Qn() {
 			memoryPulses: [],
 			pulseSeq: 0,
 			eventSeq: 0,
-			version: Fn
+			version: In
 		},
 		commitTick(t) {
 			e((e) => {
-				let n = e.world, r = e.board, i = new Map(t.units.map((e) => [e.unitId, e])), a = qn(t.frames, n.runToUnit, (e) => e === void 0 ? "unknown agent" : i.get(e)?.title ?? n.units[e]?.view.title ?? e, (e) => e === void 0 ? "unknown task" : t.cards.find((t) => t.taskId === e)?.title ?? r.cards[e]?.view.title ?? e, t.nowMs), o = {}, s = !1;
+				let n = e.world, r = e.board, i = new Map(t.units.map((e) => [e.unitId, e])), a = Jn(t.frames, n.runToUnit, (e) => e === void 0 ? "unknown agent" : i.get(e)?.title ?? n.units[e]?.view.title ?? e, (e) => e === void 0 ? "unknown task" : t.cards.find((t) => t.taskId === e)?.title ?? r.cards[e]?.view.title ?? e, t.nowMs), o = {}, s = !1;
 				for (let e of t.tasks) {
 					let t = n.tasks[e.taskId];
-					t && Un(t.view, e) ? o[e.taskId] = t : (o[e.taskId] = {
+					t && Wn(t.view, e) ? o[e.taskId] = t : (o[e.taskId] = {
 						kind: "task",
 						id: e.taskId,
 						view: e
@@ -5534,15 +5534,15 @@ function Qn() {
 						}
 						i = t.slice(-100);
 					}
-					if (t && i === t.transcript && Hn(t.view, e)) u[e.unitId] = t;
+					if (t && i === t.transcript && Un(t.view, e)) u[e.unitId] = t;
 					else {
-						let t = Vn(e) + e.tokenUsage.cachedTokens;
+						let t = Hn(e) + e.tokenUsage.cachedTokens;
 						u[e.unitId] = {
 							kind: "unit",
 							id: e.unitId,
 							view: e,
-							contextPct: Math.min(1, t / In),
-							energyPct: Math.max(0, 1 - e.cost.totalUsd / Ln),
+							contextPct: Math.min(1, t / Ln),
+							energyPct: Math.max(0, 1 - e.cost.totalUsd / Rn),
 							transcript: i,
 							transcriptSeq: o
 						}, d = !0;
@@ -5551,7 +5551,7 @@ function Qn() {
 				let f = Object.keys(u).sort(), p = f.length === n.unitIds.length && f.every((e, t) => n.unitIds[t] === e), m = {}, h = !1;
 				for (let e of t.cards) {
 					let n = r.cards[e.taskId], i = t.runStages[e.taskId] ?? null;
-					n && n.runStage === i && Wn(n.view, e) ? m[e.taskId] = n : (m[e.taskId] = {
+					n && n.runStage === i && Gn(n.view, e) ? m[e.taskId] = n : (m[e.taskId] = {
 						id: e.taskId,
 						view: e,
 						runStage: i
@@ -5597,7 +5597,7 @@ function Qn() {
 					let t = A[e.taskId] ?? [], n = e.recordIds.filter((e) => !t.includes(e));
 					n.length !== 0 && (A === r.heldByCard && (A = { ...A }), A[e.taskId] = [...t, ...n]);
 				}
-				let j = e.meta.pulseSeq, M = e.meta.memoryPulses.filter((e) => t.nowMs - e.ts < Rn);
+				let j = e.meta.pulseSeq, M = e.meta.memoryPulses.filter((e) => t.nowMs - e.ts < zn);
 				M.length === e.meta.memoryPulses.length && a.pulses.length === 0 && (M = e.meta.memoryPulses), a.pulses.length > 0 && (M = [...M, ...a.pulses.map((e) => ({
 					id: `pulse-${j += 1}`,
 					...e
@@ -5608,7 +5608,7 @@ function Qn() {
 					ids: P
 				});
 				let F = 0, ee = 0, I = 0;
-				for (let e of t.units) Bn.has(e.state) && (F += 1), ee += Vn(e), I += e.cost.totalUsd;
+				for (let e of t.units) Vn.has(e.state) && (F += 1), ee += Hn(e), I += e.cost.totalUsd;
 				let te = t.tasks.filter((e) => e.state === "done").length, ne = {
 					unitCount: t.units.length,
 					busyCount: F,
@@ -5669,7 +5669,7 @@ function Qn() {
 		clickSelect(t, n) {
 			e((e) => ({ selection: {
 				...e.selection,
-				ids: zn(e.selection.ids, t, n)
+				ids: Bn(e.selection.ids, t, n)
 			} }));
 		},
 		clearSelection() {
@@ -5777,7 +5777,7 @@ function Qn() {
 		},
 		openInspectorCard(t) {
 			e((e) => {
-				let n = e.meta.inspectorUnitId !== null || e.meta.inspectorTaskId !== null, r = e.board.cards[t], i = kn(r?.view.column, r?.view.agentIds.length ?? 0), a = n && On.has(e.meta.inspectorTab) ? e.meta.inspectorTab : i;
+				let n = e.meta.inspectorUnitId !== null || e.meta.inspectorTaskId !== null, r = e.board.cards[t], i = An(r?.view.column, r?.view.agentIds.length ?? 0), a = n && kn.has(e.meta.inspectorTab) ? e.meta.inspectorTab : i;
 				return { meta: {
 					...e.meta,
 					inspectorUnitId: null,
@@ -6010,7 +6010,7 @@ function Qn() {
 		}
 	}));
 }
-function $n(e, t) {
+function er(e, t) {
 	let n = t.sim, r = [], i = !1, a = !1, o = -1, s = () => {
 		if (a || r.length === 0 && n.tickIndex === o) return;
 		let t = r;
@@ -6171,7 +6171,7 @@ function $n(e, t) {
 }
 //#endregion
 //#region src/components/hud/SelectionPanel.tsx
-var er = 5, tr = {
+var tr = 5, nr = {
 	idle: "IDLE",
 	dispatching: "MOVING",
 	thinking: "THINKING",
@@ -6181,22 +6181,22 @@ var er = 5, tr = {
 	completed: "DONE",
 	failed: "FAILED"
 };
-function nr(e) {
-	return tr[e] ?? e.replace(/_/g, " ").toUpperCase();
+function rr(e) {
+	return nr[e] ?? e.replace(/_/g, " ").toUpperCase();
 }
-function rr(e, t, n) {
+function ir(e, t, n) {
 	e.getState().clickSelect(t, n);
 }
-function ir({ turnCount: e }) {
-	let t = Math.min(er, e);
+function ar({ turnCount: e }) {
+	let t = Math.min(tr, e);
 	return /* @__PURE__ */ l("span", {
 		className: "wr-rank",
 		title: `${e} turns served`,
 		"aria-label": `rank ${t}`,
-		children: Array.from({ length: er }, (e, n) => /* @__PURE__ */ l("span", { className: V("wr-rank-chevron", n < t && "is-earned") }, n))
+		children: Array.from({ length: tr }, (e, n) => /* @__PURE__ */ l("span", { className: V("wr-rank-chevron", n < t && "is-earned") }, n))
 	});
 }
-function ar({ store: e, unit: t }) {
+function or({ store: e, unit: t }) {
 	let n = t.view.taskId, r = B(e, (e) => n === null ? void 0 : e.world.tasks[n]);
 	return /* @__PURE__ */ u("div", {
 		className: "wr-sel-single",
@@ -6240,7 +6240,7 @@ function ar({ store: e, unit: t }) {
 						type: "button",
 						className: "wr-sel-tasklink",
 						title: "Select the assigned objective",
-						onClick: (t) => rr(e, n, t.shiftKey),
+						onClick: (t) => ir(e, n, t.shiftKey),
 						children: ["› ", r?.view.title ?? n]
 					})
 				]
@@ -6284,8 +6284,8 @@ function ar({ store: e, unit: t }) {
 							}),
 							/* @__PURE__ */ u("span", {
 								className: "wr-vital-value",
-								title: `${v(t.view.cost.totalUsd)} of ${v(Ln)} spent`,
-								children: [v(Ln * t.energyPct), " left"]
+								title: `${v(t.view.cost.totalUsd)} of ${v(Rn)} spent`,
+								children: [v(Rn * t.energyPct), " left"]
 							})
 						]
 					}),
@@ -6296,7 +6296,7 @@ function ar({ store: e, unit: t }) {
 								className: "wr-vital-label",
 								children: "TURNS"
 							}),
-							/* @__PURE__ */ l(ir, { turnCount: t.view.turnCount }),
+							/* @__PURE__ */ l(ar, { turnCount: t.view.turnCount }),
 							/* @__PURE__ */ l("span", {
 								className: "wr-vital-value",
 								children: _(t.view.turnCount)
@@ -6308,7 +6308,7 @@ function ar({ store: e, unit: t }) {
 		]
 	});
 }
-function or({ store: e, units: t }) {
+function sr({ store: e, units: t }) {
 	return /* @__PURE__ */ l("div", {
 		className: "wr-sel-grid",
 		children: t.map((t) => {
@@ -6321,7 +6321,7 @@ function or({ store: e, units: t }) {
 				type: "button",
 				className: `wr-sel-card wr-sel-card--${t.view.state}`,
 				title: `${t.view.title} (${t.view.state}) — click to select only this unit`,
-				onClick: (n) => rr(e, t.id, n.shiftKey),
+				onClick: (n) => ir(e, t.id, n.shiftKey),
 				children: [
 					/* @__PURE__ */ l("div", {
 						className: "wr-sel-card-portrait",
@@ -6333,7 +6333,7 @@ function or({ store: e, units: t }) {
 					}),
 					/* @__PURE__ */ u("div", {
 						className: "wr-sel-card-state",
-						children: [nr(t.view.state), t.view.paused && /* @__PURE__ */ l("span", {
+						children: [rr(t.view.state), t.view.paused && /* @__PURE__ */ l("span", {
 							className: "wr-sel-paused",
 							children: "paused"
 						})]
@@ -6343,7 +6343,7 @@ function or({ store: e, units: t }) {
 		})
 	});
 }
-function sr({ store: e, views: t, task: n }) {
+function cr({ store: e, views: t, task: n }) {
 	let r = B(e, (e) => e.world.units), i = B(e, (e) => e.board.cards[n.id]?.runStage ?? null);
 	B(e, (e) => e.meta.tickIndex);
 	let a = t.listSessions(n.id).find((e) => e.status === "active");
@@ -6457,7 +6457,7 @@ function sr({ store: e, views: t, task: n }) {
 							type: "button",
 							className: "wr-sel-assignee",
 							title: "Select this unit",
-							onClick: (n) => rr(e, t, n.shiftKey),
+							onClick: (n) => ir(e, t, n.shiftKey),
 							children: r[t]?.view.title ?? t
 						}, t))
 					})]
@@ -6466,7 +6466,7 @@ function sr({ store: e, views: t, task: n }) {
 		]
 	});
 }
-function cr({ store: e, views: t }) {
+function lr({ store: e, views: t }) {
 	let { units: n, tasks: r } = d({
 		world: B(e, (e) => e.world),
 		selection: B(e, (e) => e.selection)
@@ -6477,27 +6477,27 @@ function cr({ store: e, views: t }) {
 	});
 	else if (n.length === 1 && r.length === 0) {
 		let t = n[0];
-		a = t === void 0 ? /* @__PURE__ */ l("div", {}) : /* @__PURE__ */ l(ar, {
+		a = t === void 0 ? /* @__PURE__ */ l("div", {}) : /* @__PURE__ */ l(or, {
 			store: e,
 			unit: t
 		});
-	} else if (n.length > 1 && r.length === 0) a = /* @__PURE__ */ l(or, {
+	} else if (n.length > 1 && r.length === 0) a = /* @__PURE__ */ l(sr, {
 		store: e,
 		units: n
 	});
 	else if (r.length === 1 && n.length === 0) {
 		let n = r[0];
-		a = n === void 0 ? /* @__PURE__ */ l("div", {}) : /* @__PURE__ */ l(sr, {
+		a = n === void 0 ? /* @__PURE__ */ l("div", {}) : /* @__PURE__ */ l(cr, {
 			store: e,
 			views: t,
 			task: n
 		});
 	} else a = /* @__PURE__ */ u("div", {
 		className: "wr-sel-mixed",
-		children: [/* @__PURE__ */ l(or, {
+		children: [/* @__PURE__ */ l(sr, {
 			store: e,
 			units: n
-		}), r.map((n) => /* @__PURE__ */ l(sr, {
+		}), r.map((n) => /* @__PURE__ */ l(cr, {
 			store: e,
 			views: t,
 			task: n
@@ -6518,16 +6518,16 @@ function cr({ store: e, views: t }) {
 }
 //#endregion
 //#region src/components/hud/TopBar.tsx
-function lr(e) {
-	return St[(St.indexOf(e) + 1 + St.length) % St.length];
+function ur(e) {
+	return Ct[(Ct.indexOf(e) + 1 + Ct.length) % Ct.length];
 }
-function ur({ text: e }) {
+function dr({ text: e }) {
 	return /* @__PURE__ */ l("span", {
 		className: "wr-stat-num",
 		children: e
 	}, e);
 }
-function dr({ store: e, orders: t }) {
+function fr({ store: e, orders: t }) {
 	let n = B(e, (e) => e.meta), r = n.resources;
 	return /* @__PURE__ */ u("header", {
 		className: "wr-topbar",
@@ -6556,9 +6556,9 @@ function dr({ store: e, orders: t }) {
 							children: "AGENTS"
 						}), /* @__PURE__ */ u("span", {
 							className: "wr-stat-value",
-							children: [/* @__PURE__ */ l(ur, { text: _(r.unitCount) }), /* @__PURE__ */ u("em", { children: [
+							children: [/* @__PURE__ */ l(dr, { text: _(r.unitCount) }), /* @__PURE__ */ u("em", { children: [
 								"/",
-								/* @__PURE__ */ l(ur, { text: _(r.busyCount) }),
+								/* @__PURE__ */ l(dr, { text: _(r.busyCount) }),
 								" busy"
 							] })]
 						})]
@@ -6572,7 +6572,7 @@ function dr({ store: e, orders: t }) {
 							children: "TOKENS"
 						}), /* @__PURE__ */ l("span", {
 							className: "wr-stat-value",
-							children: /* @__PURE__ */ l(ur, { text: _(r.tokensBurned) })
+							children: /* @__PURE__ */ l(dr, { text: _(r.tokensBurned) })
 						})]
 					}),
 					/* @__PURE__ */ u("div", {
@@ -6585,9 +6585,9 @@ function dr({ store: e, orders: t }) {
 						}), /* @__PURE__ */ u("span", {
 							className: "wr-stat-value",
 							children: [
-								/* @__PURE__ */ l(ur, { text: _(r.tasksDone) }),
+								/* @__PURE__ */ l(dr, { text: _(r.tasksDone) }),
 								"/",
-								/* @__PURE__ */ l(ur, { text: _(r.tasksTotal) })
+								/* @__PURE__ */ l(dr, { text: _(r.tasksTotal) })
 							]
 						})]
 					}),
@@ -6600,7 +6600,7 @@ function dr({ store: e, orders: t }) {
 							children: "ALERTS"
 						}), /* @__PURE__ */ l("span", {
 							className: "wr-stat-value",
-							children: /* @__PURE__ */ l(ur, { text: _(r.alertCount) })
+							children: /* @__PURE__ */ l(dr, { text: _(r.alertCount) })
 						})]
 					})
 				]
@@ -6650,7 +6650,7 @@ function dr({ store: e, orders: t }) {
 				className: "wr-sim-toggle wr-speed-control",
 				"data-testid": "topbar-speed",
 				title: `Cogitator pacing — ${n.speed}x (click to cycle 0.5x / 1x / 2x, §V4-4)`,
-				onClick: () => t.setSpeed(lr(n.speed)),
+				onClick: () => t.setSpeed(ur(n.speed)),
 				children: [n.speed, "x"]
 			}),
 			/* @__PURE__ */ l("button", {
@@ -6675,7 +6675,7 @@ function dr({ store: e, orders: t }) {
 }
 //#endregion
 //#region src/game/cardEditor.ts
-function fr(e) {
+function pr(e) {
 	return {
 		title: e.title,
 		taskKind: e.taskKind,
@@ -6686,28 +6686,28 @@ function fr(e) {
 		stackRef: e.stackRef
 	};
 }
-function pr(e) {
+function mr(e) {
 	return e.column === "backlog";
 }
-function mr(e, t) {
+function hr(e, t) {
 	return t.filter((t) => t.taskId !== e && t.column === "backlog" && t.parentId === null).map((e) => e.taskId);
 }
-function hr(e) {
+function gr(e) {
 	return [...new Set(e.map((e) => e.workspaceId))].sort();
 }
-function gr(e, t) {
+function _r(e, t) {
 	let n = {}, r = t.title.trim();
 	r !== "" && r !== e.title && (n.title = r), t.taskKind !== e.taskKind && (n.taskKind = t.taskKind), t.description !== e.description && (n.description = t.description), t.yolo !== e.yolo && (n.yolo = t.yolo);
 	let i = t.parentId === "" ? null : t.parentId;
-	return pr(e) && i !== e.parentId && (n.parentId = i), t.workspaceId !== e.workspaceId && (n.workspaceId = t.workspaceId), t.stackRef !== e.stackRef && (n.stackRef = t.stackRef), n;
+	return mr(e) && i !== e.parentId && (n.parentId = i), t.workspaceId !== e.workspaceId && (n.workspaceId = t.workspaceId), t.stackRef !== e.stackRef && (n.stackRef = t.stackRef), n;
 }
-function _r(e) {
+function vr(e) {
 	return Object.keys(e).length === 0;
 }
 //#endregion
 //#region src/components/panels/CardEditor.tsx
-function vr({ store: e, orders: t, views: n, card: r }) {
-	let i = B(e, (e) => e.board.cards), a = B(e, (e) => e.board.cardIds), [s, c] = o(() => fr(r.view)), d = a.map((e) => i[e]?.view).filter((e) => e !== void 0), f = mr(r.id, d), p = hr(d), m = n.listStacks(), h = pr(r.view), g = () => e.getState().closeCardEditor();
+function yr({ store: e, orders: t, views: n, card: r }) {
+	let i = B(e, (e) => e.board.cards), a = B(e, (e) => e.board.cardIds), [s, c] = o(() => pr(r.view)), d = a.map((e) => i[e]?.view).filter((e) => e !== void 0), f = hr(r.id, d), p = gr(d), m = n.listStacks(), h = mr(r.view), g = () => e.getState().closeCardEditor();
 	return /* @__PURE__ */ l("div", {
 		className: "wr-modal-backdrop",
 		"data-testid": "card-editor",
@@ -6750,7 +6750,7 @@ function vr({ store: e, orders: t, views: n, card: r }) {
 							...s,
 							taskKind: e.target.value
 						}),
-						children: U.map((e) => /* @__PURE__ */ l("option", {
+						children: ct.map((e) => /* @__PURE__ */ l("option", {
 							value: e,
 							children: e
 						}, e))
@@ -6873,8 +6873,8 @@ function vr({ store: e, orders: t, views: n, card: r }) {
 						type: "button",
 						className: "wr-alert-btn wr-alert-btn--approve",
 						onClick: () => {
-							let e = gr(r.view, s);
-							_r(e) || t.updateTask(r.id, e), g();
+							let e = _r(r.view, s);
+							vr(e) || t.updateTask(r.id, e), g();
 						},
 						children: "Save"
 					})]
@@ -6883,9 +6883,9 @@ function vr({ store: e, orders: t, views: n, card: r }) {
 		})
 	});
 }
-function yr({ store: e, orders: t, views: n }) {
+function br({ store: e, orders: t, views: n }) {
 	let r = B(e, (e) => e.meta.cardEditorTaskId), i = B(e, (e) => e.meta.cardEditorTaskId === null ? void 0 : e.board.cards[e.meta.cardEditorTaskId]);
-	return r === null || i === void 0 ? null : /* @__PURE__ */ l(vr, {
+	return r === null || i === void 0 ? null : /* @__PURE__ */ l(yr, {
 		store: e,
 		orders: t,
 		views: n,
@@ -6894,7 +6894,7 @@ function yr({ store: e, orders: t, views: n }) {
 }
 //#endregion
 //#region src/components/panels/GraphLayerPicker.tsx
-function br({ label: e, kinds: t, selectedId: r, onSelect: i }) {
+function xr({ label: e, kinds: t, selectedId: r, onSelect: i }) {
 	let [a, s] = o(""), [c, d] = o([]), [f, p] = o("idle");
 	return n(() => {
 		let e = !1, n = encodeURIComponent(t.join(",")), r = a.trim() ? `/api/atlas/search?q=${encodeURIComponent(a.trim())}&kinds=${n}&limit=25` : `/api/atlas/search?mode=browse&kinds=${n}&limit=50`;
@@ -6984,18 +6984,59 @@ function br({ label: e, kinds: t, selectedId: r, onSelect: i }) {
 }
 //#endregion
 //#region src/game/stackForge.ts
-var xr = [
+var Sr = [
 	"prompt",
 	"yolo",
 	"deny"
-];
-function Sr(e) {
+], Cr = {
+	small: {
+		requests: {
+			cpu: "25m",
+			memory: "512Mi"
+		},
+		limits: {
+			cpu: "1500m",
+			memory: "2Gi"
+		}
+	},
+	medium: {
+		requests: {
+			cpu: "250m",
+			memory: "1Gi"
+		},
+		limits: {
+			cpu: "2",
+			memory: "4Gi"
+		}
+	},
+	large: {
+		requests: {
+			cpu: "1000m",
+			memory: "2Gi"
+		},
+		limits: {
+			cpu: "4",
+			memory: "8Gi"
+		}
+	}
+};
+function wr(e) {
+	let t = e?.requests?.cpu;
+	if (t === void 0) return "";
+	for (let e of [
+		"small",
+		"medium",
+		"large"
+	]) if (Cr[e].requests?.cpu === t) return e;
+	return "";
+}
+function W(e) {
 	return e ? e.split(",").map((e) => e.trim()).filter(Boolean) : [];
 }
-function Cr(e) {
+function Tr(e) {
 	return (e ?? []).join(", ");
 }
-function wr() {
+function Er() {
 	return {
 		stackRef: null,
 		name: "",
@@ -7020,10 +7061,11 @@ function wr() {
 		configGrants: "",
 		memoryRepositoryRefs: "",
 		displayName: "",
-		agentRole: ""
+		agentRole: "",
+		size: ""
 	};
 }
-function Tr(e) {
+function Dr(e) {
 	let t = e.stack.spec;
 	return {
 		baseAgent: t.baseAgent,
@@ -7035,36 +7077,37 @@ function Tr(e) {
 		developer: t.prompt.developer ?? "",
 		serviceAccountRef: t.runtimeIdentity?.serviceAccountRef ?? "",
 		toolProfileRef: t.toolProfileRef ?? "",
-		mcpServerRefs: Cr(t.externalTools?.mcpServerRefs),
-		cliToolRefs: Cr(t.externalTools?.cliToolRefs),
-		skillRefs: Cr(t.skillRefs),
-		subagentRefs: Cr(t.subagentRefs),
-		contextLabelRefs: Cr(t.contextLabelRefs),
+		mcpServerRefs: Tr(t.externalTools?.mcpServerRefs),
+		cliToolRefs: Tr(t.externalTools?.cliToolRefs),
+		skillRefs: Tr(t.skillRefs),
+		subagentRefs: Tr(t.subagentRefs),
+		contextLabelRefs: Tr(t.contextLabelRefs),
 		workspacePolicyRef: t.workspacePolicyRef ?? "",
 		runnerPool: t.runnerPool ?? "",
-		roleBindings: Cr(t.permissionRefs?.roleBindings),
-		secretGrants: Cr(t.permissionRefs?.secretGrants),
-		configGrants: Cr(t.permissionRefs?.configGrants),
-		memoryRepositoryRefs: Cr(t.memoryRepositoryRefs),
+		roleBindings: Tr(t.permissionRefs?.roleBindings),
+		secretGrants: Tr(t.permissionRefs?.secretGrants),
+		configGrants: Tr(t.permissionRefs?.configGrants),
+		memoryRepositoryRefs: Tr(t.memoryRepositoryRefs),
 		displayName: t.displayName ?? "",
-		agentRole: Cr(t.agentRole?.refs)
+		agentRole: Tr(t.agentRole?.refs),
+		size: wr(t.resources)
 	};
 }
-function Er(e) {
+function Or(e) {
 	return {
 		stackRef: null,
 		name: `${e.name} Mk II`,
-		...Tr(e)
+		...Dr(e)
 	};
 }
-function Dr(e) {
+function kr(e) {
 	return {
 		stackRef: e.stackRef,
 		name: e.name,
-		...Tr(e)
+		...Dr(e)
 	};
 }
-function Or(e, t) {
+function Ar(e, t) {
 	let n = st.includes(t) ? t : null;
 	return {
 		...e,
@@ -7073,10 +7116,10 @@ function Or(e, t) {
 		model: n === null ? e.model : H[n][0]
 	};
 }
-function kr(e) {
+function jr(e) {
 	let t = e.name.trim();
 	if (t === "") return null;
-	let n = Sr(e.mcpServerRefs), r = Sr(e.cliToolRefs), i = Sr(e.skillRefs), a = Sr(e.subagentRefs), o = Sr(e.contextLabelRefs), s = Sr(e.memoryRepositoryRefs), c = Sr(e.roleBindings), l = Sr(e.secretGrants), u = Sr(e.configGrants), d = Sr(e.agentRole), f = {
+	let n = W(e.mcpServerRefs), r = W(e.cliToolRefs), i = W(e.skillRefs), a = W(e.subagentRefs), o = W(e.contextLabelRefs), s = W(e.memoryRepositoryRefs), c = W(e.roleBindings), l = W(e.secretGrants), u = W(e.configGrants), d = W(e.agentRole), f = {
 		...n.length > 0 ? { mcpServerRefs: n } : {},
 		...r.length > 0 ? { cliToolRefs: r } : {}
 	}, p = {
@@ -7108,12 +7151,13 @@ function kr(e) {
 			...Object.keys(p).length > 0 ? { permissionRefs: p } : {},
 			...s.length > 0 ? { memoryRepositoryRefs: s } : {},
 			...e.displayName.trim() === "" ? {} : { displayName: e.displayName.trim() },
-			...d.length > 0 ? { agentRole: { refs: d } } : {}
+			...d.length > 0 ? { agentRole: { refs: d } } : {},
+			...e.size === "" ? {} : { resources: Cr[e.size] }
 		},
 		status: { phase: "ready" }
 	};
 }
-function Ar(e, t = 90) {
+function Mr(e, t = 90) {
 	let n = e.trim();
 	if (n === "") return "— no personality inscribed —";
 	let r = (/^[^.!?]*[.!?]/.exec(n)?.[0] ?? n).trim();
@@ -7121,13 +7165,13 @@ function Ar(e, t = 90) {
 }
 //#endregion
 //#region src/components/panels/Foundry.tsx
-function jr(e, t) {
+function Nr(e, t) {
 	let n = (e || "").split(",").map((e) => e.trim()).filter(Boolean);
 	return !t || n.includes(t) ? e : [...n, t].join(", ");
 }
-var Mr = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" width=\"100%\" height=\"100%\" aria-hidden=\"true\"><path d=\"M3 6.5 H17 C16.4 9.2 14.2 10.6 11.6 10.9 L11.6 13.2 H13.6 C14.3 13.2 14.8 13.7 14.8 14.4 V15.4 H5.2 V14.4 C5.2 13.7 5.7 13.2 6.4 13.2 H8.4 L8.4 10.9 C6.6 10.7 5.4 9.9 4.8 8.6 L3 8.2 Z\" fill=\"currentColor\"/></svg>";
-function Nr({ store: e, orders: t }) {
-	let n = B(e, (e) => e.board.cardIds), r = B(e, (e) => e.board.cards), [i, a] = o("implement"), [s, d] = o(""), [f, p] = o(""), m = n.filter((e) => r[e]?.view.parentId === null), h = pt[i], g = () => {
+var Pr = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" width=\"100%\" height=\"100%\" aria-hidden=\"true\"><path d=\"M3 6.5 H17 C16.4 9.2 14.2 10.6 11.6 10.9 L11.6 13.2 H13.6 C14.3 13.2 14.8 13.7 14.8 14.4 V15.4 H5.2 V14.4 C5.2 13.7 5.7 13.2 6.4 13.2 H8.4 L8.4 10.9 C6.6 10.7 5.4 9.9 4.8 8.6 L3 8.2 Z\" fill=\"currentColor\"/></svg>";
+function Fr({ store: e, orders: t }) {
+	let n = B(e, (e) => e.board.cardIds), r = B(e, (e) => e.board.cards), [i, a] = o("implement"), [s, d] = o(""), [f, p] = o(""), m = n.filter((e) => r[e]?.view.parentId === null), h = mt[i], g = () => {
 		t.createTask({
 			taskKind: i,
 			...s.trim() === "" ? {} : { title: s.trim() },
@@ -7144,7 +7188,7 @@ function Nr({ store: e, orders: t }) {
 				className: "wr-foundry-input",
 				value: i,
 				onChange: (e) => a(e.target.value),
-				children: U.map((e) => /* @__PURE__ */ l("option", {
+				children: ct.map((e) => /* @__PURE__ */ l("option", {
 					value: e,
 					children: e
 				}, e))
@@ -7205,7 +7249,7 @@ function Nr({ store: e, orders: t }) {
 		})
 	] });
 }
-function Pr({ stack: e, onForgeFrom: t, onEdit: n }) {
+function Ir({ stack: e, onForgeFrom: t, onEdit: n }) {
 	let r = e.stack.spec;
 	return /* @__PURE__ */ u("li", {
 		className: "wr-stack-row",
@@ -7241,7 +7285,7 @@ function Pr({ stack: e, onForgeFrom: t, onEdit: n }) {
 			}),
 			/* @__PURE__ */ l("div", {
 				className: "wr-stack-row-excerpt",
-				children: Ar(r.prompt.system)
+				children: Mr(r.prompt.system)
 			}),
 			/* @__PURE__ */ u("div", {
 				className: "wr-stack-row-actions",
@@ -7252,7 +7296,7 @@ function Pr({ stack: e, onForgeFrom: t, onEdit: n }) {
 					children: [/* @__PURE__ */ l("span", {
 						className: "wr-forge-glyph",
 						"aria-hidden": !0,
-						dangerouslySetInnerHTML: { __html: Mr }
+						dangerouslySetInnerHTML: { __html: Pr }
 					}), "Forge From"]
 				}), e.custom && /* @__PURE__ */ l("button", {
 					type: "button",
@@ -7264,17 +7308,17 @@ function Pr({ stack: e, onForgeFrom: t, onEdit: n }) {
 		]
 	});
 }
-function Fr({ orders: e, views: t }) {
-	let [n, r] = o(wr), [, i] = o(0), a = t.listStacks(), s = xr.includes(n.approvalMode) ? xr : [n.approvalMode, ...xr];
+function Lr({ orders: e, views: t }) {
+	let [n, r] = o(Er), [, i] = o(0), a = t.listStacks(), s = Sr.includes(n.approvalMode) ? Sr : [n.approvalMode, ...Sr];
 	return /* @__PURE__ */ u("div", {
 		className: "wr-foundry-stacks-body",
 		children: [/* @__PURE__ */ l("ul", {
 			className: "wr-stack-roster",
 			"aria-label": "Agent stack roster",
-			children: a.map((e) => /* @__PURE__ */ l(Pr, {
+			children: a.map((e) => /* @__PURE__ */ l(Ir, {
 				stack: e,
-				onForgeFrom: () => r(Er(e)),
-				onEdit: () => r(Dr(e))
+				onForgeFrom: () => r(Or(e)),
+				onEdit: () => r(kr(e))
 			}, e.stackRef))
 		}), /* @__PURE__ */ u("div", {
 			className: "wr-stack-editor",
@@ -7329,13 +7373,13 @@ function Fr({ orders: e, views: t }) {
 								/* @__PURE__ */ l("select", {
 									className: "wr-foundry-input",
 									value: n.adapter,
-									onChange: (e) => r(Or(n, e.target.value)),
+									onChange: (e) => r(Ar(n, e.target.value)),
 									children: st.map((e) => /* @__PURE__ */ l("option", {
 										value: e,
 										children: e
 									}, e))
 								}),
-								/* @__PURE__ */ l(br, {
+								/* @__PURE__ */ l(xr, {
 									label: "Platform",
 									kinds: [
 										"AgentProduct",
@@ -7344,7 +7388,7 @@ function Fr({ orders: e, views: t }) {
 										"Platform"
 									],
 									selectedId: n.adapter,
-									onSelect: (e) => r(Or(n, e.displayName || e.id))
+									onSelect: (e) => r(Ar(n, e.displayName || e.id))
 								})
 							]
 						}),
@@ -7364,7 +7408,7 @@ function Fr({ orders: e, views: t }) {
 										model: e.target.value
 									})
 								}),
-								/* @__PURE__ */ l(br, {
+								/* @__PURE__ */ l(xr, {
 									label: "Model",
 									kinds: [
 										"ModelFamily",
@@ -7396,7 +7440,7 @@ function Fr({ orders: e, views: t }) {
 										provider: e.target.value
 									})
 								}),
-								/* @__PURE__ */ l(br, {
+								/* @__PURE__ */ l(xr, {
 									label: "Provider",
 									kinds: [
 										"Provider",
@@ -7427,6 +7471,38 @@ function Fr({ orders: e, views: t }) {
 									value: e,
 									children: e
 								}, e))
+							})]
+						}),
+						/* @__PURE__ */ u("label", {
+							className: "wr-foundry-field",
+							children: [/* @__PURE__ */ l("span", {
+								className: "wr-foundry-label",
+								children: "size (agent Job resources)"
+							}), /* @__PURE__ */ u("select", {
+								className: "wr-foundry-input",
+								value: n.size,
+								onChange: (e) => r({
+									...n,
+									size: e.target.value
+								}),
+								children: [
+									/* @__PURE__ */ l("option", {
+										value: "",
+										children: "default (deployment floor)"
+									}),
+									/* @__PURE__ */ l("option", {
+										value: "small",
+										children: "small — 25m / 512Mi (fits busy clusters)"
+									}),
+									/* @__PURE__ */ l("option", {
+										value: "medium",
+										children: "medium — 250m / 1Gi"
+									}),
+									/* @__PURE__ */ l("option", {
+										value: "large",
+										children: "large — 1000m / 2Gi"
+									})
+								]
 							})]
 						}),
 						/* @__PURE__ */ u("label", {
@@ -7515,7 +7591,7 @@ function Fr({ orders: e, views: t }) {
 										mcpServerRefs: e.target.value
 									})
 								}),
-								/* @__PURE__ */ l(br, {
+								/* @__PURE__ */ l(xr, {
 									label: "Tools / MCP",
 									kinds: [
 										"Tool",
@@ -7525,7 +7601,7 @@ function Fr({ orders: e, views: t }) {
 									],
 									onSelect: (e) => r({
 										...n,
-										mcpServerRefs: jr(n.mcpServerRefs, e.displayName || e.id)
+										mcpServerRefs: Nr(n.mcpServerRefs, e.displayName || e.id)
 									})
 								})
 							]
@@ -7547,12 +7623,12 @@ function Fr({ orders: e, views: t }) {
 										cliToolRefs: e.target.value
 									})
 								}),
-								/* @__PURE__ */ l(br, {
+								/* @__PURE__ */ l(xr, {
 									label: "CLI Tools",
 									kinds: ["Tool", "ToolDescriptor"],
 									onSelect: (e) => r({
 										...n,
-										cliToolRefs: jr(n.cliToolRefs, e.displayName || e.id)
+										cliToolRefs: Nr(n.cliToolRefs, e.displayName || e.id)
 									})
 								})
 							]
@@ -7574,7 +7650,7 @@ function Fr({ orders: e, views: t }) {
 										skillRefs: e.target.value
 									})
 								}),
-								/* @__PURE__ */ l(br, {
+								/* @__PURE__ */ l(xr, {
 									label: "Skills",
 									kinds: [
 										"Skill",
@@ -7584,7 +7660,7 @@ function Fr({ orders: e, views: t }) {
 									],
 									onSelect: (e) => r({
 										...n,
-										skillRefs: jr(n.skillRefs, e.displayName || e.id)
+										skillRefs: Nr(n.skillRefs, e.displayName || e.id)
 									})
 								})
 							]
@@ -7654,7 +7730,7 @@ function Fr({ orders: e, views: t }) {
 										agentRole: e.target.value
 									})
 								}),
-								/* @__PURE__ */ l(br, {
+								/* @__PURE__ */ l(xr, {
 									label: "Agent Role",
 									kinds: [
 										"Role",
@@ -7664,7 +7740,7 @@ function Fr({ orders: e, views: t }) {
 									],
 									onSelect: (e) => r({
 										...n,
-										agentRole: jr(n.agentRole, e.displayName || e.id)
+										agentRole: Nr(n.agentRole, e.displayName || e.id)
 									})
 								})
 							]
@@ -7759,14 +7835,14 @@ function Fr({ orders: e, views: t }) {
 					children: [/* @__PURE__ */ l("button", {
 						type: "button",
 						className: "wr-alert-btn",
-						onClick: () => r(wr()),
+						onClick: () => r(Er()),
 						children: "Clear"
 					}), /* @__PURE__ */ l("button", {
 						type: "button",
 						className: "wr-alert-btn wr-alert-btn--approve",
 						disabled: n.name.trim() === "",
 						onClick: () => {
-							let t = kr(n);
+							let t = jr(n);
 							if (t === null) return;
 							let a = e.upsertStack(t);
 							a !== null && (r({
@@ -7781,10 +7857,10 @@ function Fr({ orders: e, views: t }) {
 		})]
 	});
 }
-function Ir(e, t) {
+function Rr(e, t) {
 	return e?.emoji != null && e.emoji !== "" ? e.emoji : (t.trim()[0] ?? "?").toUpperCase();
 }
-function Lr({ def: e }) {
+function zr({ def: e }) {
 	let t = e.roleContext ?? e.persona?.roleTitle ?? null, n = e.persona?.displayName ?? e.personaRef ?? e.name;
 	return /* @__PURE__ */ u("li", {
 		className: "wr-stack-row wr-definition-row",
@@ -7794,7 +7870,7 @@ function Lr({ def: e }) {
 				/* @__PURE__ */ l("span", {
 					className: "wr-persona-glyph",
 					"aria-hidden": !0,
-					children: Ir(e.persona, n)
+					children: Rr(e.persona, n)
 				}),
 				/* @__PURE__ */ l("span", {
 					className: "wr-stack-name",
@@ -7824,13 +7900,13 @@ function Lr({ def: e }) {
 		})]
 	});
 }
-function Rr({ persona: e }) {
+function Br({ persona: e }) {
 	return /* @__PURE__ */ u("li", {
 		className: "wr-persona-card",
 		children: [/* @__PURE__ */ l("span", {
 			className: "wr-persona-glyph wr-persona-glyph--lg",
 			"aria-hidden": !0,
-			children: Ir(e, e.displayName)
+			children: Rr(e, e.displayName)
 		}), /* @__PURE__ */ u("div", {
 			className: "wr-persona-card-body",
 			children: [
@@ -7850,7 +7926,7 @@ function Rr({ persona: e }) {
 		})]
 	});
 }
-function zr({ orders: e, views: t }) {
+function Vr({ orders: e, views: t }) {
 	let n = t.listDefinitions(), r = t.listPersonas(), i = t.listStacks(), [, a] = o(0), [s, c] = o(""), [d, f] = o(r[0]?.name ?? ""), [p, m] = o(i[0]?.stackRef ?? ""), [h, g] = o(""), [_, v] = o(""), [y, b] = o(""), [x, S] = o(""), [C, w] = o(""), [T, E] = o("direct"), [D, O] = o("professional"), [k, A] = o(""), [j, M] = o(""), [N, P] = o("nova"), [F, ee] = o(""), I = s.trim() !== "" && d !== "" && p !== "", te = () => {
 		I && e.upsertDefinition({
 			name: s.trim(),
@@ -7868,7 +7944,7 @@ function zr({ orders: e, views: t }) {
 				children: [n.length === 0 && /* @__PURE__ */ l("li", {
 					className: "wr-roster-empty",
 					children: "No agent definitions"
-				}), n.map((e) => /* @__PURE__ */ l(Lr, { def: e }, e.name))]
+				}), n.map((e) => /* @__PURE__ */ l(zr, { def: e }, e.name))]
 			}),
 			/* @__PURE__ */ u("div", {
 				className: "wr-persona-gallery-wrap",
@@ -7881,7 +7957,7 @@ function zr({ orders: e, views: t }) {
 					children: [r.length === 0 && /* @__PURE__ */ l("li", {
 						className: "wr-roster-empty",
 						children: "No personas"
-					}), r.map((e) => /* @__PURE__ */ l(Rr, { persona: e }, e.name))]
+					}), r.map((e) => /* @__PURE__ */ l(Br, { persona: e }, e.name))]
 				})]
 			}),
 			/* @__PURE__ */ u("div", {
@@ -8027,7 +8103,7 @@ function zr({ orders: e, views: t }) {
 										placeholder: "code-review, security",
 										onChange: (e) => ee(e.target.value)
 									}),
-									/* @__PURE__ */ l(br, {
+									/* @__PURE__ */ l(xr, {
 										label: "Skills",
 										kinds: [
 											"Skill",
@@ -8035,7 +8111,7 @@ function zr({ orders: e, views: t }) {
 											"SkillArea",
 											"Capability"
 										],
-										onSelect: (e) => ee(jr(F, e.displayName || e.id))
+										onSelect: (e) => ee(Nr(F, e.displayName || e.id))
 									})
 								]
 							})
@@ -8188,7 +8264,7 @@ function zr({ orders: e, views: t }) {
 		]
 	});
 }
-function Br({ store: e, orders: t, views: r }) {
+function Hr({ store: e, orders: t, views: r }) {
 	let i = B(e, (e) => e.meta.foundryOpen), a = B(e, (e) => e.meta.foundryTab);
 	B(e, (e) => e.meta.tickIndex);
 	let [s, c] = o("commission");
@@ -8248,10 +8324,10 @@ function Br({ store: e, orders: t, views: r }) {
 						})
 					]
 				}),
-				s === "commission" ? /* @__PURE__ */ l(Nr, {
+				s === "commission" ? /* @__PURE__ */ l(Fr, {
 					store: e,
 					orders: t
-				}) : l(s === "stacks" ? Fr : zr, {
+				}) : l(s === "stacks" ? Lr : Vr, {
 					orders: t,
 					views: r
 				})
@@ -8261,10 +8337,10 @@ function Br({ store: e, orders: t, views: r }) {
 }
 //#endregion
 //#region src/game/ideView.ts
-function Vr(e) {
+function Ur(e) {
 	return e.replace(/[^a-zA-Z0-9]/g, "-");
 }
-function Hr(e, t) {
+function Wr(e, t) {
 	let n = Math.max(0, Math.min(e.length, t)), r = e.slice(0, n), i = r.lastIndexOf("\n") + 1, a = i === 0 ? 0 : r.split("\n").length - 1, o = e.indexOf("\n", n), s = o === -1 ? e.length : o;
 	return {
 		lineIndex: a,
@@ -8273,14 +8349,14 @@ function Hr(e, t) {
 		atLineEnd: n === s
 	};
 }
-function Ur(e, t, n) {
+function Gr(e, t, n) {
 	let r = Math.max(0, Math.min(e.length, t));
 	return {
 		text: e.slice(0, r) + n.text + e.slice(r),
 		caret: r + n.text.length
 	};
 }
-function Wr(e) {
+function Kr(e) {
 	return {
 		ghost: null,
 		cascade: e === null
@@ -8288,7 +8364,7 @@ function Wr(e) {
 }
 //#endregion
 //#region src/game/syntax.ts
-function Gr(e) {
+function qr(e) {
 	let t = e.lastIndexOf(".");
 	switch (t >= 0 ? e.slice(t + 1).toLowerCase() : "") {
 		case "ts":
@@ -8304,13 +8380,13 @@ function Gr(e) {
 		default: return "plain";
 	}
 }
-var Kr = "const|let|var|function|return|if|else|for|while|do|import|export|from|new|class|extends|implements|interface|type|enum|async|await|switch|case|break|continue|typeof|instanceof|in|of|this|null|undefined|true|false|throw|try|catch|finally|readonly|public|private|protected|static|void|never|unknown|number|string|boolean|default|as|satisfies|keyof|yield|delete|get|set", qr = {
+var Jr = "const|let|var|function|return|if|else|for|while|do|import|export|from|new|class|extends|implements|interface|type|enum|async|await|switch|case|break|continue|typeof|instanceof|in|of|this|null|undefined|true|false|throw|try|catch|finally|readonly|public|private|protected|static|void|never|unknown|number|string|boolean|default|as|satisfies|keyof|yield|delete|get|set", Yr = {
 	ts: {
 		re: new RegExp([
 			String.raw`(\/\/.*$|\/\*[\s\S]*?\*\/)`,
 			String.raw`('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|` + "`(?:[^`\\\\]|\\\\.)*`)",
 			String.raw`(\b\d(?:[\d_]*\.?[\d_]*)\b)`,
-			String.raw`(\b(?:${Kr})\b)`,
+			String.raw`(\b(?:${Jr})\b)`,
 			String.raw`(\b[A-Z][A-Za-z0-9_]*\b)`
 		].join("|"), "gm"),
 		classes: [
@@ -8326,7 +8402,7 @@ var Kr = "const|let|var|function|return|if|else|for|while|do|import|export|from|
 			String.raw`(\/\/.*$|\/\*[\s\S]*?\*\/)`,
 			String.raw`('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|` + "`(?:[^`\\\\]|\\\\.)*`)",
 			String.raw`(\b\d(?:[\d_]*\.?[\d_]*)\b)`,
-			String.raw`(\b(?:${Kr})\b)`,
+			String.raw`(\b(?:${Jr})\b)`,
 			String.raw`(\b[A-Z][A-Za-z0-9_]*\b)`
 		].join("|"), "gm"),
 		classes: [
@@ -8382,13 +8458,13 @@ var Kr = "const|let|var|function|return|if|else|for|while|do|import|export|from|
 		]
 	}
 };
-function Jr(e, t) {
+function Xr(e, t) {
 	if (e.length === 0) return [];
 	if (t === "plain") return [{
 		text: e,
 		cls: "plain"
 	}];
-	let n = qr[t], r = [], i = 0;
+	let n = Yr[t], r = [], i = 0;
 	for (n.re.lastIndex = 0;;) {
 		let t = n.re.exec(e);
 		if (t === null) break;
@@ -8413,8 +8489,8 @@ function Jr(e, t) {
 }
 //#endregion
 //#region src/components/panels/IdeOverlay.tsx
-var Yr = 400, Xr = 80;
-function Zr({ node: e, depth: t, changed: n, collapsed: r, onToggleDir: i, onOpenFile: a, activePath: o }) {
+var Zr = 400, Qr = 80;
+function $r({ node: e, depth: t, changed: n, collapsed: r, onToggleDir: i, onOpenFile: a, activePath: o }) {
 	let s = { paddingLeft: `${8 + t * 14}px` };
 	if (e.type === "dir") {
 		let d = !r.has(e.path);
@@ -8432,7 +8508,7 @@ function Zr({ node: e, depth: t, changed: n, collapsed: r, onToggleDir: i, onOpe
 				className: "wr-ide-entry-dirname",
 				children: [e.name, "/"]
 			})]
-		}), d && (e.children ?? []).map((e) => /* @__PURE__ */ l(Zr, {
+		}), d && (e.children ?? []).map((e) => /* @__PURE__ */ l($r, {
 			node: e,
 			depth: t + 1,
 			changed: n,
@@ -8457,7 +8533,7 @@ function Zr({ node: e, depth: t, changed: n, collapsed: r, onToggleDir: i, onOpe
 		})]
 	});
 }
-function Qr({ store: e, orders: t, views: r }) {
+function ei({ store: e, orders: t, views: r }) {
 	let i = B(e, (e) => e.meta.ideTaskId);
 	B(e, (e) => e.meta.tickIndex);
 	let [s, c] = o([]), [d, f] = o(null), [p, m] = o({}), [h, g] = o({}), [_, v] = o(/* @__PURE__ */ new Set()), [y, b] = o(null), [x, S] = o(0), [C, w] = o(""), T = a(null), E = a(null), D = a(null), O = a(null), k = a(null);
@@ -8469,7 +8545,7 @@ function Qr({ store: e, orders: t, views: r }) {
 		c([t.path]), f(t.path), m({ [t.path]: n }), w(n);
 	}, [i, r]);
 	let A = d === null ? "" : p[d] ?? "";
-	if (n(() => (E.current !== null && window.clearTimeout(E.current), E.current = window.setTimeout(() => w(A), Xr), () => {
+	if (n(() => (E.current !== null && window.clearTimeout(E.current), E.current = window.setTimeout(() => w(A), Qr), () => {
 		E.current !== null && window.clearTimeout(E.current);
 	}), [A]), n(() => {
 		k.current !== null && D.current !== null && (D.current.setSelectionRange(k.current, k.current), k.current = null);
@@ -8496,7 +8572,7 @@ function Qr({ store: e, orders: t, views: r }) {
 		});
 	}, I = (e, t, n) => {
 		T.current !== null && window.clearTimeout(T.current), T.current = window.setTimeout(() => {
-			let r = Hr(e, t);
+			let r = Wr(e, t);
 			if (!r.atLineEnd || r.lineText.trim() === "") return;
 			let i = He.suggestCompletion({
 				path: n,
@@ -8508,7 +8584,7 @@ function Qr({ store: e, orders: t, views: r }) {
 				lineIndex: r.lineIndex,
 				text: i
 			});
-		}, Yr);
+		}, Zr);
 	}, te = (e) => {
 		if (d === null) return;
 		let t = e.target.value, n = e.target.selectionStart;
@@ -8523,7 +8599,7 @@ function Qr({ store: e, orders: t, views: r }) {
 		if (d !== null) {
 			if (n.key === "Tab" && y !== null && y.path === d) {
 				n.preventDefault();
-				let e = Ur(p[d] ?? "", n.currentTarget.selectionStart, y);
+				let e = Gr(p[d] ?? "", n.currentTarget.selectionStart, y);
 				m((t) => ({
 					...t,
 					[d]: e.text
@@ -8535,7 +8611,7 @@ function Qr({ store: e, orders: t, views: r }) {
 			}
 			if (n.key === "Escape") {
 				n.preventDefault(), n.stopPropagation();
-				let t = Wr(y);
+				let t = Kr(y);
 				b(t.ghost), t.cascade && (P(d), e.getState().escape());
 				return;
 			}
@@ -8546,7 +8622,7 @@ function Qr({ store: e, orders: t, views: r }) {
 	}, re = (e) => {
 		let t = e.currentTarget, n = O.current;
 		n !== null && (n.style.transform = `translate(${-t.scrollLeft}px, ${-t.scrollTop}px)`);
-	}, R = d === null ? "plain" : Gr(d), ie = Hr(A, x).lineIndex, ae = C.split("\n"), oe = ae.length > 400, se = oe ? ae.slice(0, 400) : ae;
+	}, R = d === null ? "plain" : qr(d), ie = Wr(A, x).lineIndex, ae = C.split("\n"), oe = ae.length > 400, se = oe ? ae.slice(0, 400) : ae;
 	return /* @__PURE__ */ u("div", {
 		className: "wr-ide",
 		"data-testid": "ide-overlay",
@@ -8583,7 +8659,7 @@ function Qr({ store: e, orders: t, views: r }) {
 				children: [j === null && /* @__PURE__ */ l("div", {
 					className: "wr-ide-empty",
 					children: "the workspace shrine is dark"
-				}), j !== null && (j.children ?? []).map((e) => /* @__PURE__ */ l(Zr, {
+				}), j !== null && (j.children ?? []).map((e) => /* @__PURE__ */ l($r, {
 					node: e,
 					depth: 0,
 					changed: N,
@@ -8601,7 +8677,7 @@ function Qr({ store: e, orders: t, views: r }) {
 					className: "wr-ide-tabbar",
 					role: "tablist",
 					children: [s.map((e) => /* @__PURE__ */ u("span", {
-						"data-testid": `ide-tab-${Vr(e)}`,
+						"data-testid": `ide-tab-${Ur(e)}`,
 						role: "tab",
 						"aria-selected": e === d,
 						className: V("wr-ide-tab", e === d && "is-active", h[e] === !0 && "is-dirty"),
@@ -8654,7 +8730,7 @@ function Qr({ store: e, orders: t, views: r }) {
 							children: /* @__PURE__ */ u("code", { children: [se.map((e, t) => /* @__PURE__ */ u("div", {
 								className: V("wr-ide-line", t === ie && "is-lit"),
 								children: [
-									Jr(e, R).map((e, t) => e.cls === "plain" ? /* @__PURE__ */ l("span", { children: e.text }, t) : /* @__PURE__ */ l("span", {
+									Xr(e, R).map((e, t) => e.cls === "plain" ? /* @__PURE__ */ l("span", { children: e.text }, t) : /* @__PURE__ */ l("span", {
 										className: `tok-${e.cls}`,
 										children: e.text
 									}, t)),
@@ -8692,21 +8768,21 @@ function Qr({ store: e, orders: t, views: r }) {
 }
 //#endregion
 //#region src/game/memoryIO.ts
-function $r(e, t) {
+function ti(e, t) {
 	return e ?? t;
 }
-function ei(e, t) {
+function ni(e, t) {
 	return e.find((e) => e.name === t)?.recordIds[0] ?? null;
 }
-function ti(e, t = 8) {
+function ri(e, t = 8) {
 	let n = /* @__PURE__ */ new Set(), r = [];
 	for (let i of e) if (!n.has(i.recordId) && (n.add(i.recordId), r.push(i.recordId), r.length >= t)) break;
 	return r;
 }
-function ni(e, t = 8) {
+function ii(e, t = 8) {
 	return e.slice(0, t).map((e) => e.updateId);
 }
-function ri(e) {
+function ai(e) {
 	return e.reduce((e, t) => e + t.changes.length, 0);
 }
 //#endregion
@@ -8714,42 +8790,42 @@ function ri(e) {
 var G = {
 	width: 1200,
 	height: 760
-}, ii = 34, ai = 30, oi = 2.399963229728653;
-function si(e) {
+}, oi = 34, si = 30, ci = 2.399963229728653;
+function li(e) {
 	return e.replace(/:/g, "-");
 }
-var ci = [
+var ui = [
 	168,
 	352,
 	42,
 	75
 ];
-function li(e) {
+function di(e) {
 	let t = 0;
 	for (let n = 0; n < e.length; n += 1) t = t * 31 + e.charCodeAt(n) >>> 0;
-	return ci[t % ci.length] ?? 42;
+	return ui[t % ui.length] ?? 42;
 }
 function K(e) {
 	return Math.round(e * 100) / 100;
 }
-function ui(e, t) {
+function fi(e, t) {
 	let n = G.width / 2, r = G.height / 2, i = (e.x + t.x) / 2, a = (e.y + t.y) / 2, o = i + (n - i) * .22, s = a + (r - a) * .22;
 	return `M ${K(e.x)} ${K(e.y)} Q ${K(o)} ${K(s)} ${K(t.x)} ${K(t.y)}`;
 }
-function di(e) {
-	let t = e <= 1 ? 1 : e <= 4 ? 2 : Math.ceil(Math.sqrt(e)), n = Math.ceil(e / t), r = (G.width - ii * (t + 1)) / t, i = (G.height - ii * (n + 1)) / n, a = [];
+function pi(e) {
+	let t = e <= 1 ? 1 : e <= 4 ? 2 : Math.ceil(Math.sqrt(e)), n = Math.ceil(e / t), r = (G.width - oi * (t + 1)) / t, i = (G.height - oi * (n + 1)) / n, a = [];
 	for (let n = 0; n < e; n += 1) {
 		let e = n % t, o = Math.floor(n / t);
 		a.push({
-			x: ii + e * (r + ii),
-			y: ii + o * (i + ii),
+			x: oi + e * (r + oi),
+			y: oi + o * (i + oi),
 			width: r,
 			height: i
 		});
 	}
 	return a;
 }
-function fi(e, t = []) {
+function mi(e, t = []) {
 	let n = [...new Set(e.map((e) => e.nodeKind))].sort(), r = /* @__PURE__ */ new Map();
 	for (let e of t) for (let t of e.recordIds) r.has(t) || r.set(t, e.name);
 	let i = t.map((e) => e.name), a = e.filter((e) => !r.has(e.id));
@@ -8761,7 +8837,7 @@ function fi(e, t = []) {
 	}
 	let o = new Map(i.map((e) => [e, []])), s = [...e].sort((e, t) => e.id < t.id ? -1 : 1);
 	for (let e of s) o.get(r.get(e.id) ?? i[i.length - 1])?.push(e);
-	let c = di(i.length), l = [], u = /* @__PURE__ */ new Map(), d = [];
+	let c = pi(i.length), l = [], u = /* @__PURE__ */ new Map(), d = [];
 	i.forEach((e, t) => {
 		let n = c[t];
 		e !== "" && d.push({
@@ -8775,9 +8851,9 @@ function fi(e, t = []) {
 				height: K(n.height)
 			}
 		});
-		let r = o.get(e) ?? [], i = n.x + n.width / 2, a = n.y + (n.height + ai) / 2, s = Math.min(n.width, n.height - ai) / 2 - 26, f = Math.sqrt(Math.max(1, r.length));
+		let r = o.get(e) ?? [], i = n.x + n.width / 2, a = n.y + (n.height + si) / 2, s = Math.min(n.width, n.height - si) / 2 - 26, f = Math.sqrt(Math.max(1, r.length));
 		r.forEach((t, n) => {
-			let r = Math.sqrt(n + .55) / f * s, o = n * oi, c = {
+			let r = Math.sqrt(n + .55) / f * s, o = n * ci, c = {
 				id: t.id,
 				nodeKind: t.nodeKind,
 				silo: e,
@@ -8799,7 +8875,7 @@ function fi(e, t = []) {
 				edgeKind: r,
 				src: e.id,
 				dst: i.target,
-				d: ui(t, n)
+				d: fi(t, n)
 			});
 		}
 	}
@@ -8812,7 +8888,7 @@ function fi(e, t = []) {
 }
 //#endregion
 //#region src/components/panels/MemoryIOTab.tsx
-function pi({ beads: e }) {
+function hi({ beads: e }) {
 	if (e.length === 0) return null;
 	let t = e.length * 34 + 8;
 	return /* @__PURE__ */ u("svg", {
@@ -8853,18 +8929,18 @@ function pi({ beads: e }) {
 		}, e.key))]
 	});
 }
-function mi({ store: e, views: t, taskId: n, unitId: r }) {
-	let i = B(e, (e) => e.board.memory.silos), a = $r(n, r);
+function gi({ store: e, views: t, taskId: n, unitId: r }) {
+	let i = B(e, (e) => e.board.memory.silos), a = ti(n, r);
 	if (a === null) return /* @__PURE__ */ l("div", {
 		className: "wr-inspector-body wr-tab-empty",
 		children: "no memory traffic — nothing to inspect"
 	});
-	let o = t.getMemoryIO(a), s = new Map(o.read.map((e) => [e.recordId, e.kind])), d = ti(o.read).map((e) => ({
+	let o = t.getMemoryIO(a), s = new Map(o.read.map((e) => [e.recordId, e.kind])), d = ri(o.read).map((e) => ({
 		key: e,
-		hue: li(s.get(e) ?? "")
-	})), f = ni(o.written).map((e) => ({
+		hue: di(s.get(e) ?? "")
+	})), f = ii(o.written).map((e) => ({
 		key: e,
-		hue: li("proposal")
+		hue: di("proposal")
 	})), p = (t) => {
 		e.getState().openArchiveAt(t);
 	};
@@ -8878,7 +8954,7 @@ function mi({ store: e, views: t, taskId: n, unitId: r }) {
 					className: "wr-memio-cap",
 					children: "Read"
 				}),
-				/* @__PURE__ */ l(pi, { beads: d }),
+				/* @__PURE__ */ l(hi, { beads: d }),
 				o.read.length === 0 ? /* @__PURE__ */ l("div", {
 					className: "wr-tab-empty",
 					children: "no pieces obtained yet — the cogitator has not queried"
@@ -8901,7 +8977,7 @@ function mi({ store: e, views: t, taskId: n, unitId: r }) {
 							" ",
 							/* @__PURE__ */ l("span", {
 								className: "wr-memio-kind",
-								style: { "--mem-hue": String(li(e.kind)) },
+								style: { "--mem-hue": String(di(e.kind)) },
 								children: e.kind
 							}),
 							" ",
@@ -8926,13 +9002,13 @@ function mi({ store: e, views: t, taskId: n, unitId: r }) {
 					className: "wr-memio-cap",
 					children: "Written"
 				}),
-				/* @__PURE__ */ l(pi, { beads: f }),
+				/* @__PURE__ */ l(hi, { beads: f }),
 				o.written.length === 0 ? /* @__PURE__ */ l("div", {
 					className: "wr-tab-empty",
 					children: "no proposals inscribed yet — completion sends updates"
 				}) : /* @__PURE__ */ u(c, { children: [/* @__PURE__ */ u("div", {
 					className: "wr-memio-meta",
-					children: [ri(o.written), " proposed changes"]
+					children: [ai(o.written), " proposed changes"]
 				}), /* @__PURE__ */ l("ul", {
 					className: "wr-memio-list",
 					children: o.written.map((e, t) => /* @__PURE__ */ u("li", {
@@ -8940,9 +9016,9 @@ function mi({ store: e, views: t, taskId: n, unitId: r }) {
 						role: "button",
 						tabIndex: 0,
 						title: "open the target silo in the Archive",
-						onClick: () => p(ei(i, e.silo)),
+						onClick: () => p(ni(i, e.silo)),
 						onKeyDown: (t) => {
-							(t.key === "Enter" || t.key === " ") && p(ei(i, e.silo));
+							(t.key === "Enter" || t.key === " ") && p(ni(i, e.silo));
 						},
 						children: [
 							/* @__PURE__ */ l("span", {
@@ -8978,7 +9054,7 @@ function mi({ store: e, views: t, taskId: n, unitId: r }) {
 }
 //#endregion
 //#region src/components/panels/SessionsTab.tsx
-function hi({ session: e }) {
+function _i({ session: e }) {
 	return /* @__PURE__ */ u(c, { children: [
 		/* @__PURE__ */ l("span", {
 			className: V("wr-sess-role", `wr-sess-role--${e.role}`),
@@ -8995,19 +9071,19 @@ function hi({ session: e }) {
 		})
 	] });
 }
-function gi({ session: e }) {
+function vi({ session: e }) {
 	return /* @__PURE__ */ l("span", {
 		className: V("wr-sess-status", `wr-sess-status--${e.status}`),
 		children: e.status
 	});
 }
-function _i({ session: e }) {
-	return /* @__PURE__ */ u(c, { children: [/* @__PURE__ */ l(hi, { session: e }), /* @__PURE__ */ l(gi, { session: e })] });
+function yi({ session: e }) {
+	return /* @__PURE__ */ u(c, { children: [/* @__PURE__ */ l(_i, { session: e }), /* @__PURE__ */ l(vi, { session: e })] });
 }
-function vi(e) {
+function bi(e) {
 	return `T${_(e.startedTick)} → ${e.endedTick === null ? "now" : `T${_(e.endedTick)}`}`;
 }
-function yi({ node: e, views: t, onOpen: n }) {
+function xi({ node: e, views: t, onOpen: n }) {
 	let r = e.session, i = R({
 		entityId: r.sessionId,
 		kind: "unit",
@@ -9037,11 +9113,11 @@ function yi({ node: e, views: t, onOpen: n }) {
 					}),
 					/* @__PURE__ */ l("span", {
 						className: "wr-sess-chiprow wr-sess-chiprow--line",
-						children: /* @__PURE__ */ l(hi, { session: r })
+						children: /* @__PURE__ */ l(_i, { session: r })
 					}),
 					/* @__PURE__ */ u("span", {
 						className: "wr-sess-chiprow wr-sess-chiprow--line",
-						children: [/* @__PURE__ */ l(gi, { session: r }), a !== void 0 && /* @__PURE__ */ u("button", {
+						children: [/* @__PURE__ */ l(vi, { session: r }), a !== void 0 && /* @__PURE__ */ u("button", {
 							type: "button",
 							className: "wr-sess-reviewed",
 							title: `open the reviewed session — ${a.title}`,
@@ -9066,21 +9142,21 @@ function yi({ node: e, views: t, onOpen: n }) {
 					]
 				}), /* @__PURE__ */ l("span", {
 					className: "wr-sess-meta-line wr-sess-ticks",
-					children: vi(r)
+					children: bi(r)
 				})]
 			})
 		]
 	}), e.children.length > 0 && /* @__PURE__ */ l("div", {
 		className: "wr-sess-children",
-		children: e.children.map((e) => /* @__PURE__ */ l(yi, {
+		children: e.children.map((e) => /* @__PURE__ */ l(xi, {
 			node: e,
 			views: t,
 			onOpen: n
 		}, e.session.sessionId))
 	})] });
 }
-function bi({ sessions: e, views: n, onOpen: r }) {
-	let i = jn(e);
+function Si({ sessions: e, views: n, onOpen: r }) {
+	let i = Mn(e);
 	return i.length === 0 ? /* @__PURE__ */ l("div", {
 		className: "wr-inspector-body wr-tab-empty",
 		children: "no sessions yet — no agent has attended this card"
@@ -9091,7 +9167,7 @@ function bi({ sessions: e, views: n, onOpen: r }) {
 			children: i.map((e) => /* @__PURE__ */ u(t, { children: [/* @__PURE__ */ u("div", {
 				className: "wr-sess-divider",
 				children: ["ATTEMPT ", e.attempt]
-			}), e.rows.map((e) => /* @__PURE__ */ l(yi, {
+			}), e.rows.map((e) => /* @__PURE__ */ l(xi, {
 				node: e,
 				views: n,
 				onOpen: r
@@ -9099,7 +9175,7 @@ function bi({ sessions: e, views: n, onOpen: r }) {
 		})
 	});
 }
-function xi({ entry: e }) {
+function Ci({ entry: e }) {
 	switch (e.kind) {
 		case "thinking": return /* @__PURE__ */ u("li", {
 			className: "wr-tr wr-tr--thinking",
@@ -9114,7 +9190,7 @@ function xi({ entry: e }) {
 			children: [
 				/* @__PURE__ */ l("span", {
 					className: "wr-tr-tool-glyph",
-					dangerouslySetInnerHTML: { __html: Gi }
+					dangerouslySetInnerHTML: { __html: qi }
 				}),
 				/* @__PURE__ */ l("span", {
 					className: "wr-tr-tool-name",
@@ -9146,7 +9222,7 @@ function xi({ entry: e }) {
 		});
 	}
 }
-function Si({ sessionId: e, views: t, onOpen: r, onBack: i, hideParentLink: o = !1 }) {
+function wi({ sessionId: e, views: t, onOpen: r, onBack: i, hideParentLink: o = !1 }) {
 	let s = t.getSession(e), c = a(null), d = s?.transcript.length ?? 0, f = s?.record.status === "active";
 	if (n(() => {
 		let e = c.current;
@@ -9184,7 +9260,7 @@ function Si({ sessionId: e, views: t, onOpen: r, onBack: i, hideParentLink: o = 
 							children: p.title
 						}), /* @__PURE__ */ l("div", {
 							className: "wr-sess-chiprow",
-							children: /* @__PURE__ */ l(_i, { session: p })
+							children: /* @__PURE__ */ l(yi, { session: p })
 						})]
 					}),
 					/* @__PURE__ */ u("span", {
@@ -9198,7 +9274,7 @@ function Si({ sessionId: e, views: t, onOpen: r, onBack: i, hideParentLink: o = 
 							]
 						}), /* @__PURE__ */ l("span", {
 							className: "wr-sess-meta-line wr-sess-ticks",
-							children: vi(p)
+							children: bi(p)
 						})]
 					})
 				]
@@ -9235,41 +9311,41 @@ function Si({ sessionId: e, views: t, onOpen: r, onBack: i, hideParentLink: o = 
 				children: [s.transcript.length === 0 && /* @__PURE__ */ l("li", {
 					className: "wr-tr wr-tr--note",
 					children: "an empty ledger — the session logged nothing"
-				}), s.transcript.map((e) => /* @__PURE__ */ l(xi, { entry: e }, e.seq))]
+				}), s.transcript.map((e) => /* @__PURE__ */ l(Ci, { entry: e }, e.seq))]
 			})
 		]
 	});
 }
-function Ci({ views: e, taskId: t, childIds: r }) {
-	let [i, a] = o(Mn);
+function Ti({ views: e, taskId: t, childIds: r }) {
+	let [i, a] = o(Nn);
 	if (n(() => {
-		a(Mn);
+		a(Nn);
 	}, [t]), t === null) return /* @__PURE__ */ l("div", {
 		className: "wr-inspector-body wr-tab-empty",
 		children: "no card — sessions attach to cards"
 	});
-	let s = (e) => a(Nn(e));
-	return i.mode === "transcript" ? /* @__PURE__ */ l(Si, {
+	let s = (e) => a(Pn(e));
+	return i.mode === "transcript" ? /* @__PURE__ */ l(wi, {
 		sessionId: i.sessionId,
 		views: e,
 		onOpen: s,
-		onBack: () => a(Pn())
-	}) : /* @__PURE__ */ l(bi, {
-		sessions: An(e.listSessions(), t, r),
+		onBack: () => a(Fn())
+	}) : /* @__PURE__ */ l(Si, {
+		sessions: jn(e.listSessions(), t, r),
 		views: e,
 		onOpen: s
 	});
 }
 //#endregion
 //#region src/game/cogitatorShell.ts
-var wi = "the cogitator does not know this incantation";
-function Ti(e) {
+var Ei = "the cogitator does not know this incantation";
+function Di(e) {
 	return {
 		lines: e,
 		clear: !1
 	};
 }
-function Ei(e, t) {
+function Oi(e, t) {
 	let n = t.replace(/^\.?\/?/, "").replace(/\/+$/, "");
 	if (n === "" || n === ".") return e;
 	let r = e;
@@ -9280,10 +9356,10 @@ function Ei(e, t) {
 	}
 	return r;
 }
-function Di(e) {
+function ki(e) {
 	return e?.gitStatus.branch ?? "main";
 }
-function Oi() {
+function Ai() {
 	return [
 		"the cogitator answers these incantations:",
 		"  help            this litany",
@@ -9297,29 +9373,29 @@ function Oi() {
 		"  clear           wipe the slate"
 	];
 }
-function ki(e, t) {
+function ji(e, t) {
 	let n = e.getWorkspaceTree(e.taskId);
 	if (n === null) return ["ls: the workspace shrine is dark — no tree observed"];
-	let r = Ei(n, t);
+	let r = Oi(n, t);
 	if (r === null) return [`ls: no such gallery: ${t}`];
 	let i = r.children ?? [];
 	return i.length === 0 ? ["(an empty gallery)"] : i.map((e) => e.type === "dir" ? `${e.name}/` : e.name);
 }
-function Ai(e, t) {
+function Mi(e, t) {
 	if (t === "") return ["cat: name the scroll to recite"];
 	let n = e.getFileContent(e.taskId, t);
 	return n === null ? [`cat: the cogitator finds no scroll at ${t}`] : n.split("\n");
 }
-function ji(e) {
+function Ni(e) {
 	let t = e.getWorkspaceView(e.taskId);
 	if (t === null) return ["git status: no workspace consecrated for this card"];
-	let n = [`on branch ${Di(t)}`];
+	let n = [`on branch ${ki(t)}`];
 	if (t.files.length === 0) return n.push("the shrine is clean — nothing to commit"), n;
 	n.push("changes scribed on the workspace:");
 	for (let e of t.files) n.push(`  ${e.status}  ${e.path}`);
 	return n.push(`${t.files.length} file(s) changed`), n;
 }
-function Mi(e, t) {
+function Pi(e, t) {
 	let n = e.getWorkspaceView(e.taskId);
 	if (n === null) return ["git diff: no workspace consecrated for this card"];
 	let r = t === "" ? n.files : n.files.filter((e) => e.path === t);
@@ -9328,11 +9404,11 @@ function Mi(e, t) {
 	for (let e of r) i.push(`--- a/${e.path}`, `+++ b/${e.path}`, ...e.diff.split("\n"));
 	return i;
 }
-function Ni(e) {
+function Fi(e) {
 	let t = e.getGitLog(e.taskId);
 	return t.length === 0 ? ["the ledger is blank — no commits observed"] : t.map((e) => `${e.sha.slice(0, 7)}  ${e.message}  (tick ${e.tick})`);
 }
-function Pi(e) {
+function Ii(e) {
 	let t = e.getWorkspaceView(e.taskId)?.testEvidence ?? { status: "unknown" }, n = ["> invoking the trial rites…", "  [/] gears engage  [-] plates warm  [\\] runes settle"];
 	switch (t.status) {
 		case "passed":
@@ -9347,31 +9423,31 @@ function Pi(e) {
 	}
 	return n;
 }
-function Fi(e, t) {
+function Li(e, t) {
 	let n = e.trim();
-	if (n === "") return Ti([]);
+	if (n === "") return Di([]);
 	let [r = "", ...i] = n.split(/\s+/), a = i.join(" ");
 	switch (r) {
-		case "help": return Ti(Oi());
+		case "help": return Di(Ai());
 		case "pwd": {
 			let e = t.getWorkspaceView(t.taskId);
-			return Ti([`/workspaces/${t.workspaceId}/${Di(e)}`]);
+			return Di([`/workspaces/${t.workspaceId}/${ki(e)}`]);
 		}
-		case "ls": return Ti(ki(t, a));
-		case "cat": return Ti(Ai(t, a));
+		case "ls": return Di(ji(t, a));
+		case "cat": return Di(Mi(t, a));
 		case "git": {
 			let [e = "", ...n] = i;
-			return Ti(e === "status" ? ji(t) : e === "diff" ? Mi(t, n.join(" ")) : e === "log" ? Ni(t) : [`${wi}: git ${e}`.trimEnd()]);
+			return Di(e === "status" ? Ni(t) : e === "diff" ? Pi(t, n.join(" ")) : e === "log" ? Fi(t) : [`${Ei}: git ${e}`.trimEnd()]);
 		}
-		case "npm": return i[0] === "test" ? Ti(Pi(t)) : Ti([`${wi}: ${n}`]);
+		case "npm": return i[0] === "test" ? Di(Ii(t)) : Di([`${Ei}: ${n}`]);
 		case "clear": return {
 			lines: [],
 			clear: !0
 		};
-		default: return Ti([`${wi}: ${n}`]);
+		default: return Di([`${Ei}: ${n}`]);
 	}
 }
-function Ii(e, t, n) {
+function Ri(e, t, n) {
 	if (e.length === 0) return {
 		index: -1,
 		text: ""
@@ -9387,19 +9463,19 @@ function Ii(e, t, n) {
 }
 //#endregion
 //#region src/components/panels/TerminalTab.tsx
-var Li = ["AEGIS COGITATOR — remote shell consecrated", "speak `help` for the litany of incantations"];
-function Ri({ taskId: e, workspaceId: t, views: r }) {
-	let [i, s] = o(() => Li.map((e, t) => ({
+var zi = ["AEGIS COGITATOR — remote shell consecrated", "speak `help` for the litany of incantations"];
+function Bi({ taskId: e, workspaceId: t, views: r }) {
+	let [i, s] = o(() => zi.map((e, t) => ({
 		id: t,
 		kind: "out",
 		text: e
-	}))), [c, d] = o(""), [f, p] = o([]), [m, h] = o(-1), g = a(Li.length), _ = a(null), v = a(null);
+	}))), [c, d] = o(""), [f, p] = o([]), [m, h] = o(-1), g = a(zi.length), _ = a(null), v = a(null);
 	if (n(() => {
-		s(Li.map((e, t) => ({
+		s(zi.map((e, t) => ({
 			id: t,
 			kind: "out",
 			text: e
-		}))), d(""), p([]), h(-1), g.current = Li.length;
+		}))), d(""), p([]), h(-1), g.current = zi.length;
 	}, [e]), n(() => {
 		let e = _.current;
 		e !== null && (e.scrollTop = e.scrollHeight);
@@ -9408,7 +9484,7 @@ function Ri({ taskId: e, workspaceId: t, views: r }) {
 		children: "no workspace — the terminal has nothing to consecrate"
 	});
 	let y = `cogitator:${t || e}$`, b = () => {
-		let n = c, i = Fi(n, {
+		let n = c, i = Li(n, {
 			taskId: e,
 			workspaceId: t,
 			getWorkspaceTree: (e) => r.getWorkspaceTree(e),
@@ -9467,7 +9543,7 @@ function Ri({ taskId: e, workspaceId: t, views: r }) {
 						}
 						if (e.key === "ArrowUp" || e.key === "ArrowDown") {
 							e.preventDefault();
-							let t = Ii(f, m, e.key === "ArrowUp" ? -1 : 1);
+							let t = Ri(f, m, e.key === "ArrowUp" ? -1 : 1);
 							h(t.index), d(t.text);
 						}
 					}
@@ -9482,12 +9558,12 @@ function Ri({ taskId: e, workspaceId: t, views: r }) {
 }
 //#endregion
 //#region src/game/diff.ts
-function zi(e) {
+function Vi(e) {
 	return e.startsWith("+++") || e.startsWith("---") || e.startsWith("@@") || e.startsWith("diff ") ? "meta" : e.startsWith("+") ? "add" : e.startsWith("-") ? "del" : "context";
 }
-function Bi(e) {
+function Hi(e) {
 	return e.split("\n").filter((e) => e.length > 0).map((e) => {
-		let t = zi(e);
+		let t = Vi(e);
 		switch (t) {
 			case "add": return {
 				kind: t,
@@ -9514,10 +9590,10 @@ function Bi(e) {
 }
 //#endregion
 //#region src/components/panels/WorkspaceView.tsx
-function Vi(e) {
+function Ui(e) {
 	return e.slice(0, 8);
 }
-function Hi({ ws: e }) {
+function Wi({ ws: e }) {
 	let t = e.gitStatus;
 	return /* @__PURE__ */ u("div", {
 		className: "wr-ws-head",
@@ -9530,7 +9606,7 @@ function Hi({ ws: e }) {
 			/* @__PURE__ */ l("span", {
 				className: "wr-ws-sha",
 				title: t.headSha,
-				children: Vi(t.headSha)
+				children: Ui(t.headSha)
 			}),
 			(t.ahead !== void 0 || t.behind !== void 0) && /* @__PURE__ */ l("span", {
 				className: "wr-ws-aheadbehind",
@@ -9557,12 +9633,12 @@ function Hi({ ws: e }) {
 		]
 	});
 }
-function Ui({ diff: e }) {
+function Gi({ diff: e }) {
 	return /* @__PURE__ */ l("div", {
 		className: "wr-diff-plate",
 		children: /* @__PURE__ */ l("div", {
 			className: "wr-diff-scroll",
-			children: Bi(e).map((e, t) => /* @__PURE__ */ u("div", {
+			children: Hi(e).map((e, t) => /* @__PURE__ */ u("div", {
 				className: V("wr-diff-row", e.kind === "add" && "wr-diff-add", e.kind === "del" && "wr-diff-del", e.kind === "meta" && "wr-diff-meta"),
 				children: [
 					/* @__PURE__ */ l("span", {
@@ -9583,7 +9659,7 @@ function Ui({ diff: e }) {
 		})
 	});
 }
-function Wi({ files: e, openIndex: t, onToggle: n }) {
+function Ki({ files: e, openIndex: t, onToggle: n }) {
 	return e.length === 0 ? /* @__PURE__ */ l("div", {
 		className: "wr-ws-empty",
 		children: "no workspace changes yet"
@@ -9617,13 +9693,13 @@ function Wi({ files: e, openIndex: t, onToggle: n }) {
 						})]
 					})
 				]
-			}), t === r && /* @__PURE__ */ l(Ui, { diff: e.diff })]
+			}), t === r && /* @__PURE__ */ l(Gi, { diff: e.diff })]
 		}, e.path))
 	});
 }
 //#endregion
 //#region src/components/panels/Inspector.tsx
-var Gi = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 16 16\" width=\"100%\" height=\"100%\" aria-hidden=\"true\"><path d=\"M8 5.2 A2.8 2.8 0 1 0 8 10.8 A2.8 2.8 0 1 0 8 5.2 Z M8 1.5 V3.5 M8 12.5 V14.5 M1.5 8 H3.5 M12.5 8 H14.5 M3.4 3.4 L4.8 4.8 M11.2 11.2 L12.6 12.6 M12.6 3.4 L11.2 4.8 M4.8 11.2 L3.4 12.6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.4\" stroke-linecap=\"round\"/></svg>", Ki = 28, qi = [
+var qi = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 16 16\" width=\"100%\" height=\"100%\" aria-hidden=\"true\"><path d=\"M8 5.2 A2.8 2.8 0 1 0 8 10.8 A2.8 2.8 0 1 0 8 5.2 Z M8 1.5 V3.5 M8 12.5 V14.5 M1.5 8 H3.5 M12.5 8 H14.5 M3.4 3.4 L4.8 4.8 M11.2 11.2 L12.6 12.6 M12.6 3.4 L11.2 4.8 M4.8 11.2 L3.4 12.6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.4\" stroke-linecap=\"round\"/></svg>", Ji = 28, Yi = [
 	{
 		id: "transcript",
 		label: "Transcript"
@@ -9649,7 +9725,7 @@ var Gi = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 16 16\" width=
 		label: "Terminal"
 	}
 ];
-function Ji({ entry: e, live: t }) {
+function Xi({ entry: e, live: t }) {
 	switch (e.kind) {
 		case "turn": return /* @__PURE__ */ l("li", {
 			className: "wr-tr wr-tr--turn",
@@ -9660,7 +9736,7 @@ function Ji({ entry: e, live: t }) {
 			children: [
 				/* @__PURE__ */ l("span", {
 					className: "wr-tr-tool-glyph",
-					dangerouslySetInnerHTML: { __html: Gi }
+					dangerouslySetInnerHTML: { __html: qi }
 				}),
 				/* @__PURE__ */ l("span", {
 					className: "wr-tr-tool-name",
@@ -9692,7 +9768,7 @@ function Ji({ entry: e, live: t }) {
 		});
 	}
 }
-function Yi({ resolved: e }) {
+function Zi({ resolved: e }) {
 	let t = me({
 		id: e.optionId,
 		caption: e.caption,
@@ -9716,7 +9792,7 @@ function Yi({ resolved: e }) {
 		})]
 	});
 }
-function Xi({ unit: e, inquiries: t, resolved: r, onChoose: i }) {
+function Qi({ unit: e, inquiries: t, resolved: r, onChoose: i }) {
 	let s = a(null), c = a(!0), [d, f] = o(!0), p = e.transcript.length + t.length + r.length;
 	n(() => {
 		c.current = !0, f(!0);
@@ -9731,7 +9807,7 @@ function Xi({ unit: e, inquiries: t, resolved: r, onChoose: i }) {
 			ref: s,
 			className: "wr-inspector-stream",
 			onScroll: (e) => {
-				let t = e.currentTarget, n = t.scrollHeight - t.scrollTop - t.clientHeight < Ki;
+				let t = e.currentTarget, n = t.scrollHeight - t.scrollTop - t.clientHeight < Ji;
 				c.current !== n && (c.current = n, f(n));
 			},
 			children: [
@@ -9739,17 +9815,17 @@ function Xi({ unit: e, inquiries: t, resolved: r, onChoose: i }) {
 					className: "wr-tr wr-tr--note",
 					children: "no transcript yet — unit has not run"
 				}),
-				e.transcript.map((t) => /* @__PURE__ */ l(Ji, {
+				e.transcript.map((t) => /* @__PURE__ */ l(Xi, {
 					entry: t,
 					live: t === m && e.view.state === "thinking"
 				}, t.id)),
-				r.map((e) => /* @__PURE__ */ l(Yi, { resolved: e }, `res-${e.hookRequestId}`)),
+				r.map((e) => /* @__PURE__ */ l(Zi, { resolved: e }, `res-${e.hookRequestId}`)),
 				t.map((e) => /* @__PURE__ */ u("li", {
 					className: "wr-tr wr-tr--inquiry",
 					children: [/* @__PURE__ */ l("div", {
 						className: "wr-inq-question",
 						children: e.question
-					}), /* @__PURE__ */ l(xn, {
+					}), /* @__PURE__ */ l(Sn, {
 						inquiry: e,
 						withTestIds: !1,
 						onChoose: (t) => i(e, t.id, t.caption, t.tone)
@@ -9767,7 +9843,7 @@ function Xi({ unit: e, inquiries: t, resolved: r, onChoose: i }) {
 		})]
 	});
 }
-function Zi({ observation: e, simStartMs: t }) {
+function $i({ observation: e, simStartMs: t }) {
 	let r = a(null), i = a(!0), [s, c] = o(!0);
 	if (n(() => {
 		let e = r.current;
@@ -9777,7 +9853,7 @@ function Zi({ observation: e, simStartMs: t }) {
 		children: "no run observed — the card has not started work"
 	});
 	let d = (e) => {
-		let t = e.currentTarget, n = t.scrollHeight - t.scrollTop - t.clientHeight < Ki;
+		let t = e.currentTarget, n = t.scrollHeight - t.scrollTop - t.clientHeight < Ji;
 		i.current !== n && (i.current = n, c(n));
 	}, f = Object.entries(e.pendingEffectsByKind).sort(([e], [t]) => e.localeCompare(t));
 	return /* @__PURE__ */ u("div", {
@@ -9858,16 +9934,16 @@ function Zi({ observation: e, simStartMs: t }) {
 		]
 	});
 }
-function Qi({ taskId: e, views: t }) {
+function ea({ taskId: e, views: t }) {
 	let [n, r] = o(null), i = e === null ? null : t.getWorkspaceView(e);
 	return i === null ? /* @__PURE__ */ l("div", {
 		className: "wr-inspector-body wr-tab-empty",
 		children: "no workspace — the card has no working copy"
 	}) : /* @__PURE__ */ u("div", {
 		className: "wr-inspector-body wr-workspace",
-		children: [/* @__PURE__ */ l(Hi, { ws: i }), /* @__PURE__ */ l("div", {
+		children: [/* @__PURE__ */ l(Wi, { ws: i }), /* @__PURE__ */ l("div", {
 			className: "wr-workspace-scroll",
-			children: /* @__PURE__ */ l(Wi, {
+			children: /* @__PURE__ */ l(Ki, {
 				files: i.files,
 				openIndex: n,
 				onToggle: (e) => r((t) => t === e ? null : e)
@@ -9875,7 +9951,7 @@ function Qi({ taskId: e, views: t }) {
 		})]
 	});
 }
-function $i({ unit: e }) {
+function ta({ unit: e }) {
 	let t = e.view.tokenUsage;
 	return /* @__PURE__ */ u("footer", {
 		className: "wr-inspector-foot",
@@ -9904,7 +9980,7 @@ function $i({ unit: e }) {
 		]
 	});
 }
-function ea({ store: e, orders: t, views: n }) {
+function na({ store: e, orders: t, views: n }) {
 	let r = B(e, (e) => e.meta.inspectorUnitId), i = B(e, (e) => e.meta.inspectorTaskId), a = B(e, (e) => e.meta.inspectorTab), o = B(e, (e) => e.world.units), s = B(e, (e) => e.board), d = B(e, (e) => e.meta.simStartMs);
 	B(e, (e) => e.meta.tickIndex);
 	let f = r === null ? void 0 : o[r];
@@ -9993,7 +10069,7 @@ function ea({ store: e, orders: t, views: n }) {
 			/* @__PURE__ */ l("nav", {
 				className: "wr-inspector-tabs",
 				"aria-label": "Inspector tabs",
-				children: qi.map(({ id: t, label: n }) => /* @__PURE__ */ l("button", {
+				children: Yi.map(({ id: t, label: n }) => /* @__PURE__ */ l("button", {
 					type: "button",
 					"data-testid": `inspector-tab-${t}`,
 					className: V("wr-inspector-tab", a === t && "is-active"),
@@ -10004,7 +10080,7 @@ function ea({ store: e, orders: t, views: n }) {
 			a === "transcript" && (f === void 0 ? /* @__PURE__ */ l("div", {
 				className: "wr-inspector-body wr-tab-empty",
 				children: "no attending agent — no transcript"
-			}) : /* @__PURE__ */ l(Xi, {
+			}) : /* @__PURE__ */ l(Qi, {
 				unit: f,
 				inquiries: _,
 				resolved: v,
@@ -10020,49 +10096,49 @@ function ea({ store: e, orders: t, views: n }) {
 					}), t.answerInquiry(n.hookRequestId, r);
 				}
 			})),
-			a === "sessions" && /* @__PURE__ */ l(Ci, {
+			a === "sessions" && /* @__PURE__ */ l(Ti, {
 				views: n,
 				taskId: p,
 				childIds: m?.view.childIds ?? []
 			}),
-			a === "process" && /* @__PURE__ */ l(Zi, {
+			a === "process" && /* @__PURE__ */ l($i, {
 				observation: h,
 				simStartMs: d
 			}),
-			a === "workspace" && /* @__PURE__ */ l(Qi, {
+			a === "workspace" && /* @__PURE__ */ l(ea, {
 				taskId: p,
 				views: n
 			}),
-			a === "memory" && /* @__PURE__ */ l(mi, {
+			a === "memory" && /* @__PURE__ */ l(gi, {
 				store: e,
 				views: n,
 				taskId: p,
 				unitId: f?.id ?? null
 			}),
-			a === "terminal" && /* @__PURE__ */ l(Ri, {
+			a === "terminal" && /* @__PURE__ */ l(Bi, {
 				taskId: p,
 				workspaceId: m?.view.workspaceId ?? f?.view.workspaceId ?? "",
 				views: n
 			}),
-			f !== void 0 && /* @__PURE__ */ l($i, { unit: f })
+			f !== void 0 && /* @__PURE__ */ l(ta, { unit: f })
 		]
 	});
 }
 //#endregion
 //#region src/game/archiveView.ts
-var ta = .5, na = 2.5, ra = {
+var ra = .5, ia = 2.5, aa = {
 	k: 1,
 	tx: 0,
 	ty: 0
 };
-function ia(e) {
-	return Math.min(na, Math.max(ta, e));
+function oa(e) {
+	return Math.min(ia, Math.max(ra, e));
 }
-function aa(e) {
+function sa(e) {
 	return 1.25 ** (-e / 120);
 }
-function oa(e, t, n) {
-	let r = ia(e.k * t);
+function ca(e, t, n) {
+	let r = oa(e.k * t);
 	if (r === e.k) return e;
 	let i = r / e.k;
 	return {
@@ -10071,16 +10147,16 @@ function oa(e, t, n) {
 		ty: n.y - (n.y - e.ty) * i
 	};
 }
-function sa(e, t, n, r) {
+function la(e, t, n, r) {
 	if (e.k <= 1) return e;
-	let i = (t.minX + t.maxX) / 2, a = (t.minY + t.maxY) / 2, o = e.tx + e.k * i, s = e.ty + e.k * a, c = Math.min(1, (e.k - 1) / (na - 1)), l = n * .35 * c, u = r * .35 * c, d = Math.min(n - l, Math.max(l, o)), f = Math.min(r - u, Math.max(u, s));
+	let i = (t.minX + t.maxX) / 2, a = (t.minY + t.maxY) / 2, o = e.tx + e.k * i, s = e.ty + e.k * a, c = Math.min(1, (e.k - 1) / (ia - 1)), l = n * .35 * c, u = r * .35 * c, d = Math.min(n - l, Math.max(l, o)), f = Math.min(r - u, Math.max(u, s));
 	return d === o && f === s ? e : {
 		k: e.k,
 		tx: e.tx + (d - o),
 		ty: e.ty + (f - s)
 	};
 }
-function ca(e, t, n = 120) {
+function ua(e, t, n = 120) {
 	if (t.length === 0) return e;
 	let r = t[0], i = Math.hypot(r.x - e.x, r.y - e.y);
 	for (let n = 1; n < t.length; n += 1) {
@@ -10094,14 +10170,14 @@ function ca(e, t, n = 120) {
 		y: e.y + (r.y - e.y) * a
 	};
 }
-function la(e, t, n) {
+function da(e, t, n) {
 	return t === 0 && n === 0 ? e : {
 		k: e.k,
 		tx: e.tx + t,
 		ty: e.ty + n
 	};
 }
-function ua(e, t, n, r, i) {
+function fa(e, t, n, r, i) {
 	let a = Math.min(e.width / r, e.height / i) || 1, o = (e.width - r * a) / 2, s = (e.height - i * a) / 2;
 	return {
 		x: (t - e.left - o) / a,
@@ -10109,27 +10185,27 @@ function ua(e, t, n, r, i) {
 		scale: a
 	};
 }
-function da(e) {
+function pa(e) {
 	return e.toLowerCase().replace(/:/g, "-");
 }
-function fa(e, t) {
-	let n = da(t.trim()), r = /* @__PURE__ */ new Set();
+function ma(e, t) {
+	let n = pa(t.trim()), r = /* @__PURE__ */ new Set();
 	if (n.length === 0) return r;
-	for (let t of e) (da(t.id).includes(n) || da(t.attributes.title).includes(n)) && r.add(t.id);
+	for (let t of e) (pa(t.id).includes(n) || pa(t.attributes.title).includes(n)) && r.add(t.id);
 	return r;
 }
-function pa(e, t, n, r, i, a = 32) {
+function ha(e, t, n, r, i, a = 32) {
 	let o = e.tx + e.k * t, s = e.ty + e.k * n;
 	return o >= -a && o <= r + a && s >= -a && s <= i + a;
 }
-function ma(e, t, n, r, i, a, o = !0, s = !0) {
+function ga(e, t, n, r, i, a, o = !0, s = !0) {
 	for (let e of a) if (e !== null && (r === e || i === e)) return !0;
 	return !(t !== n || e > 1 && !o && !s);
 }
 //#endregion
 //#region src/components/panels/MemoryOverlay.tsx
-function ha({ store: e }) {
-	let t = B(e, (e) => e.meta.archiveOpen), r = B(e, (e) => e.meta.archiveFocusId), s = B(e, (e) => e.board.memory), c = B(e, (e) => e.board.agents), d = B(e, (e) => e.selection.ids), f = B(e, (e) => e.meta.memoryPulses), p = B(e, (e) => e.board.heldByCard), [m, h] = o(null), [g, _] = o(null), [v, y] = o(null), [b, x] = o(ra), [S, C] = o(""), w = a(null), T = a(null), E = i(() => fi(s.records, s.silos), [s.records, s.silos]), D = i(() => {
+function _a({ store: e }) {
+	let t = B(e, (e) => e.meta.archiveOpen), r = B(e, (e) => e.meta.archiveFocusId), s = B(e, (e) => e.board.memory), c = B(e, (e) => e.board.agents), d = B(e, (e) => e.selection.ids), f = B(e, (e) => e.meta.memoryPulses), p = B(e, (e) => e.board.heldByCard), [m, h] = o(null), [g, _] = o(null), [v, y] = o(null), [b, x] = o(aa), [S, C] = o(""), w = a(null), T = a(null), E = i(() => mi(s.records, s.silos), [s.records, s.silos]), D = i(() => {
 		let e = /* @__PURE__ */ new Map();
 		for (let t of E.nodes) {
 			let n = e.get(t.silo) ?? {
@@ -10160,19 +10236,19 @@ function ha({ store: e }) {
 		};
 	}, [E.nodes]);
 	if (n(() => {
-		t && (x(ra), C(""), _(r));
+		t && (x(aa), C(""), _(r));
 	}, [t, r]), n(() => {
 		let e = w.current;
 		if (!t || e === null) return;
 		let n = (t) => {
 			t.preventDefault();
-			let n = ua(e.getBoundingClientRect(), t.clientX, t.clientY, G.width, G.height), r = aa(t.deltaY);
+			let n = fa(e.getBoundingClientRect(), t.clientX, t.clientY, G.width, G.height), r = sa(t.deltaY);
 			x((e) => {
-				let t = r > 1 ? ca(n, D.map((t) => ({
+				let t = r > 1 ? ua(n, D.map((t) => ({
 					x: e.tx + e.k * t.x,
 					y: e.ty + e.k * t.y
-				}))) : n, i = oa(e, r, t);
-				return t === n ? sa(i, O, G.width, G.height) : i;
+				}))) : n, i = ca(e, r, t);
+				return t === n ? la(i, O, G.width, G.height) : i;
 			});
 		};
 		return e.addEventListener("wheel", n, { passive: !1 }), () => e.removeEventListener("wheel", n);
@@ -10184,7 +10260,7 @@ function ha({ store: e }) {
 	let k = new Map(s.records.map((e) => [e.id, e])), A = g === null ? void 0 : k.get(g), j = new Map(E.nodes.map((e) => [e.id, e.silo])), M = new Map(E.nodes.map((e) => [e.id, {
 		x: e.x,
 		y: e.y
-	}])), N = new Map(E.nodes.map((e) => [e.id, pa(b, e.x, e.y, G.width, G.height)])), P = 1 / Math.max(1, b.k), F = fa(s.records, S), ee = S.trim().length > 0, I = /* @__PURE__ */ new Set(), te = !1;
+	}])), N = new Map(E.nodes.map((e) => [e.id, ha(b, e.x, e.y, G.width, G.height)])), P = 1 / Math.max(1, b.k), F = ma(s.records, S), ee = S.trim().length > 0, I = /* @__PURE__ */ new Set(), te = !1;
 	for (let e of d) {
 		let t = c[e];
 		if (t !== void 0) {
@@ -10206,8 +10282,8 @@ function ha({ store: e }) {
 	}, R = (e) => {
 		let t = T.current, n = w.current;
 		if (t === null || n === null || t.pointerId !== e.pointerId) return;
-		let { scale: r } = ua(n.getBoundingClientRect(), e.clientX, e.clientY, G.width, G.height), i = (e.clientX - t.lastX) / r, a = (e.clientY - t.lastY) / r;
-		t.lastX = e.clientX, t.lastY = e.clientY, x((e) => la(e, i, a));
+		let { scale: r } = fa(n.getBoundingClientRect(), e.clientX, e.clientY, G.width, G.height), i = (e.clientX - t.lastX) / r, a = (e.clientY - t.lastY) / r;
+		t.lastX = e.clientX, t.lastY = e.clientY, x((e) => da(e, i, a));
 	}, ie = () => {
 		T.current = null;
 	};
@@ -10251,7 +10327,7 @@ function ha({ store: e }) {
 							type: "button",
 							"data-testid": `memory-filter-${e}`,
 							className: V("wr-mem-chip", m === e && "is-active"),
-							style: { "--mem-hue": String(li(e)) },
+							style: { "--mem-hue": String(di(e)) },
 							onClick: () => h(m === e ? null : e),
 							children: e
 						}, e))]
@@ -10259,7 +10335,7 @@ function ha({ store: e }) {
 					/* @__PURE__ */ l("button", {
 						type: "button",
 						className: "wr-mem-chip wr-mem-reset",
-						onClick: () => x(ra),
+						onClick: () => x(aa),
 						children: "RESET VIEW"
 					}),
 					/* @__PURE__ */ l("button", {
@@ -10359,7 +10435,7 @@ function ha({ store: e }) {
 									className: "wr-mem-edges",
 									children: E.edges.map((e) => {
 										let t = v ?? g;
-										if (!ma(b.k, j.get(e.src) ?? "", j.get(e.dst) ?? "", e.src, e.dst, [v, g], N.get(e.src) ?? !0, N.get(e.dst) ?? !0)) return null;
+										if (!ga(b.k, j.get(e.src) ?? "", j.get(e.dst) ?? "", e.src, e.dst, [v, g], N.get(e.src) ?? !0, N.get(e.dst) ?? !0)) return null;
 										if (t !== null && (e.src === t || e.dst === t) && t !== null) {
 											let n = M.get(t), r = M.get(e.src === t ? e.dst : e.src), i = `memg-${e.key.replace(/[^a-zA-Z0-9_-]/g, "-")}`;
 											return /* @__PURE__ */ u("g", { children: [n !== void 0 && r !== void 0 && /* @__PURE__ */ l("defs", { children: /* @__PURE__ */ u("linearGradient", {
@@ -10406,10 +10482,10 @@ function ha({ store: e }) {
 										if (m !== null && e.nodeKind !== m) return null;
 										let t = I.has(e.id), n = ne.has(e.id), r = ee && F.has(e.id), i = b.k >= 1 || v === e.id || g === e.id;
 										return /* @__PURE__ */ u("g", {
-											"data-testid": `memory-node-${si(e.id)}`,
+											"data-testid": `memory-node-${li(e.id)}`,
 											className: V("wr-mem-node", t && "is-held", te && I.size > 0 && !t && "is-dimmed", n && "is-pulsing", g === e.id && "is-focused", r && "is-match", ee && !r && "is-filtered"),
 											transform: `translate(${e.x} ${e.y})`,
-											style: { "--mem-hue": String(li(e.nodeKind)) },
+											style: { "--mem-hue": String(di(e.nodeKind)) },
 											onClick: (t) => {
 												t.stopPropagation(), _(e.id === g ? null : e.id);
 											},
@@ -10485,13 +10561,13 @@ function ha({ store: e }) {
 }
 //#endregion
 //#region src/game/registry.ts
-var ga = [
+var va = [
 	"stacks",
 	"agents",
 	"tasks",
 	"workspaces"
 ];
-function _a(e = "stacks") {
+function ya(e = "stacks") {
 	return {
 		current: {
 			tab: e,
@@ -10500,7 +10576,7 @@ function _a(e = "stacks") {
 		trail: []
 	};
 }
-function va(e) {
+function ba(e) {
 	return {
 		current: {
 			tab: "stacks",
@@ -10512,10 +10588,10 @@ function va(e) {
 		}]
 	};
 }
-function ya(e, t) {
-	return e.current.tab === t && e.current.detailId === null && e.trail.length === 0 ? e : _a(t);
+function xa(e, t) {
+	return e.current.tab === t && e.current.detailId === null && e.trail.length === 0 ? e : ya(t);
 }
-function ba(e, t, n) {
+function Sa(e, t, n) {
 	return e.current.tab === t && e.current.detailId === n ? e : {
 		current: {
 			tab: t,
@@ -10524,45 +10600,45 @@ function ba(e, t, n) {
 		trail: [...e.trail, e.current]
 	};
 }
-function xa(e) {
+function Ca(e) {
 	let t = e.trail[e.trail.length - 1];
-	return t === void 0 ? e.current.detailId === null ? e : _a(e.current.tab) : {
+	return t === void 0 ? e.current.detailId === null ? e : ya(e.current.tab) : {
 		current: t,
 		trail: e.trail.slice(0, -1)
 	};
 }
-function Sa(e) {
+function wa(e) {
 	return e.trail.length > 0 || e.current.detailId !== null;
 }
-function Ca(e, t = 96) {
+function Ta(e, t = 96) {
 	let n = e.stack.spec.prompt.system.trim().replace(/\s+/g, " ");
 	return n.length <= t ? n : `${n.slice(0, t).trimEnd()}…`;
 }
-function wa(e, t) {
+function Ea(e, t) {
 	return e.filter((e) => e.stackRef === t);
 }
-function Ta(e, t) {
+function Da(e, t) {
 	return e.find((e) => e.stackRef === t);
 }
-function Ea(e) {
+function Oa(e) {
 	let t = e.tokenUsage;
 	return t.inputTokens + t.outputTokens + t.thinkingTokens;
 }
 //#endregion
 //#region src/components/panels/RegistryOverlay.tsx
-var Da = {
+var ka = {
 	stacks: "Stacks",
 	agents: "Agents",
 	tasks: "Tasks",
 	workspaces: "Workspaces"
 };
-function Oa(e, t) {
+function Aa(e, t) {
 	return e.find((e) => e.taskId === t)?.title ?? t;
 }
-function ka(e) {
+function ja(e) {
 	return e.slice(0, 8);
 }
-function Aa({ stack: e }) {
+function Ma({ stack: e }) {
 	let t = e.stack.spec;
 	return /* @__PURE__ */ u(c, { children: [
 		/* @__PURE__ */ l("span", {
@@ -10589,7 +10665,7 @@ function Aa({ stack: e }) {
 		})
 	] });
 }
-function ja({ views: e, nav: t }) {
+function Na({ views: e, nav: t }) {
 	let n = e.listStacks();
 	return /* @__PURE__ */ u("ul", {
 		className: "wr-reg-table",
@@ -10678,15 +10754,15 @@ function ja({ views: e, nav: t }) {
 					/* @__PURE__ */ l("span", {
 						className: "wr-reg-excerpt",
 						title: "personality (prompt.system)",
-						children: Ca(e)
+						children: Ta(e)
 					})
 				]
 			}, e.stackRef);
 		})]
 	});
 }
-function Ma({ stackRef: e, store: t, views: n, nav: r }) {
-	let i = Ta(n.listStacks(), e);
+function Pa({ stackRef: e, store: t, views: n, nav: r }) {
+	let i = Da(n.listStacks(), e);
 	if (i === void 0) return /* @__PURE__ */ u("div", {
 		className: "wr-tab-empty",
 		children: [
@@ -10695,7 +10771,7 @@ function Ma({ stackRef: e, store: t, views: n, nav: r }) {
 			"”"
 		]
 	});
-	let a = wa(n.listSessions(), e), o = i.stack.spec.prompt;
+	let a = Ea(n.listSessions(), e), o = i.stack.spec.prompt;
 	return /* @__PURE__ */ u("div", {
 		className: "wr-reg-detail",
 		"data-testid": "registry-stack-detail",
@@ -10709,7 +10785,7 @@ function Ma({ stackRef: e, store: t, views: n, nav: r }) {
 					}),
 					/* @__PURE__ */ l("span", {
 						className: "wr-reg-chiprow",
-						children: /* @__PURE__ */ l(Aa, { stack: i })
+						children: /* @__PURE__ */ l(Ma, { stack: i })
 					}),
 					/* @__PURE__ */ l("button", {
 						type: "button",
@@ -10784,7 +10860,7 @@ function Ma({ stackRef: e, store: t, views: n, nav: r }) {
 		]
 	});
 }
-function Na({ views: e, cards: t, nav: n }) {
+function Fa({ views: e, cards: t, nav: n }) {
 	let r = e.listSessions();
 	return r.length === 0 ? /* @__PURE__ */ l("div", {
 		className: "wr-tab-empty",
@@ -10837,7 +10913,7 @@ function Na({ views: e, cards: t, nav: n }) {
 						onClick: (t) => {
 							t.stopPropagation(), n.openDetail("tasks", e.taskId);
 						},
-						children: Oa(t, e.taskId)
+						children: Aa(t, e.taskId)
 					}),
 					/* @__PURE__ */ l("span", {
 						className: V("wr-sess-status", `wr-sess-status--${e.status}`),
@@ -10848,7 +10924,7 @@ function Na({ views: e, cards: t, nav: n }) {
 						children: [
 							_(e.turnCount),
 							" turns · ",
-							_(Ea(e)),
+							_(Oa(e)),
 							" tok ·",
 							" ",
 							v(e.cost.totalUsd)
@@ -10859,7 +10935,7 @@ function Na({ views: e, cards: t, nav: n }) {
 		})
 	});
 }
-function Pa({ session: e, cards: t, views: n, nav: r }) {
+function Ia({ session: e, cards: t, views: n, nav: r }) {
 	let i = t.find((t) => t.taskId === e.taskId), a = e.parentSessionId === null ? void 0 : n.getSession(e.parentSessionId)?.record, o = e.reviewOfSessionId === null ? void 0 : n.getSession(e.reviewOfSessionId)?.record;
 	return /* @__PURE__ */ u("div", {
 		className: "wr-reg-chiprow wr-reg-linkrow",
@@ -10876,7 +10952,7 @@ function Pa({ session: e, cards: t, views: n, nav: r }) {
 				className: "wr-reg-link",
 				title: "open the attended task",
 				onClick: () => r.openDetail("tasks", e.taskId),
-				children: ["task ⟶ ", Oa(t, e.taskId)]
+				children: ["task ⟶ ", Aa(t, e.taskId)]
 			}),
 			e.runId !== null && /* @__PURE__ */ u("button", {
 				type: "button",
@@ -10909,17 +10985,17 @@ function Pa({ session: e, cards: t, views: n, nav: r }) {
 		]
 	});
 }
-function Fa({ sessionId: e, cards: t, views: n, nav: r, onBack: i }) {
+function La({ sessionId: e, cards: t, views: n, nav: r, onBack: i }) {
 	let a = n.getSession(e)?.record;
 	return /* @__PURE__ */ u("div", {
 		className: "wr-reg-detail wr-reg-detail--agent",
 		"data-testid": "registry-agent-detail",
-		children: [a !== void 0 && /* @__PURE__ */ l(Pa, {
+		children: [a !== void 0 && /* @__PURE__ */ l(Ia, {
 			session: a,
 			cards: t,
 			views: n,
 			nav: r
-		}), /* @__PURE__ */ l(Si, {
+		}), /* @__PURE__ */ l(wi, {
 			sessionId: e,
 			views: n,
 			onOpen: (e) => r.openDetail("agents", e),
@@ -10928,7 +11004,7 @@ function Fa({ sessionId: e, cards: t, views: n, nav: r, onBack: i }) {
 		})]
 	});
 }
-function Ia({ cards: e, views: t, nav: n }) {
+function Ra({ cards: e, views: t, nav: n }) {
 	let r = t.listStacks();
 	return /* @__PURE__ */ l("ul", {
 		className: "wr-reg-table",
@@ -10971,7 +11047,7 @@ function Ia({ cards: e, views: t, nav: n }) {
 					onClick: (t) => {
 						t.stopPropagation(), n.openDetail("stacks", e.stackRef);
 					},
-					children: Ta(r, e.stackRef)?.name ?? e.stackRef
+					children: Da(r, e.stackRef)?.name ?? e.stackRef
 				}),
 				e.workspaceId !== "" && /* @__PURE__ */ l("button", {
 					type: "button",
@@ -10986,7 +11062,7 @@ function Ia({ cards: e, views: t, nav: n }) {
 		}, e.taskId))
 	});
 }
-function La({ taskId: e, cards: t, views: n, nav: r }) {
+function za({ taskId: e, cards: t, views: n, nav: r }) {
 	let i = t.find((t) => t.taskId === e);
 	if (i === void 0) return /* @__PURE__ */ u("div", {
 		className: "wr-tab-empty",
@@ -10996,7 +11072,7 @@ function La({ taskId: e, cards: t, views: n, nav: r }) {
 			"”"
 		]
 	});
-	let a = i.parentId === null ? void 0 : t.find((e) => e.taskId === i.parentId), o = i.childIds.map((e) => t.find((t) => t.taskId === e)).filter((e) => e !== void 0), s = n.listRuns().filter((t) => t.taskId === e), d = n.getWorkspaceView(e), f = An(n.listSessions(), e, i.childIds);
+	let a = i.parentId === null ? void 0 : t.find((e) => e.taskId === i.parentId), o = i.childIds.map((e) => t.find((t) => t.taskId === e)).filter((e) => e !== void 0), s = n.listRuns().filter((t) => t.taskId === e), d = n.getWorkspaceView(e), f = jn(n.listSessions(), e, i.childIds);
 	return /* @__PURE__ */ u("div", {
 		className: "wr-reg-detail",
 		"data-testid": "registry-task-detail",
@@ -11075,7 +11151,7 @@ function La({ taskId: e, cards: t, views: n, nav: r }) {
 				className: "wr-reg-section",
 				children: "SESSIONS"
 			}),
-			/* @__PURE__ */ l(bi, {
+			/* @__PURE__ */ l(Si, {
 				sessions: f,
 				views: n,
 				onOpen: (e) => r.openDetail("agents", e)
@@ -11147,7 +11223,7 @@ function La({ taskId: e, cards: t, views: n, nav: r }) {
 					}),
 					/* @__PURE__ */ l("span", {
 						className: "wr-reg-mono",
-						children: ka(d.gitStatus.headSha)
+						children: ja(d.gitStatus.headSha)
 					}),
 					/* @__PURE__ */ l("span", {
 						className: V("wr-reg-dirty", d.gitStatus.dirty && "is-dirty"),
@@ -11162,7 +11238,7 @@ function La({ taskId: e, cards: t, views: n, nav: r }) {
 		]
 	});
 }
-function Ra({ views: e, nav: t }) {
+function Ba({ views: e, nav: t }) {
 	return /* @__PURE__ */ l("ul", {
 		className: "wr-reg-table",
 		"aria-label": "All workspaces",
@@ -11205,7 +11281,7 @@ function Ra({ views: e, nav: t }) {
 						}),
 						/* @__PURE__ */ l("span", {
 							className: "wr-reg-mono",
-							children: ka(e.gitStatus.headSha)
+							children: ja(e.gitStatus.headSha)
 						})
 					] }),
 					/* @__PURE__ */ u("span", {
@@ -11227,7 +11303,7 @@ function Ra({ views: e, nav: t }) {
 							children: e.branch
 						}), /* @__PURE__ */ l("span", {
 							className: "wr-reg-mono",
-							children: ka(e.headSha)
+							children: ja(e.headSha)
 						})] }),
 						/* @__PURE__ */ l("span", {
 							className: V("wr-reg-dirty", e.dirty && "is-dirty"),
@@ -11239,7 +11315,7 @@ function Ra({ views: e, nav: t }) {
 		}, e.workspaceId))
 	});
 }
-function za({ workspaceId: e, cards: t, views: n, nav: r }) {
+function Va({ workspaceId: e, cards: t, views: n, nav: r }) {
 	let i = n.listWorkspaces().find((t) => t.workspaceId === e);
 	if (i === void 0) return /* @__PURE__ */ u("div", {
 		className: "wr-tab-empty",
@@ -11304,7 +11380,7 @@ function za({ workspaceId: e, cards: t, views: n, nav: r }) {
 							children: e.branch
 						}), /* @__PURE__ */ l("span", {
 							className: "wr-reg-mono",
-							children: ka(e.headSha)
+							children: ja(e.headSha)
 						})] }),
 						/* @__PURE__ */ l("span", {
 							className: V("wr-reg-dirty", e.dirty && "is-dirty"),
@@ -11343,7 +11419,7 @@ function za({ workspaceId: e, cards: t, views: n, nav: r }) {
 						}),
 						/* @__PURE__ */ l("span", {
 							className: "wr-reg-dim",
-							children: Oa(t, e.taskId)
+							children: Aa(t, e.taskId)
 						})
 					]
 				}, e.sessionId))
@@ -11376,7 +11452,7 @@ function za({ workspaceId: e, cards: t, views: n, nav: r }) {
 									" −",
 									_(n.deletions),
 									" · ",
-									Oa(t, e)
+									Aa(t, e)
 								]
 							})
 						]
@@ -11386,48 +11462,48 @@ function za({ workspaceId: e, cards: t, views: n, nav: r }) {
 		]
 	});
 }
-function Ba({ store: e, views: t }) {
+function Ha({ store: e, views: t }) {
 	let r = B(e, (e) => e.meta.registryOpen), i = B(e, (e) => e.meta.registryStackRef);
 	B(e, (e) => e.meta.tickIndex);
-	let [a, s] = o(_a());
+	let [a, s] = o(ya());
 	if (n(() => {
-		r && s(i === null ? _a() : va(i));
+		r && s(i === null ? ya() : ba(i));
 	}, [r, i]), !r) return null;
 	let c = {
-		openDetail: (e, t) => s((n) => ba(n, e, t)),
+		openDetail: (e, t) => s((n) => Sa(n, e, t)),
 		openRun: (t) => e.getState().openRunsAt(t)
-	}, d = () => s((e) => xa(e)), f = t.listCardViews(), { tab: p, detailId: m } = a.current, h;
-	return h = m === null ? p === "stacks" ? /* @__PURE__ */ l(ja, {
+	}, d = () => s((e) => Ca(e)), f = t.listCardViews(), { tab: p, detailId: m } = a.current, h;
+	return h = m === null ? p === "stacks" ? /* @__PURE__ */ l(Na, {
 		views: t,
 		nav: c
-	}) : p === "agents" ? /* @__PURE__ */ l(Na, {
+	}) : p === "agents" ? /* @__PURE__ */ l(Fa, {
 		views: t,
 		cards: f,
 		nav: c
-	}) : p === "tasks" ? /* @__PURE__ */ l(Ia, {
+	}) : p === "tasks" ? /* @__PURE__ */ l(Ra, {
 		cards: f,
 		views: t,
 		nav: c
-	}) : /* @__PURE__ */ l(Ra, {
+	}) : /* @__PURE__ */ l(Ba, {
 		views: t,
 		nav: c
-	}) : p === "stacks" ? /* @__PURE__ */ l(Ma, {
+	}) : p === "stacks" ? /* @__PURE__ */ l(Pa, {
 		stackRef: m,
 		store: e,
 		views: t,
 		nav: c
-	}) : p === "agents" ? /* @__PURE__ */ l(Fa, {
+	}) : p === "agents" ? /* @__PURE__ */ l(La, {
 		sessionId: m,
 		cards: f,
 		views: t,
 		nav: c,
 		onBack: d
-	}) : p === "tasks" ? /* @__PURE__ */ l(La, {
+	}) : p === "tasks" ? /* @__PURE__ */ l(za, {
 		taskId: m,
 		cards: f,
 		views: t,
 		nav: c
-	}) : /* @__PURE__ */ l(za, {
+	}) : /* @__PURE__ */ l(Va, {
 		workspaceId: m,
 		cards: f,
 		views: t,
@@ -11451,20 +11527,20 @@ function Ba({ store: e, views: t }) {
 							className: "wr-foundry-tabs wr-runs-tabs",
 							role: "tablist",
 							"aria-label": "Registry tabs",
-							children: ga.map((e) => /* @__PURE__ */ l("div", {
+							children: va.map((e) => /* @__PURE__ */ l("div", {
 								role: "tab",
 								tabIndex: 0,
 								"data-testid": `registry-tab-${e}`,
 								"aria-selected": p === e,
 								className: V("wr-foundry-tab", p === e && "is-active"),
-								onClick: () => s((t) => ya(t, e)),
+								onClick: () => s((t) => xa(t, e)),
 								onKeyDown: (t) => {
-									(t.key === "Enter" || t.key === " ") && s((t) => ya(t, e));
+									(t.key === "Enter" || t.key === " ") && s((t) => xa(t, e));
 								},
-								children: Da[e]
+								children: ka[e]
 							}, e))
 						}),
-						Sa(a) && /* @__PURE__ */ l("button", {
+						wa(a) && /* @__PURE__ */ l("button", {
 							type: "button",
 							className: "wr-runs-back",
 							"data-testid": "registry-back",
@@ -11522,10 +11598,10 @@ function Ba({ store: e, views: t }) {
 }
 //#endregion
 //#region src/game/review.ts
-function Va(e, t, n) {
+function Ua(e, t, n) {
 	t.moveCard(n, "approved"), e.getState().closeReview();
 }
-function Ha(e, t, n, r) {
+function Wa(e, t, n, r) {
 	let i = r.trim();
 	if (i.length > 0) {
 		let t = e.getState().board.cards[n]?.view.title ?? n;
@@ -11535,7 +11611,7 @@ function Ha(e, t, n, r) {
 }
 //#endregion
 //#region src/components/panels/ReviewPanel.tsx
-function Ua({ store: e, orders: t, views: r }) {
+function Ga({ store: e, orders: t, views: r }) {
 	let i = B(e, (e) => e.meta.reviewTaskId), a = B(e, (e) => i === null ? void 0 : e.board.cards[i]);
 	B(e, (e) => e.meta.tickIndex);
 	let [s, d] = o(null), [f, p] = o(!1), [m, h] = o("");
@@ -11607,7 +11683,7 @@ function Ua({ store: e, orders: t, views: r }) {
 			/* @__PURE__ */ u("div", {
 				className: "wr-review-body",
 				children: [
-					/* @__PURE__ */ l(Hi, { ws: g }),
+					/* @__PURE__ */ l(Wi, { ws: g }),
 					g.reviewerNotes.length > 0 && /* @__PURE__ */ u(c, { children: [/* @__PURE__ */ l("div", {
 						className: "wr-review-section",
 						children: "REVIEWER NOTES"
@@ -11622,7 +11698,7 @@ function Ua({ store: e, orders: t, views: r }) {
 						className: "wr-review-section",
 						children: "CHANGED FILES"
 					}),
-					/* @__PURE__ */ l(Wi, {
+					/* @__PURE__ */ l(Ki, {
 						files: g.files,
 						openIndex: s,
 						onToggle: (e) => d((t) => t === e ? null : e)
@@ -11645,7 +11721,7 @@ function Ua({ store: e, orders: t, views: r }) {
 							type: "button",
 							"data-testid": "review-request-changes",
 							className: "wr-review-btn wr-review-btn--reject",
-							onClick: () => Ha(e, t, i, m),
+							onClick: () => Wa(e, t, i, m),
 							children: "Send back to DO"
 						}), /* @__PURE__ */ l("button", {
 							type: "button",
@@ -11658,7 +11734,7 @@ function Ua({ store: e, orders: t, views: r }) {
 					type: "button",
 					"data-testid": "review-approve-all",
 					className: "wr-review-btn wr-review-btn--approve",
-					onClick: () => Va(e, t, i),
+					onClick: () => Ua(e, t, i),
 					children: "Approve All"
 				}), /* @__PURE__ */ l("button", {
 					type: "button",
@@ -11670,38 +11746,38 @@ function Ua({ store: e, orders: t, views: r }) {
 		]
 	});
 }
-var Wa = "The cogitator refuses the amendment — a rite requires at least two phases.", Ga = "The cogitator cannot inscribe an empty phase — name every step of the rite.", Ka = "Amendments bind future runs only — rites already underway keep their pinned revision.";
-function qa(e, t, n) {
+var Ka = "The cogitator refuses the amendment — a rite requires at least two phases.", qa = "The cogitator cannot inscribe an empty phase — name every step of the rite.", Ja = "Amendments bind future runs only — rites already underway keep their pinned revision.";
+function Ya(e, t, n) {
 	return e.map((e, r) => r === t ? n : e);
 }
-function Ja(e) {
+function Xa(e) {
 	let t = 1, n = "new-phase";
 	for (; e.includes(n);) t += 1, n = `new-phase-${t}`;
 	return [...e, n];
 }
-function Ya(e, t) {
+function Za(e, t) {
 	return e.length <= 2 ? {
 		ok: !1,
 		phases: [...e],
-		error: Wa
+		error: Ka
 	} : {
 		ok: !0,
 		phases: e.filter((e, n) => n !== t),
 		error: null
 	};
 }
-function Xa(e, t, n) {
+function Qa(e, t, n) {
 	let r = t + n;
 	if (t < 0 || t >= e.length || r < 0 || r >= e.length) return [...e];
 	let i = [...e], a = i[t];
 	return i[t] = i[r], i[r] = a, i;
 }
-function Za(e) {
-	return e.length < 2 ? Wa : e.some((e) => e.trim().length === 0) ? Ga : null;
+function $a(e) {
+	return e.length < 2 ? Ka : e.some((e) => e.trim().length === 0) ? qa : null;
 }
 //#endregion
 //#region src/game/runsView.ts
-function Qa(e, t) {
+function eo(e, t) {
 	let n = t !== null && t.runId === e.runId;
 	return {
 		run: e,
@@ -11709,16 +11785,16 @@ function Qa(e, t) {
 		journalLive: n
 	};
 }
-function $a(e) {
+function to(e) {
 	return e.length <= 12 ? e : `${e.slice(0, 12)}…`;
 }
-function eo(e) {
+function no(e) {
 	let t = e.tokens;
 	return t.inputTokens + t.outputTokens + t.thinkingTokens;
 }
 //#endregion
 //#region src/components/panels/RunsOverlay.tsx
-function to({ phases: e }) {
+function ro({ phases: e }) {
 	return /* @__PURE__ */ l("span", {
 		className: "wr-runs-pipeline",
 		"aria-label": "phase pipeline",
@@ -11728,7 +11804,7 @@ function to({ phases: e }) {
 		}, e.label))
 	});
 }
-function no({ run: e }) {
+function io({ run: e }) {
 	let t = Object.entries(e.pendingEffectsByKind).filter(([, e]) => e > 0).sort(([e], [t]) => e.localeCompare(t));
 	return t.length === 0 ? null : /* @__PURE__ */ l("span", {
 		className: "wr-runs-effects",
@@ -11742,7 +11818,7 @@ function no({ run: e }) {
 		}, e))
 	});
 }
-function ro({ run: e, title: t, simStartMs: n, onOpen: r }) {
+function ao({ run: e, title: t, simStartMs: n, onOpen: r }) {
 	return /* @__PURE__ */ u("li", {
 		className: "wr-runs-row",
 		role: "button",
@@ -11755,7 +11831,7 @@ function ro({ run: e, title: t, simStartMs: n, onOpen: r }) {
 			/* @__PURE__ */ l("span", {
 				className: "wr-runs-id",
 				title: e.runId,
-				children: $a(e.runId)
+				children: to(e.runId)
 			}),
 			/* @__PURE__ */ l("span", {
 				className: "wr-runs-title",
@@ -11773,12 +11849,12 @@ function ro({ run: e, title: t, simStartMs: n, onOpen: r }) {
 				className: `wr-runstate wr-runstate--${e.observedState}`,
 				children: e.observedState
 			}),
-			/* @__PURE__ */ l(to, { phases: e.phases }),
-			/* @__PURE__ */ l(no, { run: e }),
+			/* @__PURE__ */ l(ro, { phases: e.phases }),
+			/* @__PURE__ */ l(io, { run: e }),
 			/* @__PURE__ */ u("span", {
 				className: "wr-runs-tokens",
 				children: [
-					_(eo(e)),
+					_(no(e)),
 					" tok · ",
 					v(e.costUsd)
 				]
@@ -11795,8 +11871,8 @@ function ro({ run: e, title: t, simStartMs: n, onOpen: r }) {
 		]
 	});
 }
-function io({ run: e, title: t, views: n, simStartMs: r, onBack: i }) {
-	let a = Qa(e, n.getRunObservation(e.taskId)), o = {
+function oo({ run: e, title: t, views: n, simStartMs: r, onBack: i }) {
+	let a = eo(e, n.getRunObservation(e.taskId)), o = {
 		runId: e.runId,
 		taskId: e.taskId,
 		observedState: e.observedState,
@@ -11832,7 +11908,7 @@ function io({ run: e, title: t, views: n, simStartMs: r, onBack: i }) {
 					/* @__PURE__ */ u("span", {
 						className: "wr-runs-tokens",
 						children: [
-							_(eo(e)),
+							_(no(e)),
 							" tok · ",
 							v(e.costUsd)
 						]
@@ -11848,7 +11924,7 @@ function io({ run: e, title: t, views: n, simStartMs: r, onBack: i }) {
 					})
 				]
 			}),
-			/* @__PURE__ */ l(Zi, {
+			/* @__PURE__ */ l($i, {
 				observation: o,
 				simStartMs: r
 			}),
@@ -11859,16 +11935,16 @@ function io({ run: e, title: t, views: n, simStartMs: r, onBack: i }) {
 		]
 	});
 }
-function ao({ template: e, orders: t, onClose: n }) {
+function so({ template: e, orders: t, onClose: n }) {
 	let [r, i] = o([...e.phases]), [a, s] = o(null), c = () => {
-		let i = Za(r);
+		let i = $a(r);
 		if (i !== null) {
 			s(i);
 			return;
 		}
 		t.updateProcessTemplate(e.kind, r.map((e) => e.trim())) !== null && n();
 	}, d = (e) => {
-		let t = Ya(r, e);
+		let t = Za(r, e);
 		s(t.error), t.ok && i(t.phases);
 	};
 	return /* @__PURE__ */ u("div", {
@@ -11895,21 +11971,21 @@ function ao({ template: e, orders: t, onClose: n }) {
 							value: e,
 							"aria-label": `phase ${t + 1} label`,
 							onChange: (e) => {
-								s(null), i(qa(r, t, e.target.value));
+								s(null), i(Ya(r, t, e.target.value));
 							}
 						}),
 						/* @__PURE__ */ l("button", {
 							type: "button",
 							"aria-label": `move phase ${t + 1} up`,
 							disabled: t === 0,
-							onClick: () => i(Xa(r, t, -1)),
+							onClick: () => i(Qa(r, t, -1)),
 							children: "↑"
 						}),
 						/* @__PURE__ */ l("button", {
 							type: "button",
 							"aria-label": `move phase ${t + 1} down`,
 							disabled: t === r.length - 1,
-							onClick: () => i(Xa(r, t, 1)),
+							onClick: () => i(Qa(r, t, 1)),
 							children: "↓"
 						}),
 						/* @__PURE__ */ l("button", {
@@ -11932,7 +12008,7 @@ function ao({ template: e, orders: t, onClose: n }) {
 						type: "button",
 						className: "wr-process-editor-add",
 						onClick: () => {
-							s(null), i(Ja(r));
+							s(null), i(Xa(r));
 						},
 						children: "ADD PHASE"
 					}),
@@ -11951,12 +12027,12 @@ function ao({ template: e, orders: t, onClose: n }) {
 			}),
 			/* @__PURE__ */ l("div", {
 				className: "wr-process-editor-note",
-				children: Ka
+				children: Ja
 			})
 		]
 	});
 }
-function oo({ views: e, orders: t }) {
+function co({ views: e, orders: t }) {
 	let [n, r] = o(null), i = e.listProcessTemplates(), a = n === null ? void 0 : i.find((e) => e.kind === n);
 	return /* @__PURE__ */ u("div", {
 		className: "wr-process-lib",
@@ -11986,14 +12062,14 @@ function oo({ views: e, orders: t }) {
 					})
 				]
 			}, e.kind))
-		}), a !== void 0 && /* @__PURE__ */ l(ao, {
+		}), a !== void 0 && /* @__PURE__ */ l(so, {
 			template: a,
 			orders: t,
 			onClose: () => r(null)
 		}, `${a.kind}@v${a.revision}`)]
 	});
 }
-function so({ store: e, orders: t, views: r }) {
+function lo({ store: e, orders: t, views: r }) {
 	let i = B(e, (e) => e.meta.runsOpen), a = B(e, (e) => e.meta.runsFocusRunId), s = B(e, (e) => e.board.cards), c = B(e, (e) => e.meta.simStartMs);
 	B(e, (e) => e.meta.tickIndex);
 	let [d, f] = o("runs"), [p, m] = o(null);
@@ -12076,20 +12152,20 @@ function so({ store: e, orders: t, views: r }) {
 								className: "wr-tab-empty",
 								children: "no rites recorded — start a card working"
 							}),
-							h.map((e) => /* @__PURE__ */ l(ro, {
+							h.map((e) => /* @__PURE__ */ l(ao, {
 								run: e,
 								title: g(e),
 								simStartMs: c,
 								onOpen: () => m(e.runId)
 							}, e.runId))
 						]
-					}) : /* @__PURE__ */ l(io, {
+					}) : /* @__PURE__ */ l(oo, {
 						run: _,
 						title: g(_),
 						views: r,
 						simStartMs: c,
 						onBack: () => m(null)
-					})), d === "processes" && /* @__PURE__ */ l(oo, {
+					})), d === "processes" && /* @__PURE__ */ l(co, {
 						views: r,
 						orders: t
 					})]
@@ -12132,7 +12208,7 @@ function so({ store: e, orders: t, views: r }) {
 }
 //#endregion
 //#region src/components/panels/SteerModal.tsx
-function co({ store: e, orders: t }) {
+function uo({ store: e, orders: t }) {
 	let n = B(e, (e) => e.meta.steerOpen), r = B(e, (e) => e.world), i = B(e, (e) => e.selection), [a, s] = o("");
 	if (!n) return null;
 	let { units: c } = d({
@@ -12200,7 +12276,7 @@ function co({ store: e, orders: t }) {
 }
 //#endregion
 //#region src/components/WarRoom.tsx
-function lo({ store: e, orders: t, views: r }) {
+function fo({ store: e, orders: t, views: r }) {
 	return n(() => et({
 		store: e,
 		orders: t
@@ -12208,67 +12284,67 @@ function lo({ store: e, orders: t, views: r }) {
 		className: "wr-root",
 		"data-testid": "war-room",
 		children: [
-			/* @__PURE__ */ l(dr, {
+			/* @__PURE__ */ l(fr, {
 				store: e,
 				orders: t
 			}),
-			/* @__PURE__ */ l(_n, {
+			/* @__PURE__ */ l(vn, {
 				store: e,
 				orders: t
 			}),
-			/* @__PURE__ */ l(Sn, {
+			/* @__PURE__ */ l(Cn, {
 				store: e,
 				orders: t
 			}),
 			/* @__PURE__ */ u("div", {
 				className: "wr-bottom-row",
 				children: [
-					/* @__PURE__ */ l(En, { store: e }),
-					/* @__PURE__ */ l(cr, {
+					/* @__PURE__ */ l(Dn, { store: e }),
+					/* @__PURE__ */ l(lr, {
 						store: e,
 						views: r
 					}),
-					/* @__PURE__ */ l(Cn, {
+					/* @__PURE__ */ l(wn, {
 						store: e,
 						orders: t
 					})
 				]
 			}),
-			/* @__PURE__ */ l(ea, {
+			/* @__PURE__ */ l(na, {
 				store: e,
 				orders: t,
 				views: r
 			}),
-			/* @__PURE__ */ l(Ua, {
+			/* @__PURE__ */ l(Ga, {
 				store: e,
 				orders: t,
 				views: r
 			}),
-			/* @__PURE__ */ l(co, {
+			/* @__PURE__ */ l(uo, {
 				store: e,
 				orders: t
 			}),
-			/* @__PURE__ */ l(Br, {
+			/* @__PURE__ */ l(Hr, {
 				store: e,
 				orders: t,
 				views: r
 			}),
-			/* @__PURE__ */ l(yr, {
+			/* @__PURE__ */ l(br, {
 				store: e,
 				orders: t,
 				views: r
 			}),
-			/* @__PURE__ */ l(ha, { store: e }),
-			/* @__PURE__ */ l(Ba, {
+			/* @__PURE__ */ l(_a, { store: e }),
+			/* @__PURE__ */ l(Ha, {
 				store: e,
 				views: r
 			}),
-			/* @__PURE__ */ l(so, {
+			/* @__PURE__ */ l(lo, {
 				store: e,
 				orders: t,
 				views: r
 			}),
-			/* @__PURE__ */ l(Qr, {
+			/* @__PURE__ */ l(ei, {
 				store: e,
 				orders: t,
 				views: r
@@ -12284,13 +12360,13 @@ function lo({ store: e, orders: t, views: r }) {
 		]
 	});
 }
-var uo = class {
+var po = class {
 	sim;
 	tickIntervalMs;
 	autoStart;
 	connected = !1;
 	constructor(e = {}) {
-		this.sim = new Ut({ seed: e.seed ?? 42 }), this.tickIntervalMs = e.tickIntervalMs, this.autoStart = e.autoStart ?? !0;
+		this.sim = new Wt({ seed: e.seed ?? 42 }), this.tickIntervalMs = e.tickIntervalMs, this.autoStart = e.autoStart ?? !0;
 	}
 	async connect() {
 		this.connected || (this.connected = !0, this.sim.handleClientFrame({
@@ -12397,27 +12473,27 @@ var uo = class {
 	listTasks() {
 		return Promise.resolve(this.sim.listTasks());
 	}
-}, fo = "1", po = 15e3, mo = 1e4, ho = 500, go = 3e4, _o = 256, vo = class extends Error {
+}, mo = "1", ho = 15e3, go = 1e4, _o = 500, vo = 3e4, yo = 256, bo = class extends Error {
 	status;
 	constructor(e, t, n) {
 		super(`GET ${e} failed: HTTP ${t}${n ? ` — ${n}` : ""}`), this.name = "RealBackendRestError", this.status = t;
 	}
 };
-function yo(e) {
+function xo(e) {
 	let t = globalThis.WebSocket;
 	if (typeof t != "function") throw Error("RealBackend: no ambient WebSocket; inject webSocketFactory");
 	return new t(e);
 }
-function bo() {
+function So() {
 	let e = globalThis.fetch;
 	if (typeof e != "function") throw Error("RealBackend: no ambient fetch; inject fetch");
 	return e;
 }
-function xo(e) {
+function Co(e) {
 	let t = new URL(e);
 	return t.protocol = t.protocol === "wss:" ? "https:" : t.protocol === "ws:" ? "http:" : t.protocol, t.pathname = "", t.search = "", t.hash = "", t.origin;
 }
-var So = new Set([
+var wo = new Set([
 	"hello",
 	"error",
 	"pong",
@@ -12426,12 +12502,12 @@ var So = new Set([
 	"hook.resolved",
 	"pairing.consumed"
 ]);
-function Co(e) {
+function To(e) {
 	if (typeof e != "object" || !e) return null;
 	let t = e.type;
-	return typeof t != "string" || !So.has(t) ? null : e;
+	return typeof t != "string" || !wo.has(t) ? null : e;
 }
-var wo = class {
+var Eo = class {
 	config;
 	gatewayUrl;
 	token;
@@ -12457,7 +12533,7 @@ var wo = class {
 	warnedVerbs = /* @__PURE__ */ new Set();
 	constructor(e, t = {}) {
 		if (e.gatewayUrl === void 0 || e.token === void 0) throw Error("RealBackend requires a resolved real config (gatewayUrl + token)");
-		this.config = e, this.gatewayUrl = e.gatewayUrl, this.token = e.token, this.restBaseUrl = xo(e.gatewayUrl), this.webSocketFactory = t.webSocketFactory ?? yo, this.fetchImpl = t.fetch ?? bo(), this.pingIntervalMs = e.pingIntervalMs ?? po, this.pongTimeoutMs = e.pongTimeoutMs ?? mo, this.baseDelayMs = e.baseDelayMs ?? ho, this.maxDelayMs = e.maxDelayMs ?? go, this.maxReconnectAttempts = e.maxReconnectAttempts;
+		this.config = e, this.gatewayUrl = e.gatewayUrl, this.token = e.token, this.restBaseUrl = Co(e.gatewayUrl), this.webSocketFactory = t.webSocketFactory ?? xo, this.fetchImpl = t.fetch ?? So(), this.pingIntervalMs = e.pingIntervalMs ?? ho, this.pongTimeoutMs = e.pongTimeoutMs ?? go, this.baseDelayMs = e.baseDelayMs ?? _o, this.maxDelayMs = e.maxDelayMs ?? vo, this.maxReconnectAttempts = e.maxReconnectAttempts;
 	}
 	connect() {
 		return this.state === "ready" ? Promise.resolve() : this.state === "connecting" || this.state === "authenticating" ? new Promise((e, t) => {
@@ -12506,11 +12582,11 @@ var wo = class {
 		} catch {
 			return;
 		}
-		let n = Co(t);
+		let n = To(t);
 		if (n !== null) {
 			if (n.type === "hello" && this.state === "authenticating") {
-				if (!n.protocolVersions.includes(fo)) {
-					let e = /* @__PURE__ */ Error(`gateway does not support protocol v${fo} (got ${n.protocolVersions.join(",")})`);
+				if (!n.protocolVersions.includes(mo)) {
+					let e = /* @__PURE__ */ Error(`gateway does not support protocol v${mo} (got ${n.protocolVersions.join(",")})`);
 					this.teardownSocket(), this.failConnect(e);
 					return;
 				}
@@ -12578,7 +12654,7 @@ var wo = class {
 			this.writeToSocket(e);
 			return;
 		}
-		t || (this.outboundBuffer.push(e), this.outboundBuffer.length > _o && this.outboundBuffer.shift());
+		t || (this.outboundBuffer.push(e), this.outboundBuffer.length > yo && this.outboundBuffer.shift());
 	}
 	trackSubscription(e) {
 		switch (e.type) {
@@ -12671,7 +12747,7 @@ var wo = class {
 			} catch {
 				n = "";
 			}
-			throw new vo(`/api/v1/${e}`, t.status, n);
+			throw new bo(`/api/v1/${e}`, t.status, n);
 		}
 		return await t.json();
 	}
@@ -12738,7 +12814,7 @@ var wo = class {
 	getConfig() {
 		return this.config;
 	}
-}, To = class {
+}, Do = class {
 	connect() {
 		return Promise.resolve();
 	}
@@ -12760,40 +12836,40 @@ var wo = class {
 		return Promise.resolve([]);
 	}
 };
-function Eo(e, t) {
-	return e.mode === "real" ? e.gatewayUrl !== void 0 && e.token !== void 0 ? new wo(e, t) : new To() : new uo({ seed: e.seed });
+function Oo(e, t) {
+	return e.mode === "real" ? e.gatewayUrl !== void 0 && e.token !== void 0 ? new Eo(e, t) : new Do() : new po({ seed: e.seed });
 }
 //#endregion
 //#region src/backend/kradle/controllerClient.ts
-var Do = 5e3, Oo = 3e4, ko = "X-Kradle-Request", Ao = "commander", jo = "default", Mo = 500, No = class extends Error {
+var ko = 5e3, Ao = 3e4, jo = "X-Kradle-Request", Mo = "commander", No = "default", Po = 500, Fo = class extends Error {
 	status;
 	endpoint;
 	bodyExcerpt;
 	constructor(e, t, n) {
 		super(`kradle ${t} failed: HTTP ${e}${n ? ` — ${n}` : ""}`), this.name = "KradleControlPlaneError", this.status = e, this.endpoint = t, this.bodyExcerpt = n;
 	}
-}, Po = class extends Error {
+}, Io = class extends Error {
 	action;
 	constructor(e) {
 		super(`kradle ${e} is a proposed (not-live) route — gated per SPEC §3.2 / E-RUNACTIONS`), this.name = "KradleProposedRouteError", this.action = e;
 	}
 };
-function Fo() {
+function Lo() {
 	let e = globalThis.fetch;
 	if (typeof e != "function") throw Error("KradleControllerClient: no ambient fetch; inject deps.fetch");
 	return e;
 }
-function Io() {
+function Ro() {
 	let e = globalThis.EventSource;
 	return typeof e == "function" ? (t, n) => new e(t, n) : null;
 }
-function Lo(e) {
+function zo(e) {
 	return e.endsWith("/") ? e.slice(0, -1) : e;
 }
-function Ro(e, t = {}) {
-	let n = Lo((e.kradleApiUrl ?? "").trim());
+function Bo(e, t = {}) {
+	let n = zo((e.kradleApiUrl ?? "").trim());
 	if (!n) throw Error("KradleControllerClient: kradleApiUrl is required");
-	let r = (e.kradleOrg ?? "").trim() || jo, i = e.kradleToken?.trim() || void 0, a = typeof e.requestTimeoutMs == "number" && e.requestTimeoutMs > 0 ? e.requestTimeoutMs : Oo, o = t.fetch ?? Fo(), s = t.eventSourceFactory ?? Io();
+	let r = (e.kradleOrg ?? "").trim() || No, i = e.kradleToken?.trim() || void 0, a = typeof e.requestTimeoutMs == "number" && e.requestTimeoutMs > 0 ? e.requestTimeoutMs : Ao, o = t.fetch ?? Lo(), s = t.eventSourceFactory ?? Ro();
 	function c() {
 		let e = { Accept: "application/json" };
 		return i && (e.Authorization = `Bearer ${i}`), e;
@@ -12804,10 +12880,10 @@ function Ro(e, t = {}) {
 			headers: l,
 			credentials: "include"
 		};
-		s ? (l["Content-Type"] = "application/json", l[ko] = Ao, r !== void 0 && (u.body = JSON.stringify(r))) : u.cache = "no-store";
+		s ? (l["Content-Type"] = "application/json", l[jo] = Mo, r !== void 0 && (u.body = JSON.stringify(r))) : u.cache = "no-store";
 		let d = new AbortController();
 		u.signal = d.signal;
-		let f = setTimeout(() => d.abort(), s ? Do : a), p;
+		let f = setTimeout(() => d.abort(), s ? ko : a), p;
 		try {
 			p = await o(`${n}${e}`, u);
 		} finally {
@@ -12816,11 +12892,11 @@ function Ro(e, t = {}) {
 		if (!p.ok) {
 			let t = "";
 			try {
-				t = (await p.text()).slice(0, Mo);
+				t = (await p.text()).slice(0, Po);
 			} catch {
 				t = "";
 			}
-			throw new No(p.status, e, t);
+			throw new Fo(p.status, e, t);
 		}
 		return await p.json();
 	}
@@ -12867,13 +12943,13 @@ function Ro(e, t = {}) {
 			return l(d("/dispatch"), "POST", e);
 		},
 		resumeRun(e, t) {
-			return Promise.reject(new Po("runs/<run>/resume"));
+			return Promise.reject(new Io("runs/<run>/resume"));
 		},
 		forkRun(e, t) {
-			return Promise.reject(new Po("runs/<run>/fork"));
+			return Promise.reject(new Io("runs/<run>/fork"));
 		},
 		continueRun(e, t) {
-			return Promise.reject(new Po("runs/<run>/continue"));
+			return Promise.reject(new Io("runs/<run>/continue"));
 		},
 		queryMemory(e) {
 			return l(d("/memory/query"), "POST", e);
@@ -12919,19 +12995,19 @@ function Ro(e, t = {}) {
 }
 //#endregion
 //#region src/backend/kradle/mappers.ts
-var zo = "kradle.a5c.ai/origin", Bo = "commander.a5c.ai/default-for", Vo = "commander.a5c.ai/coordination", Ho = 15e3, Uo = {
+var Vo = "kradle.a5c.ai/origin", Ho = "commander.a5c.ai/default-for", Uo = "commander.a5c.ai/coordination", Wo = 15e3, Go = {
 	totalUsd: 0,
 	inputTokens: 0,
 	outputTokens: 0,
 	thinkingTokens: 0,
 	cachedTokens: 0
-}, Wo = {
+}, Ko = {
 	inputTokens: 0,
 	outputTokens: 0,
 	thinkingTokens: 0,
 	cachedTokens: 0
 };
-function Go(e) {
+function qo(e) {
 	return typeof e == "object" && !!e && !Array.isArray(e);
 }
 function q(e) {
@@ -12940,13 +13016,13 @@ function q(e) {
 function J(e) {
 	return typeof e == "number" && Number.isFinite(e) ? e : void 0;
 }
-function Ko(e) {
+function Jo(e) {
 	return typeof e == "boolean" ? e : void 0;
 }
 function Y(e) {
-	return Go(e) ? e : void 0;
+	return qo(e) ? e : void 0;
 }
-function qo(e) {
+function Yo(e) {
 	return Array.isArray(e) ? e : void 0;
 }
 function X(e) {
@@ -12955,9 +13031,9 @@ function X(e) {
 function Z(e) {
 	return Y(e.status) ?? {};
 }
-function Jo(e) {
+function Xo(e) {
 	let t = e.metadata.labels;
-	if (!Go(t)) return {};
+	if (!qo(t)) return {};
 	let n = {};
 	for (let [e, r] of Object.entries(t)) typeof r == "string" && (n[e] = r);
 	return n;
@@ -12965,21 +13041,21 @@ function Jo(e) {
 function Q(e) {
 	return q(Z(e).phase);
 }
-function Yo(e) {
+function Zo(e) {
 	let t = q(e);
 	if (t === void 0) return;
 	let n = Date.parse(t);
 	return Number.isFinite(n) ? n : void 0;
 }
-function Xo(e) {
-	return Yo(e.metadata.creationTimestamp);
+function Qo(e) {
+	return Zo(e.metadata.creationTimestamp);
 }
-var Zo = new Set(st), Qo = new Set(U);
-function $o(e, t = "claude-code") {
-	return e !== void 0 && Zo.has(e) ? e : t;
+var $o = new Set(st), es = new Set(ct);
+function ts(e, t = "claude-code") {
+	return e !== void 0 && $o.has(e) ? e : t;
 }
-function es(e) {
-	if (e !== void 0 && Qo.has(e)) return e;
+function ns(e) {
+	if (e !== void 0 && es.has(e)) return e;
 	switch (e) {
 		case "ci-repair":
 		case "diagnostic": return "fix";
@@ -12990,18 +13066,18 @@ function $(e, t) {
 	let n = e.agents?.[t]?.items;
 	return Array.isArray(n) && n.length > 0 ? n : [];
 }
-function ts(e, t) {
+function rs(e, t) {
 	let n = e.agents?.[t]?.pending;
 	return Array.isArray(n) ? n : [];
 }
-function ns(e, t) {
+function is(e, t) {
 	let n = [];
-	for (let r of e.resources ?? []) if (r.kind === t && Array.isArray(r.items)) for (let e of r.items) Go(e) && Go(e.metadata) && n.push(e);
+	for (let r of e.resources ?? []) if (r.kind === t && Array.isArray(r.items)) for (let e of r.items) qo(e) && qo(e.metadata) && n.push(e);
 	return n;
 }
-function rs(e) {
-	let t = X(e), n = q(t.adapter) ?? "claude-code", r = q(t.baseAgent) ?? n, i = H[$o(n)] ?? [], a = q(t.model) ?? i[0] ?? "", o = Y(t.prompt) ?? Y(t.promptTemplates), s = q(o?.system) ?? q(t.systemPrompt) ?? "", c = q(o?.developer) ?? q(t.developerPrompt), l = (e) => {
-		let t = qo(e);
+function as(e) {
+	let t = X(e), n = q(t.adapter) ?? "claude-code", r = q(t.baseAgent) ?? n, i = H[ts(n)] ?? [], a = q(t.model) ?? i[0] ?? "", o = Y(t.prompt) ?? Y(t.promptTemplates), s = q(o?.system) ?? q(t.systemPrompt) ?? "", c = q(o?.developer) ?? q(t.developerPrompt), l = (e) => {
+		let t = Yo(e);
 		return t === void 0 ? void 0 : t.filter((e) => typeof e == "string");
 	}, u = q(Y(t.runtimeIdentity)?.serviceAccountRef), d = Y(t.externalTools), f = l(d?.mcpServerRefs) ?? l(t.mcpServerRefs), p = l(d?.cliToolRefs), m = f !== void 0 || p !== void 0 ? {
 		...f === void 0 ? {} : { mcpServerRefs: f },
@@ -13017,7 +13093,7 @@ function rs(e) {
 		metadata: {
 			name: e.metadata.name,
 			...q(e.metadata.namespace) === void 0 ? {} : { namespace: e.metadata.namespace },
-			labels: Jo(e)
+			labels: Xo(e)
 		},
 		spec: {
 			...q(t.organizationRef) === void 0 ? {} : { organizationRef: q(t.organizationRef) },
@@ -13044,50 +13120,50 @@ function rs(e) {
 		status: { phase: Q(e) ?? "Ready" }
 	};
 }
-function is(e) {
-	let t = q(X(e).displayName) ?? e.metadata.name, n = Jo(e)[zo] === "foundry";
+function os(e) {
+	let t = q(X(e).displayName) ?? e.metadata.name, n = Xo(e)[Vo] === "foundry";
 	return {
 		stackRef: e.metadata.name,
 		name: t,
 		custom: n,
-		stack: rs(e)
+		stack: as(e)
 	};
 }
-function as(e) {
+function ss(e) {
 	let t = /* @__PURE__ */ new Map();
-	for (let n of ns(e, "AgentDefinition")) t.set(n.metadata.name, is(n));
-	for (let n of $(e, "stacks")) t.set(n.metadata.name, is(n));
+	for (let n of is(e, "AgentDefinition")) t.set(n.metadata.name, os(n));
+	for (let n of $(e, "stacks")) t.set(n.metadata.name, os(n));
 	return [...t.values()].sort((e, t) => e.name.localeCompare(t.name));
 }
-function os(e) {
-	let t = $(e, "personas");
-	return t.length > 0 ? t : ns(e, "AgentPersona");
-}
-function ss(e) {
-	let t = $(e, "definitions");
-	return t.length > 0 ? t : ns(e, "AgentDefinition");
-}
 function cs(e) {
-	let t = $(e, "processTemplates");
-	return t.length > 0 ? t : ns(e, "AgentProcessTemplate");
+	let t = $(e, "personas");
+	return t.length > 0 ? t : is(e, "AgentPersona");
 }
 function ls(e) {
-	let t = /* @__PURE__ */ new Map(), n = [...cs(e)].sort((e, t) => e.metadata.name.localeCompare(t.metadata.name));
+	let t = $(e, "definitions");
+	return t.length > 0 ? t : is(e, "AgentDefinition");
+}
+function us(e) {
+	let t = $(e, "processTemplates");
+	return t.length > 0 ? t : is(e, "AgentProcessTemplate");
+}
+function ds(e) {
+	let t = /* @__PURE__ */ new Map(), n = [...us(e)].sort((e, t) => e.metadata.name.localeCompare(t.metadata.name));
 	for (let e of n) {
 		let n = X(e), r = q(n.taskKind);
-		if (r === void 0 || !Qo.has(r)) continue;
+		if (r === void 0 || !es.has(r)) continue;
 		let i = (Array.isArray(n.phases) ? n.phases : []).map((e) => typeof e == "string" ? e.trim() : "").filter((e) => e.length > 0);
 		i.length !== 0 && t.set(r, {
 			taskKind: r,
 			phases: i,
 			processId: e.metadata.name,
-			revision: us(e),
+			revision: fs(e),
 			displayName: q(n.displayName) ?? null
 		});
 	}
 	return t;
 }
-function us(e) {
+function fs(e) {
 	let { generation: t, resourceVersion: n } = e.metadata;
 	if (typeof t == "number" && Number.isFinite(t)) return t;
 	if (typeof n == "string") {
@@ -13096,24 +13172,24 @@ function us(e) {
 	}
 	return typeof n == "number" && Number.isFinite(n) ? n : 1;
 }
-function ds(e) {
-	let t = $(e, "appearances");
-	return t.length > 0 ? t : ns(e, "AgentAppearance");
-}
-function fs(e) {
-	let t = $(e, "voiceProfiles");
-	return t.length > 0 ? t : ns(e, "AgentVoiceProfile");
-}
 function ps(e) {
+	let t = $(e, "appearances");
+	return t.length > 0 ? t : is(e, "AgentAppearance");
+}
+function ms(e) {
+	let t = $(e, "voiceProfiles");
+	return t.length > 0 ? t : is(e, "AgentVoiceProfile");
+}
+function hs(e) {
 	let t = /* @__PURE__ */ new Map();
-	for (let n of os(e)) t.set(n.metadata.name, n);
+	for (let n of cs(e)) t.set(n.metadata.name, n);
 	let n = /* @__PURE__ */ new Map();
-	for (let t of ds(e)) {
+	for (let t of ps(e)) {
 		let e = q(X(t).personaRef);
 		e !== void 0 && n.set(e, t);
 	}
 	let r = /* @__PURE__ */ new Map();
-	for (let t of fs(e)) {
+	for (let t of ms(e)) {
 		let e = q(X(t).personaRef);
 		e !== void 0 && r.set(e, t);
 	}
@@ -13124,7 +13200,7 @@ function ps(e) {
 		personaViewByName: /* @__PURE__ */ new Map()
 	};
 }
-function ms(e, t) {
+function gs(e, t) {
 	let n = t.personaViewByName.get(e.metadata.name);
 	if (n !== void 0) return n;
 	let r = X(e), i = q(r.displayName) ?? e.metadata.name, a = q(r.tagline) ?? null, o = q(Y(r.role)?.title) ?? null, s = Y(r.appearance), c = t.appearanceByPersona.get(e.metadata.name), l = s ?? (c === void 0 ? void 0 : X(c)), u = q(l?.emoji) ?? null, d = Y(l?.avatar) ?? null, f = Y(r.voiceProfile), p = t.voiceByPersona.get(e.metadata.name), m = q((f ?? (p === void 0 ? void 0 : X(p)))?.ttsProvider) ?? null, h = {
@@ -13138,48 +13214,48 @@ function ms(e, t) {
 	};
 	return t.personaViewByName.set(e.metadata.name, h), h;
 }
-function hs(e) {
-	let t = ps(e);
-	return [...t.personaByName.values()].map((e) => ms(e, t)).sort((e, t) => e.displayName.localeCompare(t.displayName));
+function _s(e) {
+	let t = hs(e);
+	return [...t.personaByName.values()].map((e) => gs(e, t)).sort((e, t) => e.displayName.localeCompare(t.displayName));
 }
-function gs(e) {
-	let t = ps(e), n = [];
-	for (let r of ss(e)) {
+function vs(e) {
+	let t = hs(e), n = [];
+	for (let r of ls(e)) {
 		let e = X(r), i = q(e.personaRef) ?? "", a = i === "" ? void 0 : t.personaByName.get(i);
 		n.push({
 			name: r.metadata.name,
 			personaRef: i,
 			stackRef: q(e.stackRef) ?? "",
 			roleContext: q(e.roleContext) ?? null,
-			persona: a === void 0 ? null : ms(a, t)
+			persona: a === void 0 ? null : gs(a, t)
 		});
 	}
 	return n.sort((e, t) => e.name.localeCompare(t.name));
 }
-function _s(e, t, n, r) {
+function ys(e, t, n, r) {
 	if (r !== void 0) {
 		let t = e.personaByName.get(r);
-		if (t !== void 0) return ms(t, e);
+		if (t !== void 0) return gs(t, e);
 	}
 	if (n !== void 0) {
 		let r = t.get(n), i = r === void 0 ? void 0 : q(X(r).personaRef);
 		if (i !== void 0) {
 			let t = e.personaByName.get(i);
-			if (t !== void 0) return ms(t, e);
+			if (t !== void 0) return gs(t, e);
 		}
 	}
 	return null;
 }
-var vs = new Set(Ct);
-function ys(e) {
+var bs = new Set(wt);
+function xs(e) {
 	let t = q(Z(e).boardColumn);
-	return t !== void 0 && vs.has(t) ? t : void 0;
+	return t !== void 0 && bs.has(t) ? t : void 0;
 }
-function bs(e) {
+function Ss(e) {
 	let t = J(Z(e).progress);
 	if (t !== void 0) return Math.min(1, Math.max(0, t));
 }
-function xs(e, t) {
+function Cs(e, t) {
 	switch (e) {
 		case "pending":
 		case "Pending":
@@ -13199,7 +13275,7 @@ function xs(e, t) {
 		default: return "backlog";
 	}
 }
-var Ss = new Set([
+var ws = new Set([
 	"succeeded",
 	"Succeeded",
 	"Completed",
@@ -13208,20 +13284,20 @@ var Ss = new Set([
 	"cancelled",
 	"Cancelled"
 ]);
-function Cs(e) {
-	return e !== void 0 && Ss.has(e);
-}
-function ws(e) {
-	return q(X(e).agentDispatchRun) ?? q(X(e).dispatchRun);
-}
 function Ts(e) {
-	let t = ns(e, "AgentDispatchAttempt");
-	return t.length > 0 ? t : [];
+	return e !== void 0 && ws.has(e);
 }
 function Es(e) {
+	return q(X(e).agentDispatchRun) ?? q(X(e).dispatchRun);
+}
+function Ds(e) {
+	let t = is(e, "AgentDispatchAttempt");
+	return t.length > 0 ? t : [];
+}
+function Os(e) {
 	let t = /* @__PURE__ */ new Map(), n = 0;
-	for (let r of Ts(e)) {
-		let e = ws(r);
+	for (let r of Ds(e)) {
+		let e = Es(r);
 		if (e === void 0) {
 			n += 1;
 			continue;
@@ -13233,11 +13309,11 @@ function Es(e) {
 	}
 	let r = /* @__PURE__ */ new Map(), i = /* @__PURE__ */ new Map();
 	for (let [e, n] of t) {
-		n.sort((e, t) => (Xo(e.item) ?? e.seq) - (Xo(t.item) ?? t.seq) || e.seq - t.seq);
+		n.sort((e, t) => (Qo(e.item) ?? e.seq) - (Qo(t.item) ?? t.seq) || e.seq - t.seq);
 		let t = n.map((e) => e.item);
 		r.set(e, t);
 		let a;
-		for (let e = t.length - 1; e >= 0; --e) if (!Cs(Q(t[e]))) {
+		for (let e = t.length - 1; e >= 0; --e) if (!Ts(Q(t[e]))) {
 			a = t[e];
 			break;
 		}
@@ -13248,26 +13324,26 @@ function Es(e) {
 		activeByRun: i
 	};
 }
-function Ds(e) {
+function ks(e) {
 	return q(X(e).dispatchRun);
 }
-function Os(e) {
+function As(e) {
 	let t = X(e).action, n = q(t);
 	return n === void 0 ? q(Y(t)?.type) : n;
 }
-function ks(e) {
+function js(e) {
 	let t = Q(e);
 	return t === void 0 || t === "Pending";
 }
-function As(e) {
-	let t = /* @__PURE__ */ new Map(), n = /* @__PURE__ */ new Map(), r = $(e, "approvals"), i = ts(e, "approvals");
+function Ms(e) {
+	let t = /* @__PURE__ */ new Map(), n = /* @__PURE__ */ new Map(), r = $(e, "approvals"), i = rs(e, "approvals");
 	for (let e of r) {
-		let n = Ds(e);
+		let n = ks(e);
 		n !== void 0 && (t.get(n) ?? t.set(n, []).get(n)).push(e);
 	}
-	let a = i.length > 0 ? i : r.filter(ks);
+	let a = i.length > 0 ? i : r.filter(js);
 	for (let e of a) {
-		let t = Ds(e);
+		let t = ks(e);
 		t !== void 0 && (n.get(t) ?? n.set(t, []).get(t)).push(e);
 	}
 	return {
@@ -13275,47 +13351,47 @@ function As(e) {
 		pendingByRun: n
 	};
 }
-var js = new Set(["review", "ai-review"]), Ms = new Set([
+var Ns = new Set(["review", "ai-review"]), Ps = new Set([
 	"write-back",
 	"release",
 	"tool-use"
 ]);
-function Ns(e) {
+function Fs(e) {
 	return q(X(e).dispatchRun);
 }
-function Ps(e) {
+function Is(e) {
 	return q(X(e).dispatchAttempt);
 }
-function Fs(e) {
+function Ls(e) {
 	return Q(e) === "Active";
 }
-function Is(e) {
+function Rs(e) {
 	let t = /* @__PURE__ */ new Map();
 	for (let n of $(e, "sessions")) {
-		if (!Fs(n)) continue;
-		let e = Ns(n);
+		if (!Ls(n)) continue;
+		let e = Fs(n);
 		e !== void 0 && (t.get(e) ?? t.set(e, []).get(e)).push(n);
 	}
 	return t;
 }
-function Ls(e) {
+function zs(e) {
 	let t = /* @__PURE__ */ new Map();
 	for (let n of $(e, "sessions")) {
-		let e = Ps(n);
+		let e = Is(n);
 		e !== void 0 && (t.get(e) ?? t.set(e, []).get(e)).push(n);
 	}
 	return t;
 }
-function Rs(e, t, n, r) {
+function Bs(e, t, n, r) {
 	let i = t.activeByRun.get(e);
 	if (i !== void 0) {
-		let n = (r.get(i) ?? []).filter(Fs);
+		let n = (r.get(i) ?? []).filter(Ls);
 		if (n.length > 0) return n;
 		if (t.byRun.has(e)) return [];
 	}
 	return n.get(e) ?? [];
 }
-var zs = {
+var Vs = {
 	Pending: "created",
 	Provisioning: "created",
 	Ready: "ready",
@@ -13324,10 +13400,10 @@ var zs = {
 	Archived: "archived",
 	Terminating: "missing"
 };
-function Bs(e) {
-	return e !== void 0 && e in zs ? zs[e] : "missing";
+function Hs(e) {
+	return e !== void 0 && e in Vs ? Vs[e] : "missing";
 }
-function Vs(e) {
+function Us(e) {
 	let t = Y(Z(e).gitStatus), n = {
 		branch: q(t?.branch) ?? "main",
 		headSha: q(t?.headSha) ?? "",
@@ -13335,34 +13411,34 @@ function Vs(e) {
 	}, r = J(t?.ahead), i = J(t?.behind), a = J(t?.uncommittedCount);
 	return r !== void 0 && (n.ahead = r), i !== void 0 && (n.behind = i), a !== void 0 && (n.uncommittedCount = a), n;
 }
-function Hs(e) {
+function Ws(e) {
 	let t = /* @__PURE__ */ new Map();
 	for (let n of $(e, "workspaces")) t.set(n.metadata.name, n);
 	return t;
 }
-function Us(e) {
-	switch (Ks(e)) {
+function Gs(e) {
+	switch (Js(e)) {
 		case "running": return .5;
 		case "succeeded": return 1;
 		default: return 0;
 	}
 }
-function Ws(e) {
-	let t = $(e, "runs"), n = As(e), r = Hs(e), i = Is(e), a = Es(e), o = Ls(e), s = /* @__PURE__ */ new Map();
+function Ks(e) {
+	let t = $(e, "runs"), n = Ms(e), r = Ws(e), i = Rs(e), a = Os(e), o = zs(e), s = /* @__PURE__ */ new Map();
 	for (let e of t) {
-		let t = q(X(e).parentRunRef) ?? Jo(e)["commander.a5c.ai/parent"];
+		let t = q(X(e).parentRunRef) ?? Xo(e)["commander.a5c.ai/parent"];
 		t !== void 0 && (s.get(t) ?? s.set(t, []).get(t)).push(e.metadata.name);
 	}
 	let c = [], l = 0;
 	for (let e of t) {
-		let t = X(e), u = Jo(e), d = e.metadata.name, f = es(q(t.taskKind)), p = Q(e), m = n.pendingByRun.get(d) ?? [], h = m.some((e) => js.has(Os(e) ?? "")), g = m.some((e) => Ms.has(Os(e) ?? "")), _ = (n.byRun.get(d) ?? []).some((e) => Ms.has(Os(e) ?? "") && (Q(e) === "Approved" || q(Z(e).decision) === "approved")), v = q(Z(e).mergedAt) !== void 0 || u["commander.a5c.ai/merged"] === "true", y = q(Z(e).releasedAt) !== void 0 || u["commander.a5c.ai/release-id"] !== void 0, b = ys(e) ?? xs(p, {
+		let t = X(e), u = Xo(e), d = e.metadata.name, f = ns(q(t.taskKind)), p = Q(e), m = n.pendingByRun.get(d) ?? [], h = m.some((e) => Ns.has(As(e) ?? "")), g = m.some((e) => Ps.has(As(e) ?? "")), _ = (n.byRun.get(d) ?? []).some((e) => Ps.has(As(e) ?? "") && (Q(e) === "Approved" || q(Z(e).decision) === "approved")), v = q(Z(e).mergedAt) !== void 0 || u["commander.a5c.ai/merged"] === "true", y = q(Z(e).releasedAt) !== void 0 || u["commander.a5c.ai/release-id"] !== void 0, b = xs(e) ?? Cs(p, {
 			taskKind: f,
 			hasPendingReviewApproval: h,
 			hasPendingWriteBackApproval: g,
 			hasApprovedWriteBack: _,
 			merged: v,
 			released: y
-		}), x = b === "merged" || b === "in-production" || b === "approved" ? b : h ? "ai-review" : g ? "human-review" : b, S = q(t.workspaceRef) ?? "", C = S === "" ? void 0 : r.get(S), w = C === void 0 ? 0 : Vs(C).uncommittedCount ?? 0, T = q(Y(t.sourceRefs)?.pullRequest), E = q(t.repository) ?? "", D = q(t.title) ?? T ?? (E === "" ? d : `${E}:${f}`), O = Y(t.sourceEvent), k = q(t.description) ?? q(O?.name) ?? "", A = (n.byRun.get(d) ?? []).find((e) => q(Z(e).feedback) !== void 0), j = A ? q(Z(A).feedback) ?? null : null, M = Rs(d, a, i, o).map((e) => e.metadata.name), N = (a.byRun.get(d) ?? []).length || 1, P = {
+		}), x = b === "merged" || b === "in-production" || b === "approved" ? b : h ? "ai-review" : g ? "human-review" : b, S = q(t.workspaceRef) ?? "", C = S === "" ? void 0 : r.get(S), w = C === void 0 ? 0 : Us(C).uncommittedCount ?? 0, T = q(Y(t.sourceRefs)?.pullRequest), E = q(t.repository) ?? "", D = q(t.title) ?? T ?? (E === "" ? d : `${E}:${f}`), O = Y(t.sourceEvent), k = q(t.description) ?? q(O?.name) ?? "", A = (n.byRun.get(d) ?? []).find((e) => q(Z(e).feedback) !== void 0), j = A ? q(Z(A).feedback) ?? null : null, M = Bs(d, a, i, o).map((e) => e.metadata.name), N = (a.byRun.get(d) ?? []).length || 1, P = {
 			taskId: d,
 			taskKind: f,
 			title: D,
@@ -13370,9 +13446,9 @@ function Ws(e) {
 			workspaceId: S,
 			column: x,
 			order: 0,
-			yolo: Ko(Y(t.approvalPolicy)?.autoApprove) ?? u["commander.a5c.ai/yolo"] === "true",
+			yolo: Jo(Y(t.approvalPolicy)?.autoApprove) ?? u["commander.a5c.ai/yolo"] === "true",
 			merged: x === "merged" || x === "in-production",
-			progress: bs(e) ?? Us(p),
+			progress: Ss(e) ?? Gs(p),
 			parentId: q(t.parentRunRef) ?? u["commander.a5c.ai/parent"] ?? null,
 			childIds: s.get(d) ?? [],
 			agentIds: M,
@@ -13390,7 +13466,7 @@ function Ws(e) {
 		};
 		c.push({
 			view: P,
-			sortKey: Xo(e) ?? l,
+			sortKey: Qo(e) ?? l,
 			seq: l
 		}), l += 1;
 	}
@@ -13401,7 +13477,7 @@ function Ws(e) {
 	});
 	return c.map((e) => e.view);
 }
-var Gs = {
+var qs = {
 	Pending: "pending",
 	Queued: "queued",
 	Running: "running",
@@ -13411,10 +13487,10 @@ var Gs = {
 	Failed: "failed",
 	Cancelled: "cancelled"
 };
-function Ks(e) {
-	return e === void 0 ? "pending" : Gs[e] ?? e;
+function Js(e) {
+	return e === void 0 ? "pending" : qs[e] ?? e;
 }
-var qs = {
+var Ys = {
 	pending: "Pending",
 	queued: "Queued",
 	running: "Running",
@@ -13425,10 +13501,10 @@ var qs = {
 	failed: "Failed",
 	cancelled: "Cancelled"
 };
-function Js(e) {
-	if (e !== void 0) return qs[e] ?? e;
+function Xs(e) {
+	if (e !== void 0) return Ys[e] ?? e;
 }
-var Ys = {
+var Zs = {
 	Running: "waiting",
 	Succeeded: "completed",
 	Failed: "failed",
@@ -13437,12 +13513,12 @@ var Ys = {
 	Queued: "created",
 	AwaitingApproval: "waiting"
 };
-function Xs(e) {
-	let t = Js(e);
-	return t !== void 0 && t in Ys ? Ys[t] : "created";
+function Qs(e) {
+	let t = Xs(e);
+	return t !== void 0 && t in Zs ? Zs[t] : "created";
 }
-function Zs(e, t, n) {
-	let r = n?.get(e), i = r === void 0 ? wt[e] : r.phases, a = Us(t);
+function $s(e, t, n) {
+	let r = n?.get(e), i = r === void 0 ? Tt[e] : r.phases, a = Gs(t);
 	if (a >= 1) return i.map((e) => ({
 		label: e,
 		status: "done"
@@ -13453,57 +13529,57 @@ function Zs(e, t, n) {
 		status: t < o ? "done" : t === o ? "current" : "pending"
 	}));
 }
-function Qs(e, t) {
-	let n = As(e).pendingByRun.get(t) ?? [];
+function ec(e, t) {
+	let n = Ms(e).pendingByRun.get(t) ?? [];
 	return n.length === 0 ? {} : { breakpoint: n.length };
 }
-function $s(e, t) {
+function tc(e, t) {
 	let n = t?.get(e);
 	return n === void 0 ? `commander/${e}@v1` : n.processId;
 }
-function ec(e) {
-	let t = $(e, "runs"), n = ls(e);
+function nc(e) {
+	let t = $(e, "runs"), n = ds(e);
 	return t.map((t) => {
-		let r = X(t), i = Z(t), a = es(q(r.taskKind)), o = Q(t), s = Yo(i.queuedAt) ?? Xo(t) ?? 0, c = Yo(i.completedAt) ?? Yo(i.failedAt);
+		let r = X(t), i = Z(t), a = ns(q(r.taskKind)), o = Q(t), s = Zo(i.queuedAt) ?? Qo(t) ?? 0, c = Zo(i.completedAt) ?? Zo(i.failedAt);
 		return {
 			runId: t.metadata.name,
 			taskId: t.metadata.name,
 			taskKind: a,
-			processId: $s(a, n),
+			processId: tc(a, n),
 			processRevision: n.get(a)?.revision ?? 1,
-			observedState: Xs(o),
-			phases: Zs(a, o, n),
-			pendingEffectsByKind: Qs(e, t.metadata.name),
-			tokens: { ...Wo },
+			observedState: Qs(o),
+			phases: $s(a, o, n),
+			pendingEffectsByKind: ec(e, t.metadata.name),
+			tokens: { ...Ko },
 			costUsd: J(i.cost) ?? 0,
 			startedAt: s,
 			endedAt: c ?? null
 		};
 	}).sort((e, t) => t.startedAt - e.startedAt);
 }
-function tc(e, t) {
+function rc(e, t) {
 	let n = $(e, "runs").find((e) => e.metadata.name === t);
 	if (n === void 0) return null;
-	let r = es(q(X(n).taskKind)), i = Q(n), a = ls(e);
+	let r = ns(q(X(n).taskKind)), i = Q(n), a = ds(e);
 	return {
 		runId: n.metadata.name,
 		taskId: n.metadata.name,
-		observedState: Xs(i),
-		pendingEffectsByKind: Qs(e, t),
-		phases: Zs(r, i, a),
+		observedState: Qs(i),
+		pendingEffectsByKind: ec(e, t),
+		phases: $s(r, i, a),
 		journal: []
 	};
 }
-var nc = {
+var ic = {
 	Active: "active",
 	Completed: "completed",
 	Failed: "aborted",
 	Cancelled: "aborted"
 };
-function rc(e) {
-	return e !== void 0 && e in nc ? nc[e] : "active";
+function ac(e) {
+	return e !== void 0 && e in ic ? ic[e] : "active";
 }
-function ic(e) {
+function oc(e) {
 	let t = /* @__PURE__ */ new Map();
 	for (let n of $(e, "transcripts")) {
 		let e = q(X(n).sessionRef);
@@ -13511,14 +13587,14 @@ function ic(e) {
 	}
 	return { bySession: t };
 }
-function ac(e) {
+function sc(e) {
 	if (e === void 0) return {
-		tokenUsage: { ...Wo },
-		cost: { ...Uo },
+		tokenUsage: { ...Ko },
+		cost: { ...Go },
 		messageCount: 0,
 		transcriptLength: 0
 	};
-	let t = X(e), n = Y(t.cost), r = qo(t.messages) ?? [], i = J(n?.inputTokens) ?? 0, a = J(n?.outputTokens) ?? 0, o = J(n?.thinkingTokens) ?? 0, s = J(n?.cachedTokens) ?? 0, c = J(n?.totalUsd) ?? 0;
+	let t = X(e), n = Y(t.cost), r = Yo(t.messages) ?? [], i = J(n?.inputTokens) ?? 0, a = J(n?.outputTokens) ?? 0, o = J(n?.thinkingTokens) ?? 0, s = J(n?.cachedTokens) ?? 0, c = J(n?.totalUsd) ?? 0;
 	return {
 		tokenUsage: {
 			inputTokens: i,
@@ -13536,22 +13612,22 @@ function ac(e) {
 		transcriptLength: r.length
 	};
 }
-function oc(e, t) {
+function cc(e, t) {
 	if (t === void 0) return "";
 	let n = $(e, "runs").find((e) => e.metadata.name === t);
 	return n === void 0 ? "" : q(X(n).agentStack) ?? "";
 }
-function sc(e, t, n, r) {
+function lc(e, t, n, r) {
 	let i = X(t), a = q(i.dispatchRun), o = a === void 0 ? void 0 : $(e, "runs").find((e) => e.metadata.name === a), s = o === void 0 ? {} : X(o);
-	return _s(n, r, q(i.agentDefinition) ?? q(s.agentDefinition), q(i.personaRef) ?? q(s.personaRef));
+	return ys(n, r, q(i.agentDefinition) ?? q(s.agentDefinition), q(i.personaRef) ?? q(s.personaRef));
 }
-function cc(e) {
+function uc(e) {
 	let t = /* @__PURE__ */ new Map();
-	for (let n of ss(e)) t.set(n.metadata.name, n);
+	for (let n of ls(e)) t.set(n.metadata.name, n);
 	return t;
 }
-function lc(e, t, n, r, i, a) {
-	let o = X(t), s = Jo(t), c = t.metadata.name, l = q(o.dispatchRun), u = sc(e, t, i, a)?.displayName ?? s["commander.a5c.ai/creature"] ?? c, d = $o(q(o.adapter)), f = q(o.model) ?? H[d][0] ?? "", p = s["kradle.a5c.ai/agent-role"] === "reviewer" ? "reviewer" : s["kradle.a5c.ai/agent-role"] === "integration" ? "integration" : "worker", m = rc(Q(t)), h = oc(e, l), g = ac(n.bySession.get(c)), _ = q(o.title) ?? `${u} — ${p}`, v = m === "active" ? null : 0;
+function dc(e, t, n, r, i, a) {
+	let o = X(t), s = Xo(t), c = t.metadata.name, l = q(o.dispatchRun), u = lc(e, t, i, a)?.displayName ?? s["commander.a5c.ai/creature"] ?? c, d = ts(q(o.adapter)), f = q(o.model) ?? H[d][0] ?? "", p = s["kradle.a5c.ai/agent-role"] === "reviewer" ? "reviewer" : s["kradle.a5c.ai/agent-role"] === "integration" ? "integration" : "worker", m = ac(Q(t)), h = cc(e, l), g = sc(n.bySession.get(c)), _ = q(o.title) ?? `${u} — ${p}`, v = m === "active" ? null : 0;
 	return {
 		sessionId: c,
 		title: _,
@@ -13561,7 +13637,7 @@ function lc(e, t, n, r, i, a) {
 		stackRef: h,
 		stackName: r.get(h) ?? h,
 		role: p,
-		coordination: s[Vo] === "true",
+		coordination: s[Uo] === "true",
 		taskId: l ?? "",
 		attempt: J(o.attempt) ?? 1,
 		runId: l ?? null,
@@ -13577,38 +13653,38 @@ function lc(e, t, n, r, i, a) {
 		transcriptLength: g.transcriptLength
 	};
 }
-function uc(e, t) {
-	let n = ic(e), r = new Map(as(e).map((e) => [e.stackRef, e.name])), i = ps(e), a = cc(e), o = $(e, "sessions"), s = [], c = 0;
+function fc(e, t) {
+	let n = oc(e), r = new Map(ss(e).map((e) => [e.stackRef, e.name])), i = hs(e), a = uc(e), o = $(e, "sessions"), s = [], c = 0;
 	for (let l of o) {
-		if (t !== void 0 && Ns(l) !== t) {
+		if (t !== void 0 && Fs(l) !== t) {
 			c += 1;
 			continue;
 		}
 		s.push({
-			view: lc(e, l, n, r, i, a),
-			sortKey: Xo(l) ?? c,
+			view: dc(e, l, n, r, i, a),
+			sortKey: Qo(l) ?? c,
 			seq: c
 		}), c += 1;
 	}
 	return s.sort((e, t) => t.sortKey - e.sortKey || t.seq - e.seq), s.map((e) => e.view);
 }
-var dc = {
+var pc = {
 	user: "user",
 	assistant: "message",
 	system: "event",
 	tool: "tool_call"
 };
-function fc(e, t) {
+function mc(e, t) {
 	let n = $(e, "sessions").find((e) => e.metadata.name === t);
 	if (n === void 0) return null;
-	let r = ic(e), i = lc(e, n, r, new Map(as(e).map((e) => [e.stackRef, e.name])), ps(e), cc(e)), a = r.bySession.get(t);
+	let r = oc(e), i = dc(e, n, r, new Map(ss(e).map((e) => [e.stackRef, e.name])), hs(e), uc(e)), a = r.bySession.get(t);
 	return {
 		record: i,
-		transcript: (a === void 0 ? [] : qo(X(a).messages) ?? []).map((e, t) => {
-			let n = Y(e) ?? {}, r = dc[q(n.role) ?? "assistant"] ?? "message", i = {
+		transcript: (a === void 0 ? [] : Yo(X(a).messages) ?? []).map((e, t) => {
+			let n = Y(e) ?? {}, r = pc[q(n.role) ?? "assistant"] ?? "message", i = {
 				seq: t,
 				tick: 0,
-				timestamp: Yo(n.timestamp) ?? 0,
+				timestamp: Zo(n.timestamp) ?? 0,
 				kind: r,
 				text: q(n.content) ?? ""
 			}, a = q(n.toolName);
@@ -13616,27 +13692,27 @@ function fc(e, t) {
 		})
 	};
 }
-function pc(e, t) {
+function hc(e, t) {
 	let n = $(e, "runs").find((e) => e.metadata.name === t);
 	if (n === void 0) return null;
-	let r = q(X(n).workspaceRef), i = r === void 0 ? void 0 : Hs(e).get(r), a = (As(e).byRun.get(t) ?? []).map((e) => q(Z(e).feedback)).filter((e) => e !== void 0);
+	let r = q(X(n).workspaceRef), i = r === void 0 ? void 0 : Ws(e).get(r), a = (Ms(e).byRun.get(t) ?? []).map((e) => q(Z(e).feedback)).filter((e) => e !== void 0);
 	return {
 		taskId: t,
-		phase: i === void 0 ? "missing" : Bs(Q(i)),
+		phase: i === void 0 ? "missing" : Hs(Q(i)),
 		gitStatus: i === void 0 ? {
 			branch: "main",
 			headSha: "",
 			dirty: !1
-		} : Vs(i),
+		} : Us(i),
 		files: [],
 		testEvidence: { status: "unknown" },
 		reviewerNotes: a
 	};
 }
-function mc(e) {
-	let t = Ws(e), n = $(e, "workspaces"), r = Is(e);
+function gc(e) {
+	let t = Ks(e), n = $(e, "workspaces"), r = Rs(e);
 	return n.map((e) => {
-		let n = e.metadata.name, i = Vs(e), a = Bs(Q(e)), o = t.filter((e) => e.workspaceId === n), s = o.map((e) => e.taskId), c = o.map((e) => ({
+		let n = e.metadata.name, i = Us(e), a = Hs(Q(e)), o = t.filter((e) => e.workspaceId === n), s = o.map((e) => e.taskId), c = o.map((e) => ({
 			taskId: e.taskId,
 			title: e.title,
 			branch: i.branch,
@@ -13657,22 +13733,22 @@ function mc(e) {
 		};
 	});
 }
-function hc(e) {
+function _c(e) {
 	let t = e.indexOf(":");
 	return t > 0 ? e.slice(0, t) : e;
 }
-function gc(e, t, n) {
+function vc(e, t, n) {
 	let r = (n?.matches ?? []).map((e) => ({
 		recordId: e.record.id,
 		kind: e.record.nodeKind,
-		silo: hc(e.record.id),
+		silo: _c(e.record.id),
 		tick: 0,
 		unitId: t
-	})), i = [], a = [...$(e, "memoryImports"), ...ns(e, "AgentMemoryUpdate")];
+	})), i = [], a = [...$(e, "memoryImports"), ...is(e, "AgentMemoryUpdate")];
 	for (let e of a) {
 		let n = X(e);
 		if (q(n.sourceRun) !== t) continue;
-		let r = (qo(n.changes) ?? []).map((e) => {
+		let r = (Yo(n.changes) ?? []).map((e) => {
 			let t = Y(e) ?? {};
 			return {
 				path: q(t.path) ?? "",
@@ -13694,15 +13770,15 @@ function gc(e, t, n) {
 		written: i
 	};
 }
-function _c(e) {
-	let t = ls(e);
-	return U.map((e) => {
+function yc(e) {
+	let t = ds(e);
+	return ct.map((e) => {
 		let n = t.get(e);
 		return n === void 0 ? {
 			kind: e,
-			processId: $s(e),
+			processId: tc(e),
 			revision: 1,
-			phases: [...wt[e]]
+			phases: [...Tt[e]]
 		} : {
 			kind: e,
 			processId: n.processId,
@@ -13711,8 +13787,8 @@ function _c(e) {
 		};
 	});
 }
-function vc(e, t, n, r, i, a, o) {
-	let s = X(t), c = Jo(t), l = q(s.dispatchRun), u = $o(q(s.adapter)), d = q(s.model) ?? H[u][0] ?? "", f = oc(e, l), p = c["kradle.a5c.ai/agent-role"] === "reviewer" ? "reviewer" : c["kradle.a5c.ai/agent-role"] === "integration" ? "integration" : "worker", m = ac(r.bySession.get(t.metadata.name)), h = sc(e, t, i, a);
+function bc(e, t, n, r, i, a, o) {
+	let s = X(t), c = Xo(t), l = q(s.dispatchRun), u = ts(q(s.adapter)), d = q(s.model) ?? H[u][0] ?? "", f = cc(e, l), p = c["kradle.a5c.ai/agent-role"] === "reviewer" ? "reviewer" : c["kradle.a5c.ai/agent-role"] === "integration" ? "integration" : "worker", m = sc(r.bySession.get(t.metadata.name)), h = lc(e, t, i, a);
 	return {
 		unitId: t.metadata.name,
 		agent: u,
@@ -13731,11 +13807,11 @@ function vc(e, t, n, r, i, a, o) {
 		cost: m.cost,
 		turnCount: 0,
 		messageCount: m.messageCount,
-		createdAt: Xo(t) ?? o,
+		createdAt: Qo(t) ?? o,
 		updatedAt: o
 	};
 }
-var yc = {
+var xc = {
 	Running: "in_progress",
 	Succeeded: "done",
 	Failed: "failed",
@@ -13744,27 +13820,27 @@ var yc = {
 	Queued: "queued",
 	AwaitingApproval: "review"
 };
-function bc(e) {
-	let t = Js(e);
-	return t !== void 0 && t in yc ? yc[t] : "queued";
+function Sc(e) {
+	let t = Xs(e);
+	return t !== void 0 && t in xc ? xc[t] : "queued";
 }
-function xc(e) {
-	let t = X(e), n = Q(e), r = es(q(t.taskKind)), i = n === "Succeeded" || n === "succeeded" ? "Ready" : n === "Failed" || n === "failed" || n === "Cancelled" || n === "cancelled" ? "Error" : "Pending";
+function Cc(e) {
+	let t = X(e), n = Q(e), r = ns(q(t.taskKind)), i = n === "Succeeded" || n === "succeeded" ? "Ready" : n === "Failed" || n === "failed" || n === "Cancelled" || n === "cancelled" ? "Error" : "Pending";
 	return {
 		taskId: e.metadata.name,
 		taskKind: r,
 		repository: q(t.repository) ?? "",
 		workspaceId: q(t.workspaceRef) ?? "",
 		title: q(t.title) ?? q(Y(t.sourceRefs)?.pullRequest) ?? e.metadata.name,
-		state: bc(n),
+		state: Sc(n),
 		phase: i,
-		progress: bs(e) ?? Us(n),
+		progress: Ss(e) ?? Gs(n),
 		assigneeIds: [],
 		priority: J(t.priority) ?? 0
 	};
 }
-function Sc(e, t, n) {
-	let r = X(e), i = q(r.dispatchRun), a = $o(q(r.adapter)), o = q(r.model) ?? H[a][0] ?? "", s = ac(t.bySession.get(e.metadata.name));
+function wc(e, t, n) {
+	let r = X(e), i = q(r.dispatchRun), a = ts(q(r.adapter)), o = q(r.model) ?? H[a][0] ?? "", s = sc(t.bySession.get(e.metadata.name));
 	return {
 		unitId: e.metadata.name,
 		agent: a,
@@ -13781,12 +13857,12 @@ function Sc(e, t, n) {
 		pendingHookId: null,
 		tokenUsage: s.tokenUsage,
 		cost: s.cost,
-		createdAt: Xo(e) ?? n,
+		createdAt: Qo(e) ?? n,
 		updatedAt: n
 	};
 }
-function Cc(e, t) {
-	let n = As(e), r = Is(e), i = [];
+function Tc(e, t) {
+	let n = Ms(e), r = Rs(e), i = [];
 	for (let [e, a] of n.pendingByRun) {
 		let n = r.get(e)?.[0]?.metadata.name ?? "";
 		for (let r of a) {
@@ -13807,14 +13883,14 @@ function Cc(e, t) {
 						caption: "Deny"
 					}]
 				},
-				deadlineTs: t + Ho
+				deadlineTs: t + Wo
 			});
 		}
 	}
 	return i;
 }
-function wc(e, t) {
-	let n = As(e), r = Is(e), i = [];
+function Ec(e, t) {
+	let n = Ms(e), r = Rs(e), i = [];
 	for (let [e, a] of n.pendingByRun) {
 		let n = r.get(e)?.[0]?.metadata.name ?? "";
 		for (let r of a) {
@@ -13835,17 +13911,17 @@ function wc(e, t) {
 					caption: "Deny",
 					tone: "danger"
 				}],
-				deadlineTs: t + Ho
+				deadlineTs: t + Wo
 			});
 		}
 	}
 	return i;
 }
-function Tc(e, t) {
-	let n = Ws(e), r = ic(e), i = new Map(as(e).map((e) => [e.stackRef, e.name])), a = ps(e), o = cc(e), s = $(e, "sessions").filter(Fs), c = s.map((n) => vc(e, n, i, r, a, o, t)), l = s.map((e) => Sc(e, r, t)), u = $(e, "runs").map((e) => xc(e)), d = Cc(e, t), f = wc(e, t), p = {};
+function Dc(e, t) {
+	let n = Ks(e), r = oc(e), i = new Map(ss(e).map((e) => [e.stackRef, e.name])), a = hs(e), o = uc(e), s = $(e, "sessions").filter(Ls), c = s.map((n) => bc(e, n, i, r, a, o, t)), l = s.map((e) => wc(e, r, t)), u = $(e, "runs").map((e) => Cc(e)), d = Tc(e, t), f = Ec(e, t), p = {};
 	for (let t of n) {
 		if (t.agentIds.length === 0) continue;
-		let n = tc(e, t.taskId);
+		let n = rc(e, t.taskId);
 		p[t.taskId] = n?.phases.find((e) => e.status === "current")?.label ?? null;
 	}
 	return {
@@ -13856,71 +13932,71 @@ function Tc(e, t) {
 		hooks: d,
 		inquiries: f,
 		runStages: p,
-		personas: hs(e),
-		definitions: gs(e)
+		personas: _s(e),
+		definitions: vs(e)
 	};
 }
 //#endregion
 //#region src/backend/kradle/kradleOrders.ts
-function Ec(e) {
+function Oc(e) {
 	return typeof e == "object" && !!e && !Array.isArray(e);
 }
-function Dc(e) {
+function kc(e) {
 	return typeof e == "string" ? e : void 0;
 }
-function Oc(e) {
-	return Ec(e.spec) ? e.spec : {};
+function Ac(e) {
+	return Oc(e.spec) ? e.spec : {};
 }
-function kc(e) {
+function jc(e) {
 	let t = e.metadata.labels;
-	if (!Ec(t)) return {};
+	if (!Oc(t)) return {};
 	let n = {};
 	for (let [e, r] of Object.entries(t)) typeof r == "string" && (n[e] = r);
 	return n;
 }
-function Ac(e) {
+function Mc(e) {
 	return e?.agents?.runs?.items ?? [];
 }
-function jc(e) {
+function Nc(e) {
 	let t = e?.agents?.approvals?.pending;
 	return Array.isArray(t) ? t : (e?.agents?.approvals?.items ?? []).filter((e) => {
-		let t = Ec(e.status) ? Dc(e.status.phase) : void 0;
+		let t = Oc(e.status) ? kc(e.status.phase) : void 0;
 		return t === void 0 || t === "Pending";
 	});
 }
-function Mc(e) {
+function Pc(e) {
 	return e?.agents?.stacks?.items ?? [];
 }
-function Nc(e) {
+function Fc(e) {
 	return e?.agents?.definitions?.items ?? [];
 }
-var Pc = {
+var Ic = {
 	"claude-code": "claude-code",
 	codex: "codex",
 	"gemini-cli": "gemini-cli",
 	pi: "pi"
 };
-function Fc(e) {
+function Lc(e) {
 	if (e !== void 0) {
-		for (let t of Object.keys(Pc)) if (e === t || e.includes(t)) return t;
+		for (let t of Object.keys(Ic)) if (e === t || e.includes(t)) return t;
 		return e;
 	}
 }
-function Ic(e, t) {
-	let n = Mc(e);
-	if (n.length === 0) return ft[t] ?? null;
-	let r = n.find((e) => kc(e)[Bo] === t);
+function Rc(e, t) {
+	let n = Pc(e);
+	if (n.length === 0) return pt[t] ?? null;
+	let r = n.find((e) => jc(e)[Ho] === t);
 	if (r !== void 0) return r.metadata.name;
-	let i = ct[t], a = n.find((e) => Fc(Dc(Oc(e).adapter)) === i);
+	let i = lt[t], a = n.find((e) => Lc(kc(Ac(e).adapter)) === i);
 	return a === void 0 ? n[0].metadata.name : a.metadata.name;
 }
-function Lc(e, t, n) {
-	let r = Nc(e);
-	return n != null && n !== "" ? r.find((e) => e.metadata.name === n)?.metadata.name ?? n : r.find((e) => kc(e)["commander.a5c.ai/default-for"] === t)?.metadata.name ?? null;
+function zc(e, t, n) {
+	let r = Fc(e);
+	return n != null && n !== "" ? r.find((e) => e.metadata.name === n)?.metadata.name ?? n : r.find((e) => jc(e)["commander.a5c.ai/default-for"] === t)?.metadata.name ?? null;
 }
-var Rc = "default";
-function zc(e, t) {
-	let n = e.spec, r = e.metadata.name, i = { ...e.metadata.labels ?? {} }, a = n.runtimeIdentity?.serviceAccountRef ?? Rc, o = {
+var Bc = "default";
+function Vc(e, t) {
+	let n = e.spec, r = e.metadata.name, i = { ...e.metadata.labels ?? {} }, a = n.runtimeIdentity?.serviceAccountRef ?? Bc, o = {
 		organizationRef: n.organizationRef ?? t,
 		baseAgent: n.baseAgent,
 		adapter: n.adapter,
@@ -13932,7 +14008,7 @@ function zc(e, t) {
 			serviceAccountRef: a
 		}
 	};
-	return n.provider !== void 0 && (o.provider = n.provider), n.toolProfileRef !== void 0 && (o.toolProfileRef = n.toolProfileRef), n.externalTools !== void 0 && (o.externalTools = n.externalTools), n.skillRefs !== void 0 && (o.skillRefs = n.skillRefs), n.subagentRefs !== void 0 && (o.subagentRefs = n.subagentRefs), n.contextLabelRefs !== void 0 && (o.contextLabelRefs = n.contextLabelRefs), n.workspacePolicyRef !== void 0 && (o.workspacePolicyRef = n.workspacePolicyRef), n.runnerPool !== void 0 && (o.runnerPool = n.runnerPool), n.permissionRefs !== void 0 && (o.permissionRefs = n.permissionRefs), n.memoryRepositoryRefs !== void 0 && (o.memoryRepositoryRefs = n.memoryRepositoryRefs), n.displayName !== void 0 && (o.displayName = n.displayName), n.agentRole !== void 0 && (o.agentRole = n.agentRole), {
+	return n.provider !== void 0 && (o.provider = n.provider), n.toolProfileRef !== void 0 && (o.toolProfileRef = n.toolProfileRef), n.externalTools !== void 0 && (o.externalTools = n.externalTools), n.skillRefs !== void 0 && (o.skillRefs = n.skillRefs), n.subagentRefs !== void 0 && (o.subagentRefs = n.subagentRefs), n.contextLabelRefs !== void 0 && (o.contextLabelRefs = n.contextLabelRefs), n.workspacePolicyRef !== void 0 && (o.workspacePolicyRef = n.workspacePolicyRef), n.runnerPool !== void 0 && (o.runnerPool = n.runnerPool), n.permissionRefs !== void 0 && (o.permissionRefs = n.permissionRefs), n.memoryRepositoryRefs !== void 0 && (o.memoryRepositoryRefs = n.memoryRepositoryRefs), n.displayName !== void 0 && (o.displayName = n.displayName), n.agentRole !== void 0 && (o.agentRole = n.agentRole), n.resources !== void 0 && (o.resources = n.resources), {
 		apiVersion: e.apiVersion ?? "kradle.a5c.ai/v1alpha1",
 		kind: "AgentStack",
 		metadata: {
@@ -13942,7 +14018,7 @@ function zc(e, t) {
 		spec: o
 	};
 }
-function Bc(e, t) {
+function Hc(e, t) {
 	let { personaRef: n, stackRef: r, roleContext: i, scope: a, triggerRefs: o, meetingConfig: s, limits: c } = e.spec, l = {
 		organizationRef: e.spec.organizationRef ?? t,
 		personaRef: n,
@@ -13958,11 +14034,11 @@ function Bc(e, t) {
 		spec: l
 	};
 }
-async function Vc(e, t) {
-	let n = Bc(t, e.org);
+async function Uc(e, t) {
+	let n = Hc(t, e.org);
 	return await e.applyResource(n), t.name;
 }
-function Hc(e, t) {
+function Wc(e, t) {
 	let n = e.name, r = `${n}-soul`, i = `${n}-appearance`, a = `${n}-voice`;
 	return [
 		{
@@ -14027,15 +14103,15 @@ function Hc(e, t) {
 		}
 	];
 }
-async function Uc(e, t) {
-	let n = Hc(t, e.org);
+async function Gc(e, t) {
+	let n = Wc(t, e.org);
 	for (let t of n) await e.applyResource(t);
 	return t.name;
 }
-function Wc(e) {
+function Kc(e) {
 	return `process-${e}`;
 }
-function Gc(e, t) {
+function qc(e, t) {
 	let n = {
 		organizationRef: t,
 		taskKind: e.taskKind,
@@ -14044,21 +14120,21 @@ function Gc(e, t) {
 	return e.displayName !== void 0 && e.displayName !== "" && (n.displayName = e.displayName), {
 		apiVersion: "kradle.a5c.ai/v1alpha1",
 		kind: "AgentProcessTemplate",
-		metadata: { name: e.name ?? Wc(e.taskKind) },
+		metadata: { name: e.name ?? Kc(e.taskKind) },
 		spec: n
 	};
 }
-async function Kc(e, t) {
-	let n = Gc(t, e.org);
+async function Jc(e, t) {
+	let n = qc(t, e.org);
 	return await e.applyResource(n), n.metadata.name;
 }
-function qc(e, t) {
-	return jc(e).some((e) => e.metadata.name === t);
-}
-function Jc(e, t) {
-	return Ac(e).some((e) => e.metadata.name === t);
-}
 function Yc(e, t) {
+	return Nc(e).some((e) => e.metadata.name === t);
+}
+function Xc(e, t) {
+	return Mc(e).some((e) => e.metadata.name === t);
+}
+function Zc(e, t) {
 	let { getSnapshot: n, scheduleRefresh: r, gatewayOrders: i, applyOptimistic: a } = t, o = t.repo || "default", s = /* @__PURE__ */ new Set();
 	function c(e) {
 		s.has(e) || (s.add(e), console.warn(`kradleOrders: '${e}' has no kradle write path (documented no-op)`));
@@ -14073,13 +14149,13 @@ function Yc(e, t) {
 	return {
 		abort(t) {
 			let r = n();
-			for (let n of t) Jc(r, n) ? l("abort/cancelRun", () => e.cancelRun(n)) : i ? i.abort([n]) : c("abort");
+			for (let n of t) Xc(r, n) ? l("abort/cancelRun", () => e.cancelRun(n)) : i ? i.abort([n]) : c("abort");
 		},
 		steer(e, t) {
 			i ? i.steer(e, t) : c("steer");
 		},
 		decide(t, r) {
-			if (qc(n(), t)) {
+			if (Yc(n(), t)) {
 				let n = r === "allow" ? "approve" : "deny";
 				l("decide/decideApproval", () => e.decideApproval(t, n));
 				return;
@@ -14092,11 +14168,11 @@ function Yc(e, t) {
 		},
 		answerInquiry(t, r) {
 			let a = n();
-			if (i && !qc(a, t)) {
+			if (i && !Yc(a, t)) {
 				i.answerInquiry(t, r);
 				return;
 			}
-			if (qc(a, t)) {
+			if (Yc(a, t)) {
 				let n = r === null || /^(approve|proceed|allow|yes|continue|ship|go)$/i.test(r) ? "approve" : "deny";
 				l("answerInquiry/decideApproval", () => e.decideApproval(t, n));
 				return;
@@ -14108,7 +14184,7 @@ function Yc(e, t) {
 			c("answerInquiry");
 		},
 		createTask(t) {
-			let r = n(), i = Lc(r, t.taskKind);
+			let r = n(), i = zc(r, t.taskKind);
 			if (i !== null) {
 				let n = {
 					agentDefinition: i,
@@ -14120,7 +14196,7 @@ function Yc(e, t) {
 				};
 				return l("createTask/dispatch(definition)", () => e.dispatch(n)), `dispatched:${i}`;
 			}
-			let a = Ic(r, t.taskKind);
+			let a = Rc(r, t.taskKind);
 			if (a === null) return c("createTask"), null;
 			let s = {
 				agentStack: a,
@@ -14134,7 +14210,7 @@ function Yc(e, t) {
 			return l("createTask/dispatch", () => e.dispatch(s)), `dispatched:${a}`;
 		},
 		upsertStack(t) {
-			let n = zc(t, e.org);
+			let n = Vc(t, e.org);
 			return t.stackRef !== void 0 && t.stackRef !== "" ? (n.metadata.name = t.stackRef, a && a([{
 				collection: "stacks",
 				resource: n
@@ -14157,7 +14233,7 @@ function Yc(e, t) {
 						...t.roleContext ? { roleContext: t.roleContext } : {}
 					}
 				}
-			}]), l("upsertDefinition/applyDefinition", () => Vc(e, {
+			}]), l("upsertDefinition/applyDefinition", () => Uc(e, {
 				name: t.name,
 				spec: {
 					personaRef: t.personaRef,
@@ -14168,7 +14244,7 @@ function Yc(e, t) {
 		},
 		createAgentIdentity(t) {
 			if (a) {
-				let [n, , r] = Hc(t, e.org);
+				let [n, , r] = Wc(t, e.org);
 				a([{
 					collection: "personas",
 					resource: n
@@ -14177,7 +14253,7 @@ function Yc(e, t) {
 					resource: r
 				}]);
 			}
-			return l("createAgentIdentity/applyAgentIdentity", () => Uc(e, t)), t.name;
+			return l("createAgentIdentity/applyAgentIdentity", () => Gc(e, t)), t.name;
 		},
 		createRosterAgent() {
 			return c("createRosterAgent"), null;
@@ -14220,7 +14296,7 @@ function Yc(e, t) {
 		},
 		updateProcessTemplate(t, n) {
 			let r = n.map((e) => e.trim()).filter((e) => e.length > 0);
-			return r.length === 0 ? null : (l("updateProcessTemplate/applyProcessTemplate", () => Kc(e, {
+			return r.length === 0 ? null : (l("updateProcessTemplate/applyProcessTemplate", () => Jc(e, {
 				taskKind: t,
 				phases: r
 			})), 1);
@@ -14239,7 +14315,7 @@ function Yc(e, t) {
 }
 //#endregion
 //#region src/backend/real/realBoot.ts
-var Xc = {
+var Qc = {
 	getWorkspaceView() {
 		return null;
 	},
@@ -14292,7 +14368,7 @@ var Xc = {
 		return [];
 	}
 };
-function Zc(e, t) {
+function $c(e, t) {
 	return {
 		abort(n) {
 			for (let t of n) e.send({
@@ -14369,7 +14445,7 @@ function Zc(e, t) {
 		focusInquiryCard() {}
 	};
 }
-var Qc = 5e3, $c = 500, el = class {
+var el = 5e3, tl = 500, nl = class {
 	snapshot = null;
 	rawSnapshot = null;
 	optimistic = /* @__PURE__ */ new Map();
@@ -14416,41 +14492,41 @@ var Qc = 5e3, $c = 500, el = class {
 	}
 	views() {
 		return {
-			getWorkspaceView: (e) => this.snapshot ? pc(this.snapshot, e) : null,
-			getRunObservation: (e) => this.snapshot ? tc(this.snapshot, e) : null,
-			listStacks: () => this.snapshot ? as(this.snapshot) : [],
+			getWorkspaceView: (e) => this.snapshot ? hc(this.snapshot, e) : null,
+			getRunObservation: (e) => this.snapshot ? rc(this.snapshot, e) : null,
+			listStacks: () => this.snapshot ? ss(this.snapshot) : [],
 			listRosterAgents: () => [],
-			listPersonas: () => this.snapshot ? hs(this.snapshot) : [],
-			listDefinitions: () => this.snapshot ? gs(this.snapshot) : [],
-			listRuns: () => this.snapshot ? ec(this.snapshot) : [],
-			listProcessTemplates: () => this.snapshot ? _c(this.snapshot) : [],
+			listPersonas: () => this.snapshot ? _s(this.snapshot) : [],
+			listDefinitions: () => this.snapshot ? vs(this.snapshot) : [],
+			listRuns: () => this.snapshot ? nc(this.snapshot) : [],
+			listProcessTemplates: () => this.snapshot ? yc(this.snapshot) : [],
 			getMemoryIO: (e) => {
 				if (!this.snapshot) return {
 					read: [],
 					written: []
 				};
 				let t = this.memoryIo.get(e);
-				return t === void 0 && this.fetchMemory(e), gc(this.snapshot, e, t);
+				return t === void 0 && this.fetchMemory(e), vc(this.snapshot, e, t);
 			},
 			getWorkspaceTree: () => null,
 			getFileContent: () => null,
 			getGitLog: () => [],
-			listSessions: (e) => this.snapshot ? uc(this.snapshot, e) : [],
-			getSession: (e) => this.snapshot ? fc(this.snapshot, e) : null,
-			listCardViews: () => this.snapshot ? Tc(this.snapshot, this.deps.now()).cards : [],
-			listWorkspaces: () => this.snapshot ? mc(this.snapshot) : []
+			listSessions: (e) => this.snapshot ? fc(this.snapshot, e) : [],
+			getSession: (e) => this.snapshot ? mc(this.snapshot, e) : null,
+			listCardViews: () => this.snapshot ? Dc(this.snapshot, this.deps.now()).cards : [],
+			listWorkspaces: () => this.snapshot ? gc(this.snapshot) : []
 		};
 	}
 	start() {
-		this.refresh(), this.pollHandle = this.deps.setTimer(() => this.tickPoll(), Qc), this.streamUnsub = this.deps.client.openEventStream(() => this.scheduleRefresh());
+		this.refresh(), this.pollHandle = this.deps.setTimer(() => this.tickPoll(), el), this.streamUnsub = this.deps.client.openEventStream(() => this.scheduleRefresh());
 	}
 	scheduleRefresh() {
 		this.disposed || this.debounceHandle === null && (this.debounceHandle = this.deps.setTimer(() => {
 			this.debounceHandle = null, this.refresh();
-		}, $c));
+		}, tl));
 	}
 	tickPoll() {
-		this.disposed || (this.refresh(), this.pollHandle = this.deps.setTimer(() => this.tickPoll(), Qc));
+		this.disposed || (this.refresh(), this.pollHandle = this.deps.setTimer(() => this.tickPoll(), el));
 	}
 	refresh() {
 		this.disposed || this.inFlight || (this.inFlight = !0, this.deps.client.snapshot().then((e) => {
@@ -14480,7 +14556,7 @@ var Qc = 5e3, $c = 500, el = class {
 		this.disposed = !0, this.pollHandle !== null && this.deps.clearTimer(this.pollHandle), this.debounceHandle !== null && this.deps.clearTimer(this.debounceHandle), this.streamUnsub !== null && this.streamUnsub(), this.pollHandle = null, this.debounceHandle = null, this.streamUnsub = null;
 	}
 };
-function tl(e, t, n, r = {}) {
+function rl(e, t, n, r = {}) {
 	let i = [], a = !1, o = !1, s = 0, c = r.now ?? (() => Date.now()), l = r.setTimer ?? ((e, t) => setTimeout(e, t)), u = r.clearTimer ?? ((e) => clearTimeout(e)), d = () => {
 		if (o || i.length === 0) return;
 		let t = i;
@@ -14504,25 +14580,25 @@ function tl(e, t, n, r = {}) {
 		i.push(e), a || (a = !0, queueMicrotask(() => {
 			a = !1, d();
 		}));
-	}), p = Zc(t, d);
+	}), p = $c(t, d);
 	if (!(n?.kradleApiUrl !== void 0 && n.kradleApiUrl !== "")) return {
 		flush: d,
 		orders: p,
-		views: Xc,
+		views: Qc,
 		dispose() {
 			o = !0, f();
 		}
 	};
-	let m = r.createClient === void 0 ? Ro({
+	let m = r.createClient === void 0 ? Bo({
 		kradleApiUrl: n.kradleApiUrl,
 		...n.kradleToken === void 0 ? {} : { kradleToken: n.kradleToken },
 		...n.kradleOrg === void 0 ? {} : { kradleOrg: n.kradleOrg },
 		...n.kradleRepo === void 0 ? {} : { kradleRepo: n.kradleRepo }
-	}) : r.createClient(n), h = new el({
+	}) : r.createClient(n), h = new nl({
 		client: m,
 		onSnapshot: (t) => {
 			if (o) return;
-			let n = c(), r = Tc(t, n);
+			let n = c(), r = Dc(t, n);
 			s += 1, e.getState().commitTick({
 				frames: [],
 				units: r.units,
@@ -14543,7 +14619,7 @@ function tl(e, t, n, r = {}) {
 		now: c,
 		setTimer: l,
 		clearTimer: u
-	}), g = n.gatewayUrl !== void 0 && n.gatewayUrl !== "", _ = Yc(m, {
+	}), g = n.gatewayUrl !== void 0 && n.gatewayUrl !== "", _ = Zc(m, {
 		repo: n.kradleRepo ?? "default",
 		getSnapshot: () => h.getSnapshot(),
 		scheduleRefresh: () => h.scheduleRefresh(),
@@ -14561,7 +14637,7 @@ function tl(e, t, n, r = {}) {
 }
 //#endregion
 //#region src/lib.tsx
-function nl(e) {
+function il(e) {
 	return e.mock === !0 ? {
 		mode: "mock",
 		seed: 42
@@ -14575,14 +14651,14 @@ function nl(e) {
 		...e.gatewayUrl ? { gatewayUrl: e.gatewayUrl } : {}
 	};
 }
-function rl(e) {
-	let t = nl(e), n = Eo(t), r = Qn(), i, a, o = !1;
-	if (n instanceof uo) i = $n(r, n), a = n.sim, e.mock === !0 && (window.__commander = {
+function al(e) {
+	let t = il(e), n = Oo(t), r = $n(), i, a, o = !1;
+	if (n instanceof po) i = er(r, n), a = n.sim, e.mock === !0 && (window.__commander = {
 		store: r,
-		version: Fn
+		version: In
 	}, o = !0);
 	else {
-		let e = tl(r, n, t);
+		let e = rl(r, n, t);
 		i = e, a = e.views;
 	}
 	return n.connect().catch((e) => {
@@ -14596,11 +14672,11 @@ function rl(e) {
 		}
 	};
 }
-function il(e) {
+function ol(e) {
 	let [t, r] = o(null);
 	return n(() => {
 		if (typeof window > "u") return;
-		let t = rl(e);
+		let t = al(e);
 		return r(t), () => {
 			t.dispose();
 		};
@@ -14614,11 +14690,11 @@ function il(e) {
 	]), t === null ? /* @__PURE__ */ l("div", { style: {
 		width: "100vw",
 		height: "100vh"
-	} }) : /* @__PURE__ */ l(lo, {
+	} }) : /* @__PURE__ */ l(fo, {
 		store: t.store,
 		orders: t.orders,
 		views: t.views
 	});
 }
 //#endregion
-export { il as CommanderRoot, il as default };
+export { ol as CommanderRoot, ol as default };

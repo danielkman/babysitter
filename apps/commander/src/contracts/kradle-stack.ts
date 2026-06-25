@@ -73,6 +73,16 @@ export interface KradleStackSpec {
   displayName?: string;
   /** Agent-role composition facet (kradle `facet:agent-role` — Role/Responsibility/AgentTeam/OrgUnit refs). */
   agentRole?: { refs: string[] };
+  /**
+   * K8s resource requests/limits for the dispatched agent Job. createAgentJob
+   * reads `stack.spec.resources` (agent-dispatch-controller.js) and falls back
+   * to an env-configured floor when absent. Right-sizing per stack lets a
+   * lightweight agent fit a busy cluster and a heavy one reserve more.
+   */
+  resources?: {
+    requests?: { cpu?: string; memory?: string };
+    limits?: { cpu?: string; memory?: string };
+  };
 }
 
 /**

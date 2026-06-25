@@ -230,6 +230,20 @@ describe('stack clone defaults + Stacks-tab draft state (§V4-5)', () => {
     expect(editing!.stackRef).toBe('stk-c02');
   });
 
+  it('size preset emits spec.resources (small fits busy clusters); default emits none', () => {
+    const base = { ...forgeFromStack(stackView()), name: 'Sized Stack' };
+    // default size '' → no resources (deployment env floor applies)
+    expect(draftToStackInput({ ...base, size: '' })!.spec.resources).toBeUndefined();
+    // small → 25m request floor that bursts to 1500m
+    const small = draftToStackInput({ ...base, size: 'small' })!.spec.resources;
+    expect(small).toEqual({
+      requests: { cpu: '25m', memory: '512Mi' },
+      limits: { cpu: '1500m', memory: '2Gi' },
+    });
+    // large reserves more
+    expect(draftToStackInput({ ...base, size: 'large' })!.spec.resources!.requests!.cpu).toBe('1000m');
+  });
+
   it('withAdapter rebinds baseAgent and resets the model to the family default', () => {
     const draft = withAdapter(forgeFromStack(stackView()), 'codex');
     expect(draft.adapter).toBe('codex');

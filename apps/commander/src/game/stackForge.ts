@@ -14,6 +14,35 @@ import { ADAPTERS, MODELS_BY_ADAPTER, type AdapterName } from '../backend/mock/s
 /** Approval postures offered by the stack editor (kradle: yolo|prompt|deny). */
 export const APPROVAL_MODES = ['prompt', 'yolo', 'deny'] as const;
 
+/** Stack sizes offered by the editor — '' = inherit the deployment default floor. */
+export const STACK_SIZES = ['', 'small', 'medium', 'large'] as const;
+export type StackSize = (typeof STACK_SIZES)[number];
+
+type StackResources = NonNullable<KradleAgentStackInput['spec']['resources']>;
+
+/**
+ * Size preset → K8s resources for the dispatched agent Job. Agents are
+ * I/O-bound, so requests are small scheduling floors that burst to the limit.
+ * 'small' fits busy clusters (e.g. staging ~98% CPU); 'large' reserves more for
+ * heavy work. '' emits no resources, so the deployment's env-configured floor
+ * (KRADLE_AGENT_CPU_REQUEST) applies.
+ */
+export const SIZE_PRESETS: Record<Exclude<StackSize, ''>, StackResources> = {
+  small: { requests: { cpu: '25m', memory: '512Mi' }, limits: { cpu: '1500m', memory: '2Gi' } },
+  medium: { requests: { cpu: '250m', memory: '1Gi' }, limits: { cpu: '2', memory: '4Gi' } },
+  large: { requests: { cpu: '1000m', memory: '2Gi' }, limits: { cpu: '4', memory: '8Gi' } },
+};
+
+/** Map an existing stack's resources back to a size preset (for edit), else ''. */
+function sizeFromResources(resources: StackResources | undefined): StackSize {
+  const cpu = resources?.requests?.cpu;
+  if (cpu === undefined) return '';
+  for (const size of ['small', 'medium', 'large'] as const) {
+    if (SIZE_PRESETS[size].requests?.cpu === cpu) return size;
+  }
+  return '';
+}
+
 /** Form-state mirror of the editable stack fields. */
 export interface StackDraft {
   /** Non-null = editing that existing stack in place; null = forging anew. */
@@ -56,6 +85,8 @@ export interface StackDraft {
   displayName: string;
   /** CSV → `spec.agentRole.refs` (kradle agent-role facet). */
   agentRole: string;
+  /** Size preset → `spec.resources` for the dispatched agent Job ('' = default). */
+  size: StackSize;
 }
 
 /** CSV ↔ string[] helpers (mirror `stack-builder.jsx:15-21`). */
@@ -93,6 +124,7 @@ export function blankStackDraft(): StackDraft {
     memoryRepositoryRefs: '',
     displayName: '',
     agentRole: '',
+    size: '',
   };
 }
 
@@ -122,6 +154,7 @@ function draftBody(view: SimStackView): Omit<StackDraft, 'stackRef' | 'name'> {
     memoryRepositoryRefs: joinCsv(spec.memoryRepositoryRefs),
     displayName: spec.displayName ?? '',
     agentRole: joinCsv(spec.agentRole?.refs),
+    size: sizeFromResources(spec.resources),
   };
 }
 
@@ -218,6 +251,7 @@ export function draftToStackInput(draft: StackDraft): KradleAgentStackInput | nu
       ...(memoryRepositoryRefs.length > 0 ? { memoryRepositoryRefs } : {}),
       ...(draft.displayName.trim() !== '' ? { displayName: draft.displayName.trim() } : {}),
       ...(agentRoleRefs.length > 0 ? { agentRole: { refs: agentRoleRefs } } : {}),
+      ...(draft.size !== '' ? { resources: SIZE_PRESETS[draft.size] } : {}),
     },
     status: { phase: 'ready' },
   };

@@ -216,6 +216,7 @@ function stackInputToResourceBody(stack: KradleAgentStackInput, org: string): Re
   if (sp.memoryRepositoryRefs !== undefined) spec.memoryRepositoryRefs = sp.memoryRepositoryRefs;
   if (sp.displayName !== undefined) spec.displayName = sp.displayName;
   if (sp.agentRole !== undefined) spec.agentRole = sp.agentRole;
+  if (sp.resources !== undefined) spec.resources = sp.resources;
   return {
     apiVersion: stack.apiVersion ?? 'kradle.a5c.ai/v1alpha1',
     kind: 'AgentStack',

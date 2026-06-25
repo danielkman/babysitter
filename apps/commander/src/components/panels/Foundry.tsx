@@ -36,6 +36,7 @@ import {
   personalityExcerpt,
   withAdapter,
   type StackDraft,
+  type StackSize,
 } from '../../game/stackForge';
 
 export interface FoundryProps {
@@ -318,6 +319,19 @@ function StacksTab({ orders, views }: { orders: Orders; views: SimViews }): Reac
                   {m}
                 </option>
               ))}
+            </select>
+          </label>
+          <label className="wr-foundry-field">
+            <span className="wr-foundry-label">size (agent Job resources)</span>
+            <select
+              className="wr-foundry-input"
+              value={draft.size}
+              onChange={(e) => setDraft({ ...draft, size: e.target.value as StackSize })}
+            >
+              <option value="">default (deployment floor)</option>
+              <option value="small">small — 25m / 512Mi (fits busy clusters)</option>
+              <option value="medium">medium — 250m / 1Gi</option>
+              <option value="large">large — 1000m / 2Gi</option>
             </select>
           </label>
           <label className="wr-foundry-field">
