@@ -110,7 +110,7 @@ Every harness shares the neutral helper from Step 2. Some harnesses also offer a
 | openclaw | `openclaw` | Yes (npx) — see below |
 | opencode | `opencode` | Yes (npx) — see below |
 | Pi | `pi` | Yes (npx / pi) — see below |
-| genty | `genty` | No marketplace — neutral helper only |
+| genty | `genty` | Yes (npx) — see below |
 
 ### Claude Code (most proven)
 
