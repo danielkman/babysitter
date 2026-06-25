@@ -20,6 +20,14 @@ export function loadConfig(env = process.env) {
     stt: {
       provider: env.JITSI_STT_PROVIDER || '',
     },
+    videoMode: env.JITSI_VIDEO_MODE || 'none',
+    avatar: {
+      renderer: env.JITSI_AVATAR_RENDERER || '',
+      modelUrl: env.JITSI_AVATAR_MODEL_URL || '',
+      visemeSet: env.JITSI_AVATAR_VISEME_SET || '',
+      defaultMood: env.JITSI_AVATAR_DEFAULT_MOOD || 'neutral',
+      defaultView: env.JITSI_AVATAR_DEFAULT_VIEW || 'upper',
+    },
     vad: {
       provider: env.JITSI_VAD_PROVIDER || 'local-vad',
     },
