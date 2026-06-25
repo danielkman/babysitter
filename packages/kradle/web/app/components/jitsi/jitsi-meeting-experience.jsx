@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { JitsiEmbeddedMeeting } from './jitsi-embedded-meeting.jsx';
 import { JitsiMeetingControls } from './jitsi-meeting-controls.jsx';
 import { JitsiParticipantList } from './jitsi-participant-list.jsx';
+import { deriveAgentOverlay } from './agent-overlay.js';
 
 function mergeParticipants(baseParticipants, liveParticipants) {
   const byId = new Map();
@@ -77,6 +78,16 @@ export function JitsiMeetingExperience({ org = 'default', meeting, recordings = 
     () => mergeParticipants(meeting?.status?.participants?.current || [], liveParticipants),
     [liveParticipants, meeting?.status?.participants?.current],
   );
+  const overlay = useMemo(() => deriveAgentOverlay(meeting), [meeting]);
+  const [hiddenAgents, setHiddenAgents] = useState({});
+  const toggleAgentMute = useCallback(() => {
+    // Reuses the held iframe `api` (same executeCommand pattern as JitsiMeetingControls).
+    api?.executeCommand?.('toggleAudio');
+  }, [api]);
+  const toggleAgentHidden = useCallback((name) => {
+    if (!name) return;
+    setHiddenAgents((current) => ({ ...current, [name]: !current[name] }));
+  }, []);
   const roomUrl = joinPayload?.roomUrl || '';
   const jwt = joinPayload?.jwt || '';
   const directJoinUrl = joinPayload?.roomUrl && joinPayload?.jwt
@@ -105,6 +116,52 @@ export function JitsiMeetingExperience({ org = 'default', meeting, recordings = 
           onParticipantLeft={handleParticipantLeft}
           onMeetingEnded={() => setEnded(true)}
         />
+        {overlay.agents.length > 0 ? (
+          <div className="jitsiAgentOverlay" aria-label="Agent overlay">
+            {overlay.hasPendingApproval ? (
+              <div className="jitsiAgentOverlayApproval" role="status">
+                <span>Pending approval</span>
+                <ul>
+                  {overlay.governance
+                    .filter((run) => run.phase === 'waiting-approval')
+                    .map((run, index) => (
+                      <li key={run.runId || run.tool || index}>
+                        {run.tool || 'tool'}{run.runId ? ` · ${run.runId}` : ''}
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            ) : null}
+            <ul className="jitsiAgentOverlayList">
+              {overlay.agents.map((agent, index) => (
+                <li key={agent.name || agent.avatarRef || index} className="jitsiAgentOverlayItem">
+                  <span className="jitsiAgentOverlayName">{agent.name || 'agent'}</span>
+                  {agent.role ? <span className="jitsiAgentOverlayRole">{agent.role}</span> : null}
+                  <span className="jitsiAgentOverlayBadges">
+                    {agent.publishing.audio ? <span data-publishing="audio">audio</span> : null}
+                    {agent.publishing.video ? <span data-publishing="video">video</span> : null}
+                    {agent.publishing.screenshare ? <span data-publishing="screenshare">screen</span> : null}
+                  </span>
+                  <button
+                    type="button"
+                    aria-label={`Mute agent ${agent.name || ''}`.trim()}
+                    onClick={toggleAgentMute}
+                  >
+                    Mute
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={`Hide agent ${agent.name || ''}`.trim()}
+                    aria-pressed={Boolean(hiddenAgents[agent.name])}
+                    onClick={() => toggleAgentHidden(agent.name)}
+                  >
+                    {hiddenAgents[agent.name] ? 'Show' : 'Hide'}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
         <JitsiMeetingControls
           org={org}
           meetingRef={meetingRef}

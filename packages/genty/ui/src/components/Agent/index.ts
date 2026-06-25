@@ -16,8 +16,8 @@ export type { AgentPersonaEditorProps, AgentPersonaValue, AgentPersonalitySpec, 
 export { AgentSoulEditor } from './AgentSoulEditor.js';
 export type { AgentSoulEditorProps } from './AgentSoulEditor.js';
 
-export { AgentAppearanceEditor } from './AgentAppearanceEditor.js';
-export type { AgentAppearanceEditorProps, AgentAppearanceSpec, AgentAvatarSpec, AgentBadgeSpec, AgentThemeSpec } from './AgentAppearanceEditor.js';
+export { AgentAppearanceEditor, buildAppearanceSpec, parseAppearanceSpec } from './AgentAppearanceEditor.js';
+export type { AgentAppearanceEditorProps, AgentAppearanceSpec, AgentAvatarSpec, AgentBadgeSpec, AgentThemeSpec, AgentAppearanceForm, AgentAppearanceRenderer, AgentAppearanceVisemeSet } from './AgentAppearanceEditor.js';
 
 export { AgentVoiceEditor } from './AgentVoiceEditor.js';
 export type { AgentVoiceEditorProps, AgentVoiceSpec, AgentTtsConfig } from './AgentVoiceEditor.js';
