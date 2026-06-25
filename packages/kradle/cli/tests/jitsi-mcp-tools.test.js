@@ -112,9 +112,32 @@ test('video-capability MCP tools return sidecar socket descriptors for an agent 
   assert.deepEqual((await call('kradle_look_at', { target: 'camera' })).command, { action: 'look_at', target: 'camera' });
   assert.deepEqual((await call('kradle_set_view', { view: 'upper' })).command, { action: 'set_view', view: 'upper' });
   assert.deepEqual((await call('kradle_publish_video', { enabled: true })).command, { action: 'publish_video', enabled: true });
-  assert.deepEqual((await call('kradle_draw_canvas', { content: 'hi' })).command, { action: 'draw_canvas', content: 'hi' });
-  assert.deepEqual((await call('kradle_share_surface', { surface: 'browser', url: 'https://x' })).command, { action: 'share_surface', surface: 'browser', url: 'https://x' });
-  assert.deepEqual((await call('kradle_send_video_metadata', { metadata: { caption: 'slide 1' } })).command, { action: 'send_video_metadata', metadata: { caption: 'slide 1' } });
+});
+
+test('consequential visual tools route through the media-governance boundary (no direct command)', async () => {
+  const server = createMcpServer({ controller: createMockController() });
+  // The three consequential visual tools are now babysitter-gated (G13): they
+  // return a governance descriptor with NO direct command. They must be
+  // declared in governedTools for the agent.
+  const meetingContext = {
+    roomId: 'daily-room',
+    role: 'agent',
+    capabilities: { video: 'publish', screenshare: 'share', chat: 'readwrite', audio: 'publish' },
+    governedTools: ['draw_canvas', 'share_surface', 'send_video_metadata'],
+  };
+  const call = async (name, args) => parseToolResult(await server.handleMessage(rpc('tools/call', { name, arguments: { ...args, meetingContext } })));
+
+  for (const [name, args, action] of [
+    ['kradle_draw_canvas', { content: 'hi' }, 'draw_canvas'],
+    ['kradle_share_surface', { surface: 'browser', url: 'https://x' }, 'share_surface'],
+    ['kradle_send_video_metadata', { metadata: { sink: 'external-crm', external: true } }, 'send_video_metadata'],
+  ]) {
+    const result = await call(name, args);
+    assert.equal(result.governed, true, `${name} must be governed`);
+    assert.equal(result.tool, action);
+    assert.ok(result.policy && result.policy.decision === 'require-approval', `${name} requires approval`);
+    assert.ok(!('command' in result), `${name} must not carry a direct command`);
+  }
 });
 
 test('video-capability MCP tools enforce video-publish and participant gates', async () => {

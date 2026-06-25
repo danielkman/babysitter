@@ -4,6 +4,8 @@ import { createAgentSecretGrantController } from '../../core/src/agent-secret-co
 import { createAuditController } from '../../core/src/audit-controller.js';
 import { orgNamespaceName } from '../../core/src/org-scoping.js';
 import crypto from 'node:crypto';
+import { evaluateVisualPolicy } from './policy-engine.js';
+import { getGovernedTool } from './governed-tools.js';
 
 export const MCP_TOOLS = [
   { name: 'kradle_list_resources', description: 'List resources of a given kind', inputSchema: { type: 'object', properties: { kind: { type: 'string' } }, required: ['kind'] } },
@@ -659,13 +661,13 @@ async function executeTool(controller, toolName, args) {
       return meetingToolCommand('publish_video', args, { requireVideoPublish: true, payload: { enabled: args.enabled !== false } });
 
     case 'kradle_draw_canvas':
-      return meetingToolCommand('draw_canvas', args, { requireVideoPublish: true, payload: { content: args.content } });
+      return governedToolDescriptor('draw_canvas', args, { requireVideoPublish: true, payload: { content: args.content } });
 
     case 'kradle_share_surface':
-      return meetingToolCommand('share_surface', args, { requireScreenshare: true, payload: { surface: args.surface, url: args.url } });
+      return governedToolDescriptor('share_surface', args, { requireScreenshare: true, payload: { surface: args.surface, url: args.url } });
 
     case 'kradle_send_video_metadata':
-      return meetingToolCommand('send_video_metadata', args, { requireVideoPublish: true, payload: { metadata: args.metadata } });
+      return governedToolDescriptor('send_video_metadata', args, { requireVideoPublish: true, payload: { metadata: args.metadata } });
 
     default:
       throw new Error(`Tool not implemented: ${toolName}`);
@@ -741,6 +743,95 @@ function resolveMeetingToolContext(args = {}) {
       screenshare: capabilities.screenshare || process.env.JITSI_SCREENSHARE_MODE || 'none',
       video: capabilities.video || process.env.JITSI_VIDEO_MODE || 'none',
     },
+    // G9 mirror: which visual tools are babysitter-gated for this agent.
+    // Threaded from jitsiConfig.governedTools via the dispatch→sidecar
+    // meetingContext, or the JITSI_GOVERNED_TOOLS env fallback.
+    governedTools: Array.isArray(context.governedTools)
+      ? context.governedTools
+      : (process.env.JITSI_GOVERNED_TOOLS
+        ? process.env.JITSI_GOVERNED_TOOLS.split(',').map((s) => s.trim()).filter(Boolean)
+        : []),
+    // Carry any per-call policy override through to the PolicyEngine.
+    policy: context.policy,
+  };
+}
+
+/**
+ * Enforce the per-action capability gate exactly as meetingToolCommand would.
+ * Reused so a governed tool without the capability still rejects as today.
+ */
+function enforceMeetingGate(action, context, gates = {}) {
+  if (!context.active) throw new Error('No active Jitsi meeting context is available');
+  if (gates.requireChatWrite && context.capabilities.chat !== 'readwrite') {
+    throw new Error('Jitsi chat is not writable for this agent');
+  }
+  if (gates.requireParticipant && !['participant', 'moderator', 'agent'].includes(context.role)) {
+    throw new Error(`Jitsi role ${context.role} cannot perform ${action}`);
+  }
+  if (gates.requireScreenshare && context.capabilities.screenshare !== 'share') {
+    throw new Error('Jitsi screenshare is not enabled for this agent');
+  }
+  if (gates.requireVideoPublish && context.capabilities.video !== 'publish') {
+    throw new Error('Jitsi video publish is not enabled for this agent');
+  }
+  if (gates.requireModerator && context.role !== 'moderator') {
+    throw new Error(`Jitsi role ${context.role} cannot perform ${action}`);
+  }
+}
+
+/**
+ * Emit a media-governance descriptor for a consequential visual tool (G13).
+ *
+ * Unlike the fast-path meetingToolCommand, this NEVER returns a `command` to be
+ * written directly to the sidecar. It classifies the call, enforces the
+ * declaration + capability gates, runs the pure PolicyEngine, and returns a
+ * descriptor the SDK-side bridge drives through the governed process. The
+ * actual socket command is emitted only by that process on approval.
+ *
+ * @param {string} action - sidecar action ("draw_canvas"|"share_surface"|"send_video_metadata").
+ * @param {object} args - raw MCP tool arguments.
+ * @param {object} gates - capability gate + { payload } shaping (same shape meetingToolCommand uses).
+ */
+function governedToolDescriptor(action, args = {}, gates = {}) {
+  const context = resolveMeetingToolContext(args);
+  // Active + capability gate (reuse the existing posture exactly).
+  enforceMeetingGate(action, context, gates);
+  // Declaration gate (G9 mirror): the tool MUST be declared governed for this agent.
+  if (!context.governedTools.includes(action)) {
+    throw new Error(`tool ${action} is not governed for this agent`);
+  }
+  const governed = getGovernedTool(action);
+  if (!governed) {
+    throw new Error(`tool ${action} is not a known governed visual tool`);
+  }
+  const payload = gates.payload || {};
+  const inputs = { action, payload };
+  // Deterministic correlationId — explicit override, else sha256 of the
+  // {tool, inputs, nonce} envelope. No Date.now / Math.random.
+  const correlationId = args.correlationId
+    || crypto.createHash('sha256')
+      .update(JSON.stringify({ tool: action, inputs, nonce: args.nonce || '' }))
+      .digest('hex')
+      .slice(0, 32);
+  const policy = evaluateVisualPolicy(action, payload, context);
+
+  // Hard deny: no command, no socketPath — the call never reaches the sidecar.
+  if (policy.decision === 'deny') {
+    return { governed: true, denied: true, tool: action, correlationId, reason: policy.reason };
+  }
+
+  const meetingRef = args.meetingRef || context.roomId;
+  return {
+    governed: true,
+    tool: action,
+    correlationId,
+    filler: governed.filler,
+    policy: { decision: policy.decision, breakpointId: policy.breakpointId, reason: policy.reason },
+    governedProcess: governed.governedProcess,
+    inputs: { action, payload, meetingRef, roomId: context.roomId },
+    meetingRef,
+    roomId: context.roomId,
+    socketPath: context.socketPath,
   };
 }
 
