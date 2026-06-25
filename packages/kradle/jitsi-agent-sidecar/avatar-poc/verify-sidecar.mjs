@@ -45,6 +45,10 @@ const AVATAR_IMPORTMAP = {
     'three/addons/': 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/',
     'three/examples/': 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/',
     '@met4citizen/talkinghead': 'https://cdn.jsdelivr.net/gh/met4citizen/TalkingHead@1.5/modules/talkinghead.mjs',
+    // noVNC (MPL-2.0) — present so a VNC websocket path COULD resolve; the harness exercises a
+    // synthetic source element only (no real VNC), so this is never actually importShim()'d here.
+    '@novnc/novnc/core/rfb.js': 'https://cdn.jsdelivr.net/npm/@novnc/novnc@1.5.0/core/rfb.js',
+    '@novnc/novnc/': 'https://cdn.jsdelivr.net/npm/@novnc/novnc@1.5.0/',
   },
 };
 
@@ -191,7 +195,55 @@ function avatarBootstrapSource(baseUrl, avatarCfg) {
         avatar.lookAt(0, 0);
       },
       setView(v) { avatar.setView(v); },
-      drawCanvas() {},
+      drawCanvas(ops) { if (window.__kradleVideo && window.__kradleVideo.compositor && window.__kradleVideo.compositor.pushAnnotation) window.__kradleVideo.compositor.pushAnnotation(ops); },
+      clearCanvas() { if (window.__kradleVideo && window.__kradleVideo.compositor && window.__kradleVideo.compositor.clearAnnotations) window.__kradleVideo.compositor.clearAnnotations(); },
+      // Mirror of the production startScreenshare, plus a SYNTHETIC source:'element' branch the
+      // harness uses (a pre-created offscreen canvas) so S6 needs no real VNC / getDisplayMedia.
+      async startScreenshare({ source, url, el } = {}) {
+        const comp = window.__kradleVideo && window.__kradleVideo.compositor;
+        if (!comp || !comp.setScreenSource) throw new Error('compositor has no screen layer');
+        try {
+          if (source === 'element' && el) {
+            // inset (bottom-right quadrant) so the avatar base stays visible outside the region —
+            // lets S6 assert BOTH the synthetic source composites AND the avatar keeps rendering.
+            comp.setScreenSource(el, { mode: 'inset' });
+            window.__kradleScreen = { kind: 'element', el };
+          } else if ((typeof url === 'string' && /^wss?:\\/\\//i.test(url)) || source === 'vnc') {
+            const { default: RFB } = await window.importShim('@novnc/novnc/core/rfb.js');
+            const targetCanvas = document.createElement('canvas');
+            stage.appendChild(targetCanvas);
+            const rfb = new RFB(targetCanvas, url);
+            comp.setScreenSource((rfb && rfb._canvas) || targetCanvas, { mode: 'full' });
+            window.__kradleScreen = { kind: 'vnc', rfb, canvas: targetCanvas, url };
+          } else if (source === 'display') {
+            const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+            const video = document.createElement('video');
+            video.autoplay = true; video.muted = true; video.playsInline = true;
+            video.srcObject = stream;
+            stage.appendChild(video);
+            await video.play().catch(() => {});
+            comp.setScreenSource(video, { mode: 'full' });
+            window.__kradleScreen = { kind: 'display', video, stream };
+          } else {
+            throw new Error('startScreenshare: unsupported source/url');
+          }
+          window.__kradleScreenError = null;
+        } catch (err) {
+          window.__kradleScreenError = String((err && (err.stack || err.message)) || err);
+          console.error('kradle startScreenshare failed:', err);
+          throw err;
+        }
+      },
+      stopScreenshare() {
+        const comp = window.__kradleVideo && window.__kradleVideo.compositor;
+        const s = window.__kradleScreen;
+        try {
+          if (s && s.rfb && s.rfb.disconnect) s.rfb.disconnect();
+          if (s && s.stream && s.stream.getTracks) s.stream.getTracks().forEach((t) => t.stop());
+        } catch (err) { console.warn('kradle stopScreenshare teardown:', err && err.message); }
+        if (comp && comp.clearScreen) comp.clearScreen();
+        window.__kradleScreen = null;
+      },
     };
     window.__kradleAvatarBoot = { ready: true, mode: avatar.mode, attached: !!(attachResult && attachResult.attached), reason: attachResult && attachResult.reason };
   } catch (err) {
@@ -376,6 +428,95 @@ async function checkS4_g8Control(page, boot) {
   return { status: ok ? 'PASS' : 'FAIL', soft: false, name, detail };
 }
 
+// --- S5: draw_canvas / pushAnnotation composites a real annotation op -------------------------
+async function checkS5_annotation(page, boot) {
+  const name = 'S5 draw_canvas annotation composites';
+  if (!boot.webgl || !boot.boot || !boot.boot.ready) {
+    return { status: 'FAIL', soft: true, name, detail: 'skipped: no render context / bootstrap not ready' };
+  }
+  const res = await page.evaluate(async () => {
+    try {
+      const wait = () => new Promise((r) => (typeof requestAnimationFrame === 'function'
+        ? requestAnimationFrame(() => r()) : setTimeout(r, 16)));
+      const v = window.__kradleVideo;
+      const out = v.out;
+      const ctx = out.getContext('2d', { willReadFrequently: true });
+      // A filled magenta rect at a known region (#f0f => high R, low G, high B) + a text op.
+      window.__kradleAvatar.drawCanvas([
+        { type: 'rect', x: 40, y: 40, w: 120, h: 80, color: '#f0f', fill: true },
+        { type: 'text', x: 48, y: 90, text: 'S5', color: '#000' },
+      ]);
+      for (let i = 0; i < 6; i += 1) await wait();
+      // Sample the center of the {40,40,120,80} rect.
+      const px = Array.from(ctx.getImageData(40 + 60, 40 + 40, 1, 1).data);
+      const isMagenta = px[0] > 180 && px[1] < 80 && px[2] > 180;
+      const nonBlank = v.compositor.lastFrameNonBlank();
+      const warn = v.compositor.lastDrawWarning ? v.compositor.lastDrawWarning() : 'no-probe';
+      return { px, isMagenta, nonBlank, warn };
+    } catch (e) { return { error: String(e && (e.message || e)) }; }
+  });
+  if (res.error) {
+    const looksWebgl = /webgl|gl context|getImageData|readPixels/i.test(res.error);
+    return { status: 'FAIL', soft: looksWebgl, name, detail: `probe error: ${res.error}` };
+  }
+  const cleanWarn = res.warn === null || res.warn === 'no-probe';
+  const ok = res.isMagenta && res.nonBlank === true && cleanWarn;
+  const detail = `annotationPx=[${res.px}] isMagenta=${res.isMagenta} baseNonBlank=${res.nonBlank} drawWarning=${JSON.stringify(res.warn)}`;
+  return { status: ok ? 'PASS' : 'FAIL', soft: false, name, detail };
+}
+
+// --- S6: start_screenshare with a SYNTHETIC source composites while base + track stay live -----
+async function checkS6_screenshare(page, boot) {
+  const name = 'S6 start_screenshare synthetic source composites';
+  if (!boot.webgl || !boot.boot || !boot.boot.ready) {
+    return { status: 'FAIL', soft: true, name, detail: 'skipped: no render context / bootstrap not ready' };
+  }
+  const res = await page.evaluate(async () => {
+    try {
+      const wait = () => new Promise((r) => (typeof requestAnimationFrame === 'function'
+        ? requestAnimationFrame(() => r()) : setTimeout(r, 16)));
+      const v = window.__kradleVideo;
+      const out = v.out;
+      const ctx = out.getContext('2d', { willReadFrequently: true });
+      // Build a SYNTHETIC offscreen canvas filled with a known color (#0f0) + a diagonal line.
+      const syn = document.createElement('canvas');
+      syn.width = 320; syn.height = 240;
+      const sctx = syn.getContext('2d');
+      sctx.fillStyle = '#0f0'; sctx.fillRect(0, 0, syn.width, syn.height);
+      sctx.strokeStyle = '#000'; sctx.lineWidth = 4;
+      sctx.beginPath(); sctx.moveTo(0, 0); sctx.lineTo(syn.width, syn.height); sctx.stroke();
+      await window.__kradleAvatar.startScreenshare({ source: 'element', el: syn });
+      for (let i = 0; i < 6; i += 1) await wait();
+      // The compositor's default inset region: rw=floor(w/3), rh=floor(h/3), margin 12, bottom-right.
+      const w = out.width; const h = out.height;
+      const rw = Math.floor(w / 3); const rh = Math.floor(h / 3); const margin = 12;
+      const rx = w - rw - margin; const ry = h - rh - margin;
+      // Sample near the inset center but above the lower-third bar (y in [h-28,h]).
+      const sx = rx + Math.floor(rw / 2);
+      const sy = ry + Math.floor(rh / 3);
+      const px = Array.from(ctx.getImageData(sx, sy, 1, 1).data);
+      const isGreen = px[1] > 150 && px[0] < 120 && px[2] < 120;
+      const baseNonBlank = v.compositor.lastFrameNonBlank();
+      const warn = v.compositor.lastDrawWarning ? v.compositor.lastDrawWarning() : 'no-probe';
+      // Re-run the S2-style track-live assertion: published video track stays live + mock untouched.
+      const returned = v.effect.startEffect(new MediaStream());
+      const track = (returned instanceof MediaStream) ? returned.getVideoTracks()[0] : null;
+      const trackLive = !!track && track.kind === 'video' && track.readyState === 'live';
+      v.effect.stopEffect();
+      const setEffectCalls = (window.__mockCalls && window.__mockCalls.setEffect) || 0;
+      const screenErr = window.__kradleScreenError || null;
+      return { px, isGreen, baseNonBlank, warn, trackLive, setEffectCalls, screenErr, sample: [sx, sy] };
+    } catch (e) { return { error: String(e && (e.message || e)) }; }
+  });
+  if (res.error) {
+    const looksWebgl = /webgl|gl context|getImageData|readPixels|getDisplayMedia/i.test(res.error);
+    return { status: 'FAIL', soft: looksWebgl, name, detail: `probe error: ${res.error}` };
+  }
+  const ok = res.isGreen && res.baseNonBlank === true && res.trackLive && !res.screenErr;
+  const detail = `screenPx=[${res.px}]@[${res.sample}] isGreen=${res.isGreen} baseNonBlank=${res.baseNonBlank} trackLive=${res.trackLive} setEffectCalls=${res.setEffectCalls} screenErr=${res.screenErr}`;
+  return { status: ok ? 'PASS' : 'FAIL', soft: false, name, detail };
+}
+
 // --- runner ----------------------------------------------------------------------------------
 async function main() {
   const results = [];
@@ -402,10 +543,12 @@ async function main() {
     results.push(await checkS2_videoTrack(page, boot));
     results.push(await checkS3_audioTrack(page, boot));
     results.push(await checkS4_g8Control(page, boot));
+    results.push(await checkS5_annotation(page, boot));
+    results.push(await checkS6_screenshare(page, boot));
   } catch (err) {
     launchError = err;
     console.error('verify-sidecar: browser launch/navigation failed:', err && (err.stack || err.message));
-    for (const id of ['S1 inject + render non-blank', 'S2 video track + setEffect on mock', 'S3 audio track + replaceTrack on mock', 'S4 G8 set_expression mutates avatar']) {
+    for (const id of ['S1 inject + render non-blank', 'S2 video track + setEffect on mock', 'S3 audio track + replaceTrack on mock', 'S4 G8 set_expression mutates avatar', 'S5 draw_canvas annotation composites', 'S6 start_screenshare synthetic source composites']) {
       results.push({ status: 'FAIL', soft: true, name: id, detail: `browser unavailable: ${err && (err.message || err)}` });
     }
   } finally {
@@ -433,6 +576,8 @@ async function main() {
   console.log(`  SIDECAR_VIDEO_TRACK_STATE=${stateOf('S2')}`);
   console.log(`  SIDECAR_AUDIO_TRACK_STATE=${stateOf('S3')}`);
   console.log(`  SIDECAR_G8_STATE=${stateOf('S4')}`);
+  console.log(`  SIDECAR_ANNOTATION_STATE=${stateOf('S5')}`);
+  console.log(`  SIDECAR_SCREEN_STATE=${stateOf('S6')}`);
   if (launchError) console.log(`  LAUNCH_ERROR=${String(launchError.message || launchError)}`);
 
   process.exit(hardFailures > 0 ? 1 : 0);

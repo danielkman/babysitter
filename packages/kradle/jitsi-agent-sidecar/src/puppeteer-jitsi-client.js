@@ -19,6 +19,10 @@ const AVATAR_IMPORTMAP = {
     'three/addons/': 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/',
     'three/examples/': 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/',
     '@met4citizen/talkinghead': 'https://cdn.jsdelivr.net/gh/met4citizen/TalkingHead@1.5/modules/talkinghead.mjs',
+    // noVNC (MPL-2.0) — pinned CDN, loaded ONLY lazily via importShim() inside startScreenshare()
+    // for a VNC websocket URL. Never eagerly imported, so audio-only / no-VNC stacks never fetch it.
+    '@novnc/novnc/core/rfb.js': 'https://cdn.jsdelivr.net/npm/@novnc/novnc@1.5.0/core/rfb.js',
+    '@novnc/novnc/': 'https://cdn.jsdelivr.net/npm/@novnc/novnc@1.5.0/',
   },
 };
 
@@ -120,6 +124,59 @@ function avatarBootstrapSource(baseUrl, avatarCfg) {
       },
       setView(v) { avatar.setView(v); },
       drawCanvas(ops) { if (window.__kradleVideo && window.__kradleVideo.compositor && window.__kradleVideo.compositor.pushAnnotation) window.__kradleVideo.compositor.pushAnnotation(ops); },
+      clearCanvas() { if (window.__kradleVideo && window.__kradleVideo.compositor && window.__kradleVideo.compositor.clearAnnotations) window.__kradleVideo.compositor.clearAnnotations(); },
+      // G7: composite a screen/desktop source into the published video. No fallback — each branch
+      // is the intended path for its input; an unsupported input throws and is surfaced.
+      async startScreenshare({ source, url } = {}) {
+        const comp = window.__kradleVideo && window.__kradleVideo.compositor;
+        if (!comp || !comp.setScreenSource) throw new Error('compositor has no screen layer');
+        try {
+          const isVncUrl = typeof url === 'string' && /^wss?:\\/\\//i.test(url);
+          if (isVncUrl || source === 'vnc') {
+            // VNC websocket: lazily import noVNC RFB (only here, never eagerly) onto a stage canvas.
+            const { default: RFB } = await window.importShim('@novnc/novnc/core/rfb.js');
+            const targetCanvas = document.createElement('canvas');
+            targetCanvas.id = '__kradle_vnc';
+            stage.appendChild(targetCanvas);
+            const rfb = new RFB(targetCanvas, url);
+            comp.setScreenSource((rfb && rfb._canvas) || targetCanvas, { mode: 'full' });
+            window.__kradleScreen = { kind: 'vnc', rfb, canvas: targetCanvas, url };
+          } else if (source === 'display') {
+            const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+            const video = document.createElement('video');
+            video.autoplay = true; video.muted = true; video.playsInline = true;
+            video.srcObject = stream;
+            stage.appendChild(video);
+            await video.play().catch(() => {});
+            comp.setScreenSource(video, { mode: 'full' });
+            window.__kradleScreen = { kind: 'display', video, stream };
+          } else if (typeof url === 'string' && /^https?:\\/\\//i.test(url)) {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.src = url;
+            stage.appendChild(img);
+            comp.setScreenSource(img, { mode: 'inset' });
+            window.__kradleScreen = { kind: 'image', img, url };
+          } else {
+            throw new Error('startScreenshare: unsupported source/url (' + String(source) + ', ' + String(url) + ')');
+          }
+          window.__kradleScreenError = null;
+        } catch (err) {
+          window.__kradleScreenError = String((err && (err.stack || err.message)) || err);
+          console.error('kradle startScreenshare failed:', err);
+          throw err;
+        }
+      },
+      stopScreenshare() {
+        const comp = window.__kradleVideo && window.__kradleVideo.compositor;
+        const s = window.__kradleScreen;
+        try {
+          if (s && s.rfb && s.rfb.disconnect) s.rfb.disconnect();
+          if (s && s.stream && s.stream.getTracks) s.stream.getTracks().forEach((t) => t.stop());
+        } catch (err) { console.warn('kradle stopScreenshare teardown:', err && err.message); }
+        if (comp && comp.clearScreen) comp.clearScreen();
+        window.__kradleScreen = null;
+      },
     };
 
     window.__kradleAvatarBoot = { ready: true, mode: avatar.mode, attached: !!(attachResult && attachResult.attached), reason: attachResult && attachResult.reason };
@@ -392,6 +449,10 @@ export function createPuppeteerJitsiClient(config = {}) {
       await evaluateBestEffort((opts) => window.__kradleAvatar?.startScreenshare?.(opts), options);
     },
 
+    async stopScreenshare() {
+      await evaluateBestEffort(() => window.__kradleAvatar?.stopScreenshare?.());
+    },
+
     async sendVideoMetadata(metadata) {
       await evaluateBestEffort((value) => window.__kradleAvatar?.sendVideoMetadata?.(value), metadata);
     },
@@ -405,6 +466,15 @@ export function createPuppeteerJitsiClient(config = {}) {
       if (page) {
         // Tear down the avatar pipeline first (best-effort): stop compositing + the capture effect.
         await evaluateBestEffort(() => {
+          // Tear down any active screen share first (close RFB / stop display tracks) so the
+          // websocket / capture stream is released before the page closes.
+          try {
+            const s = window.__kradleScreen;
+            if (s?.rfb?.disconnect) s.rfb.disconnect();
+            if (s?.stream?.getTracks) s.stream.getTracks().forEach((t) => t.stop());
+          } catch { /* best-effort teardown */ }
+          window.__kradleVideo?.compositor?.clearScreen?.();
+          window.__kradleScreen = null;
           window.__kradleLipsync?.stop?.();
           window.__kradleVideo?.compositor?.stop?.();
           window.__kradleVideo?.effect?.stopEffect?.();
