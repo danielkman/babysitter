@@ -29,5 +29,17 @@ spec:
   mcpServerRefs:
     - kradle-mcp
     - atlas-mcp
+  # Dispatched agent Jobs are I/O-bound — they spend almost all their time waiting
+  # on the model API, not on CPU. The createAgentJob default reserves cpu:500m,
+  # which both wastes capacity and makes the Job UNSCHEDULABLE on a busy cluster
+  # (staging runs ~98% CPU; a board dispatch would sit Pending forever with
+  # "Insufficient cpu"). Request a small floor and let it burst to the limit.
+  resources:
+    requests:
+      cpu: {{ .Values.agents.assistantCpuRequest | default "25m" | quote }}
+      memory: {{ .Values.agents.assistantMemoryRequest | default "512Mi" | quote }}
+    limits:
+      cpu: {{ .Values.agents.assistantCpuLimit | default "1500m" | quote }}
+      memory: {{ .Values.agents.assistantMemoryLimit | default "2Gi" | quote }}
 {{- end }}
 {{- end }}
