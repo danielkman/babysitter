@@ -116,3 +116,51 @@ describe("runBreakpointIntrinsic non-interactive skip", () => {
     expect(runTaskIntrinsic).toHaveBeenCalled();
   });
 });
+
+describe("runBreakpointIntrinsic invocation-key disambiguation", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  function keysFromCalls(runTaskIntrinsic: ReturnType<typeof vi.fn>): string[] {
+    return runTaskIntrinsic.mock.calls.map(
+      (c) => (c[0] as { invokeOptions?: { key?: string } }).invokeOptions?.key as string
+    );
+  }
+
+  it("gives repeated default breakpoints DISTINCT keys (no collision / inherited approval)", async () => {
+    const { runBreakpointIntrinsic } = await import("../breakpoint");
+    const { runTaskIntrinsic } = await import("../task");
+    const mock = runTaskIntrinsic as ReturnType<typeof vi.fn>;
+    mock.mockResolvedValue({ approved: true });
+
+    // Interactive context shared across two breakpoints with no explicit
+    // label/breakpointId — the exact shape that used to collide on
+    // "__sdk.breakpoint.breakpoint".
+    const ctx = buildContext(false);
+    await runBreakpointIntrinsic({ question: "Approve step 1?" }, ctx);
+    await runBreakpointIntrinsic({ question: "Final sign-off?" }, ctx);
+
+    const keys = keysFromCalls(mock);
+    expect(keys).toEqual(["__sdk.breakpoint.breakpoint", "__sdk.breakpoint.breakpoint.1"]);
+    expect(new Set(keys).size).toBe(2); // distinct => second cannot inherit the first's result
+  });
+
+  it("keeps the first occurrence's bare key (backward-compat) and suffixes later ones", async () => {
+    const { runBreakpointIntrinsic } = await import("../breakpoint");
+    const { runTaskIntrinsic } = await import("../task");
+    const mock = runTaskIntrinsic as ReturnType<typeof vi.fn>;
+    mock.mockResolvedValue({ approved: true });
+
+    const ctx = buildContext(false);
+    await runBreakpointIntrinsic({ question: "a" }, ctx, { breakpointId: "gate" });
+    await runBreakpointIntrinsic({ question: "b" }, ctx, { breakpointId: "gate" });
+    await runBreakpointIntrinsic({ question: "c" }, ctx, { breakpointId: "other" });
+
+    expect(keysFromCalls(mock)).toEqual([
+      "__sdk.breakpoint.gate",
+      "__sdk.breakpoint.gate.1",
+      "__sdk.breakpoint.other",
+    ]);
+  });
+});

@@ -83,7 +83,24 @@ export async function runBreakpointIntrinsic<T = unknown>(
     return { approved: true, response: "Auto-approved (non-interactive mode)" };
   }
 
-  const invokeOptions = { ...options, label, key: `__sdk.breakpoint.${breakpointId}` };
+  // Disambiguate repeated breakpoints within one process run. The breakpoint
+  // effect uses an explicit invocation `key`, which bypasses the task
+  // intrinsic's per-call cursor (deriveStableTaskKey). Without disambiguation a
+  // second ctx.breakpoint() that resolves to the same breakpointId (e.g. the
+  // default "breakpoint" when no explicit label/breakpointId is given) collides
+  // with the first and silently inherits its resolution — a sign-off prompt
+  // gets skipped because it reuses an earlier "approved". Append a per-call
+  // counter (sharing the task intrinsic's counter map, so it is deterministic
+  // across replay — each iteration re-executes the process from the start in
+  // the same order). Keep the first occurrence's bare key for backward
+  // compatibility with already-recorded in-flight runs.
+  const baseKey = `__sdk.breakpoint.${breakpointId}`;
+  const counts = (context.invocationKeyCounts ??= new Map<string, number>());
+  const occurrence = counts.get(baseKey) ?? 0;
+  counts.set(baseKey, occurrence + 1);
+  const invocationKey = occurrence === 0 ? baseKey : `${baseKey}.${occurrence}`;
+
+  const invokeOptions = { ...options, label, key: invocationKey };
   return runTaskIntrinsic({
     task: breakpointTask,
     args: {
