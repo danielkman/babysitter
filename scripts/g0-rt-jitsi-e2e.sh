@@ -114,7 +114,10 @@ spec:
   jitsiCapability: true
   jitsiMeetingProviderRef: ${PROVIDER}
   jitsiConfig:
-    role: agent
+    # CRD enum is observer|participant|moderator (the in-code validator also accepts
+    # "agent", but the API server validates the CRD schema first). A non-observer role
+    # may publish video.
+    role: participant
     avatarRef: ${APPEARANCE}
     capabilities:
       video: publish

@@ -119,7 +119,7 @@ spec:
 ### 2.3 AgentStack (declare the video capability — G9)
 
 The G9 validator (`agent-stack-controller.js:234-284`) requires, for a publishing avatar agent:
-`jitsiCapability: true`, a `jitsiMeetingProviderRef`, `role: agent` (an **observer cannot publish video**,
+`jitsiCapability: true`, a `jitsiMeetingProviderRef`, `role: participant` (an **observer cannot publish video**, the CRD enum is observer|participant|moderator,
 `:250`), `capabilities.video: publish` **with** a resolvable `avatarRef` (`:252-259`), valid `tools` (subset
 of the JITSI_TOOLS set, `:14-34`), and `governedTools ⊆ tools` (`:261`).
 
@@ -134,7 +134,7 @@ spec:
   jitsiCapability: true
   jitsiMeetingProviderRef: default-jitsi      # REQUIRED — your JitsiMeetProvider
   jitsiConfig:
-    role: agent
+    role: participant
     avatarRef: support-avatar                  # -> AgentAppearance above
     capabilities:
       video: publish

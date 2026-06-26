@@ -2371,7 +2371,10 @@ jobs:
           KRADLE_JITSI_JWT_SECRET: ${{ secrets.KRADLE_JITSI_JWT_SECRET }}
         run: |
           # Resolve the effective shared Jitsi JWT secret once, reuse for prosody + the controller.
-          JITSI_JWT_SECRET="${KRADLE_JITSI_JWT_SECRET:-$KRADLE_TEST_AUTH_SECRET}"
+          # Must be NON-EMPTY: the helm jitsi-secrets template only mints kradle-*-jitsi-jwt when
+          # appSecret is set, and prosody JWT auth needs it. Prefer a dedicated secret, then the
+          # stable test-auth secret, then a fixed staging default so the chain is never empty.
+          JITSI_JWT_SECRET="${KRADLE_JITSI_JWT_SECRET:-${KRADLE_TEST_AUTH_SECRET:-g0rt-staging-jitsi-shared-secret}}"
           kubectl -n "$KUBE_NAMESPACE" create secret generic kradle-assistant-keys \
             --from-literal=AZURE_API_KEY="${AZURE_OPENAI_API_KEY}" \
             --from-literal=AGENT_MUX_API_BASE="https://${AZURE_OPENAI_PROJECT_NAME}.services.ai.azure.com" \
