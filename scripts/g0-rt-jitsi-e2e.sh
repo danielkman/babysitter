@@ -211,14 +211,20 @@ done
 #        30s stale-while-revalidate snapshot cache (the meeting was just patched Active). ---
 log "5. dispatch AgentStack/${STACK} into meeting ${MEETING_REF}"
 DHTTP=000
-for attempt in $(seq 1 8); do
-  DHTTP=$(curl -s -o "$DISPATCH_JSON" -w '%{http_code}' --max-time 90 -b "$COOKIE_JAR" -X POST "https://${APP_HOST}/api/orgs/${ORG}/agents/dispatch" \
+for attempt in $(seq 1 12); do
+  DHTTP=$(curl -s -o "$DISPATCH_JSON" -w '%{http_code}' --max-time 120 -b "$COOKIE_JAR" -X POST "https://${APP_HOST}/api/orgs/${ORG}/agents/dispatch" \
     -H 'content-type: application/json' \
     -d "{\"agentStack\":\"${STACK}\",\"meetingRef\":\"${MEETING_REF}\",\"task\":\"Join the meeting and greet the room.\",\"taskKind\":\"g0-rt-e2e\"}" || echo "000")
   { [ "$DHTTP" -ge 200 ] && [ "$DHTTP" -lt 300 ]; } && break
-  DBODY="$(head -c 400 "$DISPATCH_JSON")"
+  DBODY="$(head -c 300 "$DISPATCH_JSON")"
   log "dispatch attempt ${attempt} HTTP=${DHTTP} body=${DBODY}"
-  case "$DBODY" in *"not active"*) sleep 8 ;; *) fail "dispatch HTTP ${DHTTP}: ${DBODY}" ;; esac
+  # Retry on the cache-stale 'not active' (cluster is Active; BFF SWR cache lags <=30s) AND on
+  # transient gateway/pod 5xx/000. Any other 4xx is a real error -> fail fast.
+  case "$DBODY" in
+    *"not active"*) sleep 10; continue ;;
+  esac
+  if [ "$DHTTP" -ge 500 ] || [ "$DHTTP" = "000" ]; then sleep 10; continue; fi
+  fail "dispatch HTTP ${DHTTP}: ${DBODY}"
 done
 log "dispatch HTTP=${DHTTP} body=$(head -c 600 "$DISPATCH_JSON")"
 { [ "$DHTTP" -ge 200 ] && [ "$DHTTP" -lt 300 ]; } || fail "dispatch still failing after retries: $(head -c 400 "$DISPATCH_JSON")"
