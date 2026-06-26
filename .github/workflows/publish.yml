@@ -7,6 +7,11 @@ on:
       - staging
       - develop
   workflow_dispatch:
+    inputs:
+      run_g0rt:
+        description: 'Run the G0-RT live Jitsi E2E (dispatch -> sidecar join) after deploy'
+        required: false
+        default: 'false'
 
 permissions:
   contents: write
@@ -2532,6 +2537,51 @@ jobs:
           SNAP_STATUS=$(curl -sf -o /dev/null -w '%{http_code}' --max-time 15 -b /tmp/kradle-cookies.txt "https://${APP_HOST}/orgs/a5c-ai/agents" || echo "000")
           echo "Agents page status: $SNAP_STATUS"
           [ "$SNAP_STATUS" -eq 200 ] || echo "::warning::Agents page returned $SNAP_STATUS"
+
+  # G0-RT live Jitsi E2E — dispatch a video agent into the in-cluster Jitsi meeting and
+  # assert the jitsi-agent-sidecar joins. GATED (workflow_dispatch + run_g0rt=true) and
+  # NON-BLOCKING (continue-on-error) so it never breaks a normal publish. Standalone
+  # equivalent: .github/workflows/g0-rt-jitsi-e2e.yml (usable once that file is on main).
+  # Run: gh workflow run publish.yml --ref staging -f run_g0rt=true
+  g0_rt_jitsi_e2e:
+    name: G0-RT Live Jitsi E2E
+    needs:
+      - deploy_kradle
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_g0rt == 'true' && github.ref_name != 'develop' }}
+    runs-on: ubuntu-latest-l
+    continue-on-error: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Resolve target host + namespace
+        run: |
+          case "${GITHUB_REF_NAME}" in
+            main)    HOST=kradle.a5c.ai;         NS=kradle ;;
+            staging) HOST=kradle-staging.a5c.ai; NS=kradle-staging ;;
+            *) echo "::error::Unsupported branch ${GITHUB_REF_NAME}"; exit 1 ;;
+          esac
+          echo "APP_HOST=$HOST" >> "$GITHUB_ENV"
+          echo "CONTROL_NS=$NS" >> "$GITHUB_ENV"
+
+      - name: Configure kubectl
+        run: |
+          [ -n "${{ secrets.KUBE_CONFIG }}" ] || { echo "::error::secrets.KUBE_CONFIG not set"; exit 1; }
+          mkdir -p "$HOME/.kube"
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > "$HOME/.kube/config"
+          chmod 600 "$HOME/.kube/config"
+
+      - name: Run G0-RT live E2E (dispatch -> sidecar join)
+        env:
+          ORG: a5c-ai
+          JOIN_TIMEOUT: "240"
+          KRADLE_TEST_AUTH_SECRET: ${{ secrets.KRADLE_TEST_AUTH_SECRET }}
+        run: |
+          chmod +x scripts/g0-rt-jitsi-e2e.sh
+          ./scripts/g0-rt-jitsi-e2e.sh
 
   deploy_staging_cloud:
     name: Deploy Cloud
