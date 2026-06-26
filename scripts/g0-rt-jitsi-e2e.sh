@@ -26,6 +26,8 @@ JOIN_TIMEOUT="${JOIN_TIMEOUT:-240}"
 SUFFIX="$(date +%s)"
 PROVIDER="g0rt-provider"
 APPEARANCE="g0rt-avatar-${SUFFIX}"
+SA="g0rt-sa"
+GRANT="g0rt-model-grant"
 STACK="g0rt-stack-${SUFFIX}"
 MEETING="g0rt-meeting-${SUFFIX}"
 ROOM_ID="g0rt-room-${SUFFIX}"
@@ -99,6 +101,35 @@ spec:
   defaultView: upper
 EOF
 
+# The dispatch permission review (agent-permission-review.js) requires the stack's
+# runtimeIdentity.serviceAccountRef to resolve to an AgentServiceAccount, and (because
+# adapter=claude-code needs a model-provider secret) a matching AgentSecretGrant. Without
+# these the dispatch is "denied by permission review".
+log "2a. apply AgentServiceAccount/${SA} + AgentSecretGrant/${GRANT}"
+kubectl apply -f - <<EOF
+apiVersion: kradle.a5c.ai/v1alpha1
+kind: AgentServiceAccount
+metadata:
+  name: ${SA}
+  namespace: ${ORG_NS}
+spec:
+  organizationRef: ${ORG}
+  namespace: ${ORG_NS}
+  serviceAccountName: ${SA}
+---
+apiVersion: kradle.a5c.ai/v1alpha1
+kind: AgentSecretGrant
+metadata:
+  name: ${GRANT}
+  namespace: ${ORG_NS}
+spec:
+  organizationRef: ${ORG}
+  subject: ${SA}
+  purpose: model-provider
+  secretRef:
+    name: kradle-assistant-keys
+EOF
+
 log "2c. apply AgentStack/${STACK} (video:publish, jitsiCapability, governed visual tools)"
 kubectl apply -f - <<EOF
 apiVersion: kradle.a5c.ai/v1alpha1
@@ -110,7 +141,8 @@ spec:
   organizationRef: ${ORG}
   baseAgent: claude-code
   adapter: claude-code
-  runtimeIdentity: {}
+  runtimeIdentity:
+    serviceAccountRef: ${SA}
   jitsiCapability: true
   jitsiMeetingProviderRef: ${PROVIDER}
   jitsiConfig:
