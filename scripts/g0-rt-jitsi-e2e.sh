@@ -124,7 +124,8 @@ metadata:
   namespace: ${ORG_NS}
 spec:
   organizationRef: ${ORG}
-  subject: ${SA}
+  subject:
+    name: ${SA}
   purpose: model-provider
   secretRef:
     name: kradle-assistant-keys
