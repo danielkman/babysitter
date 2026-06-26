@@ -105,7 +105,11 @@ EOF
 # runtimeIdentity.serviceAccountRef to resolve to an AgentServiceAccount, and (because
 # adapter=claude-code needs a model-provider secret) a matching AgentSecretGrant. Without
 # these the dispatch is "denied by permission review".
-log "2a. apply AgentServiceAccount/${SA} + AgentSecretGrant/${GRANT}"
+log "2a. apply K8s ServiceAccount/${SA} + AgentServiceAccount/${SA} + AgentSecretGrant/${GRANT}"
+# The kradle AgentServiceAccount CRD is the permission-review abstraction; the Job's pod
+# template sets serviceAccountName=<serviceAccountName>, which must be a REAL K8s ServiceAccount
+# in the org namespace or the Job FailedCreate ("serviceaccount not found"). Create both.
+kubectl -n "$ORG_NS" create serviceaccount "$SA" --dry-run=client -o yaml | kubectl apply -f - >/dev/null
 kubectl apply -f - <<EOF
 apiVersion: kradle.a5c.ai/v1alpha1
 kind: AgentServiceAccount
