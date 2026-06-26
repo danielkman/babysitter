@@ -2419,6 +2419,15 @@ jobs:
             --set gitea.persistence.type=emptyDir \
             --set gitea.token.existingSecret=kradle-gitea-agent-token \
             --set gitea.bootstrap.sandboxRepo=agent-sandbox \
+            --set gitea.ingress.enabled=true \
+            --set gitea.ingress.className=nginx \
+            --set "gitea.ingress.host=gitea.${APP_HOST}" \
+            --set "gitea.ingress.tls[0].secretName=kradle-gitea-tls" \
+            --set "gitea.ingress.tls[0].hosts[0]=gitea.${APP_HOST}" \
+            --set "gitea.ingress.annotations.cert-manager\\.io/cluster-issuer=letsencrypt-production" \
+            --set "gitea.ingress.annotations.external-dns\\.alpha\\.kubernetes\\.io/hostname=gitea.${APP_HOST}" \
+            --set-string "gitea.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/ssl-redirect=true" \
+            --set-string "gitea.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/proxy-body-size=512m" \
             --set argocd.enabled=false \
             --set kubevela.enabled=false \
             --set "externalDependencies.kyverno.enabled=true" \

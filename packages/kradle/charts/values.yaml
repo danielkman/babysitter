@@ -393,6 +393,16 @@ gitea:
   rootUrl: ""
   sshDomain: ""
   httpUrl: ""
+  # External exposure of the forge so agent PR links are reachable from a
+  # browser. Disabled by default; when enabled, set host (+ TLS/annotations) and
+  # the chart points Gitea's ROOT_URL at https://<host>/ so PR html_urls are
+  # external. The forge stays private (login + private repos).
+  ingress:
+    enabled: false
+    host: ""
+    className: ""
+    annotations: {}
+    tls: []
   token:
     existingSecret: ""
     key: token
@@ -407,7 +417,9 @@ gitea:
     sshPort: 22
   admin:
     username: kradle-admin
-    password: change-me
+    # Empty → the chart reuses the existing admin secret's password or generates
+    # a strong one (never a weak default, since the forge can be ingress-exposed).
+    password: ""
   persistence:
     size: 10Gi
     accessModes:

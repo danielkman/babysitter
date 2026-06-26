@@ -1,4 +1,17 @@
 {{- if .Values.gitea.enabled -}}
+{{- $giteaIngress := .Values.gitea.ingress | default dict -}}
+{{- $giteaExternalUrl := "" -}}
+{{- if and $giteaIngress.enabled $giteaIngress.host -}}
+{{- $giteaExternalUrl = printf "https://%s/" $giteaIngress.host -}}
+{{- end -}}
+{{- /* Admin password: explicit value wins; else reuse the existing secret's
+       value so it stays stable across upgrades; else generate a strong one.
+       Never fall back to a weak default — this forge can be ingress-exposed. */ -}}
+{{- $adminSecretName := printf "%s-gitea-admin" (include "kradle.fullname" .) -}}
+{{- $existingAdmin := (lookup "v1" "Secret" .Release.Namespace $adminSecretName) | default dict -}}
+{{- $existingPw := "" -}}
+{{- if $existingAdmin.data -}}{{- $existingPw = (index $existingAdmin.data "password" | b64dec) -}}{{- end -}}
+{{- $adminPassword := .Values.gitea.admin.password | default $existingPw | default (randAlphaNum 24) -}}
 apiVersion: v1
 kind: Secret
 metadata:
@@ -8,7 +21,7 @@ metadata:
 type: Opaque
 stringData:
   username: {{ .Values.gitea.admin.username | quote }}
-  password: {{ .Values.gitea.admin.password | quote }}
+  password: {{ $adminPassword | quote }}
 ---
 {{- if ne (.Values.gitea.persistence.type | default "pvc") "emptyDir" }}
 apiVersion: v1
@@ -51,8 +64,12 @@ spec:
           image: "{{ .Values.gitea.image.repository }}:{{ .Values.gitea.image.tag }}"
           imagePullPolicy: {{ .Values.gitea.image.pullPolicy }}
           env:
+            # ROOT_URL drives the PR/issue html_url Gitea returns from its API —
+            # which the agent stores on the run and the board renders as the PR
+            # link. Prefer the external ingress URL so that link is reachable from
+            # a user's browser; fall back to the in-cluster URL when not exposed.
             - name: GITEA__server__ROOT_URL
-              value: {{ default (printf "http://%s-gitea-http.%s.svc.cluster.local:%v/" (include "kradle.fullname" .) .Release.Namespace (.Values.gitea.service.httpPort | int)) .Values.gitea.rootUrl | quote }}
+              value: {{ .Values.gitea.rootUrl | default $giteaExternalUrl | default (printf "http://%s-gitea-http.%s.svc.cluster.local:%v/" (include "kradle.fullname" .) .Release.Namespace (.Values.gitea.service.httpPort | int)) | quote }}
             - name: GITEA__server__SSH_DOMAIN
               value: {{ default (printf "%s-gitea-http.%s.svc.cluster.local" (include "kradle.fullname" .) .Release.Namespace) .Values.gitea.sshDomain | quote }}
             - name: GITEA__security__INSTALL_LOCK
@@ -137,4 +154,40 @@ spec:
     - name: ssh
       port: {{ .Values.gitea.service.sshPort }}
       targetPort: ssh
+{{- if $giteaIngress.enabled }}
+---
+# Optional external exposure so the PR links the agent surfaces on the board are
+# reachable from a user's browser. The forge stays private (Gitea login + private
+# repos); the admin password is generated, never the weak default.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "kradle.fullname" . }}-gitea
+  labels:
+    {{- include "kradle.labels" . | nindent 4 }}
+    app.kubernetes.io/component: gitea-backend
+  {{- with $giteaIngress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with $giteaIngress.className }}
+  ingressClassName: {{ . | quote }}
+  {{- end }}
+  {{- if $giteaIngress.tls }}
+  tls:
+    {{- toYaml $giteaIngress.tls | nindent 4 }}
+  {{- end }}
+  rules:
+    - host: {{ $giteaIngress.host | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "kradle.fullname" . }}-gitea-http
+                port:
+                  number: {{ .Values.gitea.service.httpPort }}
+{{- end }}
 {{- end -}}
