@@ -90,12 +90,9 @@ In this repository, [`plugins/babysitter-unified`](plugins/babysitter-unified/pl
 Native marketplace install:
 
 ```bash
-claude plugin marketplace add a5c-ai/babysitter-claude@staging
+claude plugin marketplace add a5c-ai/babysitter-claude
 claude plugin install --scope user babysitter@a5c.ai
 ```
-
-The `@staging` suffix selects the staging publish channel; use `@main` for the
-stable channel or omit it for the marketplace repo's default branch.
 
 Restart Claude Code, then type `/skills` to verify "babysit" appears.
 
@@ -122,7 +119,7 @@ of this repo for that flow, or upload plugin ZIPs manually.
 Official marketplace install:
 
 ```bash
-codex plugin marketplace add a5c-ai/babysitter --ref staging --sparse .agents/plugins
+codex plugin marketplace add a5c-ai/babysitter
 ```
 
 Or via the SDK helper:
