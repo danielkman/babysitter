@@ -74,18 +74,6 @@ For most users, install the main CLI first:
 npm install -g @a5c-ai/babysitter
 ```
 
-Install the optional runtime CLI if you need headless orchestration, the internal harness, daemon utilities, MCP serving, or the TUI:
-
-```bash
-npm install -g @a5c-ai/genty-platform
-```
-
-If you are authoring processes or embedding Babysitter in your own code, add the SDK package to your project:
-
-```bash
-npm install @a5c-ai/babysitter-sdk
-```
-
 Prefer to drive a harness directly from your shell instead of from inside a session? Install the host-side `adapters` CLI and run any supported harness with one command — see the [Adapters CLI reference](docs/user-guide/reference/adapters-cli.md):
 
 ```bash
