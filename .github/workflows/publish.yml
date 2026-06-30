@@ -2368,6 +2368,18 @@ jobs:
               done
             done
           fi
+          # Cluster-scoped resources the chart owns (rbac.yaml ClusterRole +
+          # ClusterRoleBinding named kradle-kradle; apiservice v1alpha1.kradle.a5c.ai)
+          # are global singletons shared by the staging and main releases, so the same
+          # ownership mismatch blocks adoption. Re-stamp them to the current release too.
+          for kind in clusterrole clusterrolebinding apiservice; do
+            for name in $(kubectl get "$kind" \
+                -o jsonpath='{range .items[?(@.metadata.annotations.meta\.helm\.sh/release-name=="kradle")]}{.metadata.name}{"\n"}{end}' 2>/dev/null); do
+              echo "Adopting $kind/$name (cluster-scoped) -> release-namespace=$KUBE_NAMESPACE"
+              kubectl annotate "$kind" "$name" meta.helm.sh/release-namespace="$KUBE_NAMESPACE" --overwrite
+              kubectl label "$kind" "$name" app.kubernetes.io/managed-by=Helm --overwrite
+            done
+          done
           # Clean up pre-Helm standalone resources
           kubectl -n "$KUBE_NAMESPACE" delete ingress kradle --ignore-not-found
           kubectl -n "$KUBE_NAMESPACE" delete service kradle --ignore-not-found
