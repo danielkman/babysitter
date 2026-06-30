@@ -1,0 +1,43 @@
+# G0-RT — JitsiMeetProvider for the in-cluster Jitsi (jitsi.install=true).
+#
+# Apply this AFTER the publish/deploy brings up the in-cluster Jitsi stack
+# (kradle-jitsi-subchart-web / -prosody / -jvb in the kradle-staging namespace).
+# It points kradle at the in-cluster Jitsi so a meeting-dispatch agent (the
+# headless-Chromium sidecar) joins over cluster-internal HTTP — no public DNS/cert
+# needed for an AGENT-ONLY boot (human participants would use the public ingress).
+#
+# Namespace: apply into the org namespace where the meeting/dispatch runs
+# (kradle-org-<org>, e.g. kradle-org-a5c-ai). The meeting controller resolves
+# providerRef by name in the meeting's namespace.
+#
+# JWT: authMode=jwt with the SAME shared HS256 secret the controller signs with
+# (KRADLE_JITSI_JWT_SECRET) and prosody validates with (JWT_APP_SECRET) — see
+# publish.yml deploy_kradle. appId/issuer=kradle, audience=jitsi match the chart
+# (values.yaml jitsi.prosody.auth.jwt) and the controller signer
+# (jitsi-meeting-controller.js signJwt). Replace <SHARED_JITSI_JWT_SECRET> with the
+# deployed value (kubectl -n kradle-staging get secret kradle-kradle-jitsi-jwt
+# -o jsonpath='{.data.appSecret}' | base64 -d).
+#
+# endpoint = the URL the sidecar's headless Chromium OPENS (roomUrl is derived from
+# it). For the agent-only smoke use the in-cluster web Service FQDN so the Job pod in
+# kradle-org-<org> can reach it cross-namespace (networkPolicy is disabled on staging).
+apiVersion: kradle.a5c.ai/v1alpha1
+kind: JitsiMeetProvider
+metadata:
+  name: in-cluster-jitsi
+  namespace: kradle-org-a5c-ai
+spec:
+  organizationRef: a5c-ai
+  # Cluster-internal web service (release "kradle", subchart alias "jitsi-subchart").
+  endpoint: http://kradle-jitsi-subchart-web.kradle-staging.svc.cluster.local:80
+  internalEndpoint: http://kradle-jitsi-subchart-web.kradle-staging.svc.cluster.local:80
+  authMode: jwt
+  deploymentMode: internal
+  jwtConfig:
+    appId: kradle
+    issuer: kradle
+    audience: jitsi
+    secret: "<SHARED_JITSI_JWT_SECRET>"
+    appSecret: "<SHARED_JITSI_JWT_SECRET>"
+  features: {}
+  defaultRoomConfig: {}

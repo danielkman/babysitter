@@ -1,0 +1,78 @@
+{
+  "name": "@a5c-ai/channels-adapter",
+  "version": "6.0.0",
+  "type": "module",
+  "license": "MIT",
+  "description": "MCP-server mini-framework turning GitHub/Jira backends into Claude Code channels via declarative YAML: polling, dedup, declarative filters, opaque HMAC reply relay, and per-event session spawning via @a5c-ai/adapters.",
+  "author": "a5c-ai",
+  "homepage": "https://github.com/a5c-ai/babysitter/tree/main/packages/adapters/channels#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/a5c-ai/babysitter.git",
+    "directory": "packages/adapters/channels"
+  },
+  "bugs": {
+    "url": "https://github.com/a5c-ai/babysitter/issues"
+  },
+  "keywords": [
+    "adapters",
+    "mcp",
+    "claude",
+    "channel",
+    "github",
+    "jira"
+  ],
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "main": "dist/index.js",
+  "module": "./dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "adapters-channels": "./dist/cli.js",
+    "mcp-channels": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc --build && tsc --emitDeclarationOnly --declarationMap false -p tsconfig.json",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@a5c-ai/adapters": "6.0.0",
+    "@a5c-ai/triggers-adapter": "6.0.0",
+    "@a5c-ai/atlas": "6.0.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "js-yaml": "^4.2.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.19",
+    "@types/js-yaml": "^4.0.9",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.6",
+    "@vitest/coverage-v8": "^4.1.6"
+  },
+  "atlas": {
+    "layers": [
+      "cross-cutting"
+    ],
+    "muxes": [
+      "channels-adapter"
+    ]
+  }
+}

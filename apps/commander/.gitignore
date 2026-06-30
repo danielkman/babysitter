@@ -1,0 +1,8 @@
+node_modules/
+dist/
+# dist-lib/ is a COMMITTED prebuilt artifact (kradle/web consumes it) — keep it tracked.
+!dist-lib/
+playwright-report/
+test-results/
+.vite/
+*.local

@@ -1,0 +1,75 @@
+# Example mcp-channels configuration (SPEC §5).
+#
+# Two channels:
+#   1. GitHub issue comments on issues assigned to "alice".
+#   2. Jira "crash" bugs filed in project BUG and tagged needs-triage.
+#
+# ${ENV} placeholders are interpolated from process.env at load time. A missing
+# required env var produces a config VALIDATION error (never a crash at poll
+# time) — see config.js / SPEC §5.
+
+server:
+  name: mcp-channels              # MCP server name -> <channel source="mcp-channels">
+  # instructions: "Optional override of the server instructions."
+  permissionRelay: false          # opt-in claude/channel/permission relay
+
+state:
+  dir: ./.mcp-channels-state      # optional; default ~/.claude/channels/<name>/state
+  maxSeenPerSource: 1000          # FIFO-bounded per-source dedup seen-set
+
+defaults:
+  pollIntervalSeconds: 60         # per-source override falls back to this
+
+# --- Optional: event-triggered session spawner (SPEC §10) --------------------
+# Global spawn defaults; per-source `spawn` blocks merge OVER these. A source
+# only spawns when its `onEvent` is `spawn` or `both` (default `emit`).
+spawn:
+  agent: claude                   # canonical @a5c-ai/adapters key for Claude Code
+                                  # (the friendly alias `claude-code` also works)
+  mode: headless                  # headless | interactive   (default headless)
+  approvalMode: yolo              # yolo | prompt | deny      (default yolo)
+  selfMcpName: mcp-channels       # name of the self-association MCP entry
+  maxConcurrent: 4                # max in-flight session launches
+
+sources:
+  # --- 1) GitHub: comments on issues assigned to alice -----------------------
+  - id: gh-comments-by-alice
+    backend: github               # built-in backend type
+    pollIntervalSeconds: 30
+    auth:
+      token: "${GITHUB_TOKEN}"    # GitHub PAT
+    config:
+      repo: "octo/app"            # owner/name
+      events: [issue_comment]
+    filter:
+      all:
+        - { field: "issue.assignee.login", op: eq, value: "alice" }
+    routing:
+      reply: comment              # default reply mode for this backend
+    # onEvent: both               # emit | spawn | both (default emit) — uncomment
+    #                             # to ALSO spawn a fresh session per surviving event.
+    # spawn:                      # per-source overrides, merged OVER the global block
+    #   model: claude-opus-4-8
+    #   cwd: "."
+    #   promptTemplate: |         # optional; overrides the default prompt. Placeholders:
+    #     New comment on {{meta.repo}}#{{meta.issue_number}} from {{source_id}}:
+    #     {{content}}
+    #     Reply with the `reply` tool using reply_to={{reply_to}}.
+
+  # --- 2) Jira: crash bugs in project BUG needing triage ---------------------
+  - id: jira-crash-bugs
+    backend: jira                 # built-in backend type
+    pollIntervalSeconds: 60
+    auth:
+      baseUrl: "https://x.atlassian.net"
+      email: "${JIRA_EMAIL}"
+      token: "${JIRA_TOKEN}"
+    config:
+      project: "BUG"
+      events: [issue_created]
+    filter:
+      all:
+        - { field: "fields.labels", op: includes, value: "needs-triage" }
+        - { field: "fields.summary", op: contains, value: "crash", ignoreCase: true }
+    routing:
+      reply: comment

@@ -26,6 +26,8 @@ JOIN_TIMEOUT="${JOIN_TIMEOUT:-240}"
 SUFFIX="$(date +%s)"
 PROVIDER="g0rt-provider"
 APPEARANCE="g0rt-avatar-${SUFFIX}"
+SA="g0rt-sa"
+GRANT="g0rt-model-grant"
 STACK="g0rt-stack-${SUFFIX}"
 MEETING="g0rt-meeting-${SUFFIX}"
 ROOM_ID="g0rt-room-${SUFFIX}"
@@ -99,6 +101,40 @@ spec:
   defaultView: upper
 EOF
 
+# The dispatch permission review (agent-permission-review.js) requires the stack's
+# runtimeIdentity.serviceAccountRef to resolve to an AgentServiceAccount, and (because
+# adapter=claude-code needs a model-provider secret) a matching AgentSecretGrant. Without
+# these the dispatch is "denied by permission review".
+log "2a. apply K8s ServiceAccount/${SA} + AgentServiceAccount/${SA} + AgentSecretGrant/${GRANT}"
+# The kradle AgentServiceAccount CRD is the permission-review abstraction; the Job's pod
+# template sets serviceAccountName=<serviceAccountName>, which must be a REAL K8s ServiceAccount
+# in the org namespace or the Job FailedCreate ("serviceaccount not found"). Create both.
+kubectl -n "$ORG_NS" create serviceaccount "$SA" --dry-run=client -o yaml | kubectl apply -f - >/dev/null
+kubectl apply -f - <<EOF
+apiVersion: kradle.a5c.ai/v1alpha1
+kind: AgentServiceAccount
+metadata:
+  name: ${SA}
+  namespace: ${ORG_NS}
+spec:
+  organizationRef: ${ORG}
+  namespace: ${ORG_NS}
+  serviceAccountName: ${SA}
+---
+apiVersion: kradle.a5c.ai/v1alpha1
+kind: AgentSecretGrant
+metadata:
+  name: ${GRANT}
+  namespace: ${ORG_NS}
+spec:
+  organizationRef: ${ORG}
+  subject:
+    name: ${SA}
+  purpose: model-provider
+  secretRef:
+    name: kradle-assistant-keys
+EOF
+
 log "2c. apply AgentStack/${STACK} (video:publish, jitsiCapability, governed visual tools)"
 kubectl apply -f - <<EOF
 apiVersion: kradle.a5c.ai/v1alpha1
@@ -110,7 +146,8 @@ spec:
   organizationRef: ${ORG}
   baseAgent: claude-code
   adapter: claude-code
-  runtimeIdentity: {}
+  runtimeIdentity:
+    serviceAccountRef: ${SA}
   jitsiCapability: true
   jitsiMeetingProviderRef: ${PROVIDER}
   jitsiConfig:
@@ -133,54 +170,87 @@ spec:
       - share_surface
 EOF
 
-# --- 3. authenticated BFF session ---
-log "3. authenticate (test-session) at https://${APP_HOST}"
-[ -n "${KRADLE_TEST_AUTH_SECRET:-}" ] || fail "KRADLE_TEST_AUTH_SECRET not set — cannot dispatch"
-AUTH=$(curl -sf --max-time 20 -X POST "https://${APP_HOST}/api/auth/test-session" \
-  -H 'content-type: application/json' \
-  -d "{\"secret\":\"${KRADLE_TEST_AUTH_SECRET}\",\"username\":\"g0rt-e2e\"}" \
-  -c "$COOKIE_JAR") || fail "test-session request failed"
-echo "$AUTH" | jq -e '.ok == true' >/dev/null || fail "test-session not ok: $AUTH"
+# --- 3. create the meeting via kubectl (no BFF — the api pod is intermittently unstable and
+#        its dispatch reads a stale snapshot; we bypass it entirely and dispatch via the CLI). ---
+log "3. apply JitsiMeeting/${MEETING} (room ${ROOM_ID}) via kubectl"
+kubectl apply -f - <<EOF
+apiVersion: kradle.a5c.ai/v1alpha1
+kind: JitsiMeeting
+metadata:
+  name: ${MEETING}
+  namespace: ${ORG_NS}
+spec:
+  organizationRef: ${ORG}
+  providerRef: ${PROVIDER}
+  roomId: ${ROOM_ID}
+  displayName: G0-RT E2E
+  ttlMinutes: 30
+EOF
+MEETING_REF="${MEETING}"
 
-# --- 4. create the meeting (API -> Active + roomUrl). Capture status + body for diagnostics. ---
-log "4. create JitsiMeeting/${MEETING} (room ${ROOM_ID}) via the BFF"
-MEET_BODY="$(mktemp)"
-MHTTP=$(curl -s -o "$MEET_BODY" -w '%{http_code}' --max-time 30 -b "$COOKIE_JAR" -X POST "https://${APP_HOST}/api/orgs/${ORG}/jitsi/meetings" \
-  -H 'content-type: application/json' \
-  -d "{\"name\":\"${MEETING}\",\"displayName\":\"G0-RT E2E\",\"ttlMinutes\":30,\"providerRef\":\"${PROVIDER}\",\"roomId\":\"${ROOM_ID}\"}" || echo "000")
-log "meeting HTTP=${MHTTP} body=$(head -c 400 "$MEET_BODY")"
-{ [ "$MHTTP" -ge 200 ] && [ "$MHTTP" -lt 300 ]; } || fail "meeting creation HTTP ${MHTTP}: $(head -c 300 "$MEET_BODY")"
-# metadata.name is the canonical ref; createMeetingResource normalizes name == our MEETING slug.
-MEETING_REF=$(jq -r '.metadata.name // .name // .resource.metadata.name // empty' "$MEET_BODY" 2>/dev/null || true)
-MEETING_REF="${MEETING_REF:-$MEETING}"
-rm -f "$MEET_BODY"
+# jitsimeetings has a status subresource — status.phase MUST be set via --subresource=status.
+# jitsi-agent-bridge.js:66 requires status.phase === 'Active'; roomUrl is what the sidecar opens.
+log "3b. mark JitsiMeeting/${MEETING_REF} Active via the status subresource"
+MSTATUS="{\"status\":{\"phase\":\"Active\",\"roomUrl\":\"http://${JITSI_WEB_SVC}/${ROOM_ID}\"}}"
+kubectl -n "$ORG_NS" patch jitsimeeting "$MEETING_REF" --subresource=status --type=merge -p "$MSTATUS" \
+  || fail "could not patch meeting status to Active"
+for i in $(seq 1 10); do
+  PH=$(kubectl -n "$ORG_NS" get jitsimeeting "$MEETING_REF" -o jsonpath='{.status.phase}' 2>/dev/null || true)
+  [ "$PH" = "Active" ] && { log "meeting phase=Active at the cluster"; break; }
+  sleep 2
+done
 
-# --- 5. dispatch the agent INTO the meeting. Capture status + body. ---
-log "5. dispatch AgentStack/${STACK} into meeting ${MEETING_REF}"
-DHTTP=$(curl -s -o "$DISPATCH_JSON" -w '%{http_code}' --max-time 90 -b "$COOKIE_JAR" -X POST "https://${APP_HOST}/api/orgs/${ORG}/agents/dispatch" \
-  -H 'content-type: application/json' \
-  -d "{\"agentStack\":\"${STACK}\",\"meetingRef\":\"${MEETING_REF}\",\"task\":\"Join the meeting and greet the room.\",\"taskKind\":\"g0-rt-e2e\"}" || echo "000")
-log "dispatch HTTP=${DHTTP} body=$(head -c 600 "$DISPATCH_JSON")"
-{ [ "$DHTTP" -ge 200 ] && [ "$DHTTP" -lt 300 ]; } || fail "dispatch HTTP ${DHTTP}: $(head -c 400 "$DISPATCH_JSON")"
-RUN_ID=$(jq -r '.run.metadata.name // .run.id // .runId // .metadata.name // empty' "$DISPATCH_JSON" 2>/dev/null || true)
-[ -n "$RUN_ID" ] || fail "could not extract runId from dispatch response: $(head -c 400 "$DISPATCH_JSON")"
+# --- 4. dispatch via the kradle CLI. The CLI's getController() builds a FRESH per-invocation
+#        controller whose kubectl-backed gateway reads live k8s (no stuck BFF SWR snapshot), so
+#        getMeeting sees the Active meeting. dispatchAgent runs the permission review (SA+grant)
+#        and submits the agent Job in-process. No web auth needed (kubeconfig is the trust). ---
+log "4. dispatch AgentStack/${STACK} into meeting ${MEETING_REF} via the kradle CLI"
+CLI="${GITHUB_WORKSPACE:-.}/packages/kradle/cli/bin/kradle.mjs"
+# api-controller.js:28 scopes the controller (and its snapshot) to KRADLE_NAMESPACE (default
+# kradle-system) — point it at the org namespace so the snapshot finds the stack/meeting/grants.
+KRADLE_NAMESPACE="$ORG_NS" node "$CLI" dispatch \
+  --stack "$STACK" --namespace "$ORG_NS" --organizationRef "$ORG" \
+  --meetingRef "$MEETING_REF" --task "Join the meeting and greet the room." \
+  --taskKind g0-rt-e2e --repository default --ref main --actor g0-rt-e2e \
+  > "$DISPATCH_JSON" 2>&1 || { sed 's/^/[cli] /' "$DISPATCH_JSON" | tail -25; fail "CLI dispatch failed"; }
+sed 's/^/[cli] /' "$DISPATCH_JSON" | tail -15
+
+# --- 5. find the agent Job the dispatch submitted (by stack label -> its run label). ---
+log "5. locate the agent-run Job for stack ${STACK}"
+RUN_ID=""
+for i in $(seq 1 20); do
+  RUN_ID=$(kubectl -n "$ORG_NS" get jobs -l "kradle.a5c.ai/stack=${STACK}" --sort-by=.metadata.creationTimestamp -o jsonpath='{.items[-1:].metadata.labels.kradle\.a5c\.ai/run}' 2>/dev/null || true)
+  [ -n "$RUN_ID" ] && break
+  sleep 3
+done
+[ -n "$RUN_ID" ] || fail "no agent-run Job appeared for stack ${STACK} after CLI dispatch (review/submit failed — see [cli] output above)"
 log "dispatched runId=${RUN_ID}"
 
-# --- 6. find the Job + pod ---
-log "6. wait for Job kradle-agent-${RUN_ID} + its pod"
+# --- 6. find the Job + its pod. K8s sets job-name=<job> + controller-uid on Job pods; the
+#        kradle.a5c.ai/run label is on the Job, not necessarily the pod — match on job-name. ---
+JOB="kradle-agent-${RUN_ID}"
+log "6. wait for Job ${JOB} + its pod"
 for i in $(seq 1 30); do
-  kubectl -n "$ORG_NS" get job "kradle-agent-${RUN_ID}" >/dev/null 2>&1 && break
+  kubectl -n "$ORG_NS" get job "$JOB" >/dev/null 2>&1 && break
   sleep 2
-  [ "$i" = 30 ] && fail "Job kradle-agent-${RUN_ID} never appeared (dispatch made no Job — check withOrgScope / image pull / controller logs)"
+  [ "$i" = 30 ] && { kubectl -n "$ORG_NS" get jobs 2>/dev/null | sed 's/^/[jobs] /'; fail "Job ${JOB} never appeared"; }
 done
 POD=""
-for i in $(seq 1 30); do
-  POD=$(kubectl -n "$ORG_NS" get pods -l "kradle.a5c.ai/run=${RUN_ID}" -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || true)
+for i in $(seq 1 45); do  # up to ~135s — agent + sidecar image pulls can be slow
+  POD=$(kubectl -n "$ORG_NS" get pods -l "job-name=${JOB}" -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || true)
+  [ -z "$POD" ] && POD=$(kubectl -n "$ORG_NS" get pods -l "kradle.a5c.ai/run=${RUN_ID}" -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || true)
   [ -n "$POD" ] && break
-  sleep 2
+  sleep 3
 done
-[ -n "$POD" ] || fail "no pod for run ${RUN_ID}"
+if [ -z "$POD" ]; then
+  log "=== no pod — Job describe + namespace state (diagnostics) ==="
+  kubectl -n "$ORG_NS" describe job "$JOB" 2>/dev/null | sed 's/^/[job] /' | tail -30 || true
+  kubectl -n "$ORG_NS" get pods 2>/dev/null | sed 's/^/[pods] /' || true
+  kubectl -n "$ORG_NS" get events --sort-by=.lastTimestamp 2>/dev/null | sed 's/^/[ev] /' | tail -20 || true
+  fail "no pod for Job ${JOB} (see Job describe/events above — likely image pull, scheduling, or a Job-spec reject)"
+fi
 log "pod=${POD}"
+kubectl -n "$ORG_NS" get pod "$POD" -o wide 2>/dev/null | sed 's/^/[pod] /' || true
 
 # --- 7. assert the sidecar JOINS (and, for video:publish, boots the avatar) ---
 log "7. poll the jitsi-agent-sidecar container logs for the join signal (timeout ${JOIN_TIMEOUT}s)"

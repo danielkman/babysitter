@@ -1,0 +1,193 @@
+{{- if .Values.gitea.enabled -}}
+{{- $giteaIngress := .Values.gitea.ingress | default dict -}}
+{{- $giteaExternalUrl := "" -}}
+{{- if and $giteaIngress.enabled $giteaIngress.host -}}
+{{- $giteaExternalUrl = printf "https://%s/" $giteaIngress.host -}}
+{{- end -}}
+{{- /* Admin password: explicit value wins; else reuse the existing secret's
+       value so it stays stable across upgrades; else generate a strong one.
+       Never fall back to a weak default — this forge can be ingress-exposed. */ -}}
+{{- $adminSecretName := printf "%s-gitea-admin" (include "kradle.fullname" .) -}}
+{{- $existingAdmin := (lookup "v1" "Secret" .Release.Namespace $adminSecretName) | default dict -}}
+{{- $existingPw := "" -}}
+{{- if $existingAdmin.data -}}{{- $existingPw = (index $existingAdmin.data "password" | b64dec) -}}{{- end -}}
+{{- $adminPassword := .Values.gitea.admin.password | default $existingPw | default (randAlphaNum 24) -}}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "kradle.fullname" . }}-gitea-admin
+  labels:
+    {{- include "kradle.labels" . | nindent 4 }}
+type: Opaque
+stringData:
+  username: {{ .Values.gitea.admin.username | quote }}
+  password: {{ $adminPassword | quote }}
+---
+{{- if ne (.Values.gitea.persistence.type | default "pvc") "emptyDir" }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "kradle.fullname" . }}-gitea-data
+  labels:
+    {{- include "kradle.labels" . | nindent 4 }}
+spec:
+  accessModes: {{ .Values.gitea.persistence.accessModes | toJson }}
+  resources:
+    requests:
+      storage: {{ .Values.gitea.persistence.size }}
+  {{- if .Values.gitea.persistence.storageClassName }}
+  storageClassName: {{ .Values.gitea.persistence.storageClassName | quote }}
+  {{- end }}
+{{- end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kradle.fullname" . }}-gitea
+  labels:
+    {{- include "kradle.labels" . | nindent 4 }}
+    app.kubernetes.io/component: gitea-backend
+spec:
+  replicas: {{ .Values.gitea.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: gitea-backend
+  template:
+    metadata:
+      labels:
+        {{- include "kradle.labels" . | nindent 8 }}
+        app.kubernetes.io/component: gitea-backend
+    spec:
+      containers:
+        - name: gitea
+          image: "{{ .Values.gitea.image.repository }}:{{ .Values.gitea.image.tag }}"
+          imagePullPolicy: {{ .Values.gitea.image.pullPolicy }}
+          env:
+            # ROOT_URL drives the PR/issue html_url Gitea returns from its API —
+            # which the agent stores on the run and the board renders as the PR
+            # link. Prefer the external ingress URL so that link is reachable from
+            # a user's browser; fall back to the in-cluster URL when not exposed.
+            - name: GITEA__server__ROOT_URL
+              value: {{ .Values.gitea.rootUrl | default $giteaExternalUrl | default (printf "http://%s-gitea-http.%s.svc.cluster.local:%v/" (include "kradle.fullname" .) .Release.Namespace (.Values.gitea.service.httpPort | int)) | quote }}
+            - name: GITEA__server__SSH_DOMAIN
+              value: {{ default (printf "%s-gitea-http.%s.svc.cluster.local" (include "kradle.fullname" .) .Release.Namespace) .Values.gitea.sshDomain | quote }}
+            - name: GITEA__security__INSTALL_LOCK
+              value: "true"
+            - name: GITEA_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "kradle.fullname" . }}-gitea-admin
+                  key: username
+            - name: GITEA_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "kradle.fullname" . }}-gitea-admin
+                  key: password
+            - name: KRADLE_BOOTSTRAP_ORG
+              value: {{ .Values.admin.org | default "" | quote }}
+            - name: KRADLE_BOOTSTRAP_SANDBOX_REPO
+              value: {{ (.Values.gitea.bootstrap | default dict).sandboxRepo | default "" | quote }}
+          # Gitea data lives on an emptyDir in this deployment, so a fresh pod
+          # (every `helm uninstall`/install deploy) starts with an empty DB. This
+          # postStart self-provisions the admin user used for agent git auth and,
+          # when configured, the demo sandbox org+repo — so the "agents do real
+          # repo work" slice survives every deploy without manual re-provisioning.
+          # All steps are idempotent (|| true; "already exists" is fine).
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - |
+                    set -u
+                    A=http://localhost:3000
+                    for i in $(seq 1 60); do curl -sf "$A/api/healthz" >/dev/null 2>&1 && break; sleep 2; done
+                    gitea admin user create --admin --username "$GITEA_ADMIN_USER" --password "$GITEA_ADMIN_PASSWORD" --email "$GITEA_ADMIN_USER@kradle.local" --must-change-password=false 2>/dev/null || true
+                    AUTH="$GITEA_ADMIN_USER:$GITEA_ADMIN_PASSWORD"
+                    if [ -n "$KRADLE_BOOTSTRAP_ORG" ]; then
+                      curl -s -o /dev/null -u "$AUTH" -X POST -H 'Content-Type: application/json' -d "{\"username\":\"$KRADLE_BOOTSTRAP_ORG\",\"visibility\":\"private\"}" "$A/api/v1/orgs" || true
+                    fi
+                    if [ -n "$KRADLE_BOOTSTRAP_ORG" ] && [ -n "$KRADLE_BOOTSTRAP_SANDBOX_REPO" ]; then
+                      curl -s -o /dev/null -u "$AUTH" -X POST -H 'Content-Type: application/json' -d "{\"name\":\"$KRADLE_BOOTSTRAP_SANDBOX_REPO\",\"private\":true,\"auto_init\":true,\"default_branch\":\"main\",\"description\":\"agent vertical-slice sandbox\"}" "$A/api/v1/orgs/$KRADLE_BOOTSTRAP_ORG/repos" || true
+                      C=$(printf '// agent sandbox\nexport function add(a, b) {\n  return a + b;\n}\n' | base64 | tr -d '\n')
+                      curl -s -o /dev/null -u "$AUTH" -X POST -H 'Content-Type: application/json' -d "{\"content\":\"$C\",\"message\":\"seed math.js\",\"branch\":\"main\"}" "$A/api/v1/repos/$KRADLE_BOOTSTRAP_ORG/$KRADLE_BOOTSTRAP_SANDBOX_REPO/contents/math.js" || true
+                    fi
+          ports:
+            - name: http
+              containerPort: 3000
+            - name: ssh
+              containerPort: 2222
+          readinessProbe:
+            httpGet:
+              path: /api/healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          {{- if eq (.Values.gitea.persistence.type | default "pvc") "emptyDir" }}
+          emptyDir: {}
+          {{- else }}
+          persistentVolumeClaim:
+            claimName: {{ include "kradle.fullname" . }}-gitea-data
+          {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kradle.fullname" . }}-gitea-http
+  labels:
+    {{- include "kradle.labels" . | nindent 4 }}
+spec:
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: gitea-backend
+  ports:
+    - name: http
+      port: {{ .Values.gitea.service.httpPort }}
+      targetPort: http
+    - name: ssh
+      port: {{ .Values.gitea.service.sshPort }}
+      targetPort: ssh
+{{- if $giteaIngress.enabled }}
+---
+# Optional external exposure so the PR links the agent surfaces on the board are
+# reachable from a user's browser. The forge stays private (Gitea login + private
+# repos); the admin password is generated, never the weak default.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "kradle.fullname" . }}-gitea
+  labels:
+    {{- include "kradle.labels" . | nindent 4 }}
+    app.kubernetes.io/component: gitea-backend
+  {{- with $giteaIngress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with $giteaIngress.className }}
+  ingressClassName: {{ . | quote }}
+  {{- end }}
+  {{- if $giteaIngress.tls }}
+  tls:
+    {{- toYaml $giteaIngress.tls | nindent 4 }}
+  {{- end }}
+  rules:
+    - host: {{ $giteaIngress.host | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "kradle.fullname" . }}-gitea-http
+                port:
+                  number: {{ .Values.gitea.service.httpPort }}
+{{- end }}
+{{- end -}}

@@ -1,0 +1,31 @@
+nodeKind: PackageSurface
+id: package:a5c-ai-voice-adapter
+attributes:
+  packageId: "@a5c-ai/voice-adapter"
+  packageName: "@a5c-ai/voice-adapter"
+  displayName: "Media Governance Bridge (audio + video)"
+  description: |
+    PROPOSED (not yet built). Thin TypeScript bridge letting a realtime media agent
+    call babysitter-governed tools over MCP — across both the voice path and the
+    animated-avatar VIDEO path on kradle/Jitsi. Cosmetic animation (expression/
+    posture/gaze/visemes) runs on a realtime fast path; consequential visual actions
+    (canvas content, screen-share/VNC, external video metadata) are gated like any
+    sensitive tool via in-process babysitter runs (createRun -> orchestrateIteration
+    -> commitEffectResult) with policy + auth./destroy. breakpoint approval gates and
+    a replayable journal — all OUT of the audio/animation hot path. Extends the
+    existing kradle CRDs (AgentStack.jitsiConfig, JitsiMeeting, AgentAppearance/
+    AgentVoiceProfile) rather than minting a parallel CRD. See
+    docs/research/voice-governance-bridge-spec.md + realtime-agent-gaps.md.
+  role: "media-governance-bridge"
+  whenToUse: "Use when a realtime voice/video avatar agent must run governed/audited tool workflows mid-conversation without blocking the sub-second audio/animation turn."
+  status: proposed
+  workspacePath: packages/adapters/voice
+  moduleType: typescript
+  surfaceKinds: [mcp-server, crd-controller, channel-bridge]
+  sourceOfTruthRole: external
+  publishedTo: npm
+  versionPolicy: semver
+  supportedBackends: [webrtc, sip]
+  layer: cross-cutting
+  mux: voice-adapter
+edges: {}

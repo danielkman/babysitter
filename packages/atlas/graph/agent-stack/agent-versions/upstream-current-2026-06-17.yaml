@@ -1,0 +1,513 @@
+# Additive upstream release records from the 2026-06-17 agent-version tracker.
+nodeKind: AgentVersion
+id: agentVersion:amp:0-0-1781711870-g4b29d4
+attributes:
+  agentId: "amp"
+  agentProductId: agent:amp
+  displayName: "Amp CLI 0.0.1781711870-g4b29d4"
+  runtimeFamily: "cli-harness"
+  releaseChannel: "stable"
+  versionRange: "0.0.1781711870-g4b29d4"
+  currentVersion: "0.0.1781711870-g4b29d4"
+  releasedAt: "2026-06-17"
+  sourcePackage: "@ampcode/cli"
+  releaseNotesUrl: "https://www.npmjs.com/package/@ampcode/cli/v/0.0.1781711870-g4b29d4"
+  cliCommand: "amp"
+  summary: "Timestamped Amp npm release; no public build-specific changelog was found."
+  assimilationNotes:
+    - "Latest npm moved from 0.0.1780637187-g70e21b to 0.0.1781711870-g4b29d4."
+    - "Install command remains npm install -g @ampcode/cli."
+    - "No confirmed CLI flag, transport, MCP, model, or migration change was published for this timestamped build."
+  releaseHighlights:
+    - "npm package update to @ampcode/cli 0.0.1781711870-g4b29d4."
+  installMethods:
+    - install:npm
+edges:
+  version_of:
+    - agent:amp
+  sourced_from:
+    - evidence:amp-0-0-1781711870-g4b29d4-2026-06-17
+---
+nodeKind: AgentVersion
+id: agentVersion:antigravity:1-0-9
+attributes:
+  agentId: "antigravity"
+  agentProductId: agent:antigravity-cli
+  displayName: "Antigravity CLI 1.0.9"
+  runtimeFamily: "cli-harness"
+  releaseChannel: "stable"
+  versionRange: "1.0.9"
+  currentVersion: "1.0.9"
+  releasedAt: "2026-06-17"
+  upstreamReleaseTag: "1.0.9"
+  releaseNotesUrl: "https://github.com/google-antigravity/antigravity-cli/releases/tag/1.0.9"
+  cliCommand: "antigravity"
+  summary: "Antigravity CLI release adding plugin submodule installation, safer permissions/sandbox checks, TUI parser/runtime fixes, and headless print-mode resume fixes."
+  assimilationNotes:
+    - "Latest official google-antigravity/antigravity-cli release moved from 1.0.5 to 1.0.9."
+    - "Plugin installs now initialize Git submodules, affecting plugin install/sync behavior."
+    - "Builtin customizations get automatic read-only access, reducing startup permission prompts."
+    - "Command permission checks now strict-match PowerShell scripts, redirections, and unparseable strings; sandbox dangerous paths now include .git."
+    - "Headless print-mode resumption now prints only the newly generated response instead of historical transcript content."
+    - "No package rename or install-method migration was identified."
+  releaseHighlights:
+    - "Plugin submodule install support."
+    - "Automatic read-only builtin customizations permission."
+    - "Stricter command permission and sandbox checks."
+    - "Glamour parser and Bubble Tea runtime panic fixes."
+    - "Headless print-mode resume output fix."
+  installMethods:
+    - install:github-release
+edges:
+  version_of:
+    - agent:antigravity-cli
+  sourced_from:
+    - evidence:antigravity-1-0-9-2026-06-17
+---
+nodeKind: AgentVersion
+id: agentVersion:claude:2-1-179
+attributes:
+  agentId: "claude"
+  agentProductId: agent:claude-code
+  displayName: "Claude Code 2.1.179"
+  runtimeFamily: "cli-harness"
+  releaseChannel: "stable"
+  versionRange: "2.1.179"
+  currentVersion: "2.1.179"
+  releasedAt: "2026-06-16"
+  sourcePackage: "@anthropic-ai/claude-code"
+  upstreamReleaseTag: "v2.1.179"
+  releaseNotesUrl: "https://github.com/anthropics/claude-code/releases/tag/v2.1.179"
+  cliCommand: "claude"
+  summary: "Claude Code patch release fixing mid-stream drops, WSL2 mouse-wheel scrolling, sandbox allow/deny glob scaling, subagent transcript/focus behavior, and remote-session task/plugin behavior."
+  assimilationNotes:
+    - "Latest npm moved from 2.1.165 to 2.1.179."
+    - "Partial responses are preserved on mid-stream connection drops, affecting stream/error handling expectations."
+    - "Sandbox denyRead/allowRead glob expansion no longer makes Bash tool descriptions enormous on Linux."
+    - "Remote session background tasks no longer appear stuck between turns and plugin loading is faster."
+    - "No package rename, install-method migration, new CLI flag, or model change was published."
+  releaseHighlights:
+    - "Preserved partial responses on mid-stream drops."
+    - "WSL2 mouse-wheel scrolling fix."
+    - "Sandbox allow/deny glob description scaling fix."
+    - "Remote session background-task and plugin-loading fixes."
+  installMethods:
+    - install:npm
+edges:
+  version_of:
+    - agent:claude-code
+  sourced_from:
+    - evidence:claude-code-2-1-179-2026-06-17
+---
+nodeKind: AgentVersion
+id: agentVersion:claude-agent-sdk:0-3-179
+attributes:
+  agentId: "claude-agent-sdk"
+  agentProductId: agent:claude-agent-sdk
+  displayName: "Claude Agent SDK 0.3.179"
+  runtimeFamily: "sdk"
+  releaseChannel: "stable"
+  versionRange: "0.3.179"
+  currentVersion: "0.3.179"
+  releasedAt: "2026-06-16"
+  sourcePackage: "@anthropic-ai/claude-agent-sdk"
+  upstreamReleaseTag: "v0.3.179"
+  releaseNotesUrl: "https://github.com/anthropics/claude-agent-sdk-typescript/releases/tag/v0.3.179"
+  summary: "Claude Agent SDK release adding tool_use_meta display labels and fixing -p/background-agent and stream-json busy-state behavior."
+  assimilationNotes:
+    - "Latest npm moved from 0.3.165 to 0.3.179."
+    - "Optional tool_use_meta sidecars on assistant messages affect SDK event/message typings and UI renderers for tool labels."
+    - "-p mode now waits for completed background-agent notifications before final output."
+    - "Remote stream-json sessions emit the turn result at turn boundary and report idle while background tasks continue."
+    - "Package remains @anthropic-ai/claude-agent-sdk."
+  releaseHighlights:
+    - "Optional tool_use_meta sidecar for assistant tool calls."
+    - "-p/background-agent final result fix."
+    - "stream-json remote busy-state fix."
+  installMethods:
+    - install:npm
+edges:
+  version_of:
+    - agent:claude-agent-sdk
+  sourced_from:
+    - evidence:claude-agent-sdk-0-3-179-2026-06-17
+---
+nodeKind: AgentVersion
+id: agent-version:codex@0.140.0
+attributes:
+  agentId: "codex"
+  agentProductId: agent:codex
+  displayName: "Codex CLI 0.140.0"
+  runtimeFamily: "cli-harness"
+  releaseChannel: "stable"
+  versionRange: "0.140.0"
+  currentVersion: "0.140.0"
+  releasedAt: "2026-06-15"
+  sourcePackage: "@openai/codex"
+  upstreamReleaseTag: "rust-v0.140.0"
+  releaseNotesUrl: "https://github.com/openai/codex/releases/tag/rust-v0.140.0"
+  cliCommand: "codex"
+  summary: "Codex CLI release adding /usage, /delete, /import, unified mentions, managed Bedrock auth, SQLite recovery, MCP reliability fixes, and app-server deletion APIs."
+  assimilationNotes:
+    - "Latest npm moved from 0.137.0 to 0.140.0."
+    - "New /usage views affect command catalog and telemetry/usage surfaces."
+    - "New codex delete, /delete, and app-server thread/delete APIs affect session lifecycle and transport-adapter deletion support."
+    - "New /import from Claude Code affects migration/import workflow support."
+    - "Unified @ mentions now include files, plugins, and skills by default, affecting prompt parsing and mention metadata."
+    - "Managed Bedrock API-key auth and encrypted local credential storage affect auth/provider config modeling."
+    - "Removed experimental /realtime voice controls and related audio dependencies."
+  releaseHighlights:
+    - "/usage daily, weekly, and cumulative token views."
+    - "Permanent session deletion commands and app-server thread/delete."
+    - "/import from Claude Code."
+    - "Unified @ mentions for files, plugins, and skills."
+    - "Managed Bedrock API-key auth and encrypted local credential storage."
+    - "Automatic SQLite state recovery."
+  installMethods:
+    - install:npm
+edges:
+  version_of:
+    - agent:codex
+  sourced_from:
+    - evidence:codex-rust-v0-140-0-2026-06-17
+---
+nodeKind: AgentVersion
+id: agentVersion:codex-sdk:6-43-0
+attributes:
+  agentId: "codex-sdk"
+  agentProductId: agent:codex-sdk
+  displayName: "OpenAI Node SDK 6.43.0"
+  runtimeFamily: "sdk"
+  releaseChannel: "stable"
+  versionRange: "6.43.0"
+  currentVersion: "6.43.0"
+  releasedAt: "2026-06-16"
+  sourcePackage: "openai"
+  upstreamReleaseTag: "v6.43.0"
+  releaseNotesUrl: "https://github.com/openai/openai-node/releases/tag/v6.43.0"
+  summary: "OpenAI Node SDK release with TypeScript package entry fixes and repository/build-system maintenance."
+  assimilationNotes:
+    - "Latest npm moved from 6.42.0 to 6.43.0."
+    - "TypeScript package entry fix may affect SDK import/typing resolution in generated adapters."
+    - "Repository converted to pnpm and build release scheduling changed; no public API surface, transport, install, or migration change was published."
+  releaseHighlights:
+    - "TypeScript package entry fix to use main."
+    - "pnpm repository conversion and build-system maintenance."
+  installMethods:
+    - install:npm
+edges:
+  version_of:
+    - agent:codex-sdk
+  sourced_from:
+    - evidence:openai-node-6-43-0-2026-06-17
+---
+nodeKind: AgentVersion
+id: agentVersion:copilot:1-0-63
+attributes:
+  agentId: "copilot"
+  agentProductId: agent:copilot-cli
+  displayName: "GitHub Copilot CLI 1.0.63"
+  runtimeFamily: "cli-harness"
+  releaseChannel: "stable"
+  versionRange: "1.0.63"
+  currentVersion: "1.0.63"
+  releasedAt: "2026-06-16"
+  sourcePackage: "@github/copilot"
+  upstreamReleaseTag: "v1.0.63"
+  releaseNotesUrl: "https://github.com/github/copilot-cli/releases/tag/v1.0.63"
+  cliCommand: "gh copilot"
+  summary: "GitHub Copilot CLI release restoring /responses WebSocket connections, adding deferTools MCP config, improving auth/network diagnostics, and adding experimental /rewind without git."
+  assimilationNotes:
+    - "Latest stable release moved from 1.0.59 to 1.0.63; v1.0.64-0 exists as a pre-release and was not treated as stable latest."
+    - "Restored /responses WebSocket connections affects transport-adapter proxy expectations."
+    - "New deferTools MCP server config affects MCP tool-search/tool availability modeling."
+    - "Experimental /rewind no longer requires git and can restore only Copilot-changed files."
+    - "Agent mode is tracked per session, affecting session state reset/switch behavior."
+    - "No install-method or package-name migration was published."
+  releaseHighlights:
+    - "Restore /responses WebSocket connections."
+    - "MCP deferTools config option."
+    - "Experimental /rewind without git."
+    - "Agent mode tracked per session."
+    - "PostToolUse hook matcher fix."
+  installMethods:
+    - install:gh-extension
+edges:
+  version_of:
+    - agent:copilot-cli
+  sourced_from:
+    - evidence:copilot-cli-1-0-63-2026-06-17
+---
+nodeKind: AgentVersion
+id: agentVersion:cursor:changelog-2026-06-10
+attributes:
+  agentId: "cursor"
+  agentProductId: agent:cursor
+  displayName: "Cursor changelog 2026-06-10"
+  runtimeFamily: "ide-agent"
+  releaseChannel: "stable"
+  versionRange: "2026-06-10-changelog"
+  currentVersion: "2026-06-10-changelog"
+  releasedAt: "2026-06-10"
+  releaseNotesUrl: "https://cursor.com/changelog"
+  summary: "Cursor changelog entry reporting Bugbot review performance, cost, and bug-detection improvements."
+  assimilationNotes:
+    - "Latest Cursor changelog moved from the recorded 2026-06-03 entry to 2026-06-10."
+    - "Bugbot review time is now about 90 seconds instead of about 5 minutes."
+    - "Bugbot average bugs found per review increased from 0.56 to 0.62 and cost per run decreased by about 22%."
+    - "No package name, install method, CLI flag, transport/API, or migration change was published for Cursor adapter surfaces."
+  releaseHighlights:
+    - "Bugbot reviews over 3x faster."
+    - "Bugbot runs about 22% cheaper."
+    - "Bugbot finds about 10% more bugs per review."
+  installMethods:
+    - install:desktop-app
+edges:
+  version_of:
+    - agent:cursor
+  sourced_from:
+    - evidence:cursor-changelog-2026-06-10-2026-06-17
+---
+nodeKind: AgentVersion
+id: agentVersion:droid:0-150-1
+attributes:
+  agentId: "droid"
+  agentProductId: agent:droid
+  displayName: "Factory Droid CLI 0.150.1"
+  runtimeFamily: "cli-harness"
+  releaseChannel: "stable"
+  versionRange: "0.150.1"
+  currentVersion: "0.150.1"
+  releasedAt: "2026-06-17"
+  sourcePackage: "@factory/cli"
+  releaseNotesUrl: "https://www.npmjs.com/package/@factory/cli/v/0.150.1"
+  cliCommand: "droid"
+  summary: "Factory Droid CLI npm release; public version-specific release notes were not found."
+  assimilationNotes:
+    - "Latest npm moved from 0.141.0 to 0.150.1."
+    - "npm metadata identifies the package as Factory Droid CLI and points repository metadata at Factory-AI/factory apps/cli."
+    - "No public version-specific changelog was found, so no CLI flag, transport, API, model, or migration change is confirmed."
+    - "Install command remains npm install -g @factory/cli."
+  releaseHighlights:
+    - "npm package update to @factory/cli 0.150.1."
+  installMethods:
+    - install:npm
+edges:
+  version_of:
+    - agent:droid
+  sourced_from:
+    - evidence:droid-0-150-1-2026-06-17
+---
+nodeKind: AgentVersion
+id: agentVersion:gemini:0-46-0
+attributes:
+  agentId: "gemini"
+  agentProductId: agent:gemini-cli
+  displayName: "Gemini CLI 0.46.0"
+  runtimeFamily: "cli-harness"
+  releaseChannel: "stable"
+  versionRange: "0.46.0"
+  currentVersion: "0.46.0"
+  releasedAt: "2026-06-10"
+  sourcePackage: "@google/gemini-cli"
+  upstreamReleaseTag: "v0.46.0"
+  releaseNotesUrl: "https://github.com/google-gemini/gemini-cli/releases/tag/v0.46.0"
+  cliCommand: "gemini"
+  summary: "Gemini CLI release hardening PTY resize and editor preference handling, transitioning flash GA model behavior behind an experiment flag, and updating release-preview patches."
+  assimilationNotes:
+    - "Latest npm moved from 0.45.1 to 0.46.0."
+    - "PTY resize hardening affects terminal adapter robustness."
+    - "Invalid preferredEditor spam-loop fix affects settings validation behavior."
+    - "Flash GA model transition behind an experiment flag may affect model defaults when that flag is set."
+    - "No install-method migration was published."
+  releaseHighlights:
+    - "PTY resize native-crash hardening."
+    - "preferredEditor spam-loop prevention."
+    - "Flash GA model transition under experiment flag."
+  installMethods:
+    - install:npm
+edges:
+  version_of:
+    - agent:gemini-cli
+  sourced_from:
+    - evidence:gemini-cli-0-46-0-2026-06-17
+---
+nodeKind: AgentVersion
+id: agentVersion:hermes:0-16-0
+attributes:
+  agentId: "hermes"
+  agentProductId: agent:hermes
+  displayName: "Hermes Agent 0.16.0"
+  runtimeFamily: "cli-harness"
+  releaseChannel: "stable"
+  versionRange: "0.16.0"
+  currentVersion: "0.16.0"
+  releasedAt: "2026-06-06"
+  sourcePackage: "hermes-agent"
+  releaseNotesUrl: "https://www.npmjs.com/package/hermes-agent/v/0.16.0"
+  cliCommand: "hermes"
+  summary: "Hermes Agent npm bridge update to upstream Hermes Agent 0.16.0; no public per-version changelog was found."
+  assimilationNotes:
+    - "Latest npm moved from 0.15.2 to 0.16.0."
+    - "npm description identifies this as an unofficial npm bridge for Hermes Agent 0.16.0."
+    - "No public version-specific CLI flag, transport, API, model, install, or migration change was found."
+  releaseHighlights:
+    - "npm package update to hermes-agent 0.16.0."
+  installMethods:
+    - install:npm
+edges:
+  version_of:
+    - agent:hermes
+  sourced_from:
+    - evidence:hermes-agent-0-16-0-2026-06-17
+---
+nodeKind: AgentVersion
+id: agentVersion:omp:16-0-5
+attributes:
+  agentId: "omp"
+  agentProductId: agent:omp
+  displayName: "Oh-My-Pi 16.0.5"
+  runtimeFamily: "cli-harness"
+  releaseChannel: "stable"
+  versionRange: "16.0.5"
+  currentVersion: "16.0.5"
+  releasedAt: "2026-06-17"
+  sourcePackage: "@oh-my-pi/pi-coding-agent"
+  upstreamReleaseTag: "v16.0.5"
+  releaseNotesUrl: "https://github.com/can1357/oh-my-pi/releases/tag/v16.0.5"
+  cliCommand: "omp"
+  summary: "Oh-My-Pi release adding model-scoped API key resolution, agent-loop deadlines, Antigravity endpoint routing, Gemini thinking-loop guard, image-description fallbacks, session_stop extension events, and --max-time."
+  assimilationNotes:
+    - "Latest upstream moved from 15.9.1 to 16.0.5."
+    - "Breaking AgentOptions.getApiKey and AgentLoopConfig.getApiKey signature change affects SDK/agent-core integrations."
+    - "New --max-time <seconds> should be modeled in launchBehavior/promptExtraFlags."
+    - "New providers.antigravityEndpoint setting and Antigravity endpoint-mode routing affect provider configuration."
+    - "New session_stop extension event with continuation feedback affects extension/hook mapping."
+    - "JSON-mode startup notices now route to stderr, affecting stdout JSON stream parsing."
+  releaseHighlights:
+    - "Breaking model-scoped getApiKey API."
+    - "Agent-loop deadline support and --max-time."
+    - "Antigravity endpoint routing and user-agent changes."
+    - "Gemini thinking-loop guard."
+    - "Automatic image descriptions for text-only models."
+    - "session_stop extension event."
+  installMethods:
+    - install:npm
+edges:
+  version_of:
+    - agent:omp
+  sourced_from:
+    - evidence:omp-16-0-5-2026-06-17
+---
+nodeKind: AgentVersion
+id: agentVersion:openclaw:2026-6-8
+attributes:
+  agentId: "openclaw"
+  agentProductId: agent:openclaw
+  displayName: "OpenClaw 2026.6.8"
+  runtimeFamily: "cli-harness"
+  releaseChannel: "stable"
+  versionRange: "2026.6.8"
+  currentVersion: "2026.6.8"
+  releasedAt: "2026-06-16"
+  sourcePackage: "openclaw"
+  upstreamReleaseTag: "v2026.6.8"
+  releaseNotesUrl: "https://github.com/openclaw/openclaw/releases/tag/v2026.6.8"
+  cliCommand: "openclaw"
+  summary: "OpenClaw release with rich Telegram/WhatsApp delivery, GLM-5.2 and Claude Haiku 4.5 catalog support, /usage footer rendering, /btw in CLI-backed sessions, and extensive provider/session/runtime reliability fixes."
+  assimilationNotes:
+    - "Latest upstream moved from 2026.6.1 to 2026.6.8."
+    - "Telegram rich-message and WhatsApp ACP binding support affect channel/transport adapters."
+    - "GLM-5.2 and Claude Haiku 4.5 catalog support affect model catalog mappings."
+    - "Web search defaults keep key-free providers explicit opt-ins, affecting search-provider configuration."
+    - "New /btw support in CLI-backed sessions affects command catalog and prompt-routing behavior."
+    - "Release verification confirms npm package openclaw 2026.6.8 and Windows Hub promotion artifacts."
+  releaseHighlights:
+    - "Telegram rich-message delivery and WhatsApp ACP bindings."
+    - "GLM-5.2 and Claude Haiku 4.5 catalog support."
+    - "Built-in /usage full footer rendering."
+    - "/btw support in CLI-backed sessions."
+    - "Provider/model replay hardening and SecretRef auth fixes."
+  installMethods:
+    - install:npm
+    - install:github-release
+edges:
+  version_of:
+    - agent:openclaw
+  sourced_from:
+    - evidence:openclaw-2026-6-8-2026-06-17
+---
+nodeKind: AgentVersion
+id: agentVersion:opencode:1-17-7
+attributes:
+  agentId: "opencode"
+  agentProductId: agent:opencode
+  displayName: "OpenCode 1.17.7"
+  runtimeFamily: "cli-harness"
+  releaseChannel: "stable"
+  versionRange: "1.17.7"
+  currentVersion: "1.17.7"
+  releasedAt: "2026-06-14"
+  sourcePackage: "opencode-ai"
+  upstreamReleaseTag: "v1.17.7"
+  releaseNotesUrl: "https://github.com/anomalyco/opencode/releases/tag/v1.17.7"
+  cliCommand: "opencode"
+  summary: "OpenCode release fixing plugin client server reuse, ACP shell display, plugin PTY environment propagation, MCP workspace roots, MCP debug protocol version, and SDK provider/model availability refresh."
+  assimilationNotes:
+    - "Latest npm moved from 1.16.0 to 1.17.7."
+    - "Plugin client requests now reuse the active server instead of the default local port, affecting plugin transport routing."
+    - "ACP shell tool calls now expose command and working directory from the start, affecting shell event rendering."
+    - "Plugin-provided shell environment variables now apply to PTY sessions."
+    - "MCP servers can receive current workspace as a client root."
+    - "SDK clients refresh model/provider availability when integrations change, and credential update/remove calls accept location."
+  releaseHighlights:
+    - "Active-server plugin client reuse."
+    - "ACP shell command/workdir display."
+    - "Plugin shell env vars in PTY sessions."
+    - "MCP workspace client root support."
+    - "SDK provider/model availability refresh."
+  installMethods:
+    - install:npm
+edges:
+  version_of:
+    - agent:opencode
+  sourced_from:
+    - evidence:opencode-1-17-7-2026-06-17
+---
+nodeKind: AgentVersion
+id: agentVersion:qwen:0-18-2
+attributes:
+  agentId: "qwen"
+  agentProductId: agent:qwen
+  displayName: "Qwen Code 0.18.2"
+  runtimeFamily: "cli-harness"
+  releaseChannel: "stable"
+  versionRange: "0.18.2"
+  currentVersion: "0.18.2"
+  releasedAt: "2026-06-17"
+  sourcePackage: "@qwen-code/qwen-code"
+  upstreamReleaseTag: "v0.18.2"
+  releaseNotesUrl: "https://github.com/QwenLM/qwen-code/releases/tag/v0.18.2"
+  cliCommand: "qwen"
+  summary: "Qwen Code release adding daemon status API, sessions list --json/--limit, workflow meta and /workflows phase-tree support, web-shell APIs, collapsible thinking blocks, and transport/schema reliability fixes."
+  assimilationNotes:
+    - "Latest npm moved from 0.17.1 to 0.18.2."
+    - "New daemon status API affects daemon adapter capability mapping."
+    - "New sessions list command with --json and --limit flags should be added to command/launch behavior metadata."
+    - "Workflow P4 adds meta, /workflows, and phase-tree support, affecting workflow command catalog."
+    - "DaemonTransport abstraction and auto-retry of transport stream errors affect SDK/transport assumptions."
+    - "Qwen PR review proxy bypass and permission fixes affect review/permissions behavior."
+  releaseHighlights:
+    - "daemon status API."
+    - "sessions list --json --limit."
+    - "Workflow meta, /workflows, and phase-tree support."
+    - "Web-shell custom footer and imperative composer APIs."
+    - "Collapsible thinking blocks with duration timer."
+    - "Transport stream auto-retry and MCP schema coercion fixes."
+  installMethods:
+    - install:npm
+edges:
+  version_of:
+    - agent:qwen
+  sourced_from:
+    - evidence:qwen-code-0-18-2-2026-06-17

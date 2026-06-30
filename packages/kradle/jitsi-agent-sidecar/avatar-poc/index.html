@@ -1,0 +1,156 @@
+<!doctype html>
+<!--
+  avatar-poc / index.html — self-contained, CDN-only ESM page.
+
+  Responsibility:
+    The single browser entry point for the avatar-render PoC. It pins all browser
+    libraries (three + @met4citizen/TalkingHead) via an ESM <importmap> loaded from
+    a CDN — NO npm packages, NO bundler, NO lockfile. It hosts the single composited
+    output <canvas id="out"> that will become the published Jitsi video track, plus an
+    off-DOM-ish stage container for TalkingHead's own WebGL renderer canvas.
+
+    A <script type="module"> bootstrap wires together the modules
+    ./avatar.js, ./compositor.js, ./lipsync.js and ./publish-effect.js and exposes
+    window.__avatarPoc so that verify.mjs (headless puppeteer-core) and the manual
+    live-Jitsi path can drive the PoC via page.evaluate().
+
+  Version pins (see README.md for rationale):
+    - three@0.170.0          — pinned to match TalkingHead 1.5's documented importmap.
+                               (Task brief suggested ~0.180; TalkingHead's own source
+                               pins 0.170, so we follow TalkingHead to avoid API drift.)
+    - @met4citizen/TalkingHead@1.5 (loaded from the GitHub tag via jsDelivr `gh`).
+    - es-module-shims@1.7.1  — importmap polyfill, mirrors TalkingHead's own index.html.
+
+  Constraints honored: CDN-only, no install, no package.json inside avatar-poc/.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Avatar Render PoC</title>
+
+    <!--
+      es-module-shims provides importmap support across browsers/contexts (and is what
+      TalkingHead's own demo uses). Loaded `async` before the importmap, per the shim's
+      documented usage.
+    -->
+    <script async src="https://cdn.jsdelivr.net/npm/es-module-shims@1.7.1/dist/es-module-shims.js"></script>
+
+    <!--
+      ESM import map. TalkingHead imports bare specifiers `three` and `three/addons/...`,
+      so the same map must satisfy both our modules and TalkingHead. Versions are PINNED
+      (no `@latest`) so the PoC is reproducible.
+    -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+          "three/": "https://cdn.jsdelivr.net/npm/three@0.170.0/",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/",
+          "three/examples/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/",
+          "@met4citizen/talkinghead": "https://cdn.jsdelivr.net/gh/met4citizen/TalkingHead@1.5/modules/talkinghead.mjs"
+        }
+      }
+    </script>
+
+    <style>
+      :root { color-scheme: dark; }
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+        background: #111;
+        color: #eee;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 16px;
+      }
+      h1 { font-size: 16px; font-weight: 600; margin: 4px 0; }
+      /*
+        #avatar-stage hosts TalkingHead's internal WebGL renderer canvas. It is NOT the
+        published surface; the compositor copies the avatar canvas into #out.
+        Kept on-page (visually small) so WebGL has a real drawing context in headless.
+      */
+      #avatar-stage {
+        width: 320px;
+        height: 240px;
+        border: 1px solid #333;
+        background: #000;
+      }
+      /* #out is the SINGLE composited output that becomes the published video track. */
+      #out {
+        border: 1px solid #444;
+        background: #000;
+      }
+      .row { display: flex; gap: 16px; align-items: flex-start; }
+      .label { font-size: 11px; opacity: 0.6; text-align: center; }
+    </style>
+  </head>
+
+  <body>
+    <h1>Avatar Render PoC — proves G1 (render) / G2 (publish) / G4 (lipsync) + X1 (A/V sync)</h1>
+
+    <div class="row">
+      <div>
+        <div id="avatar-stage"></div>
+        <div class="label">#avatar-stage (TalkingHead renderer, not published)</div>
+      </div>
+      <div>
+        <!-- The single composited output; captureStream() of this becomes the video track. -->
+        <canvas id="out" width="640" height="480"></canvas>
+        <div class="label">#out (composited → published track)</div>
+      </div>
+    </div>
+
+    <!--
+      Bootstrap. Constructs the avatar (primitive placeholder by default — no GLB committed or
+      fetched), the compositor over #out, starts the rAF compositing loop, and exposes
+      window.__avatarPoc so verify.mjs (headless puppeteer-core) and the manual live-Jitsi path
+      can drive the PoC via page.evaluate(). On error we still expose the failure on
+      window.__avatarPoc so the harness can read the real reason instead of timing out.
+
+      The AVATAR_GLB_URL can be supplied via ?glb=<url> (a user-owned/RPM GLB); absent => the
+      license-clean primitive placeholder.
+    -->
+    <script type="module">
+      const out = document.getElementById('out');
+      const stageEl = document.getElementById('avatar-stage');
+      const glbUrl = new URLSearchParams(location.search).get('glb') || undefined;
+
+      try {
+        const { createAvatar } = await import('./avatar.js');
+        const { createCompositor } = await import('./compositor.js');
+
+        const avatar = await createAvatar({ stageEl, glbUrl });
+        const compositor = createCompositor({ outCanvas: out, avatar });
+        compositor.start();
+
+        // publish-effect.js / lipsync.js are loaded lazily (used by V2/V3 and the live path).
+        let publish = null;
+        let lipsyncMod = null;
+        try { publish = await import('./publish-effect.js'); } catch (e) { /* optional for V4 */ }
+        try { lipsyncMod = await import('./lipsync.js'); } catch (e) { /* optional for V4 */ }
+
+        window.__avatarPoc = {
+          ready: true,
+          mode: avatar.mode,
+          avatar,
+          compositor,
+          out,
+          stageEl,
+          publish,
+          lipsync: lipsyncMod,
+        };
+      } catch (err) {
+        window.__avatarPoc = {
+          ready: false,
+          error: (err && (err.stack || err.message)) || String(err),
+          out,
+          stageEl,
+        };
+        console.error('avatar-poc bootstrap failed:', err);
+      }
+    </script>
+  </body>
+</html>
