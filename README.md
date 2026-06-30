@@ -85,7 +85,7 @@ adapters run claude "explain this codebase"
 Babysitter supports the 12 AI coding harnesses listed in the [install matrix](docs/user-guide/harnesses/install-matrix.md). Install the plugin for your harness of choice; the two fully-worked harnesses have dedicated pages — [Claude Code](docs/user-guide/harnesses/claude-code.md) and [Codex](docs/user-guide/harnesses/codex.md).
 In this repository, [`plugins/babysitter-unified`](plugins/babysitter-unified/plugin.json) is the only maintained plugin source; harness-specific bundles are generated during build/release and are not committed:
 
-### Claude Code (recommended)
+### Claude Code
 
 Native marketplace install:
 
